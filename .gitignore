@@ -1,0 +1,32 @@
+# compiled python files
+*.pyc
+
+# OS-specific files
+*.DS_Store
+
+# documentation files
+/docs/*
+# Allow
+!/docs/img/
+
+# json results
+*.json
+
+# setuptools distribution folder
+/dist/
+/build/
+
+# pyinstaller files
+*.spec
+
+# PyCharm settings
+/.idea/
+
+# release files
+/releases/
+
+# Python egg metadata, regenerated from source files by setuptools
+/*.egg-info
+
+# image files
+*.psd
