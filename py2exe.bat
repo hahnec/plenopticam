@@ -8,4 +8,5 @@ pyinstaller plenopticam\gui\top_level.py^
 	--noconsole^
 	--add-data C:\Python\Python36\lib\site-packages\libtiff;.\libtiff^
 	--name=plenopticam^
-	--icon=plenopticam\gui\icns\1055104.ico
+	--icon=plenopticam\gui\icns\1055104.ico^
+	--add-data=plenopticam\gui\icns\1055104.ico;.\icns\

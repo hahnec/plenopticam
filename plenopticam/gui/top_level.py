@@ -27,6 +27,7 @@ except ImportError:
 
 from tempfile import mkstemp
 import sys
+import os
 
 # local python files
 from plenopticam.misc.status import PlenopticamStatus
@@ -58,7 +59,11 @@ class PlenopticamApp(tk.Tk):
 
         # icon handling
         if sys.platform == 'win32':
-            self.iconbitmap(default=ICON_PATH)
+            self.wm_iconbitmap(default=ICON_PATH)
+            cwd = sys._MEIPASS if hasattr(sys, '_MEIPASS') else os.getcwd()
+            fp = os.path.join(cwd, 'icns', '1055104.ico')
+            fp = fp if os.path.exists(fp) else ICON_PATH
+            self.iconbitmap(fp)
 
         # initialize parameters
         self.sta = PlenopticamStatus()
