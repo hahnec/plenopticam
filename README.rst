@@ -125,20 +125,17 @@ If you find this work helpful, please cite the following publications:
     :target: https://github.com/hahnec/plenopticam/archive/master.zip
     :alt: Downloads
 
-.. |UoB| image:: https://3tkh0x1zl0mb1ta92c2mrvv2-wpengine.netdna-ssl.com/wp-content/uploads/2015/12/LO_KukriGB_Universities_Bedfordshire.png
-    :width: 70 px
-    :target: https://www.beds.ac.uk/
-    :alt: University of Bedfordshire
+.. |UoB| raw:: html
 
-.. |EUFramework| image:: http://www.gsa.europa.eu/sites/default/files/Seventh_Framework_Programme_logo.png
-    :width: 100 px
-    :target: https://cordis.europa.eu/project/rcn/94148_en.html
-    :alt: 7th Framework Programme
+    <img src="https://3tkh0x1zl0mb1ta92c2mrvv2-wpengine.netdna-ssl.com/wp-content/uploads/2015/12/LO_KukriGB_Universities_Bedfordshire.png" width="70px">
 
-.. |Hahne| image:: http://www.christopherhahne.de/images/about.jpg
-    :width: 100 px
-    :target: http://www.christopherhahne.de
-    :alt: Photo
+.. |EUFramework| raw:: html
+
+    <img src="http://www.gsa.europa.eu/sites/default/files/Seventh_Framework_Programme_logo.png" width="100px">
+
+.. |Hahne| raw:: html
+
+    <img src="http://www.christopherhahne.de/images/about.jpg" width="100px">
 
 .. Hyperlink aliases
 
