@@ -18,7 +18,7 @@ class CnfgWidget(object):
         self.frame = tk.Toplevel(padx=PX, pady=PY)
 
         # window title
-        self.frame.wm_title("Configuration parameters")
+        self.frame.wm_title("Configuration")
 
         # tk variables init
         self.tk_vars = {}
