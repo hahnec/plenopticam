@@ -2,7 +2,9 @@
 Plenopticam
 ===========
 
-A light field photograph application for computational change of perspective view and synthetic focus based on a Standard Plenoptic Camera (SPC).
+A light field photograph application (macOS_ or Win_) for computational change of perspective view and synthetic focus based on a Standard Plenoptic Camera (SPC).
+
+Check out Plenopticam's partner project Plenoptisign_ capable of estimating metric light field geometries.
 
 |license| |code| |repo| |downloads|
 
@@ -22,13 +24,17 @@ If installation ran smoothly, enter the following
 
     ``$ plenopticam -g``
 
-to the command line after which a tidy and instructive user interface will pop up (see below).
+to the command line after which a tidy user interface will pop up (see below).
 
 |gui|
 
 .. |gui| raw:: html
 
     <img src="./docs/img/gui_v3.png" width="700px">
+
+.. note::
+    "Pick folder" checkbox is useful to point to a directory containing calibration archive files of Lytro Illum cameras.
+    In such case, the white image calibration file corresponding to the Illum image is found automatically.
 
 Results
 -------
@@ -69,26 +75,33 @@ Further information
 * visit `plenoptic.info <http://www.plenoptic.info>`__ for technical details, animated figures and theoretical background
 
 Credits
--------
+=======
 
 Contributors
-============
-* `Christopher Hahne <http://www.christopherhahne.de/>`__
+------------
+
+|Hahne|
+
+`Christopher Hahne <http://www.christopherhahne.de/>`__
 
 Sponsors
-========
-* `IRAC at University of Bedfordshire <https://www.beds.ac.uk/research-ref/irac/about>`__
-* `7th Framework Programme under Grant EU-FP7 ICT-2010-248420 <https://cordis.europa.eu/project/rcn/94148_en.html>`__
+--------
+
+|EUFramework|
+
+`under Grant EU-FP7 ICT-2010-248420 <https://cordis.europa.eu/project/rcn/94148_en.html>`__
+
+|UoB|
+
+`Institute for Research in Applicable Computing (IRAC) <https://www.beds.ac.uk/research-ref/irac/about>`__
 
 Citation
-========
+--------
 If you find this work helpful, please cite the following publications:
 
 * `Refocusing distance of a standard plenoptic camera <https://doi.org/10.1364/OE.24.021521>`__, *OpticsExpress*, `[BibTeX] <http://www.plenoptic.info/bibtex/HAHNE-OPEX.2016.bib>`__
 
 * `Baseline and triangulation geometry in a standard plenoptic camera <https://www.plenoptic.info/IJCV_Hahne17_final.pdf>`__, *Int. J. of Comp. Vis.*, `[BibTeX] <http://plenoptic.info/bibtex/HAHNE-IJCV.2017.bib>`__
-
-
 
 .. Image substitutions
 
@@ -112,6 +125,21 @@ If you find this work helpful, please cite the following publications:
     :target: https://github.com/hahnec/plenopticam/archive/master.zip
     :alt: Downloads
 
+.. |UoB| raw:: html
+
+    <img src="https://3tkh0x1zl0mb1ta92c2mrvv2-wpengine.netdna-ssl.com/wp-content/uploads/2015/12/LO_KukriGB_Universities_Bedfordshire.png" width="70px">
+
+.. |EUFramework| raw:: html
+
+    <img src="http://www.gsa.europa.eu/sites/default/files/Seventh_Framework_Programme_logo.png" width="100px">
+
+.. |Hahne| raw:: html
+
+    <img src="http://www.christopherhahne.de/images/about.jpg" width="100px">
+
 .. Hyperlink aliases
 
 .. _source: https://github.com/hahnec/plenopticam/archive/master.zip
+.. _macOS: https://github.com/hahnec/plenopticam/releases/download/v1.0.0-alpha/plenopticam_1.0.0-alpha_macOS.zip
+.. _Win: https://github.com/hahnec/plenopticam/releases/download/v1.0.0-alpha/plenopticam_1.0.0_alpha_win.zip
+.. _Plenoptisign: https://github.com/hahnec/plenoptisign/
