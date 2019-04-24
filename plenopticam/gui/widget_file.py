@@ -6,7 +6,7 @@ except ImportError:
 import os
 
 from plenopticam.gui.widget_path import PathWidget
-from plenopticam.gui.constants import PX, PY
+from plenopticam.gui.constants import PX, PY, GENERIC_EXTS, LYT_LFP_EXTS, LYT_CAL_EXTS
 
 class FileWidget(tk.Frame):
 
@@ -18,8 +18,10 @@ class FileWidget(tk.Frame):
         self.cfg = parent.cfg
 
         # supported file extensions
-        LFP_EXTS = [('Generic image files', '*.bmp *.png *.tiff *.jpeg *.jpg'), ('Lytro files', '*.lfp *.lfr *.raw')]
-        CAL_EXTS = [('Generic image files', '*.bmp *.png *.tiff *.jpeg *.jpg'), ('Lytro files', '*.tar *.raw')]
+        LFP_EXTS = [('Supported files', ' '.join(LYT_LFP_EXTS+GENERIC_EXTS)), ('Lytro files', ' '.join(LYT_LFP_EXTS)),
+                    ('Generic image files', ' '.join(GENERIC_EXTS))]
+        CAL_EXTS = [('Supported files', ' '.join(LYT_CAL_EXTS+GENERIC_EXTS)), ('Lytro files', ' '.join(LYT_CAL_EXTS)),
+                    ('Generic image files', ' '.join(GENERIC_EXTS))]
 
         # instantiate light field path widget
         tk.Label(self, text='Light field image: ').grid(row=0, column=0, sticky='W')
