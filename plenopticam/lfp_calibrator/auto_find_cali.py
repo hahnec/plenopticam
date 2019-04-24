@@ -117,7 +117,7 @@ class CaliFinder(object):
 
         # skip if file already found or if provided path is not a directory
         if not self._file_found:
-            onlydirs = [d for d in listdir(self._path)] #if isdir(join(self.cfg.params[self.cfg.cal_path], d))
+            onlydirs = [d for d in listdir(self._path)]
             dirnames = [self._serial] if onlydirs.count(self._serial) else onlydirs
 
             # iterate through directories
@@ -134,7 +134,7 @@ class CaliFinder(object):
                             self.cfg.params[self.cfg.cal_meta] = join(join(self._path.split('.')[0], self._serial), self._cal_fn)
 
                             # load raw data
-                            self._raw_data = open(self.cfg.params[self.cfg.cal_meta], mode='rb')    # verify!
+                            self._raw_data = open(self.cfg.params[self.cfg.cal_meta], mode='rb')
 
                             break
 
@@ -203,4 +203,4 @@ class CaliFinder(object):
     @property
     def wht_img(self):
 
-        return self._wht_img   #, self.cfg
+        return self._wht_img
