@@ -36,7 +36,7 @@ class LfpViewer(object):
             self.viewpoint_extraction()
 
             # remove pixel outliers (yields bad results at this stage)
-            #self._vp_img_arr = proc_vp_arr(correct_hotpixels, self._vp_img_arr)
+            self._vp_img_arr = proc_vp_arr(correct_luma_outliers, self._vp_img_arr)
 
             # automatic contrast handling
             central_view = self._vp_img_arr[int((self._vp_img_arr.shape[0]-1)/2),

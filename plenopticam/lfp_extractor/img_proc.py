@@ -88,6 +88,26 @@ def correct_outliers(channel):
 
     return channel
 
+def correct_luma_outliers(img, n=2, perc=.15):
+
+    # luma channel conversion
+    luma = misc.yuv_conv(img.copy())[..., 0]
+
+    for i in range(n, luma.shape[0]):
+        for j in range(n, luma.shape[1]):
+            win = luma[i-n:i+n+1, j-n:j+n+1]
+
+            # hot pixel detection
+            num_hi = len(win[win > luma[i, j]*(1-perc)])
+
+            # dead pixel detection
+            num_lo = len(win[win < luma[i, j]*(1+perc)])
+
+            if num_hi < n*3 or num_lo < n*3:
+                img[i, j, :] = (sum(sum(img[i-1:i+2, j-1:j+2, :]))-img[i, j, :])/8.
+
+    return img
+
 def correct_hotpixels(img):
 
     if len(img.shape) == 3:
