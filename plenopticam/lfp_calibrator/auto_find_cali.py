@@ -176,7 +176,7 @@ class CaliFinder(object):
                 self._raw_data = tar_obj.extractfile('unitdata/' + self._cal_fn)
 
         except FileNotFoundError:
-            pass  # print('Did not find tar archive containing calibration data.')
+            self.sta.status_msg('Did not find calibration file.', opt=True)
         except KeyError:
             self.sta.status_msg('Did not find "cal_file_manifest.json" in tar archive', opt=True)
         except Exception:
