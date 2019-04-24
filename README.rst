@@ -57,9 +57,9 @@ Results
 .. * |Stanford|_
 
 .. |Irisa| replace:: Irisa dataset
-.. _Irisa: https://www.irisa.fr/temics/demos/lightField/CLIM/DataSoftware.html
+.. _Irisa: https://www.irisa.fr/temics/demos/IllumDatasetLF/index.html
 
-.. |Stanford| replace:: Irisa dataset
+.. |Stanford| replace:: Stanford dataset
 .. _Stanford: http://lightfields.stanford.edu/mvlf/
 
 
