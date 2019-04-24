@@ -173,7 +173,7 @@ class CaliFinder(object):
                                                           self._serial, self._cal_fn.replace('.RAW', '.json'))
 
                 # load raw data
-                self._raw_data = tar_obj.extractfile(join('unitdata', self._cal_fn))
+                self._raw_data = tar_obj.extractfile('unitdata/' + self._cal_fn)
 
         except FileNotFoundError:
             pass  # print('Did not find tar archive containing calibration data.')
