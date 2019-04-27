@@ -3,7 +3,9 @@ try:
 except ImportError:
     import Tkinter as tk
 
-import sys, os, pickle
+import sys
+import pickle
+from os.path import join, dirname, exists, isdir
 import threading
 import queue
 import types
@@ -82,6 +84,10 @@ class CtrlWidget(tk.Frame):
             # reset calibration image
             self.wht_img = None
 
+        # reset calibration metadata path (if roots in paths do not match)
+        if dirname(dirname(self.cfg.params[self.cfg.cal_meta])) not in dirname(self.cfg.params[self.cfg.cal_path]):
+            self.cfg.params[self.cfg.cal_meta] = ''
+
         # save config to hard drive
         self.cfg.save_params()
 
@@ -134,7 +140,8 @@ class CtrlWidget(tk.Frame):
         self.sta.status_msg('Starting ...', self.cfg.params[self.cfg.opt_dbug])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_dbug])
 
-        # reset interrupt
+        # reset
+        self.var_init()
         self.sta.interrupt = False
 
         # disable button activity
@@ -148,10 +155,6 @@ class CtrlWidget(tk.Frame):
 
         # safely create output data folder
         misc.mkdir_p(self.cfg.params[self.cfg.lfp_path].split('.')[0], self.cfg.params[self.cfg.opt_prnt])
-
-        # reset calibration metadata path (if root paths do not match)
-        if os.path.dirname(self.cfg.params[self.cfg.cal_path]) != os.path.dirname(self.cfg.params[self.cfg.cal_meta]):
-            self.cfg.params[self.cfg.cal_meta] = self.cfg.get_file_path()
 
         # put tasks in the job queue to be run
         for task_info in (
@@ -173,17 +176,17 @@ class CtrlWidget(tk.Frame):
         return self.lfp_img is None
 
     def cond1(self):
-        return os.path.isdir(self.cfg.params[self.cfg.cal_path]) or self.cfg.params[self.cfg.cal_path].endswith('.tar')
+        return isdir(self.cfg.params[self.cfg.cal_path]) or self.cfg.params[self.cfg.cal_path].endswith('.tar')
 
     def cond2(self):
         return not self.cond1()
 
     def cond3(self):
         meta_path = self.cfg.params[self.cfg.cal_meta]
-        return not (os.path.exists(meta_path) and meta_path.endswith('json')) or self.cfg.params[self.cfg.opt_cali]
+        return not (exists(meta_path) and meta_path.endswith('json')) or self.cfg.params[self.cfg.opt_cali]
 
     def cond4(self):
-        return not os.path.exists(os.path.join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'lfp_img_align.pkl'))
+        return not exists(join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'lfp_img_align.pkl'))
 
     def lfp_align(self):
 
@@ -196,7 +199,7 @@ class CtrlWidget(tk.Frame):
     def load_pickle_file(self):
 
         # load previously computed light field alignment
-        self.lfp_img_align = pickle.load(open(os.path.join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'lfp_img_align.pkl'), 'rb'))
+        self.lfp_img_align = pickle.load(open(join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'lfp_img_align.pkl'), 'rb'))
 
     def lfp_extract(self):
 
