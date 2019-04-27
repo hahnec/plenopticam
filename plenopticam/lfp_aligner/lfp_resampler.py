@@ -137,7 +137,7 @@ class LfpResampler(object):
                             # interpolate upper adjacent patch while considering hex shift alignment (take same column if row "left-handed", next otherwise)
                             t_mic = centroids[(centroids[:, 3] == lx-np.mod(ly+hex_odd, 2)) & (centroids[:, 2] == ly-1), [0, 1]]
                             t_win = self.lfp_raw[int(t_mic[0])-c-1:int(t_mic[0])+c+2, int(t_mic[1])-c-1: int(t_mic[1])+c+2, :]
-                            t = self._patch_align(t_win, t_mic, method='cubic')[1:-1, 1:-1, :]
+                            t = self._patch_align(t_win, t_mic, method=self._method)[1:-1, 1:-1, :]
 
                             b_mic = centroids[(centroids[:, 3] == lx-np.mod(ly+hex_odd, 2)) & (centroids[:, 2] == ly+1), [0, 1]]
                             b_win = self.lfp_raw[int(b_mic[0])-c-1:int(b_mic[0])+c+2, int(b_mic[1])-c-1: int(b_mic[1])+c+2, :]
@@ -206,6 +206,10 @@ class LfpResampler(object):
             # careful: interp2d() takes x first and y second
             fun = interp2d(range(n), range(m), window[:, :, p], kind=method, copy=False)
             output[:, :, p] = fun(np.arange(n)+mic[1]-int(mic[1]), np.arange(m)+mic[0]-int(mic[0]))
+
+            # treatment of interpolated values being below or above original extrema
+            output[:, :, p][output[:, :, p] < window.min()] = window.min()
+            output[:, :, p][output[:, :, p] > window.max()] = window.max()
 
         return output
 
