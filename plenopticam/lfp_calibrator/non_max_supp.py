@@ -32,12 +32,24 @@ class NonMaxSuppression(object):
         self.cfg = cfg
         self.sta = sta
 
-        # output variable
-        self._map = np.zeros(self._img.shape, dtype=self._img.dtype)    # binary output image
+        # internal variable
+        self._map = np.zeros(self._img.shape, dtype=self._img.dtype)
+
+    @property
+    def map(self):
+        return self._map
+
+    @property
+    def idx(self):
+        return np.array(self._map.nonzero())
 
     def main(self):
 
+        # find local maxima
         self._non_max_suppression()
+
+        # suppress negative local maxima
+        self._map[self._map < 0] = 0
 
     def _non_max_suppression(self):
         ''' adaption of non-maximum suppression by Tuan Q. Pham '''
@@ -96,7 +108,7 @@ class NonMaxSuppression(object):
                     r += 1
                     continue
 
-                self._map[r, c] = 1
+                self._map[r, c] = self._img[r, c]
                 # a new local maximum is found
                 r += 1
 
@@ -115,11 +127,3 @@ class NonMaxSuppression(object):
             self.sta.progress(c/(w-2)*100, self.cfg.params[self.cfg.opt_prnt])
 
         return True
-
-    @property
-    def map(self):
-        return self._map
-
-    @property
-    def idx(self):
-        return np.array(self._map.nonzero())
