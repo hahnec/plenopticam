@@ -9,12 +9,15 @@ from scipy.interpolate import interp2d#, RectBivariateSpline, griddata
 
 class LfpResampler(object):
 
-    def __init__(self, lfp_raw, cfg, sta=None):
+    def __init__(self, lfp_raw, cfg, sta=None, method='cubic'):
 
         # input variables
         self.lfp_raw = lfp_raw
         self.cfg = cfg
         self.sta = sta if sta is not None else misc.PlenopticamStatus()
+
+        # internal variables
+        self._method = method
 
         # output variable
         self._lfp_out = np.zeros(lfp_raw.shape)
@@ -38,7 +41,7 @@ class LfpResampler(object):
 
         if self.cfg.calibs[self.cfg.pat_type] == 'rec':
 
-            self._lfp_out = np.zeros([lens_y_max * patch_size, lens_x_max * patch_size, 3])
+            self._lfp_out = np.zeros([lens_y_max * patch_size, lens_x_max * patch_size, P])
 
             # iterate over each MIC
             for ly in range(lens_y_max):
@@ -48,9 +51,9 @@ class LfpResampler(object):
                     curr_mic = centroids[(centroids[:, 3] == lx) & (centroids[:, 2] == ly), [0, 1]]
 
                     # interpolate each micro image with its MIC as the center with consistent micro image size
-                    window = self.lfp_raw[int(curr_mic[0])-c-1:int(curr_mic[0])+c+2, int(curr_mic[1])-c-1:int(curr_mic[1])+c+2, :]
-                    self._lfp_out[ly * patch_size:(ly+1) * patch_size, lx * patch_size:(lx+1) * patch_size, :] = \
-                        self._patch_align(window, curr_mic, method='cubic')[1:-1, 1:-1, :]
+                    window = self.lfp_raw[int(curr_mic[0])-c-1:int(curr_mic[0])+c+2, int(curr_mic[1])-c-1:int(curr_mic[1])+c+2]
+                    self._lfp_out[ly * patch_size:(ly+1) * patch_size, lx * patch_size:(lx+1) * patch_size] = \
+                        self._patch_align(window, curr_mic, method=self._method)[1:-1, 1:-1]
 
                 # check interrupt status
                 if self.sta.interrupt:
@@ -78,10 +81,10 @@ class LfpResampler(object):
 
                     # interpolate each micro image with its MIC as the center with consistent micro image size
                     window = self.lfp_raw[int(curr_mic[0])-c-1:int(curr_mic[0])+c+2, int(curr_mic[1])-c-1: int(curr_mic[1])+c+2]
-                    patch_stack[lx, :, :] = self._patch_align(window, curr_mic, method='cubic')[1:-1, 1:-1]
+                    patch_stack[lx, :, :] = self._patch_align(window, curr_mic, method=self._method)[1:-1, 1:-1]
 
                     # do interpolation of two adjacent micro images
-                    if np.mod(ly+hex_odd, 2) and lx > 0: #ly+1
+                    if np.mod(ly+hex_odd, 2) and lx > 0:
                         patch_stack[lx-1, :, :, :] = (patch_stack[lx-1, :, :, :]+patch_stack[lx, :, :, :])/2.
 
                 # image stretch interpolation in x-direction to compensate for hex-alignment
@@ -125,7 +128,7 @@ class LfpResampler(object):
                     # interpolate each micro image with its MIC as the center with consistent micro image size
                     r_mic = centroids[(centroids[:, 3] == lx) & (centroids[:, 2] == ly), [0, 1]]
                     r_win = self.lfp_raw[int(r_mic[0])-c-1:int(r_mic[0])+c+2, int(r_mic[1])-c-1: int(r_mic[1])+c+2, :]
-                    r = self._patch_align(r_win, r_mic, method='cubic')[1:-1, 1:-1, :]
+                    r = self._patch_align(r_win, r_mic, method=self._method)[1:-1, 1:-1, :]
 
                     patch_stack[2*lx, :, :, :] = r
 
@@ -141,7 +144,7 @@ class LfpResampler(object):
 
                             b_mic = centroids[(centroids[:, 3] == lx-np.mod(ly+hex_odd, 2)) & (centroids[:, 2] == ly+1), [0, 1]]
                             b_win = self.lfp_raw[int(b_mic[0])-c-1:int(b_mic[0])+c+2, int(b_mic[1])-c-1: int(b_mic[1])+c+2, :]
-                            b = self._patch_align(b_win, b_mic, method='cubic')[1:-1, 1:-1, :]
+                            b = self._patch_align(b_win, b_mic, method=self._method)[1:-1, 1:-1, :]
 
                             patch_stack[2*lx-1, :, :, :] = t*tb_weight + b*tb_weight + l*lr_weight + r*lr_weight
                         else:
