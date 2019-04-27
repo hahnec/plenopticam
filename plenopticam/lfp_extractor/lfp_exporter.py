@@ -84,7 +84,7 @@ def gif_vp_img(vp_img_arr, duration, fp='', fn='', pattern='circle'):
     if pattern == 'circle':
         for x in range(-r, r+1):
             for y in range(-r, r+1):
-                if round(sqrt(x**2 + y**2)) == r:
+                if int(sqrt(x**2 + y**2)) == r:
                     mask[y+r][x+r] = 1
 
     # extract coordinates from mask
