@@ -1,8 +1,8 @@
-import numpy as np
 
-#from plenopticam import misc
 from plenopticam.lfp_extractor.lfp_exporter import export_viewpoints, gif_vp_img
 from plenopticam.lfp_extractor.img_proc import *
+
+import numpy as np
 
 class LfpViewer(object):
 
@@ -35,7 +35,7 @@ class LfpViewer(object):
             # extract viewpoints
             self.viewpoint_extraction()
 
-            # remove pixel outliers (yields bad results at this stage)
+            # remove pixel outliers
             self._vp_img_arr = proc_vp_arr(correct_luma_outliers, self._vp_img_arr)
 
             # automatic contrast handling
@@ -44,6 +44,7 @@ class LfpViewer(object):
             contrast, brightness = auto_contrast(central_view, p_lo=0.001, p_hi=0.999)
             self._vp_img_arr = proc_vp_arr(correct_contrast, self._vp_img_arr, contrast, brightness)
 
+            # automatic white balance if option is set
             if self.cfg.params[self.cfg.opt_awb_]:
 
                 # print status

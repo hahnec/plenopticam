@@ -67,34 +67,44 @@ def contrast_per_channel(img, sat_perc=0.1):
 
     return img
 
-def correct_outliers(channel):
+# def correct_hotpixels(img):
+#
+#     if len(img.shape) == 3:
+#         for i, channel in enumerate(img.swapaxes(0, 2)):
+#             img[:, :, i] = correct_outliers(channel).swapaxes(0, 1)
+#     elif len(img.shape) == 2:
+#         img = correct_outliers(img)
+#
+#     return img
+#
+# def correct_outliers(channel):
+#
+#     # create copy of channel for filtering
+#     arr = channel.copy()
+#
+#     # perform median filter convolution
+#     #med_img = medfilt(arr, kernel_size=(3, 3))
+#     med_img = median_filter(arr, size=2)
+#
+#     # compute absolute differences per pixel
+#     diff_img = abs(arr-med_img)
+#     del arr
+#
+#     # obtain intensity threshold for pixels that have to be replaced
+#     threshold = np.std(diff_img)*10#np.max(diff_img-np.mean(diff_img)) * .4
+#
+#     # replace pixels above threshold by median filtered pixels while ignoring image borders (due to 3x3 kernel)
+#     channel[1:-1, 1:-1][diff_img[1:-1, 1:-1] > threshold] = med_img[1:-1, 1:-1][diff_img[1:-1, 1:-1] > threshold]
+#
+#     return channel
 
-    # create copy of channel for filtering
-    arr = channel.copy()
-
-    # perform median filter convolution
-    #med_img = medfilt(arr, kernel_size=(3, 3))
-    med_img = median_filter(arr, size=2)
-
-    # compute absolute differences per pixel
-    diff_img = abs(arr-med_img)
-    del arr
-
-    # obtain intensity threshold for pixels that have to be replaced
-    threshold = np.std(diff_img)*10#np.max(diff_img-np.mean(diff_img)) * .4
-
-    # replace pixels above threshold by median filtered pixels while ignoring image borders (due to 3x3 kernel)
-    channel[1:-1, 1:-1][diff_img[1:-1, 1:-1] > threshold] = med_img[1:-1, 1:-1][diff_img[1:-1, 1:-1] > threshold]
-
-    return channel
-
-def correct_luma_outliers(img, n=2, perc=.15):
+def correct_luma_outliers(img, n=2, perc=.2):
 
     # luma channel conversion
     luma = misc.yuv_conv(img.copy())[..., 0]
 
-    for i in range(n, luma.shape[0]):
-        for j in range(n, luma.shape[1]):
+    for i in range(n, luma.shape[0]-n):
+        for j in range(n, luma.shape[1]-n):
             win = luma[i-n:i+n+1, j-n:j+n+1]
 
             # hot pixel detection
@@ -103,18 +113,9 @@ def correct_luma_outliers(img, n=2, perc=.15):
             # dead pixel detection
             num_lo = len(win[win < luma[i, j]*(1+perc)])
 
-            if num_hi < n*3 or num_lo < n*3:
+            if num_hi < win.size/5 or num_lo < win.size/5:
+                # replace outlier by average of all directly adjacent pixels
                 img[i, j, :] = (sum(sum(img[i-1:i+2, j-1:j+2, :]))-img[i, j, :])/8.
-
-    return img
-
-def correct_hotpixels(img):
-
-    if len(img.shape) == 3:
-        for i, channel in enumerate(img.swapaxes(0, 2)):
-            img[:, :, i] = correct_outliers(channel).swapaxes(0, 1)
-    elif len(img.shape) == 2:
-        img = correct_outliers(img)
 
     return img
 
