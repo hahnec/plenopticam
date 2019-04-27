@@ -44,7 +44,7 @@ class CentroidDrawer(object):
         if self.cfg.params[self.cfg.opt_dbug]:
 
             plot_img = self.draw_centroids_img()
-            save_img_file(plot_img, os.path.join(self.cfg.params[self.cfg.lfp_path].split('.')[-2], fn))
+            save_img_file(plot_img, os.path.join(os.path.dirname(self.cfg.params[self.cfg.lfp_path]), fn))
             # plot_centroids(img, centroids)
 
         return True
