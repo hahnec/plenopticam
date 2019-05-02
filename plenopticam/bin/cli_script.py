@@ -93,6 +93,7 @@ def main():
 
     # instantiate status object
     sta = misc.PlenopticamStatus()
+    sta.bind_to_interrupt(sys.exit)     # set interrupt
 
     # set calibration folder path
     cfg.params[cfg.cal_path] = "/Users/Admin/Pictures/Lytro_Illum/CalibFolder"
