@@ -23,19 +23,23 @@ class CnfgWidget(object):
         # tk variables init
         self.tk_vars = {}
 
+        # tk widget list init
+        self.obj_ents = {}
+
         # generate settings properties using dict consisting of lists containing names and types
         PROPERTIES = dict(zip(c.PARAMS_KEYS, (pair for pair in zip(c.PARAMS_NAME, c.PARAMS_TYPE))))
 
         # hide some config keys in user interface which are given as tuple
-        EXCLUDED = ('opt_view', 'opt_refo', 'opt_prnt', 'opt_dbug', 'opt_rota', 'opt_pflu')
+        EXCLUDED = ('opt_view', 'opt_refo', 'opt_prnt', 'opt_rota', 'opt_dbug')
         self.gui_keys = [key for key in PROPERTIES.keys() if key not in EXCLUDED]
 
         # place properties in tk frame
         for i, key in enumerate(self.gui_keys):
             tk.Label(self.frame, text=PROPERTIES[key][0]).grid(row=i, column=0, sticky='W')
+            obj_ent = None
             if PROPERTIES[key][1] == 'str':
                 self.tk_vars[key] = tk.StringVar(value=self.cfg.params[key])
-                obj_ent = tk.Entry(self.frame, textvariable=self.tk_vars[key])
+                obj_ent = tk.Entry(self.frame, textvariable=self.tk_vars[key], width=2*PX)
                 obj_ent.grid(row=i, column=1, sticky='W')
                 obj_ent.xview_moveto(1.0)  # display text from most right
 
@@ -59,14 +63,17 @@ class CnfgWidget(object):
 
             elif PROPERTIES[key][1] == 'sel':
                 self.tk_vars[key] = tk.StringVar(value=self.cfg.params[key])
-                values = ('off', 'vertical', 'horizontal', 'diagonal upwards', 'diagonal downwards')
-                obj_ent = tk.Spinbox(self.frame, values=values, textvariable=self.tk_vars[key], width=PX)
+                obj_ent = tk.Spinbox(self.frame, values=c.PFLU_VALS, textvariable=self.tk_vars[key], width=PX, command=self.refi)
+                self.tk_vars[key].set(value=self.cfg.params[key])   # set to default necessary for tkinter's spinbox
                 obj_ent.grid(row=i, column=1, sticky='W')
                 obj_ent.xview_moveto(1.0)  # display text from most right
 
             elif PROPERTIES[key][1] == 'bool':
                 self.tk_vars[key] = tk.BooleanVar(value=bool(self.cfg.params[key]))
-                tk.Checkbutton(self.frame, variable=self.tk_vars[key]).grid(row=i, column=1, sticky='W')
+                obj_ent = tk.Checkbutton(self.frame, variable=self.tk_vars[key])
+                obj_ent.grid(row=i, column=1, sticky='W')
+
+            self.obj_ents[key] = obj_ent
 
         btn = tk.Button(self.frame, text="Save & Close", width=BTN_W*2, command=self.close)
         btn.grid(row=len(self.gui_keys)+1, columnspan=2, padx=PX, pady=PY)
@@ -76,6 +83,13 @@ class CnfgWidget(object):
 
         # stop all processes until this widget is closed (e.g. self.frame is destroyed)
         self.frame.wait_window()
+
+    def refi(self):
+
+        # set refocus refinement option if scheimpflug focus type is desired
+        if self.tk_vars[self.cfg.opt_pflu].get() is not 'off':
+            self.tk_vars[self.cfg.opt_refi].set(value=True)
+            self.obj_ents[self.cfg.opt_refi].select()
 
     def save_cfg(self):
 

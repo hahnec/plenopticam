@@ -22,6 +22,7 @@ Copyright (c) 2017 Christopher Hahne <info@christopherhahne.de>
 
 # local imports
 from plenopticam import misc
+from plenopticam.cfg import constants as c
 
 # external libs
 import numpy as np
@@ -53,7 +54,11 @@ class Scheimpflug(object):
 
         a_start, a_stop = self.cfg.params[self.cfg.ran_refo]
 
-        m, n, p = self.refo_stack[0].shape if len(self.refo_stack[0].shape) == 3 else (self.refo_stack[0].shape[0], self.refo_stack[0].shape[1], 1)
+        if len(self.refo_stack[0].shape) == 3:
+            m, n, p = self.refo_stack[0].shape
+        else:
+            m, n, p = (self.refo_stack[0].shape[0], self.refo_stack[0].shape[1], 1)
+
         scheimpflug_img = np.zeros([m, n, p])
 
         # map generation
@@ -65,10 +70,10 @@ class Scheimpflug(object):
         # vertical orientation (default)
         a_map = a_map_y
         # horizontal orientation
-        if self.cfg.params[self.cfg.opt_pflu] == 'horizontal':
+        if self.cfg.params[self.cfg.opt_pflu] == c.PFLU_VALS[2]:
             a_map = a_map_x
         # diagonal orientation
-        elif self.cfg.params[self.cfg.opt_pflu] == ('diagonal upwards' or 'diagonal downwards'):
+        elif self.cfg.params[self.cfg.opt_pflu] == (c.PFLU_VALS[3] or c.PFLU_VALS[4]):
             a_map = np.mean([a_map_x, a_map_y], dtype='int', axis=self.cfg.params[self.cfg.opt_pflu]-3)
 
         for y in range(m):
@@ -84,9 +89,9 @@ class Scheimpflug(object):
                 self.sta.progress(percentage, self.cfg.params[self.cfg.opt_prnt])
 
         # write image file to hard drive
-        fp = self.cfg.params[self.cfg.lfp_path].split('.')[0]
-        img = misc.uint16_norm(scheimpflug_img)
-        misc.save_img_file(img, os.path.join(fp, 'scheimpflug_' + str(a_start) + '_' + str(a_stop) + '.png'))
+        fp = os.path.splitext(self.cfg.params[self.cfg.lfp_path])[0]
+        fn = 'scheimpflug_' + str(a_start) + '_' + str(a_stop) + '_' + self.cfg.params[self.cfg.opt_pflu] + '.png'
+        misc.save_img_file(misc.uint16_norm(scheimpflug_img), os.path.join(fp, fn))
 
         return True
 
