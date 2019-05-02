@@ -2,7 +2,7 @@
 Plenopticam
 ===========
 
-A light field photograph application (macOS_ or Win_) for computational change of perspective view and synthetic focus based on a Standard Plenoptic Camera (SPC).
+A light field photography application (macOS_ or Win_) for computational change of perspective view and synthetic focus based on a Standard Plenoptic Camera (SPC).
 
 Check out Plenopticam's partner project Plenoptisign_ capable of estimating metric light field geometries.
 
