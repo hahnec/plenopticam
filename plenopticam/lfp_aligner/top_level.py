@@ -23,8 +23,8 @@ __license__ = """
 # local imports
 from plenopticam import misc
 from plenopticam.lfp_aligner.lfp_resampler import LfpResampler
-from plenopticam.lfp_aligner.pitch_eval import pitch_eval
 from plenopticam.lfp_aligner.lfp_rotator import LfpRotator
+from plenopticam.lfp_extractor.lfp_cropper import LfpCropper
 
 class LfpAligner(object):
 
@@ -46,10 +46,10 @@ class LfpAligner(object):
             del obj
 
         # evaluate valid patch size
-        self.cfg.params[self.cfg.ptc_leng] = pitch_eval(self.cfg.calibs[self.cfg.mic_list], self.cfg.params[self.cfg.ptc_leng])
+        self.cfg.params[self.cfg.ptc_leng] = LfpCropper.pitch_max(self.cfg.calibs[self.cfg.mic_list])
 
         # interpolate each micro image with its MIC as the center with consistent micro image size
-        obj = LfpResampler(self._lfp_img, self.cfg, self.sta)
+        obj = LfpResampler(self._lfp_img, cfg=self.cfg, sta=self.sta, method='cubic')
         obj.main()
         self._lfp_img = obj.lfp_out
         del obj

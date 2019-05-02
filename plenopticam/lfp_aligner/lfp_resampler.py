@@ -104,12 +104,11 @@ class LfpResampler(object):
                 # print progress status
                 self.sta.progress((ly+1)/lens_y_max*100, self.cfg.params[self.cfg.opt_prnt])
 
-        elif self.cfg.calibs[self.cfg.pat_type] == 'xxx':
+        elif self.cfg.calibs[self.cfg.pat_type] == 'hex_alt':
 
             hex_stretch = int(np.round(2*lens_x_max / np.sqrt(3)))
             interpol_stack = np.zeros([hex_stretch, patch_size, patch_size, P])
             self._lfp_out = np.zeros([lens_y_max * patch_size, hex_stretch * patch_size, P])
-            #spc_img_align = np.zeros([lens_y_max * patch_size, (2*lens_x_max+1) * patch_size, P])
 
             # get interpolation weights according to micro lens arrangement
             tb_weight = 1/(1+np.sqrt(3)) / 2
@@ -149,8 +148,6 @@ class LfpResampler(object):
                             patch_stack[2*lx-1, :, :, :] = t*tb_weight + b*tb_weight + l*lr_weight + r*lr_weight
                         else:
                             patch_stack[2*lx-1, :, :, :] = (l+r)/2.
-                        #if lx == 395 and ly == 217: #x=3950 y=1085
-                        #    pass
 
                 # shift patch_stack by adding one patch to the front to compensate for hexagonal structure
                 if np.mod(ly+hex_odd-1, 2):  # shift first and every other row to left if "they are right-handed"
@@ -166,7 +163,6 @@ class LfpResampler(object):
                             interpol_stack[:, y, x, p] = np.interp(interpol_vals, range(2*lens_x_max+1), patch_stack[:, y, x, p])
 
                 self._lfp_out[ly*patch_size:ly*patch_size+patch_size, :] = np.concatenate(interpol_stack, axis=1).reshape((patch_size, hex_stretch*patch_size, P))
-                #self.lfp_out[ly*patch_size:ly*patch_size+patch_size, :] = np.concatenate(patch_stack, axis=1).reshape((patch_size, (2*lens_x_max+1)*patch_size, P))
 
                 # check interrupt status
                 if self.sta.interrupt:

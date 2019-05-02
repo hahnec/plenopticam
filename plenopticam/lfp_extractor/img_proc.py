@@ -1,6 +1,8 @@
 # external libs
 import numpy as np
+
 from plenopticam import misc
+from plenopticam.cfg import Config
 
 try:
     from scipy.signal import medfilt
@@ -51,6 +53,7 @@ def correct_contrast(img_arr, contrast=1, brightness=0, ch=0):
 
     return img
 
+
 def contrast_per_channel(img, sat_perc=0.1):
     # sat_perc is the saturation percentile which will be cut-off at the lower and higher end in each color channel
 
@@ -98,7 +101,38 @@ def contrast_per_channel(img, sat_perc=0.1):
 #
 #     return channel
 
-def correct_luma_outliers(img, n=2, perc=.2):
+
+def correct_outliers(img, n=2, perc=.2, sta=None):
+
+    # status init
+    sta = sta if sta is not None else misc.PlenopticamStatus()
+    sta.status_msg('Hot pixel removal', True)
+
+    for i in range(n, img.shape[0]-n):
+        for j in range(n, img.shape[1]-n):
+            win = img[i-n:i+n+1, j-n:j+n+1]
+
+            # hot pixel detection
+            num_hi = len(win[win > img[i, j]*(1-perc)])
+
+            # dead pixel detection
+            num_lo = len(win[win < img[i, j]*(1+perc)])
+
+            if num_hi < win.size/5 or num_lo < win.size/5:
+                # replace outlier by average of all directly adjacent pixels
+                img[i, j] = (sum(sum(img[i-1:i+2, j-1:j+2]))-img[i, j])/8.
+
+            # progress update
+            sta.progress((i*img.shape[1]+(j+1))/img.size*100, True)
+
+    return img
+
+
+def correct_luma_outliers(img, n=2, perc=.2, sta=None):
+
+    # status init
+    sta = sta if sta is not None else misc.PlenopticamStatus()
+    sta.status_msg('Hot pixel removal', True)
 
     # luma channel conversion
     luma = misc.yuv_conv(img.copy())[..., 0]
@@ -117,16 +151,32 @@ def correct_luma_outliers(img, n=2, perc=.2):
                 # replace outlier by average of all directly adjacent pixels
                 img[i, j, :] = (sum(sum(img[i-1:i+2, j-1:j+2, :]))-img[i, j, :])/8.
 
+            # progress update
+            sta.progress((i*luma.shape[1]+(j+1))/luma.size*100, True)
+
     return img
 
-def proc_vp_arr(fun, vp_img_arr, *args):
+
+def proc_vp_arr(fun, vp_img_arr, **kwargs):
     ''' process viewpoint images based on provided function handle and argument data '''
+
+    sta = kwargs['sta'] if 'sta' in kwargs else misc.PlenopticamStatus()
+    cfg = kwargs['cfg'] if 'cfg' in kwargs else Config()
+    msg = kwargs['msg'] if 'msg' in kwargs else 'Viewpoint process'
+    sta.status_msg(msg, cfg.params[cfg.opt_dbug])
+
+    args = [kwargs[key] for key in kwargs.keys() if key not in ('cfg', 'sta', 'msg')]
 
     for j in range(vp_img_arr.shape[0]):
         for i in range(vp_img_arr.shape[1]):
             vp_img_arr[j, i, :, :, :] = fun(vp_img_arr[j, i, :, :, :], *args)
 
+            # progress update
+            percentage = (i*vp_img_arr.shape[1]+(j+1))/(vp_img_arr.shape[0]*vp_img_arr.shape[1]*100)
+            sta.progress(percentage, cfg.params[cfg.opt_dbug])
+
     return vp_img_arr
+
 
 def proc_img(fun, img):
     ''' process image along third dimension given a function handle '''
@@ -135,6 +185,7 @@ def proc_img(fun, img):
             img[..., i] = fun(img[..., i])
 
     return img
+
 
 def robust_awb(img, t=0.3, max_iter=1000):
     ''' inspired by Jun-yan Huo et al. and http://web.stanford.edu/~sujason/ColorBalancing/Code/robustAWB.m '''
@@ -184,6 +235,7 @@ def robust_awb(img, t=0.3, max_iter=1000):
     gains = img[0, 0, :]/ref_pixel
 
     return gains
+
 
 def correct_awb(img, gains):
 

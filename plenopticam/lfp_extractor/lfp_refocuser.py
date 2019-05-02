@@ -26,6 +26,7 @@ from plenopticam.lfp_extractor import lfp_exporter
 
 # external
 import numpy as np
+import os
 
 class LfpRefocuser(object):
 
@@ -53,20 +54,22 @@ class LfpRefocuser(object):
             self.refo_from_vp()
         elif self.lfp_img is not None:
             if self.cfg.params[self.cfg.opt_refi]:
-                self.refo_from_scratch_hires()
+                self.refo_from_scratch_upsample()
             else:
                 self.refo_from_scratch()
 
+        # tbd
         self.all_in_focus()
 
         # check interrupt status
         if not self.sta.interrupt:
             # export refocused images
-            lfp_exporter.export_refo_stack(np.array(self._refo_stack), self.cfg)
+            lfp_exporter.export_refo_stack(np.array(self._refo_stack), self.cfg, type='png')
 
             # export gif animation
+            fn = 'refocus_animation_'+str(self.cfg.params[self.cfg.ptc_leng])+'px'
             misc.save_gif(misc.uint8_norm(np.array(self._refo_stack+self._refo_stack[::-1])), duration=.8,
-                 fp=self.cfg.params[self.cfg.lfp_path].split('.')[0], fn='refocus_animation')
+                 fp=os.path.splitext(self.cfg.params[self.cfg.lfp_path])[0], fn=fn)
 
         return True
 
@@ -88,17 +91,13 @@ class LfpRefocuser(object):
         a_list = self.cfg.params[self.cfg.ran_refo]
         for a in range(*a_list):
 
-            # check interrupt status
-            if self.sta.interrupt:
-                return False
-
             overlap = abs(a) * (patch_len - 1)
             img_slice = np.zeros(np.append(np.array(self.vp_img_arr.shape[2:-1]) * factor + [overlap, overlap], 3))
             for j in range(patch_len):
                 for i in range(patch_len):
 
                     # perform sub-pixel refinement if required
-                    vp_img = misc.img_resize(self.vp_img_arr[j, i], factor) if factor != 1 else self.vp_img_arr[j, i]
+                    vp_img = misc.img_resize(self.vp_img_arr[j, i], factor) if factor > 1 else self.vp_img_arr[j, i]
 
                     # get viewpoint pad widths for each border
                     tb = (abs(a) * j, abs(a) * (patch_len - 1 - j))    # top, bottom
@@ -121,6 +120,9 @@ class LfpRefocuser(object):
             # crop refocused image for consistent image dimensions
             crop = int(overlap/2)
             final_img = img_slice[crop:-crop, crop:-crop, :] if (a != 0) else img_slice
+
+            # spatially downscale image to original resolution (for less memory usage)
+            final_img = misc.img_resize(final_img, 1./factor) if factor > 1 else final_img
 
             self._refo_stack.append(final_img)
 
@@ -194,10 +196,10 @@ class LfpRefocuser(object):
 
             # crop refocused image for consistent image dimensions
             crop = int(overlap/2)
-            img_slice = ver_refo[crop:-crop, crop:-crop, :] if (a != 0) else ver_refo
+            final_img = ver_refo[crop:-crop, crop:-crop, :] if (a != 0) else ver_refo
 
             # append refocused image to stack
-            self._refo_stack.append(img_slice)
+            self._refo_stack.append(final_img)
 
             # check interrupt status
             if self.sta.interrupt:
@@ -208,7 +210,7 @@ class LfpRefocuser(object):
 
         return True
 
-    def refo_from_scratch_hires(self):
+    def refo_from_scratch_upsample(self):
 
         # print status
         self.sta.progress(0, self.cfg.params[self.cfg.opt_prnt])
@@ -217,6 +219,7 @@ class LfpRefocuser(object):
         self._refo_stack = []
         patch_len = self.cfg.params[self.cfg.ptc_leng]
         m, n, P = self.lfp_img.shape if len(self.lfp_img.shape) == 3 else self.lfp_img.shape[0], self.lfp_img.shape[1], 1
+        factor = self.cfg.params[self.cfg.ptc_leng] if self.cfg.params[self.cfg.opt_refi] else 1
 
         img = self.lfp_img/patch_len    # divide to prevent clipping
 
@@ -270,10 +273,13 @@ class LfpRefocuser(object):
 
             # crop refocused image for consistent image dimensions
             crop = int(overlap/2)
-            img_slice = ver_refo[crop:-crop, crop:-crop, :] if (a != 0) else ver_refo
+            final_img = ver_refo[crop:-crop, crop:-crop, :] if (a != 0) else ver_refo
+
+            # spatially downscale image to original resolution (for less memory usage)
+            final_img = misc.img_resize(final_img, 1./factor) if factor > 1 else final_img
 
             # append refocused image to stack
-            self._refo_stack.append(img_slice)
+            self._refo_stack.append(final_img)
 
             # check interrupt status
             if self.sta.interrupt:
