@@ -1,9 +1,8 @@
-# external libs
-import numpy as np
-
-#
 from plenopticam import misc
 from plenopticam.lfp_extractor.img_proc import *
+
+# external libs
+import numpy as np
 
 try:
     from scipy.signal import medfilt

@@ -21,7 +21,7 @@ Copyright (c) 2019 Christopher Hahne <info@christopherhahne.de>
 """
 
 # local imports
-from plenopticam.misc import mkdir_p
+from plenopticam import misc
 from plenopticam.misc.type_checks import *
 from plenopticam.misc.errors import PlenopticamError
 from plenopticam.cfg.constants import PARAMS_KEYS, PARAMS_VALS, CALIBS_KEYS
@@ -85,7 +85,7 @@ class Config(object):
             fp = os.path.join(self._dir_path, 'cfg.json')
         try:
             # create config folder (if not already present)
-            mkdir_p(self._dir_path)
+            misc.mkdir_p(self._dir_path)
             # write config file
             with open(fp, 'w') as f:
                 json.dump(self.params, f, sort_keys=True, indent=4, cls=NumpyTypeEncoder)
@@ -110,17 +110,7 @@ class Config(object):
         # construct file path
         fp = self.get_file_path()
 
-        # load calibration data from json file
-        try:
-            with open(fp, 'r') as f:
-                self.calibs = json.load(f)
-        except json.JSONDecodeError:
-            os.remove(fp)
-            raise PlenopticamError('Calibration JSON File may be corrupted. Attempt to delete file %s' % fp)
-        except IsADirectoryError:
-            raise PlenopticamError('Provided location %s is a directory' % fp)
-        except FileNotFoundError:
-            raise PlenopticamError('Provided file %s does not exist' % fp)
+        self.calibs = self.load_json(fp=fp)
 
         return True
 
@@ -129,13 +119,7 @@ class Config(object):
         # construct file path
         fp = self.get_file_path()
 
-        # create folder
-        mkdir_p(os.path.dirname(fp), False)
-
-        # save calibration data as json file
-        self.calibs = kwargs
-        with open(fp, 'wt') as f:
-            json.dump(self.calibs, f, sort_keys=True, indent=4)
+        self.save_json(fp=fp, **kwargs)
 
         return True
 
@@ -144,13 +128,61 @@ class Config(object):
         # construct file path
         if not self.params[self.cal_meta]:
             if os.path.isfile(self.params[self.cal_path]):
-                fp = self.params[self.cal_path].split('.')[0]+'.json'
+                fp = os.path.splitext(self.params[self.cal_path])[0]+'.json'
             else:
                 fp = self.params[self.cal_meta]
         else:
             fp = self.params[self.cal_meta]
 
         return fp
+
+    @staticmethod
+    def load_json(fp=None, sta=None):
+
+        sta = sta if sta is not None else misc.PlenopticamStatus()
+
+        # filename and filepath handling
+        if fp is not None and os.path.splitext(fp)[-1] != '.json':
+            fn = os.path.splitext(os.path.basename(fp))[0]+'.json'
+            fp = os.path.join(os.path.splitext(fp)[0], fn)
+
+        # load calibration data from json file
+        try:
+            with open(fp, 'r') as f:
+                json_dict = json.load(f)
+        except json.decoder.JSONDecodeError:
+            os.remove(fp)
+            sta.status_msg('Calibration JSON File may be corrupted. Attempt to delete file %s' % fp, opt=True)
+            raise PlenopticamError('Calibration JSON File may be corrupted. Attempt to delete file %s' % fp)
+        except IsADirectoryError:
+            sta.status_msg('Provided location %s is a directory' % fp, opt=True)
+            raise PlenopticamError('Provided location %s is a directory' % fp)
+        except FileNotFoundError:
+            sta.status_msg('Provided file %s does not exist' % fp, opt=True)
+            raise PlenopticamError('Provided file %s does not exist' % fp)
+
+        return json_dict
+
+    @staticmethod
+    def save_json(fp=None, **kwargs):
+
+        # filename and filepath handling
+        if fp is not None and os.path.splitext(fp)[-1] != '.json':
+            fn = os.path.splitext(os.path.basename(fp))[0]+'.json'
+            fp = os.path.join(os.path.splitext(fp)[0], fn)
+
+            # create folder
+            misc.mkdir_p(os.path.dirname(fp), False)
+
+        # save calibration data as json file
+        json_dict = kwargs['json_dict'] if 'json_dict' in kwargs else kwargs
+        try:
+            with open(fp, 'wt') as f:
+                json.dump(json_dict, f, sort_keys=True, indent=4)
+        except:
+            pass
+
+        return True
 
 class NumpyTypeEncoder(json.JSONEncoder):
     def default(self, obj):

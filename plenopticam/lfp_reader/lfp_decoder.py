@@ -28,6 +28,7 @@ class LfpDecoder(object):
 
         # internal variables
         self._bay_img = None
+        self._json_dict = {}
 
         # output variable
         self.cfg.lfpimg = {}
@@ -39,17 +40,13 @@ class LfpDecoder(object):
         sections = self.read_buffer(self.file)
 
         # analyze JSON data
-        json_dict = self.read_json(sections)
-
-        # save lfp metadata
-        with open(self.file.name.split('.')[0] + '.json', 'wt') as jsonfile:
-            json.dump(json_dict, jsonfile, indent=4)
+        self._json_dict = self.read_json(sections)
 
         # decompose JSON data
-        h, w = [safe_get(json_dict, 'image', 'width'), safe_get(json_dict, 'image', 'height')]
+        h, w = [safe_get(self._json_dict, 'image', 'width'), safe_get(self._json_dict, 'image', 'height')]
 
         # filter LFP metadata settings
-        self.cfg.lfpimg = self.filter_json(json_dict)
+        self.cfg.lfpimg = self.filter_json(self._json_dict)
 
         # compose bayer image from lfp file
         sec_idx = self.get_idx(sections, int(h * w * self.cfg.lfpimg['bit'] / 8))
@@ -181,7 +178,7 @@ class LfpDecoder(object):
                 break
 
         if padding != b'':
-            f.seek(-1, 1) # move back one byte
+            f.seek(-1, 1)   # move back one byte
 
         return section
 
@@ -203,3 +200,7 @@ class LfpDecoder(object):
     @property
     def rgb_img(self):
         return self._rgb_img.copy()
+
+    @property
+    def json_dict(self):
+        return self._json_dict.copy()

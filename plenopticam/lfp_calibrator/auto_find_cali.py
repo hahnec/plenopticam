@@ -39,7 +39,7 @@ class CaliFinder(object):
         if isdir(self._path) or self._path.endswith('.tar'):
 
             # read JSON file from selected *.lfp image
-            self._read_json()
+            self._lfp_json = self.cfg.load_json(self.cfg.params[self.cfg.lfp_path])
 
             # extract calibration reference data
             frames = safe_get(self._lfp_json, "frames")
@@ -71,11 +71,13 @@ class CaliFinder(object):
                 # look for geo data in provided calibration tar-file
                 self._search_tar_file(self._path)
 
-            # print status
             if self._file_found:
+                # print status
                 self.sta.status_msg('Found white image file '+self._cal_fn, self._opt_prnt)
             else:
+                # print status and interrupt process
                 self.sta.status_msg('White image file not found. Revise calibration path settings', self._opt_prnt)
+                self.sta.interrupt = True
 
             # load if file found and rotation option is set or calibration data is missing or re-calibration is required
             cond = self.cfg.params[self.cfg.opt_rota] or not exists(self.cfg.params[self.cfg.cal_meta]) or self.cfg.params[self.cfg.opt_cali]
@@ -181,19 +183,6 @@ class CaliFinder(object):
             self.sta.status_msg('Did not find "cal_file_manifest.json" in tar archive', opt=True)
         except Exception:
             pass
-
-    def _read_json(self):
-        ''' read JSON file from selected *.lfp image '''
-
-        try:
-            with open(self.cfg.params[self.cfg.lfp_path].split('.')[0]+'.json', mode='r') as jsonfile:
-                self._lfp_json = json.load(jsonfile)
-        except FileNotFoundError:
-            self.sta.status_msg('\r Did not find JSON file of LFP image', opt=True)
-        except json.decoder.JSONDecodeError:
-            self.sta.status_msg('\r JSON file appears to be empty', opt=True)
-
-        return True
 
     @property
     def raw_data(self):
