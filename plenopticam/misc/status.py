@@ -32,11 +32,8 @@ class PlenopticamStatus(object):
 
                 if x == 100:
                     print('\r Progress: Finished \n')
-
         elif x is None:
             self.prog_var = 'Processing ...'
-        elif self.interrupt:
-            self.prog_var = 'Stopped'
 
         return True
 
@@ -91,11 +88,11 @@ class PlenopticamStatus(object):
     def interrupt(self, val):
         if val:
 
-            # reset progress bar
-            self.progress(None, opt=False)
-
             # set interrupt
             self._interrupt.set()
+
+            # reset progress bar
+            self.prog_var = ''
 
             for callback in self._interrupt_observers:
                 callback()
