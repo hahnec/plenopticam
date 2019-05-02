@@ -50,7 +50,7 @@ def save_img_file(img, file_path, type=None):
 
     elif type == 'png' or type == 'bmp':
 
-        Image.fromarray(img).save(file_path, type)
+        Image.fromarray(img).save(file_path, type, optimize=True)
 
     return True
 
