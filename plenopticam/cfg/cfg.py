@@ -99,10 +99,6 @@ class Config(object):
         # reconstruct dict from constants
         self.params = dict(zip(PARAMS_KEYS, PARAMS_VALS))
 
-        # set current directory as default path
-        self.params[self.lfp_path] = os.path.dirname(self._dir_path)
-        self.params[self.cal_path] = os.path.dirname(self._dir_path)
-
         return True
 
     def load_cal_data(self):

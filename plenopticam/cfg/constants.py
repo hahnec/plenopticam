@@ -24,9 +24,9 @@ PARAMS_KEYS = (
 # dictionary values for configuration parameters in json file
 PARAMS_VALS = (
     # strings
-    "/",
-    "/",
-    "/",
+    '',
+    '',
+    '',
     # integers
     7,
     # lists
@@ -37,7 +37,7 @@ PARAMS_VALS = (
     True,
     True,
     False,
-    False,
+    'off',
     False,
     False,
     True,
