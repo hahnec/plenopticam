@@ -30,7 +30,7 @@ to the command line after which a tidy user interface will pop up (see below).
 
 .. |gui| raw:: html
 
-    <img src="./docs/img/gui_v3.png" width="700px">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/gui_v3.png" width="700px">
 
 .. note::
     "Pick folder" checkbox is useful to point to a directory containing calibration archive files of Lytro Illum cameras.
@@ -38,62 +38,57 @@ to the command line after which a tidy user interface will pop up (see below).
 
 Results
 -------
+|
 
-|OPEX|_
-=============================
+.. list-table::
+   :widths: 8 8
 
-|spiderman|
-
-* custom plenoptic camera built at the Univ. of Bedfordshire
-
-.. |spiderman| image:: ./docs/img/spiderman.gif
-
-.. |OPEX| replace:: Optics Express dataset
-.. _OPEX: https://ndownloader.figshare.com/files/5201452
-
-|Irisa|_
-========================
-
-|fruits|
-
-.. |fruits| raw:: html
-
-    <img src="./docs/img/fruits.gif" height="200px">
+   * - |OPEX|_
+     - |Irisa|_
+   * - |spiderman|
+     - |fruits|
+   * - custom plenoptic camera built at the Univ. of Bedfordshire
+     - raw image data from a Lytro Illum
 
 .. * |Stanford|_
 
-.. |Irisa| replace:: Irisa dataset
+.. |spiderman| image:: https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/spiderman.gif
+
+.. |OPEX| replace:: **Optics Express dataset**
+.. _OPEX: https://ndownloader.figshare.com/files/5201452
+
+.. |fruits| raw:: html
+
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits.gif" height="186px">
+
+.. |Irisa| replace:: **Irisa dataset**
 .. _Irisa: https://www.irisa.fr/temics/demos/IllumDatasetLF/index.html
 
-.. |Stanford| replace:: Stanford dataset
+.. |Stanford| replace:: **Stanford dataset**
 .. _Stanford: http://lightfields.stanford.edu/mvlf/
 
-
-Further information
--------------------
-
-* visit `plenoptic.info <http://www.plenoptic.info>`__ for technical details, animated figures and theoretical background
-
 Credits
-=======
+-------
 
 Contributors
-------------
+============
 
 |Hahne|
 
 `Christopher Hahne <http://www.christopherhahne.de/>`__
 
 Sponsors
---------
+========
+|
 
-|EUFramework|
 
-`under Grant EU-FP7 ICT-2010-248420 <https://cordis.europa.eu/project/rcn/94148_en.html>`__
+.. list-table::
+   :widths: 8 8
 
-|UoB|
-
-`Institute for Research in Applicable Computing (IRAC) <https://www.beds.ac.uk/research-ref/irac/about>`__
+   * - |EUFramework|
+     - |UoB|
+   * - `under Grant EU-FP7 ICT-2010-248420 <https://cordis.europa.eu/project/rcn/94148_en.html>`__
+     - `Institute for Research in Applicable Computing (IRAC) <https://www.beds.ac.uk/research-ref/irac/about>`__
 
 Citation
 --------
@@ -102,6 +97,11 @@ If you find this work helpful, please cite the following publications:
 * `Refocusing distance of a standard plenoptic camera <https://doi.org/10.1364/OE.24.021521>`__, *OpticsExpress*, `[BibTeX] <http://www.plenoptic.info/bibtex/HAHNE-OPEX.2016.bib>`__
 
 * `Baseline and triangulation geometry in a standard plenoptic camera <https://www.plenoptic.info/IJCV_Hahne17_final.pdf>`__, *Int. J. of Comp. Vis.*, `[BibTeX] <http://plenoptic.info/bibtex/HAHNE-IJCV.2017.bib>`__
+
+Further information
+-------------------
+
+* visit `plenoptic.info <http://www.plenoptic.info>`__ for technical details, animated figures and theoretical background
 
 .. Image substitutions
 

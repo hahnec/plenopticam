@@ -4,11 +4,6 @@
 # OS-specific files
 *.DS_Store
 
-# documentation files
-/docs/*
-# Allow
-!/docs/img/
-
 # json results
 *.json
 
@@ -30,3 +25,6 @@
 
 # image files
 *.psd
+
+# doctrees files
+/docs/build/doctrees/
