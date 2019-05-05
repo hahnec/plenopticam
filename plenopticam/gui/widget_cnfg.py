@@ -87,15 +87,19 @@ class CnfgWidget(object):
     def refi(self):
 
         # set refocus refinement option if scheimpflug focus type is desired
-        if self.tk_vars[self.cfg.opt_pflu].get() is not 'off':
+        if self.tk_vars[self.cfg.opt_pflu].get() != 'off':
             self.tk_vars[self.cfg.opt_refi].set(value=True)
             self.obj_ents[self.cfg.opt_refi].select()
+            self.cfg.params[self.cfg.opt_refi] = True
 
     def save_cfg(self):
 
         # read from tkinter variables
         for key in self.gui_keys:
             self.cfg.params[key] = self.tk_vars[key].get()
+            # set refinement option if scheimpflug option set
+            if key == self.cfg.opt_pflu:
+                self.refi()
 
         # write current configuration settings to hard drive
         self.cfg.save_params()
