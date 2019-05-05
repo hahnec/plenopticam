@@ -59,7 +59,7 @@ Results
 
 .. |fruits| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits.gif" height="186px">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits.gif" height="186px" width="273.467px">
 
 .. |Irisa| replace:: **Irisa dataset**
 .. _Irisa: https://www.irisa.fr/temics/demos/IllumDatasetLF/index.html
@@ -92,7 +92,7 @@ Sponsors
 
 Citation
 --------
-If you find this work helpful, please cite the following publications:
+If you find this work helpful for your research, please cite as appropriate:
 
 * `Refocusing distance of a standard plenoptic camera <https://doi.org/10.1364/OE.24.021521>`__, *OpticsExpress*, `[BibTeX] <http://www.plenoptic.info/bibtex/HAHNE-OPEX.2016.bib>`__
 
@@ -106,7 +106,7 @@ Further information
 .. Image substitutions
 
 .. |release| image:: https://img.shields.io/github/release/hahnec/plenopticam.svg?style=flat-square
-    :target: https://github.com/hahnec/plenopticam/archive/master.zip
+    :target: https://github.com/hahnec/plenopticam/releases/
     :alt: release
 
 .. |license| image:: https://img.shields.io/badge/License-GPL%20v3.0-orange.svg?style=flat-square
