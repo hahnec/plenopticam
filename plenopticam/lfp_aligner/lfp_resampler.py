@@ -1,5 +1,6 @@
 # local imports
 from plenopticam import misc
+from plenopticam.lfp_extractor.lfp_cropper import LfpCropper
 
 # external libs
 import numpy as np
@@ -26,7 +27,7 @@ class LfpResampler(object):
         ''' cropping micro images to square shape while interpolating around their detected center (MIC) '''
 
         centroids = np.asarray(self.cfg.calibs[self.cfg.mic_list])
-        patch_size = self.cfg.params[self.cfg.ptc_leng]
+        patch_size = LfpCropper.pitch_max(self.cfg.calibs[self.cfg.mic_list])
 
         lens_y_max = int(max(centroids[:, 2]))
         lens_x_max = int(max(centroids[:, 3]))
