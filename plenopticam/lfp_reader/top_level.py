@@ -64,8 +64,8 @@ class LfpReader(object):
                         del obj
 
                         # save bayer image as file (only in debug mode)
-                        if self.cfg.params[self.cfg.opt_dbug]:
-                            misc.save_img_file(misc.uint16_norm(self._lfp_img), fp, type='tiff')
+                        #if self.cfg.params[self.cfg.opt_dbug]:
+                        misc.save_img_file(misc.uint16_norm(self._lfp_img), fp, type='tiff')
 
                         # print status
                         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
