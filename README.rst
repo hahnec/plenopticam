@@ -6,7 +6,7 @@ A light field photography application (macOS_ or Win_) for computational change 
 
 Check out Plenopticam's partner project Plenoptisign_ capable of estimating metric light field geometries.
 
-|license| |code| |repo| |downloads|
+|release| |license| |code| |repo| |downloads|
 
 Installation
 ------------
@@ -140,6 +140,6 @@ Further information
 .. Hyperlink aliases
 
 .. _source: https://github.com/hahnec/plenopticam/archive/master.zip
-.. _macOS: https://github.com/hahnec/plenopticam/releases/download/v1.0.0-alpha/plenopticam_1.0.0-alpha_macOS.zip
-.. _Win: https://github.com/hahnec/plenopticam/releases/download/v1.0.0-alpha/plenopticam_1.0.0_alpha_win.zip
+.. _macOS: https://github.com/hahnec/plenopticam/releases/download/v0.1.0-beta/plenopticam_0.1.0-beta_macOS.zip
+.. _Win: https://github.com/hahnec/plenopticam/releases/download/v0.1.0-beta/plenopticam_0.1.0-beta_win.zip
 .. _Plenoptisign: https://github.com/hahnec/plenoptisign/
