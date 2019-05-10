@@ -22,9 +22,9 @@ Usage
 
 If installation ran smoothly, enter the following
 
-    ``$ plenopticam -g``
+    ``$ sudo plenopticam -g``
 
-to the command line after which a tidy user interface will pop up (see below).
+to the command line after which a lean user interface will pop up (see below).
 
 |gui|
 
