@@ -138,7 +138,7 @@ class LfpDecoder(object):
             file_header = f.read(len(self.LFP_HEADER))
             if not file_header == self.LFP_HEADER:
                 raise AssertionError('File header type not recognized')
-            header_length = int(f.read(4).hex(), 16) # Python3 only #f.read(1) #
+            header_length = int(f.read(4).hex(), 16)
             if not header_length == 0:
                 raise AssertionError('Unexpected header length')
             while (f.read(1) != b''):
@@ -158,7 +158,7 @@ class LfpDecoder(object):
             raise AssertionError('Section header type not recognized')
 
         # read data section length
-        sect_len = int(f.read(4).hex(), 16) #int(f.read(1).hex())
+        sect_len = int(f.read(4).hex(), 16)
 
         # read sha1 checksum and padding
         sha1 = f.read(self.SHA1_LEN)

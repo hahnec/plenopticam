@@ -27,11 +27,10 @@ from plenopticam.misc.status import PlenopticamStatus
 # external libs
 import numpy as np
 import scipy
-#from scipy.signal import convolve2d, argrelmax
 
 class PitchEstimator(object):
 
-    def __init__(self, img, cfg, sta=None, scale_val=1.625, CR=10): #1.8
+    def __init__(self, img, cfg, sta=None, scale_val=1.625, CR=10):
 
         # input variables
         self._img = img
