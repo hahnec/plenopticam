@@ -42,7 +42,7 @@ def export_viewpoints(vp_img_arr, cfg, type='tiff'):
     for j in range(ptc_leng):
         for i in range(ptc_leng):
 
-            misc.save_img_file(vp_img_arr[j, i], os.path.join(folderpath, str(j) + '_' + str(i) + '.' + type))
+            misc.save_img_file(vp_img_arr[j, i], os.path.join(folderpath, str(j) + '_' + str(i)), type=type)
 
     return True
 
@@ -65,8 +65,7 @@ def export_refo_stack(refo_stack, cfg, type='tiff'):
     for i, refo_img in enumerate(refo_stack):
 
         # write image file
-        refo_name = str(range(*cfg.params[cfg.ran_refo])[i]) + '.' + type
-        misc.save_img_file(refo_img, os.path.join(folder_path, refo_name))
+        misc.save_img_file(refo_img, str(range(*cfg.params[cfg.ran_refo])[i]), type=type)
 
     return True
 

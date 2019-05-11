@@ -34,23 +34,26 @@ import numpy as np
 import os
 
 from plenopticam.cfg import constants as c
-from .data_proc import uint8_norm, uint16_norm
+from plenopticam import misc
 
 def save_img_file(img, file_path, type=None):
 
     img = place_dnp(img)
+    ext = os.path.splitext(file_path)[-1][1:]
 
     if not type:
-        type = 'tiff' if img.dtype == 'uint16' else 'png'
+        type = ext if ext == 'png' or ext == 'tiff' else 'tiff' if img.dtype == 'uint16' else 'png'
+
+    file_path = os.path.splitext(file_path)[0]+'.'+type if ext != type else file_path
 
     if type == 'tiff':
-        obj = TIFF.open(file_path, mode='w')
-        obj.write_image(img, compression=None, write_rgb=True)
-        obj.close()
+            obj = TIFF.open(file_path, mode='w')
+            obj.write_image(misc.uint16_norm(img), compression=None, write_rgb=True)
+            obj.close()
 
     elif type == 'png' or type == 'bmp':
 
-        Image.fromarray(img).save(file_path, type, optimize=True)
+        Image.fromarray(misc.uint8_norm(img)).save(file_path, type, optimize=True)
 
     return True
 
