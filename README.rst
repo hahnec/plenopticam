@@ -1,44 +1,79 @@
 ===========
 Plenopticam
 ===========
+.. A light field photography application (macOS_ or Win_) for computational change of perspective view and synthetic focus based on a Standard Plenoptic Camera (SPC).
 
-A light field photography application (macOS_ or Win_) for computational change of perspective view and synthetic focus based on a Standard Plenoptic Camera (SPC).
+Description
+-----------
 
-Check out Plenopticam's partner project Plenoptisign_ capable of estimating metric light field geometries.
+*Plenopticam* is an open-source software (macOS_ or Win_) for scientific light field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
+Raw exposures from a plenoptic camera require four-dimensional image alignment in order to be decoded as a light field. Provided software addresses this by its ability to extract depth by means of sub-aperture images or synthetically focused photographs.
+This application is meant for researchers, developers, beginners and other fiddlers who like to experiment with light field technology. It comprises custom-types of plenoptic cameras and is thus not limited to Lytro's image data.
 
 |release| |license| |code| |repo| |downloads|
 
 Installation
 ------------
 
+* executable:
+    1. download bundled apps_ for macOS_ or Win_
+    2. extract archive
+    3. run app to open up the lean user interface (see below)
+
+|
+
+* from source:
     1. install Python from https://www.python.org/
     2. download the source_ using ``$ git clone https://github.com/hahnec/plenopticam.git``
     3. go to the root directory ``$ cd plenopticam``
-    4. install with ``$ python setup.py install`` from the root directory
-
+    4. install with ``$ sudo python setup.py install`` from the root directory
+    5. if installation ran smoothly, enter ``$ sudo plenopticam -g`` to the command line after which a lean user interface will pop up (see below)
 
 Usage
 -----
-
-If installation ran smoothly, enter the following
-
-    ``$ sudo plenopticam -g``
-
-to the command line after which a lean user interface will pop up (see below).
 
 |gui|
 
 .. |gui| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/gui_v3.png" width="700px">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/gui_v3.png" width="66%" style="align:middle">
 
 .. note::
     "Pick folder" checkbox is useful to point to a directory containing calibration archive files of Lytro Illum cameras.
     In such case, the white image calibration file corresponding to the Illum image is found automatically.
 
+|
+
+1. Choose your light field photograph using upper **Browse** button. Supported file types are:
+    - *lfr*, *lfp* and *raw* files from Lytro Illum
+    - *bmp*, *jpg* or *png* file from custom-built plenoptic camera
+    - Lytro 1st Generation (to come)
+
+|
+
+2. Choose calibration source data using lower **Browse** button. Supported file types are:
+    - *tar* archive or respective *raw* file from Lytro Illum
+    - *bmp*, *jpg* or *png* file from custom-built plenoptic camera
+    - Lytro 1st Generation (to come)
+
+|
+
+3. Adjust configuration using **Settings** button:
+    - *Micro image patch size*: default is estimated maximum
+    - *Refocusing range*: range for shift and sum synthesis
+    - *Force re-calibration*: option to re-run calibration
+    - *Automatic white balance*: option for white balancing
+    - *Refocus refinement*: option for sub-pixel precise refocusing
+    - *Scheimpflug*: option to mimic tilted sensor
+
+|
+
+4. Press **Process** to start the computation.
+
+|
+
 Results
 -------
-|
 
 .. list-table::
    :widths: 8 8
@@ -47,19 +82,21 @@ Results
      - |Irisa|_
    * - |spiderman|
      - |fruits|
-   * - custom plenoptic camera built at the Univ. of Bedfordshire
+   * - plenoptic camera built at Univ. of Bedfordshire
      - raw image data from a Lytro Illum
 
 .. * |Stanford|_
 
-.. |spiderman| image:: https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/spiderman.gif
+.. |spiderman| raw:: html
+
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/spiderman.gif" width="80%">
 
 .. |OPEX| replace:: **Optics Express dataset**
 .. _OPEX: https://ndownloader.figshare.com/files/5201452
 
 .. |fruits| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits.gif" height="186px" width="273.467px">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits.gif"  height="186px" width="273.467px">
 
 .. |Irisa| replace:: **Irisa dataset**
 .. _Irisa: https://www.irisa.fr/temics/demos/IllumDatasetLF/index.html
@@ -101,6 +138,7 @@ If you find this work helpful for your research, please cite as appropriate:
 Further information
 -------------------
 
+* check out Plenopticam's partner project Plenoptisign_ capable of estimating metric light field geometries
 * visit `plenoptic.info <http://www.plenoptic.info>`__ for technical details, animated figures and theoretical background
 
 .. Image substitutions
@@ -135,7 +173,11 @@ Further information
 
 .. |Hahne| raw:: html
 
-    <img src="http://www.christopherhahne.de/images/about.jpg" width="100px">
+    <img src="http://www.christopherhahne.de/images/about.jpg" width="15%">
+
+.. |br| raw:: html
+
+    <br />
 
 .. Hyperlink aliases
 
@@ -143,3 +185,4 @@ Further information
 .. _macOS: https://github.com/hahnec/plenopticam/releases/download/v0.1.0-beta/plenopticam_0.1.0-beta_macOS.zip
 .. _Win: https://github.com/hahnec/plenopticam/releases/download/v0.1.0-beta/plenopticam_0.1.0-beta_win.zip
 .. _Plenoptisign: https://github.com/hahnec/plenoptisign/
+.. _apps: https://github.com/hahnec/plenopticam/releases/

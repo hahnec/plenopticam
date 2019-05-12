@@ -10,32 +10,13 @@ Welcome to Plenopticam's documentation!
    :maxdepth: 2
    :caption: Contents:
 	
-.. automodule:: cfg
-	:members:
-	
-.. automodule:: gui
-	:members:
+	readme
+	guide
+	apidoc
 
-.. automodule:: lfp_aligner
-	:members:
-
-.. automodule:: lfp_calibrator
-	:members:
-.. autoclass:: CentroidRefiner
-   :members:
-
-.. automodule:: lfp_extractor
-	:members:
-	
-.. automodule:: lfp_reader
-	:members:
-
-.. automodule:: misc
-	:members:
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. Indices and tables
+.. ==================
+.. 
+.. * :ref:`genindex`
+.. * :ref:`modindex`
+.. * :ref:`search`

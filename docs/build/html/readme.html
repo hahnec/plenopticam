@@ -14,7 +14,6 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
   </head><body>
@@ -35,6 +34,7 @@
   <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Plenopticam</a><ul>
+<li><a class="reference internal" href="#description">Description</a></li>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#usage">Usage</a></li>
 <li><a class="reference internal" href="#results">Results</a></li>
@@ -78,38 +78,113 @@
             
   <div class="section" id="plenopticam">
 <h1>Plenopticam<a class="headerlink" href="#plenopticam" title="Permalink to this headline">¶</a></h1>
-<p>A light field photography application (<a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.1.0-beta/plenopticam_0.1.0-beta_macOS.zip">macOS</a> or <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.1.0-beta/plenopticam_0.1.0-beta_win.zip">Win</a>) for computational change of perspective view and synthetic focus based on a Standard Plenoptic Camera (SPC).</p>
-<p>Check out Plenopticam’s partner project <a class="reference external" href="https://github.com/hahnec/plenoptisign/">Plenoptisign</a> capable of estimating metric light field geometries.</p>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><em>Plenopticam</em> is an open-source software (<a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.1.0-beta/plenopticam_0.1.0-beta_macOS.zip">macOS</a> or <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.1.0-beta/plenopticam_0.1.0-beta_win.zip">Win</a>) for scientific light field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
+Raw exposures from a plenoptic camera require four-dimensional image alignment in order to be decoded as a light field. Provided software addresses this by its ability to extract depth by means of sub-aperture images or synthetically focused photographs.
+This application is meant for researchers, developers, beginners and other fiddlers who like to experiment with light field technology. It comprises custom-types of plenoptic cameras and is thus not limited to Lytro’s image data.</p>
 <p><a class="reference external" href="https://github.com/hahnec/plenopticam/releases/"><img alt="release" src="https://img.shields.io/github/release/hahnec/plenopticam.svg?style=flat-square" /></a> <a class="reference external" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img alt="License" src="https://img.shields.io/badge/License-GPL%20v3.0-orange.svg?style=flat-square" /></a> <a class="reference external" href="https://github.com/hahnec/plenopticam/archive/master.zip"><img alt="Code size" src="https://img.shields.io/github/languages/code-size/hahnec/plenopticam.svg?style=flat-square" /></a> <a class="reference external" href="https://github.com/hahnec/plenopticam/archive/master.zip"><img alt="Repo size" src="https://img.shields.io/github/repo-size/hahnec/plenopticam.svg?style=flat-square" /></a> <a class="reference external" href="https://github.com/hahnec/plenopticam/archive/master.zip"><img alt="Downloads" src="https://img.shields.io/github/downloads/hahnec/plenopticam/total.svg?style=flat-square" /></a></p>
+</div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><ol class="arabic simple">
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>executable:</dt>
+<dd><ol class="first last arabic">
+<li>download bundled <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/">apps</a> for <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.1.0-beta/plenopticam_0.1.0-beta_macOS.zip">macOS</a> or <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.1.0-beta/plenopticam_0.1.0-beta_win.zip">Win</a></li>
+<li>extract archive</li>
+<li>run app to open up the lean user interface (see below)</li>
+</ol>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>from source:</dt>
+<dd><ol class="first last arabic">
 <li>install Python from <a class="reference external" href="https://www.python.org/">https://www.python.org/</a></li>
 <li>download the <a class="reference external" href="https://github.com/hahnec/plenopticam/archive/master.zip">source</a> using <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/hahnec/plenopticam.git</span></code></li>
 <li>go to the root directory <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">cd</span> <span class="pre">plenopticam</span></code></li>
-<li>install with <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code> from the root directory</li>
+<li>install with <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">sudo</span> <span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code> from the root directory</li>
+<li>if installation ran smoothly, enter <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">sudo</span> <span class="pre">plenopticam</span> <span class="pre">-g</span></code> to the command line after which a lean user interface will pop up (see below)</li>
 </ol>
-</div></blockquote>
+</dd>
+</dl>
+</li>
+</ul>
 </div>
 <div class="section" id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
-<p>If installation ran smoothly, enter the following</p>
-<blockquote>
-<div><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">sudo</span> <span class="pre">plenopticam</span> <span class="pre">-g</span></code></div></blockquote>
-<p>to the command line after which a lean user interface will pop up (see below).</p>
-<p><img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/gui_v3.png" width="700px"></p>
+<p><img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/gui_v3.png" width="66%" style="align:middle"></p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">“Pick folder” checkbox is useful to point to a directory containing calibration archive files of Lytro Illum cameras.
 In such case, the white image calibration file corresponding to the Illum image is found automatically.</p>
 </div>
-</div>
-<div class="section" id="results">
-<h2>Results<a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h2>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+<ol class="arabic simple">
+<li><dl class="first docutils">
+<dt>Choose your light field photograph using upper <strong>Browse</strong> button. Supported file types are:</dt>
+<dd><ul class="first last">
+<li><em>lfr</em>, <em>lfp</em> and <em>raw</em> files from Lytro Illum</li>
+<li><em>bmp</em>, <em>jpg</em> or <em>png</em> file from custom-built plenoptic camera</li>
+<li>Lytro 1st Generation (to come)</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><dl class="first docutils">
+<dt>Choose calibration source data using lower <strong>Browse</strong> button. Supported file types are:</dt>
+<dd><ul class="first last">
+<li><em>tar</em> archive or respective <em>raw</em> file from Lytro Illum</li>
+<li><em>bmp</em>, <em>jpg</em> or <em>png</em> file from custom-built plenoptic camera</li>
+<li>Lytro 1st Generation (to come)</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><dl class="first docutils">
+<dt>Adjust configuration using <strong>Settings</strong> button:</dt>
+<dd><ul class="first last">
+<li><em>Micro image patch size</em>: default is estimated maximum</li>
+<li><em>Refocusing range</em>: range for shift and sum synthesis</li>
+<li><em>Force re-calibration</em>: option to re-run calibration</li>
+<li><em>Automatic white balance</em>: option for white balancing</li>
+<li><em>Refocus refinement</em>: option for sub-pixel precise refocusing</li>
+<li><em>Scheimpflug</em>: option to mimic tilted sensor</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<ol class="arabic simple" start="4">
+<li>Press <strong>Process</strong> to start the computation.</li>
+</ol>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+<div class="section" id="results">
+<h2>Results<a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="50%" />
@@ -119,10 +194,10 @@ In such case, the white image calibration file corresponding to the Illum image 
 <tr class="row-odd"><td><a class="reference external" href="https://ndownloader.figshare.com/files/5201452"><strong>Optics Express dataset</strong></a></td>
 <td><a class="reference external" href="https://www.irisa.fr/temics/demos/IllumDatasetLF/index.html"><strong>Irisa dataset</strong></a></td>
 </tr>
-<tr class="row-even"><td><img alt="spiderman" src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/spiderman.gif" /></td>
-<td><img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits.gif" height="186px" width="273.467px"></td>
+<tr class="row-even"><td><img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/spiderman.gif" width="80%"></td>
+<td><img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits.gif"  height="186px" width="273.467px"></td>
 </tr>
-<tr class="row-odd"><td>custom plenoptic camera built at the Univ. of Bedfordshire</td>
+<tr class="row-odd"><td>plenoptic camera built at Univ. of Bedfordshire</td>
 <td>raw image data from a Lytro Illum</td>
 </tr>
 </tbody>
@@ -132,7 +207,7 @@ In such case, the white image calibration file corresponding to the Illum image 
 <h2>Credits<a class="headerlink" href="#credits" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="contributors">
 <h3>Contributors<a class="headerlink" href="#contributors" title="Permalink to this headline">¶</a></h3>
-<p><img src="http://www.christopherhahne.de/images/about.jpg" width="100px"></p>
+<p><img src="http://www.christopherhahne.de/images/about.jpg" width="15%"></p>
 <p><a class="reference external" href="http://www.christopherhahne.de/">Christopher Hahne</a></p>
 </div>
 <div class="section" id="sponsors">
@@ -167,6 +242,7 @@ In such case, the white image calibration file corresponding to the Illum image 
 <div class="section" id="further-information">
 <h2>Further information<a class="headerlink" href="#further-information" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
+<li>check out Plenopticam’s partner project <a class="reference external" href="https://github.com/hahnec/plenoptisign/">Plenoptisign</a> capable of estimating metric light field geometries</li>
 <li>visit <a class="reference external" href="http://www.plenoptic.info">plenoptic.info</a> for technical details, animated figures and theoretical background</li>
 </ul>
 </div>
