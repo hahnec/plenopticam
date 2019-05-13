@@ -8,11 +8,10 @@ Welcome to Plenopticam's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :numbered:
 	
-	readme
-	guide
-	apidoc
+   readme
+   guide
 
 .. Indices and tables
 .. ==================
@@ -20,3 +19,4 @@ Welcome to Plenopticam's documentation!
 .. * :ref:`genindex`
 .. * :ref:`modindex`
 .. * :ref:`search`
+
