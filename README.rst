@@ -104,8 +104,7 @@ Results
 
 .. |fruits| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits.gif" style="display: block;
-    margin: 0 auto; height: auto; width: 78%;">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits.gif" width="273.467px" style="width: 80%; height: auto; display: block; margin: 0 auto;">
 
 .. |INRIA| replace:: **INRIA dataset**
 .. _INRIA: https://www.irisa.fr/temics/demos/IllumDatasetLF/index.html
