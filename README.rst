@@ -36,11 +36,18 @@ Usage
 
 .. |gui| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/gui_v3.png" width="66%" style="align:middle">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/gui_v3.png" width="66%" style="display: block;
+    margin: 0 auto;">
 
 .. note::
     "Pick folder" checkbox is useful to point to a directory containing calibration archive files of Lytro Illum cameras.
     In such case, the white image calibration file corresponding to the Illum image is found automatically.
+
+|
+
+0. Download a dataset if you don't call a plenoptic camera your own, e.g.:
+    - |OpEx|_
+    - |INRIA|_
 
 |
 
@@ -78,28 +85,30 @@ Results
 .. list-table::
    :widths: 8 8
 
-   * - |OPEX|_
-     - |Irisa|_
+   * - |OpEx|_
+     - |INRIA|_
    * - |spiderman|
      - |fruits|
    * - plenoptic camera built at Univ. of Bedfordshire
-     - raw image data from a Lytro Illum
+     - Lytro Illum camera from raw image
 
 .. * |Stanford|_
 
 .. |spiderman| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/spiderman.gif" width="80%">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/spiderman.gif" style="display: block;
+    margin: 0 auto; width: 80%;">
 
-.. |OPEX| replace:: **Optics Express dataset**
-.. _OPEX: https://ndownloader.figshare.com/files/5201452
+.. |OpEx| replace:: **OpEx dataset**
+.. _OpEx: https://ndownloader.figshare.com/files/5201452
 
 .. |fruits| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits.gif"  height="186px" width="273.467px">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits.gif" style="display: block;
+    margin: 0 auto; height: auto; width: 78%;">
 
-.. |Irisa| replace:: **Irisa dataset**
-.. _Irisa: https://www.irisa.fr/temics/demos/IllumDatasetLF/index.html
+.. |INRIA| replace:: **INRIA dataset**
+.. _INRIA: https://www.irisa.fr/temics/demos/IllumDatasetLF/index.html
 
 .. |Stanford| replace:: **Stanford dataset**
 .. _Stanford: http://lightfields.stanford.edu/mvlf/
