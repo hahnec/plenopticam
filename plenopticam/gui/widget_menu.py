@@ -26,6 +26,8 @@ except ImportError:
     import Tkinter as tk
 
 from plenopticam.gui.widget_about import AbtWidget
+import os
+import sys
 
 # make object for plot widget
 class MenuWidget(tk.Frame):
@@ -38,7 +40,6 @@ class MenuWidget(tk.Frame):
         self.parent.parent.createcommand('tkAboutDialog', self.open_about_dialog)
 
         menubar = tk.Menu(self)
-        #menubar.add_cascade(menubar.mainMenu.apple)
 
         filemenu = tk.Menu(menubar, tearoff=0)
         filemenu.add_command(label="Process", command=self.parent.process)
@@ -50,29 +51,12 @@ class MenuWidget(tk.Frame):
         filemenu.add_command(label="Quit", command=self.parent.qit)
         menubar.add_cascade(label="File", menu=filemenu)
 
-        #editmenu = tk.Menu(menubar, tearoff=0)
-        #editmenu.add_command(label="Undo", command=self.donothing)
-        #editmenu.add_separator()#
-        #editmenu.add_command(label="Cut", command=self.donothing)
-        #editmenu.add_command(label="Copy", command=self.donothing)
-        #editmenu.add_command(label="Paste", command=self.donothing)
-        #editmenu.add_command(label="Delete", command=self.donothing)
-        #editmenu.add_command(label="Select All", command=self.donothing)
-
-        #menubar.add_cascade(label="Edit", menu=editmenu)
         helpmenu = tk.Menu(menubar, tearoff=0)
-        #helpmenu.add_command(label="Help Index", command=self.donothing)
         helpmenu.add_command(label="About...", command=self.open_about_dialog)
+        helpmenu.add_command(label="Help...", command=self.open_docs)
         menubar.add_cascade(label="Help", menu=helpmenu)
 
         self.parent.parent.config(menu=menubar)
-        #self.mainloop()
-
-    # def donothing(self):
-    #
-    #     filewin = tk.Toplevel(self)
-    #     button = tk.Button(filewin, text="Do nothing button")
-    #     button.pack()
 
     def open_about_dialog(self):
         ''' open about window '''
@@ -81,3 +65,26 @@ class MenuWidget(tk.Frame):
         AbtWidget()
 
         return True
+
+    def open_docs(self):
+        ''' open documentation in webbrowser '''
+
+        # relative path for html documentation
+        REL_PATH = "docs/build/html/index.html"
+
+        # current working directory
+        cwd = os.getcwd()
+
+        # compose url
+        if os.path.exists(os.path.join(cwd, REL_PATH)):
+            url = "file:///" + os.path.join(cwd, REL_PATH)
+        elif hasattr(sys, '_MEIPASS') and os.path.exists(os.path.join(sys._MEIPASS, REL_PATH)):
+            url = "file:///" + os.path.join(sys._MEIPASS, REL_PATH)
+        elif os.path.exists(os.path.join(os.path.dirname(os.path.dirname(cwd)), REL_PATH)):
+            url = "file:///" + os.path.join(os.path.dirname(os.path.dirname(cwd)), REL_PATH)
+        else:
+            url = 'https://github.com/hahnec/plenoptisign/blob/master/README.rst'
+
+        # open in a new tab, if possible
+        import webbrowser
+        webbrowser.open(url, new=2)

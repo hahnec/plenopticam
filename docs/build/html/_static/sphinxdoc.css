@@ -30,6 +30,17 @@ body {
     min-width: 740px;
 }
 
+blockquote {
+	     font-size: 0%;
+	 }
+	 blockquote:after {
+	     font-size: 0%;
+	 }
+	 img {
+		  max-width: 80%;
+		  height: auto;
+}
+
 div.document {
     background-color: white;
     text-align: left;
