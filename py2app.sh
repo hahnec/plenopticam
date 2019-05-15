@@ -11,3 +11,6 @@ sudo chmod -R 666 ./dist/plenopticam.app/Contents/Resources/cfg/cfg.json
 
 # modify redundant file cam16_ucs.py in colour package as it causes an import error
 sudo sed -i -e '71,85 s/^/#/' ./dist/plenopticam.app/Contents/Resources/lib/python3.6/colour/models/cam16_ucs.py
+
+# copy docs folder to app bundle
+sudo cp -r ./docs ./dist/plenopticam.app/Contents/Resources/
