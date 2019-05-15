@@ -97,14 +97,15 @@ Results
 .. |spiderman| raw:: html
 
     <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/spiderman.gif" style="display: block;
-    margin: 0 auto; width: 80%;">
+    margin: 0 auto; width: 100%;">
 
 .. |OpEx| replace:: **OpEx dataset**
 .. _OpEx: https://ndownloader.figshare.com/files/5201452
 
 .. |fruits| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits.gif" width="273.467px" style="width: 80%; height: auto; display: block; margin: 0 auto;">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits_r.gif" style="display: block;
+    margin: 0 auto; width: 100%;">
 
 .. |INRIA| replace:: **INRIA dataset**
 .. _INRIA: https://www.irisa.fr/temics/demos/IllumDatasetLF/index.html

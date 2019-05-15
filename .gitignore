@@ -25,6 +25,7 @@
 
 # image files
 *.psd
+/docs/img/fruits.gif
 
 # doctrees files
 /docs/build/doctrees/
