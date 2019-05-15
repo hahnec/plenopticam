@@ -22,9 +22,9 @@ class LfpReader(object):
 
     def main(self):
 
-        if self._lfp_path.endswith(('.lfp', '.lfr', '.raw')):
+        if self._lfp_path.endswith(('.lfp', '.lfr', '.raw') + tuple('.c.'+str(num) for num in (0, 1, 2, 3))):
 
-            # filename and filepath definition
+            # filename and file path from previously decoded data
             fn = os.path.splitext(os.path.basename(self._lfp_path))[0]+'.tiff'
             fp = os.path.join(os.path.splitext(self._lfp_path)[0], fn)
 
@@ -53,7 +53,7 @@ class LfpReader(object):
 
                         # LFC and raw type decoding
                         obj = LfpDecoder(file, self.cfg, self.sta)
-                        if self._lfp_path.endswith(('.lfp', '.lfr')):
+                        if self._lfp_path.endswith(('.lfp', '.lfr') + tuple('.c.'+str(num) for num in (0, 1, 2, 3))):
                             # LFC type decoding
                             obj.decode_lfc()
                             self.cfg.save_json(self._lfp_path, json_dict=obj.json_dict)

@@ -36,18 +36,11 @@ Usage
 
 .. |gui| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/gui_v3.png" width="75%" align="middle" style="display: block;
-    margin: 0 auto;">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/gui_v3.png" width="66%" style="align:middle">
 
 .. note::
     "Pick folder" checkbox is useful to point to a directory containing calibration archive files of Lytro Illum cameras.
     In such case, the white image calibration file corresponding to the Illum image is found automatically.
-
-|
-
-0. Download a dataset if you don't call a plenoptic camera your own, e.g.:
-    - |OpEx|_
-    - |INRIA|_
 
 |
 
@@ -85,30 +78,28 @@ Results
 .. list-table::
    :widths: 8 8
 
-   * - |OpEx|_
-     - |INRIA|_
+   * - |OPEX|_
+     - |Irisa|_
    * - |spiderman|
      - |fruits|
    * - plenoptic camera built at Univ. of Bedfordshire
-     - Lytro Illum camera from raw image
+     - raw image data from a Lytro Illum
 
 .. * |Stanford|_
 
 .. |spiderman| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/spiderman.gif" width="100%"
-    align="middle" style="display: block; margin: 0 auto;">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/spiderman.gif" width="80%">
 
-.. |OpEx| replace:: **OpEx dataset**
-.. _OpEx: https://ndownloader.figshare.com/files/5201452
+.. |OPEX| replace:: **Optics Express dataset**
+.. _OPEX: https://ndownloader.figshare.com/files/5201452
 
 .. |fruits| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits_r.gif" width="100%" align="middle"
-    style="display: block; margin: 0 auto;">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits.gif"  height="186px" width="273.467px">
 
-.. |INRIA| replace:: **INRIA dataset**
-.. _INRIA: https://www.irisa.fr/temics/demos/IllumDatasetLF/index.html
+.. |Irisa| replace:: **Irisa dataset**
+.. _Irisa: https://www.irisa.fr/temics/demos/IllumDatasetLF/index.html
 
 .. |Stanford| replace:: **Stanford dataset**
 .. _Stanford: http://lightfields.stanford.edu/mvlf/
@@ -130,6 +121,7 @@ Sponsors
 
 .. list-table::
    :widths: 8 8
+   :align: "center"
 
    * - |EUFramework|
      - |UoB|
