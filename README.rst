@@ -36,7 +36,7 @@ Usage
 
 .. |gui| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/gui_v3.png" width="66%" style="display: block;
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/gui_v3.png" width="75%" align="middle" style="display: block;
     margin: 0 auto;">
 
 .. note::
@@ -96,16 +96,16 @@ Results
 
 .. |spiderman| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/spiderman.gif" style="display: block;
-    margin: 0 auto; width: 100%;">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/spiderman.gif" width="100%"
+    align="middle" style="display: block; margin: 0 auto;">
 
 .. |OpEx| replace:: **OpEx dataset**
 .. _OpEx: https://ndownloader.figshare.com/files/5201452
 
 .. |fruits| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits_r.gif" style="display: block;
-    margin: 0 auto; width: 100%;">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits_r.gif" width="100%" align="middle"
+    style="display: block; margin: 0 auto;">
 
 .. |INRIA| replace:: **INRIA dataset**
 .. _INRIA: https://www.irisa.fr/temics/demos/IllumDatasetLF/index.html
