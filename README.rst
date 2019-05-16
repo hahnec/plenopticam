@@ -96,16 +96,14 @@ Results
 
 .. |spiderman| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/spiderman.gif" width="100%"
-    align="middle" style="display: block; margin: 0 auto;">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/spiderman.gif" height="186px" max-width:"100%">
 
 .. |OpEx| replace:: **OpEx dataset**
 .. _OpEx: https://ndownloader.figshare.com/files/5201452
 
 .. |fruits| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits_r.gif" width="100%"
-    align="middle" style="display: block; margin: 0 auto;">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits_r.gif" height="186px" max-width:"100%">
 
 .. |INRIA| replace:: **INRIA dataset**
 .. _INRIA: https://www.irisa.fr/temics/demos/IllumDatasetLF/index.html
@@ -142,7 +140,7 @@ If you find this work helpful for your research, please cite as appropriate:
 
 * `Refocusing distance of a standard plenoptic camera <https://doi.org/10.1364/OE.24.021521>`__, *OpticsExpress*, `[BibTeX] <http://www.plenoptic.info/bibtex/HAHNE-OPEX.2016.bib>`__
 
-* `Baseline and triangulation geometry in a standard plenoptic camera <https://www.plenoptic.info/IJCV_Hahne17_final.pdf>`__, *Int. J. of Comp. Vis.*, `[BibTeX] <http://plenoptic.info/bibtex/HAHNE-IJCV.2017.bib>`__
+* `Baseline and triangulation geometry in a standard plenoptic camera <http://www.plenoptic.info/files/IJCV_Hahne17_final.pdf>`__, *Int. J. of Comp. Vis.*, `[BibTeX] <http://plenoptic.info/bibtex/HAHNE-IJCV.2017.bib>`__
 
 Further information
 -------------------
