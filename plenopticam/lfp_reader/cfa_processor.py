@@ -45,6 +45,7 @@ class CfaProcessor(object):
         # auto white balance
         if 'awb' in self.cfg.lfpimg.keys():
             self._rgb_img = self.correct_awb(self._rgb_img, self.cfg.lfpimg['bay'], gains=self.cfg.lfpimg['awb'])
+            self._rgb_img = self.saturation_declipping(self._rgb_img, gains=self.cfg.lfpimg['awb'])
 
         # perform gamma correction
         if 'gam' in self.cfg.lfpimg.keys():
@@ -157,11 +158,12 @@ class CfaProcessor(object):
         return self._rgb_img.copy()
 
     @staticmethod
-    def correct_gamma(img, gamma=1.):
+    def correct_gamma(img, gamma=None):
         ''' perform gamma correction on single image '''
 
-        img_arr = np.asarray(img, dtype='float64')**gamma
-        return img_arr
+        gamma = 1. if gamma is None else gamma
+
+        return np.asarray(img, dtype='float64')**gamma
 
     @staticmethod
     def correct_awb(img_arr, bay_pattern=None, gains=None):
@@ -178,7 +180,7 @@ class CfaProcessor(object):
 
         elif len(img_arr.shape) == 2 and bay_pattern == "GRBG":
 
-            img_arr[1::2, 0::2] *= gains[0]         # blue channel  #img_arr[..., 2] *= cfg.lfpimg['awb'][0]
+            img_arr[1::2, 0::2] *= gains[0]         # blue channel
             img_arr[0::2, 1::2] *= gains[1]         # red channel
             img_arr[0::2, 0::2] *= gains[2]         # green-red channel
             img_arr[1::2, 1::2] *= gains[3]         # green-blue channel
@@ -191,6 +193,24 @@ class CfaProcessor(object):
             img_arr[1::2, 0::2] *= gains[3]         # green-red channel
 
         return img_arr
+
+    @staticmethod
+    def saturation_declipping(img_arr, gains=None):
+
+        b, r, g1, g2 = gains if gains is not None else [1., 1., 1., 1.]
+        awb_list = [r, g1, b]
+        comp_arr = np.ones(img_arr.shape, dtype=img_arr.dtype)
+
+        for a, i in zip(awb_list, range(img_arr.shape[2])):
+            ch1, ch2 = [i for i, x in enumerate(awb_list) if x != a]
+            thresh = .99 * img_arr[..., i].max()
+            comp_arr[..., ch1][img_arr[..., i] > thresh] = awb_list[ch1]
+            comp_arr[..., ch2][img_arr[..., i] > thresh] = awb_list[ch2]
+
+        img_arr /= comp_arr
+
+        return img_arr
+
 
     @staticmethod
     def correct_color(img, ccm_mat=np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])):
