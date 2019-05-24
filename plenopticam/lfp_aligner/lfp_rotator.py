@@ -1,10 +1,6 @@
 import numpy as np
 import scipy
 
-# tbd: add optional white image to class since it may be needed for de-vignetting at a later stage
-# better centroid list conversion
-# add rad_rota to cfg.calibs
-
 from plenopticam.lfp_calibrator.centroid_drawer import CentroidDrawer
 
 class LfpRotator(object):
@@ -49,7 +45,7 @@ class LfpRotator(object):
         # get central row and column
         mid_row = self._centroids[self._centroids[:, 2] == self._mid_row_idx][:, :2]
         mid_col = self._centroids[self._centroids[:, 3] == self._mid_col_idx][:, :2]
-        mid_col = mid_col[0::2] # leave out every second centroid in column to compensate for hexagonal array
+        mid_col = mid_col[0::2]     # leave out every other centroid in column to compensate for hexagonal array
 
         if regression:
             # ordinary least-squares linear regression
