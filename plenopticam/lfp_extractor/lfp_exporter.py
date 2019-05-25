@@ -65,7 +65,7 @@ def export_refo_stack(refo_stack, cfg, type='tiff'):
     for i, refo_img in enumerate(refo_stack):
 
         # write image file
-        misc.save_img_file(refo_img, str(range(*cfg.params[cfg.ran_refo])[i]), type=type)
+        misc.save_img_file(refo_img, os.path.join(folder_path, str(range(*cfg.params[cfg.ran_refo])[i])), type=type)
 
     return True
 
