@@ -64,8 +64,13 @@ def export_refo_stack(refo_stack, cfg, type='tiff'):
 
     for i, refo_img in enumerate(refo_stack):
 
+        # get depth plane number for filename
+        a = range(*cfg.params[cfg.ran_refo])[i]
+        # account for sub-pixel precise depth value
+        a = round(a/patch_len, 2) if cfg.params[cfg.opt_refi] else a
+
         # write image file
-        misc.save_img_file(refo_img, os.path.join(folder_path, str(range(*cfg.params[cfg.ran_refo])[i])), type=type)
+        misc.save_img_file(refo_img, os.path.join(folder_path, str(a)), type=type)
 
     return True
 
