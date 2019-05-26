@@ -44,7 +44,7 @@ def save_img_file(img, file_path, type=None):
     if not type:
         type = ext if ext == 'png' or ext == 'tiff' else 'tiff' if img.dtype == 'uint16' else 'png'
 
-    file_path = os.path.splitext(file_path)[0]+'.'+type if ext != type else file_path
+    file_path = file_path+'.'+type if ext != type else file_path
 
     if type == 'tiff':
             obj = TIFF.open(file_path, mode='w')
