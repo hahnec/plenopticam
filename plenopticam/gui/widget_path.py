@@ -60,17 +60,14 @@ class PathWidget(tk.Frame):
     def choose_path(self):
         """ choose a path on the system using tkinter's frames """
 
-        cur_win = tk.Tk()
-        cur_win.withdraw()
-
         # select path considering type option (file=True; directory=False)
         if self.path_type:
             new_path = askdirectory(title=self.title, initialdir=os.path.dirname(self._path.get()),
-                                    mustexist=True, parent=cur_win)
+                                    mustexist=True)
         else:
             new_path = askopenfilename(title=self.title,
                                        initialdir=os.path.dirname(self._path.get()),
-                                       initialfile=os.path.basename(self._path.get()), parent=cur_win,
+                                       initialfile=os.path.basename(self._path.get()),
                                        filetypes=self.file_exts)
 
         # update entry text with the new path

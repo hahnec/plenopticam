@@ -41,6 +41,9 @@ class FileWidget(tk.Frame):
         self.chk_btn = tk.Checkbutton(self, text='Pick folder', variable=self.chk_var, command=self.btn_update)
         self.chk_btn.grid(row=1, column=2, sticky='W')
 
+        # list of button and entry widgets (collected to disable/enable widgets)
+        self.btn_list = [self.lfp_wid.btn, self.cal_wid.btn, self.chk_btn, self.lfp_wid.ent, self.cal_wid.ent]
+
     def btn_update(self):
         # toggle path type in PathWidget for calibration
         self.cal_wid.path_type = not self.cal_wid.path_type

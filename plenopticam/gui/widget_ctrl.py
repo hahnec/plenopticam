@@ -129,7 +129,7 @@ class CtrlWidget(tk.Frame):
 
         elif self.job_queue.empty() and self.cur_thread is None:
             # enable button activity
-            self.toggle_btn_list(self.cmd_wid.btn_list)
+            self.toggle_btn_list(self.cmd_wid.btn_list+self.fil_wid.btn_list)
             # step out of loop
             return True
 
@@ -146,7 +146,7 @@ class CtrlWidget(tk.Frame):
         self.sta.interrupt = False
 
         # disable button activity
-        self.toggle_btn_list(self.cmd_wid.btn_list)
+        self.toggle_btn_list(self.cmd_wid.btn_list+self.fil_wid.btn_list)
 
         # read light field photo and calibration source paths
         self.fetch_paths()
@@ -256,13 +256,13 @@ class CtrlWidget(tk.Frame):
     def cfg_change(self):
 
         # disable button activity
-        self.toggle_btn_list(self.cmd_wid.btn_list)
+        self.toggle_btn_list(self.cmd_wid.btn_list+self.fil_wid.btn_list)
 
         # create settings frame
         CnfgWidget(self.cfg)
 
         # enable buttons
-        self.toggle_btn_list(self.cmd_wid.btn_list)
+        self.toggle_btn_list(self.cmd_wid.btn_list+self.fil_wid.btn_list)
 
     def stp(self):
         ''' stop app '''
