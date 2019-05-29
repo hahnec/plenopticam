@@ -8,7 +8,7 @@ Description
 
 *Plenopticam* is an open-source software (macOS_ or Win_) for scientific light field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
 Raw exposures from a plenoptic camera require four-dimensional image alignment in order to be decoded as a light field. Provided software addresses this by its ability to extract depth by means of sub-aperture images or synthetically focused photographs.
-This application is meant for researchers, developers, beginners and other fiddlers who like to experiment with light field technology. It comprises custom-types of plenoptic cameras and is thus not limited to Lytro's image data.
+This application is meant for researchers, developers, beginners and other fiddlers who like to experiment with light field technology. Its scope comprises custom-types of plenoptic cameras and is thus not limited to Lytro's image data.
 
 |release| |license| |code| |repo| |downloads|
 
@@ -81,6 +81,18 @@ Usage
 
 Results
 -------
+
+Results can be found inside a folder named after your light field file which is located in the same directory path.
+Depending on provided files and settings, your results folder may contain the following data:
+
+    - sub-aperture images (see *viewpoints_xxx* folder) and view animation given as gif
+    - refocused images (see *refo_xxx* folder) and refocus animation given as gif
+    - raw image file given as tiff
+    - aligned light field as pkl (pickle) file
+    - light field metadata as json file (in case of Lytro image file)
+    - scheimpflug focus file
+
+Exemplary view animations can be seen below.
 
 .. list-table::
    :widths: 8 8
@@ -189,7 +201,7 @@ Further information
 .. Hyperlink aliases
 
 .. _source: https://github.com/hahnec/plenopticam/archive/master.zip
-.. _macOS: https://github.com/hahnec/plenopticam/releases/download/v0.1.0-beta/plenopticam_0.1.0-beta_macOS.zip
-.. _Win: https://github.com/hahnec/plenopticam/releases/download/v0.1.0-beta/plenopticam_0.1.0-beta_win.zip
+.. _macOS: https://github.com/hahnec/plenopticam/releases/download/v0.1.1-beta/plenopticam_0.1.1-beta_macOS.zip
+.. _Win: https://github.com/hahnec/plenopticam/releases/download/v0.1.1-beta/plenopticam_0.1.1-beta_win.zip
 .. _Plenoptisign: https://github.com/hahnec/plenoptisign/
 .. _apps: https://github.com/hahnec/plenopticam/releases/
