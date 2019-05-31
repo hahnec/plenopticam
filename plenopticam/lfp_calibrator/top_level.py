@@ -26,16 +26,18 @@ from plenopticam.lfp_calibrator.pitch_estimator import PitchEstimator
 from plenopticam.lfp_calibrator.centroid_extractor import CentroidExtractor
 from plenopticam.lfp_calibrator.centroid_sorter import CentroidSorter
 from plenopticam.lfp_calibrator.centroid_drawer import CentroidDrawer
+from plenopticam.cfg.cfg import Config
+from plenopticam.misc.status import PlenopticamStatus
 
 
 class LfpCalibrator(object):
 
-    def __init__(self, wht_img, cfg, sta=None, M=None):
+    def __init__(self, wht_img, cfg=None, sta=None, M=None):
 
         # input variables
         self._wht_img = wht_img
-        self.cfg = cfg
-        self.sta = sta
+        self.cfg = cfg if cfg is not None else Config()
+        self.sta = sta if sta is not None else PlenopticamStatus()
         self._M = M
 
     def main(self):
