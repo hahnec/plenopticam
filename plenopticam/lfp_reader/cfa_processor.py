@@ -1,5 +1,5 @@
-from plenopticam import misc
 from plenopticam.lfp_extractor.img_proc import *
+from plenopticam import misc
 
 # external libs
 import numpy as np
@@ -45,7 +45,7 @@ class CfaProcessor(object):
         # auto white balance
         if 'awb' in self.cfg.lfpimg.keys():
             self._rgb_img = self.correct_awb(self._rgb_img, self.cfg.lfpimg['bay'], gains=self.cfg.lfpimg['awb'])
-            self._rgb_img = self.saturation_declipping(self._rgb_img, gains=self.cfg.lfpimg['awb'])
+            #self._rgb_img = self.saturation_declipping_blend(self._rgb_img, gains=self.cfg.lfpimg['awb'])
 
         # perform gamma correction
         if 'gam' in self.cfg.lfpimg.keys():
@@ -203,14 +203,34 @@ class CfaProcessor(object):
 
         for a, i in zip(awb_list, range(img_arr.shape[2])):
             ch1, ch2 = [i for i, x in enumerate(awb_list) if x != a]
-            thresh = .99 * img_arr[..., i].max()
-            comp_arr[..., ch1][img_arr[..., i] > thresh] = awb_list[ch1]
-            comp_arr[..., ch2][img_arr[..., i] > thresh] = awb_list[ch2]
+            thresh = img_arr[..., i].max() * .99
+            comp_arr[..., ch1][img_arr[..., i] >= thresh] = awb_list[ch1]
+            comp_arr[..., ch2][img_arr[..., i] >= thresh] = awb_list[ch2]
 
         img_arr /= comp_arr
 
         return img_arr
 
+    @staticmethod
+    def saturation_declipping_blend(img_arr, gains=None):
+
+        b, r, g1, g2 = gains if gains is not None else [1., 1., 1., 1.]
+        awb_list = [r, g1, b]
+        comp_arr = np.zeros(img_arr.shape, dtype=img_arr.dtype)
+        mask = np.zeros(img_arr.shape[:2])
+        alpha = np.amin(img_arr/np.amax(img_arr, axis=2)[..., np.newaxis], axis=2)#np.amin(img_arr/img_arr.max(), axis=2)#
+        scmin = min(awb_list) #np.take(np.array(awb_list), np.argmin(img_arr, axis=2)) #
+
+        for i in range(img_arr.shape[2]):
+            comp_arr[..., i] = (1-alpha)*(np.amin(img_arr, axis=2)*scmin/awb_list[i]) + alpha*(img_arr[..., i]/awb_list[i])
+            thresh = img_arr[..., i].max()#*.99#1/awb_list[i]*
+            #img_arr[..., i][img_arr[..., i] > thresh] = comp_arr[..., i][img_arr[..., i] > thresh]
+            #comp_arr[..., i][img_arr[..., i] < thresh] = img_arr[..., i][img_arr[..., i] < thresh]
+            mask[img_arr[..., i] > thresh] = 1
+
+        img_arr[mask > 0] = comp_arr[mask > 0]
+
+        return img_arr
 
     @staticmethod
     def correct_color(img, ccm_mat=np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])):
