@@ -162,10 +162,13 @@ class Config(object):
     @staticmethod
     def save_json(fp=None, **kwargs):
 
-        # filename and filepath handling
-        if fp is not None and os.path.splitext(fp)[-1] != '.json':
-            fn = os.path.splitext(os.path.basename(fp))[0]+'.json'
-            fp = os.path.join(os.path.splitext(fp)[0], fn)
+        # filename and file path handling
+        if fp is not None:
+
+            # json extension handling
+            if os.path.splitext(fp)[-1] != '.json':
+                fn = os.path.basename(os.path.splitext(fp)[0])+'.json'
+                fp = os.path.join(os.path.dirname(os.path.splitext(fp)[0]), fn)
 
             # create folder
             misc.mkdir_p(os.path.dirname(fp), False)
@@ -176,7 +179,7 @@ class Config(object):
             with open(fp, 'wt') as f:
                 json.dump(json_dict, f, sort_keys=True, indent=4)
         except:
-            pass
+            return False
 
         return True
 
