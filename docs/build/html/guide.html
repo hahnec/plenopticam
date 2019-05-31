@@ -1,9 +1,11 @@
 
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>2. User Guide &#8212; Plenopticam 0.1.1 documentation</title>
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -30,6 +32,15 @@
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2. User Guide</a><ul>
+<li><a class="reference internal" href="#settings">2.1. Settings</a></li>
+<li><a class="reference internal" href="#using-your-own-lytro-illum">2.2. Using your own Lytro Illum</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="readme.html"
                         title="previous chapter">1. Plenopticam</a></p>
@@ -46,6 +57,8 @@
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -63,8 +76,62 @@
 <div class="toctree-wrapper compound">
 </div>
 <hr class="docutils" />
-<p>Once Plenopticam is ready for use (whether from <a class="reference external" href="https://github.com/hahnec/plenopticam/archive/master.zip">source</a> or as an <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/">app</a>), you will be provided with a default parameter set.
-You can start off varying these parameters as you like to see their impact on the light field geometry.</p>
+<div class="section" id="settings">
+<h2>2.1. Settings<a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h2>
+<p>Once Plenopticam is ready for use (whether from <a class="reference external" href="https://github.com/hahnec/plenopticam/archive/master.zip">source</a> or as an <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/">app</a>), you will be provided with a default parameter set. Start off varying these parameters as you like to see their impact on the light field geometry.</p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="25%" />
+<col width="75%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><em>Light field image</em></td>
+<td>Path to plenoptic image file</td>
+</tr>
+<tr class="row-odd"><td><em>Calibration source</em></td>
+<td>Path to white image calibration file</td>
+</tr>
+<tr class="row-even"><td><em>Metadata file</em></td>
+<td>Path to file where calibration properties are stored (contents are specific to <em>Plenopticam</em>)</td>
+</tr>
+<tr class="row-odd"><td><em>Micro image patch size</em></td>
+<td>One-dimensional micro image size in pixels (detected maximum is reduced via cropping)</td>
+</tr>
+<tr class="row-even"><td><em>Force re-calibration</em></td>
+<td>Redo calibration process</td>
+</tr>
+<tr class="row-odd"><td><em>Automatic white balance</em></td>
+<td>Implementation based on least-squares fit</td>
+</tr>
+<tr class="row-even"><td><em>Refocus refinement</em></td>
+<td>Enable sub-pixel precise refocusing</td>
+</tr>
+<tr class="row-odd"><td><em>Scheimpflug focus</em></td>
+<td>Imitates tilted sensor focus with ‘horizontal’, ‘vertical’, just as upwards and downwards ‘skew’</td>
+</tr>
+<tr class="row-even"><td><em>Override output folder</em></td>
+<td>Entire folder gets removed if checked</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="using-your-own-lytro-illum">
+<h2>2.2. Using your own Lytro Illum<a class="headerlink" href="#using-your-own-lytro-illum" title="Permalink to this headline">¶</a></h2>
+<p>In order to acquire the tar-archive from your own Illum camera, use the following steps:</p>
+<ol class="arabic simple">
+<li>Go to <em>SETTINGS</em> =&gt; <em>GENERAL</em> in your camera’s menu</li>
+<li>Press <em>TRANSFER PAIRING DATA TO SD CARD</em></li>
+<li>Copy the <em>xxx.tar</em> file to your desired calibration folder (Note: keep the original tar filename)</li>
+<li>Point to the tar-file at <em>calibration source</em> using the <em>Browse</em> button (point to parent folder if <em>Pick folder</em> is checked)</li>
+<li>Select your <em>xxx.lfr</em> file from the SD card using the <em>Browse</em> button at <em>light field image</em></li>
+</ol>
+<p><img src="../../img/illum_menu_settings.png" max-width="100%"></p>
+</div>
 </div>
 
 
@@ -87,7 +154,7 @@ You can start off varying these parameters as you like to see their impact on th
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019, Christopher Hahne.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>
