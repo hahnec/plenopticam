@@ -106,22 +106,6 @@ Exemplary view animations can be seen below.
 
 .. * |Stanford|_
 
-.. |spiderman| raw:: html
-
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/spiderman.gif" height="186px" max-width:"100%">
-
-.. |OpEx| replace:: **OpEx dataset**
-.. _OpEx: https://ndownloader.figshare.com/files/5201452
-
-.. |fruits| raw:: html
-
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits_r.gif" height="186px" max-width:"100%">
-
-.. |INRIA| replace:: **INRIA dataset**
-.. _INRIA: https://www.irisa.fr/temics/demos/IllumDatasetLF/index.html
-
-.. |Stanford| replace:: **Stanford dataset**
-.. _Stanford: http://lightfields.stanford.edu/mvlf/
 
 Credits
 -------
@@ -182,6 +166,14 @@ Further information
     :target: https://github.com/hahnec/plenopticam/archive/master.zip
     :alt: Downloads
 
+.. |spiderman| raw:: html
+
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/spiderman.gif" height="186px" max-width:"100%">
+
+.. |fruits| raw:: html
+
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits_r.gif" height="186px" max-width:"100%">
+
 .. |UoB| raw:: html
 
     <img src="https://3tkh0x1zl0mb1ta92c2mrvv2-wpengine.netdna-ssl.com/wp-content/uploads/2015/12/LO_KukriGB_Universities_Bedfordshire.png" width="70px">
@@ -205,3 +197,15 @@ Further information
 .. _Win: https://github.com/hahnec/plenopticam/releases/download/v0.1.1-beta/plenopticam_0.1.1-beta_win.zip
 .. _Plenoptisign: https://github.com/hahnec/plenoptisign/
 .. _apps: https://github.com/hahnec/plenopticam/releases/
+
+.. |OpEx| replace:: **OpEx dataset**
+.. _OpEx: https://ndownloader.figshare.com/files/5201452
+
+.. |INRIA| replace:: **INRIA dataset**
+.. _INRIA: https://www.irisa.fr/temics/demos/IllumDatasetLF/index.html
+
+.. |Stanford| replace:: **Stanford dataset**
+.. _Stanford: http://lightfields.stanford.edu/mvlf/
+
+.. |IllumTar| replace:: *using your own Illum data*
+.. _IllumTar: https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/build/html/guide.html
