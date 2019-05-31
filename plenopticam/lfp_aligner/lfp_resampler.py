@@ -187,7 +187,8 @@ class LfpResampler(object):
         misc.mkdir_p(self.cfg.params[self.cfg.lfp_path].split('.')[0], self.cfg.params[self.cfg.opt_prnt])
 
          # write aligned light field as pickle file to avoid recalculation
-        pickle.dump(self._lfp_out, open(os.path.join(out_path, 'lfp_img_align.pkl'), 'wb'))
+        with open(os.path.join(out_path, 'lfp_img_align.pkl'), 'wb') as f:
+            pickle.dump(self._lfp_out, f)
 
         if self.cfg.params[self.cfg.opt_dbug]:
             misc.save_img_file(self._lfp_out, os.path.join(out_path, 'lfp_img_align.tiff'))
