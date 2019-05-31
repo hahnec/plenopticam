@@ -42,11 +42,8 @@ class CaliFinder(object):
             self._lfp_json = self.cfg.load_json(self.cfg.params[self.cfg.lfp_path])
 
             # extract calibration reference data
-            frames = safe_get(self._lfp_json, "frames")
-            if frames:
-                self._georef = safe_get(frames[0], 'frame', 'geometryCorrectionRef')
-            else:
-                self._georef = ''
+            frames = safe_get(self._lfp_json, 'frames')
+            self._georef = safe_get(frames[0], 'frame', 'geometryCorrectionRef') if frames else ''
 
             # extract serial number to support search
             self._serial = safe_get(self._lfp_json, 'camera', 'serialNumber')
