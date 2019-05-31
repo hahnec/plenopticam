@@ -29,3 +29,6 @@
 
 # doctrees files
 /docs/build/doctrees/
+
+# test data
+/tests/data/
