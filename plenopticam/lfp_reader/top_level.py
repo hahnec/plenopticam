@@ -25,8 +25,9 @@ class LfpReader(object):
         if self._lfp_path.endswith(('.lfp', '.lfr', '.raw') + tuple('.c.'+str(num) for num in (0, 1, 2, 3))):
 
             # filename and file path from previously decoded data
-            fn = os.path.splitext(os.path.basename(self._lfp_path))[0]+'.tiff'
-            fp = os.path.join(os.path.splitext(self._lfp_path)[0], fn)
+            dp = os.path.splitext(self._lfp_path)[0]
+            fn = os.path.basename(dp)+'.tiff'
+            fp = os.path.join(dp, fn)
 
             # load previously generated tiff if present
             if os.path.exists(fp):
@@ -56,15 +57,14 @@ class LfpReader(object):
                         if self._lfp_path.endswith(('.lfp', '.lfr') + tuple('.c.'+str(num) for num in (0, 1, 2, 3))):
                             # LFC type decoding
                             obj.decode_lfc()
-                            self.cfg.save_json(self._lfp_path, json_dict=obj.json_dict)
+                            self.cfg.save_json(os.path.join(dp, os.path.basename(dp)+'.json'), json_dict=obj.json_dict)
                         elif self._lfp_path.endswith('.raw'):
                             # raw type decoding
                             obj.decode_raw()
                         self._lfp_img = obj.rgb_img
                         del obj
 
-                        # save bayer image as file (only in debug mode)
-                        #if self.cfg.params[self.cfg.opt_dbug]:
+                        # save bayer image as file
                         misc.save_img_file(misc.uint16_norm(self._lfp_img), fp, type='tiff')
 
                         # print status
@@ -82,8 +82,12 @@ class LfpReader(object):
             except TypeError as e:
                 raise LfpTypeError(e)
 
-            json_dict = self.cfg.load_json(self._lfp_path)
-            self.cfg.lfpimg = LfpDecoder.filter_json(json_dict)
+            try:
+                # try to load json file (if present)
+                json_dict = self.cfg.load_json(self._lfp_path)
+                self.cfg.lfpimg = LfpDecoder.filter_json(json_dict)
+            except:
+                pass
 
         # write json file
         self.cfg.save_params()
