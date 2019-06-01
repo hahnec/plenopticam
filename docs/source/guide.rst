@@ -72,7 +72,7 @@ In order to acquire the tar-archive from your own Illum camera, use the followin
 
 .. |illumtar| raw:: html
 
-    <img src="../../img/illum_menu_settings.png" max-width="100%">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/illum_menu_settings.png" max-width="100%">
 
 
 .. Hyperlink aliases
