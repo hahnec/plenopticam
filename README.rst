@@ -1,12 +1,12 @@
 ===========
-Plenopticam
+PlenoptiCam
 ===========
 .. A light field photography application (macOS_ or Win_) for computational change of perspective view and synthetic focus based on a Standard Plenoptic Camera (SPC).
 
 Description
 -----------
 
-*Plenopticam* is an open-source software (macOS_ or Win_) for scientific light field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
+*PlenoptiCam* is an open-source software (macOS_ or Win_) for scientific light field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
 Raw exposures from a plenoptic camera require four-dimensional image alignment in order to be decoded as a light field. Provided software addresses this by its ability to extract depth by means of sub-aperture images or synthetically focused photographs.
 This application is meant for researchers, developers, beginners and other fiddlers who like to experiment with light field technology. Its scope comprises custom-types of plenoptic cameras and is thus not limited to Lytro's image data.
 
@@ -141,7 +141,7 @@ If you find this work helpful for your research, please cite as appropriate:
 Further information
 -------------------
 
-* check out Plenopticam's partner project Plenoptisign_ capable of estimating metric light field geometries
+* check out PlenoptiCam's partner project PlenoptiSign_ capable of estimating metric light field geometries
 * visit `plenoptic.info <http://www.plenoptic.info>`__ for technical details, animated figures and theoretical background
 
 .. Image substitutions
@@ -195,7 +195,7 @@ Further information
 .. _source: https://github.com/hahnec/plenopticam/archive/master.zip
 .. _macOS: https://github.com/hahnec/plenopticam/releases/download/v0.1.2-beta/plenopticam_0.1.2-beta_macOS.zip
 .. _Win: https://github.com/hahnec/plenopticam/releases/download/v0.1.2-beta/plenopticam_0.1.2-beta_win.zip
-.. _Plenoptisign: https://github.com/hahnec/plenoptisign/
+.. _PlenoptiSign: https://github.com/hahnec/plenoptisign/
 .. _apps: https://github.com/hahnec/plenopticam/releases/
 
 .. |OpEx| replace:: **OpEx dataset**

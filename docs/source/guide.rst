@@ -1,4 +1,4 @@
-.. Plenopticam documentation master file, created by
+.. PlenoptiCam documentation master file, created by
    sphinx-quickstart on Sun Mar 17 00:36:29 2019.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
@@ -16,7 +16,7 @@ User Guide
 Settings
 --------
 
-Once Plenopticam is ready for use (whether from source_ or as an app_), you will be provided with a default parameter set. Start off varying these parameters as you like to see their impact on the light field geometry.
+Once PlenoptiCam is ready for use (whether from source_ or as an app_), you will be provided with a default parameter set. Start off varying these parameters as you like to see their impact on the light field geometry.
 	
 .. list-table::
    :widths: 25 75
@@ -29,7 +29,7 @@ Once Plenopticam is ready for use (whether from source_ or as an app_), you will
    * - *Calibration source*
      - Path to white image calibration file
    * - *Metadata file*
-     - Path to file where calibration properties are stored (contents are specific to *Plenopticam*)
+     - Path to file where calibration properties are stored (contents are specific to *PlenoptiCam*)
    * - *Micro image patch size*
      - One-dimensional micro image size in pixels (detected maximum is reduced via cropping)
    * - *Force re-calibration*

@@ -19,7 +19,7 @@ import plenopticam
 
 # -- Project information -----------------------------------------------------
 
-project = 'Plenopticam'
+project = 'PlenoptiCam'
 copyright = '2019, Christopher Hahne'
 author = plenopticam.__author__
 
@@ -116,7 +116,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Plenopticamdoc'
+htmlhelp_basename = 'PlenoptiCamDoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -143,7 +143,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'Plenopticam.tex', 'Plenopticam Documentation',
+    (master_doc, 'PlenoptiCam.tex', 'PlenoptiCam Documentation',
      'Christopher Hahne', 'manual'),
 ]
 
@@ -153,7 +153,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'plenopticam', 'Plenopticam Documentation',
+    (master_doc, 'plenopticam', 'PlenoptiCam Documentation',
      [author], 1)
 ]
 
@@ -164,8 +164,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'Plenopticam', 'Plenoptiscam Documentation',
-     author, 'Plenopticam', 'One line description of project.',
+    (master_doc, 'PlenoptiCam', 'Plenoptiscam Documentation',
+     author, 'PlenoptiCam', 'One line description of project.',
      'Miscellaneous'),
 ]
 
