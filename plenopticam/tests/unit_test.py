@@ -63,9 +63,14 @@ class PlenoptiCamTester(unittest.TestCase):
 
         print('Downloading data ...')
 
-        request = requests.get(url)
-        file = zipfile.ZipFile(io.BytesIO(request.content))
+        # establish internet connection for test data download
+        try:
+            request = requests.get(url)
+        except requests.exceptions.ConnectionError:
+            raise(Exception('Check your internet connection, which is required for downloading test data.'))
 
+        # extract content from downloaded data
+        file = zipfile.ZipFile(io.BytesIO(request.content))
         for fn in file.namelist():
             file.extract(fn, self.fp)
 
