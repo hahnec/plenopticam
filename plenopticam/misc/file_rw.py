@@ -101,6 +101,7 @@ def place_dnp(dus):
 
     s, t = dus.shape[:2]
     y, x = np.array([s-n, s+(t-s)//2-n])-n//2
-    dus[y:y+n, x:x+n, :] *= np.repeat(dnp[..., np.newaxis], 3, axis=2)
+    a = dus.shape[2] if len(dus.shape)==3 else 1
+    dus[y:y+n, x:x+n, ...] *= np.repeat(dnp[..., np.newaxis], a, axis=2) if a>1 else dnp
 
     return dus.astype(dtype)
