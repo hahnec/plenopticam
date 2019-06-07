@@ -33,10 +33,10 @@ from plenopticam.lfp_extractor import LfpExtractor
 from plenopticam.cfg.cfg import Config
 from plenopticam import misc
 
-class PlenopticamTester(unittest.TestCase):
+class PlenoptiCamTester(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
-        super(PlenopticamTester, self).__init__()
+        super(PlenoptiCamTester, self).__init__()
 
     def setUp(self):
 
@@ -85,6 +85,10 @@ class PlenopticamTester(unittest.TestCase):
             cfg.params[cfg.lfp_path] = os.path.join(self.fp, fn_lfp)
             cfg.params[cfg.cal_path] = os.path.join(self.fp, fn_wht)
 
+            # create folder (if it doesn't already exist)
+            misc.mkdir_p(os.path.splitext(cfg.params[cfg.lfp_path])[0])
+
+            # test light field calibration
             wht_img = misc.load_img_file(cfg.params[cfg.cal_path])
             cal_obj = LfpCalibrator(wht_img=wht_img, cfg=cfg, sta=None)
             ret_val = cal_obj.main()
@@ -106,6 +110,8 @@ class PlenopticamTester(unittest.TestCase):
             cfg.params[cfg.cal_path] = os.path.join(self.fp, fn_wht)
             cfg.params[cfg.cal_meta] = os.path.splitext(cfg.params[cfg.cal_path])[0]+'.json'
             cfg.load_cal_data()
+
+            # create folder (if it doesn't already exist)
             misc.mkdir_p(os.path.splitext(cfg.params[cfg.lfp_path])[0])
 
             # test light field alignment
