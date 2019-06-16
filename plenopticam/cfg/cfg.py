@@ -70,12 +70,16 @@ class Config(object):
         if not fp:
             fp = os.path.join(self._dir_path, 'cfg.json')
 
-        with open(fp, 'r') as f:
-            json_data = json.load(f)
+        try:
+            with open(fp, 'r') as f:
+                json_data = json.load(f)
 
-        # transfer parameters to config object
-        for key in json_data:
-            self.params[key] = str2type(json_data[key])
+            # transfer parameters to config object
+            for key in json_data:
+                self.params[key] = str2type(json_data[key])
+
+        except FileNotFoundError:
+            pass
 
         return True
 
@@ -83,14 +87,15 @@ class Config(object):
 
         if not fp:
             fp = os.path.join(self._dir_path, 'cfg.json')
+
         try:
             # create config folder (if not already present)
             misc.mkdir_p(self._dir_path)
             # write config file
-            with open(fp, 'w') as f:
+            with open(fp, 'w+') as f:
                 json.dump(self.params, f, sort_keys=True, indent=4, cls=NumpyTypeEncoder)
         except PermissionError:
-            raise PlenopticamError('\n\nGrant permission to write to the config file '+fp)
+            pass    # raise PlenopticamError('\n\nGrant permission to write to the config file '+fp)
 
         return True
 
@@ -98,6 +103,9 @@ class Config(object):
 
         # reconstruct dict from constants
         self.params = dict(zip(PARAMS_KEYS, PARAMS_VALS))
+
+        # write to json file
+        self.save_params()
 
         return True
 

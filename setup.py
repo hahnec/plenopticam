@@ -28,7 +28,6 @@ from sys import platform
 APP = ['plenopticam/gui/top_level.py']
 DATA_FILES = [
         # ('subdir' , ['file_path'])
-        ('cfg', ['plenopticam/cfg/cfg.json'])
 ]
 
 OPTIONS = {
@@ -38,7 +37,7 @@ OPTIONS = {
     "iconfile":'plenopticam/gui/icns/1055104.icns',
     "excludes": ['matplotlib'],
     "plist": dict(NSHumanReadableCopyright='2019 Christopher Hahne'),
-    "packages": ['libtiff', 'colour_demosaicing', 'colour'],
+    "packages": ['numpy', 'scipy', 'libtiff', 'colour_demosaicing', 'colour'],
 }
 
 if platform == 'darwin':
@@ -46,7 +45,6 @@ if platform == 'darwin':
      setup_requires=['py2app'],
      app=APP,
      data_files=DATA_FILES,
-     # Cross-platform applications generally expect sys.argv to be used for opening files.
      options=dict(py2app=OPTIONS),
  )
 elif platform == 'win32':
@@ -57,8 +55,6 @@ elif platform == 'win32':
  )
 else:
  extra_options = dict(
-     # Normally unix-like platforms will use "setup.py install"
-     # and install the main script as such
      setup_requires=[],
      scripts=APP,
  )
