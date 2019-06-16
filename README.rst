@@ -18,7 +18,7 @@ Installation
 * executable:
     1. download bundled apps_ for macOS_ or Win_
     2. extract archive
-    3. run app to open up the lean user interface (see below)
+    3. run app to open up the user interface (see below)
 
 |
 
@@ -92,7 +92,7 @@ Depending on provided files and settings, your results folder may contain the fo
     - light field metadata as json file (in case of Lytro image file)
     - scheimpflug focus file
 
-Exemplary view animations can be seen below.
+Exemplary view animations can be seen below (image quality due to lower resolution and limited gif colours)
 
 .. list-table::
    :widths: 8 8
@@ -105,7 +105,6 @@ Exemplary view animations can be seen below.
      - Lytro Illum camera image from raw capture
 
 .. * |Stanford|_
-
 
 Credits
 -------
