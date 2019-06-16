@@ -30,7 +30,7 @@ PARAMS_VALS = (
     # integers
     7,
     # lists
-    [-2, 4],
+    [0, 2],
     # booleans
     False,
     False,
