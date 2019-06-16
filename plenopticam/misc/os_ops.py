@@ -51,14 +51,3 @@ def select_file(init_dir=None, title=''):
     root.update()
 
     return file_path
-
-# def select_img_file(file_path=None, title=''):
-#     ''' load image file '''
-#
-#     # if filename not given, open file in window dialog
-#     if not file_path:
-#         file_path = get_file_path(init_dir=None, title=title)
-#     else:
-#         file_path = get_file_path(dirname(file_path), title=title)
-#
-#     return file_path
