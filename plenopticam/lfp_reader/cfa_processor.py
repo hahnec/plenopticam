@@ -45,7 +45,7 @@ class CfaProcessor(object):
         # auto white balance
         if 'awb' in self.cfg.lfpimg.keys():
             self._rgb_img = self.correct_awb(self._rgb_img, self.cfg.lfpimg['bay'], gains=self.cfg.lfpimg['awb'])
-            self._rgb_img = self.saturation_declipping(self._rgb_img, gains=self.cfg.lfpimg['awb'])
+            self._rgb_img = self.desaturate_clipped(self._rgb_img, gains=self.cfg.lfpimg['awb'])
 
         # perform gamma correction
         if 'gam' in self.cfg.lfpimg.keys():
