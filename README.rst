@@ -1,14 +1,14 @@
 ===========
 PlenoptiCam
 ===========
-.. A light field photography application (macOS_ or Win_) for computational change of perspective view and synthetic focus based on a Standard Plenoptic Camera (SPC).
+.. A light-field photography application (macOS_ or Win_) for computational change of perspective view and synthetic focus based on a Standard Plenoptic Camera (SPC).
 
 Description
 -----------
 
-*PlenoptiCam* is an open-source software (macOS_ or Win_) for scientific light field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
-Raw exposures from a plenoptic camera require four-dimensional image alignment in order to be decoded as a light field. Provided software addresses this by its ability to extract depth by means of sub-aperture images or synthetically focused photographs.
-This application is meant for researchers, developers, beginners and other fiddlers who like to experiment with light field technology. Its scope comprises custom-types of plenoptic cameras and is thus not limited to Lytro's image data.
+*PlenoptiCam* is an open-source software (macOS_ or Win_) for scientific light-field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
+Raw exposures from a plenoptic camera require four-dimensional image alignment in order to be decoded as a light-field. Provided software addresses this by its ability to extract depth by means of sub-aperture images or synthetically focused photographs.
+This application is meant for researchers, developers, beginners and other fiddlers who like to experiment with light-field technology. Its scope comprises custom-types of plenoptic cameras and is thus not limited to Lytro's image data.
 
 |release| |license| |code| |repo| |downloads|
 
@@ -51,7 +51,7 @@ Usage
 
 |
 
-1. Choose your light field photograph using upper **Browse** button. Supported file types are:
+1. Choose your light-field photograph using upper **Browse** button. Supported file types are:
     - *lfr*, *lfp* and *raw* files from Lytro Illum
     - *bmp*, *jpg* or *png* file from custom-built plenoptic camera
     - Lytro 1st Generation (to come)
@@ -82,14 +82,14 @@ Usage
 Results
 -------
 
-Results can be found inside a folder named after your light field file which is located in the same directory path.
+Results can be found inside a folder named after your light-field file which is located in the same directory path.
 Depending on provided files and settings, your results folder may contain the following data:
 
     - sub-aperture images (see *viewpoints_xxx* folder) and view animation given as gif
     - refocused images (see *refo_xxx* folder) and refocus animation given as gif
     - raw image file given as tiff
-    - aligned light field as pkl (pickle) file
-    - light field metadata as json file (in case of Lytro image file)
+    - aligned light-field as pkl (pickle) file
+    - light-field metadata as json file (in case of Lytro image file)
     - scheimpflug focus file
 
 Exemplary view animations can be seen below (image quality due to lower resolution and limited gif colours)
@@ -140,7 +140,7 @@ If you find this work helpful for your research, please cite as appropriate:
 Further information
 -------------------
 
-* check out PlenoptiCam's partner project PlenoptiSign_ capable of estimating metric light field geometries
+* check out PlenoptiCam's partner project PlenoptiSign_ capable of estimating metric light-field geometries
 * visit `plenoptic.info <http://www.plenoptic.info>`__ for technical details, animated figures and theoretical background
 
 .. Image substitutions
