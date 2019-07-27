@@ -1,5 +1,5 @@
 
-from plenopticam.lfp_extractor.lfp_exporter import export_viewpoints, gif_vp_img
+from plenopticam.lfp_extractor.lfp_exporter import export_viewpoints, export_thumbnail, gif_vp_img
 from plenopticam.lfp_extractor.img_proc import *
 
 import numpy as np
@@ -72,6 +72,9 @@ class LfpViewer(object):
             # print status
             self.sta.status_msg('Write viewpoint images', self.cfg.params[self.cfg.opt_prnt])
             self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
+
+            # write central view as thumbnail image
+            export_thumbnail(self._vp_img_arr, self.cfg, type='png')
 
             # write viewpoint image files to hard drive
             export_viewpoints(self._vp_img_arr, self.cfg, type='png')

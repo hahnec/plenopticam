@@ -27,6 +27,14 @@ from plenopticam import misc
 # external libs
 import os
 
+def export_thumbnail(vp_img_arr, cfg, type='tiff'):
+
+    # export central viewpoint as thumbnail image
+    misc.save_img_file(vp_img_arr[cfg.params[cfg.ptc_leng]//2+1, cfg.params[cfg.ptc_leng]//2+1],
+                       os.path.join(cfg.params[cfg.lfp_path].split('.')[0], 'thumbnail'), type=type)
+
+    return True
+
 def export_viewpoints(vp_img_arr, cfg, type='tiff'):
 
     ptc_leng = cfg.params[cfg.ptc_leng]
