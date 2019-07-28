@@ -1,4 +1,3 @@
-from plenopticam.lfp_extractor.img_proc import *
 from plenopticam import misc
 
 # external libs
@@ -169,8 +168,9 @@ class CfaProcessor(object):
     def correct_awb(img_arr, bay_pattern=None, gains=None):
         ''' automatic white balance '''
 
-        # set gains to ones if not set
-        gains = [1, 1, 1, 1] if gains is None else gains
+        # skip process if gains not set
+        if gains is None:
+           return img_arr
 
         if len(img_arr.shape) == 3:
 
@@ -195,30 +195,23 @@ class CfaProcessor(object):
         return img_arr
 
     @staticmethod
-    def desaturate_clipped(img_arr, gains=None):
+    def desaturate_clipped(img_arr, gains=None, thresh=.96):
 
-        b, r, g1, g2 = gains if gains is not None else [1., 1., 1., 1.]
-        awb_list = [r, g1, b]
-        comp_arr = np.zeros(img_arr.shape, dtype=img_arr.dtype)
+        # skip process if gains not set
+        if gains is not None:
+            b, r, g1, g2 = gains
+        else:
+           return img_arr
+
+        orig = (img_arr/np.array([r, g1, b]))
+        beta = orig / np.amax(orig, axis=2)[..., np.newaxis]
+        weights = beta * np.array([r, g1, b])
+        weights[weights < 1] = 1
+
         mask = np.zeros(img_arr.shape[:2])
-        alpha = np.amin(img_arr/np.amax(img_arr, axis=2)[..., np.newaxis], axis=2)
-        thresh = .99
+        mask[np.amax(orig, axis=2) >= orig.max()*thresh] = 1
 
-        for i in range(img_arr.shape[2]):
-            comp_arr[..., i] = (1-alpha)*(img_arr[..., i]) + alpha*(img_arr[..., i]/awb_list[i])
-
-            # determine indices of other two channels
-            ch1, ch2 = [u for u, v in enumerate(awb_list) if v != awb_list[i]]
-
-            # only consider pixels in mask which have sufficient intensity distance
-            mask[(img_arr[..., i] > img_arr[..., i].max()*thresh) &
-                 (img_arr[..., ch1] > img_arr[..., i].max()*thresh) &
-                 (img_arr[..., ch2] > img_arr[..., i].max()*thresh)] = 1
-
-        import os
-        misc.save_img_file(mask, os.getcwd()+'mask.png')
-
-        img_arr[mask > 0] = comp_arr[mask > 0]
+        img_arr[mask > 0] /= weights[mask > 0]
 
         return img_arr
 
