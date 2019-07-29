@@ -5,6 +5,8 @@ from plenopticam.lfp_reader.lfp_decoder import LfpDecoder
 
 import os
 
+SUPP_FILE_EXT = ('.raw', '.lfp', '.lfr') + tuple('.c.' + str(num) for num in (0, 1, 2, 3))
+
 class LfpReader(object):
 
     def __init__(self, cfg=None, sta=None, lfp_path=None):
@@ -22,7 +24,7 @@ class LfpReader(object):
 
     def main(self):
 
-        if self._lfp_path.endswith(('.lfp', '.lfr', '.raw') + tuple('.c.'+str(num) for num in (0, 1, 2, 3))):
+        if self._lfp_path.endswith(SUPP_FILE_EXT):
 
             # filename and file path from previously decoded data
             dp = os.path.splitext(self._lfp_path)[0]
@@ -54,11 +56,11 @@ class LfpReader(object):
 
                         # LFC and raw type decoding
                         obj = LfpDecoder(file, self.cfg, self.sta)
-                        if self._lfp_path.endswith(('.lfp', '.lfr') + tuple('.c.'+str(num) for num in (0, 1, 2, 3))):
+                        if self._lfp_path.endswith(SUPP_FILE_EXT[1:]):
                             # LFC type decoding
                             obj.decode_lfc()
                             self.cfg.save_json(os.path.join(dp, os.path.basename(dp)+'.json'), json_dict=obj.json_dict)
-                        elif self._lfp_path.endswith('.raw'):
+                        elif self._lfp_path.endswith(SUPP_FILE_EXT[0]):
                             # raw type decoding
                             obj.decode_raw()
                         self._lfp_img = obj.rgb_img
