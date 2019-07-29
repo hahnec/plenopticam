@@ -4,7 +4,7 @@ from plenopticam.misc.status import PlenopticamStatus
 
 # external libs
 import json
-from os.path import join, exists, isdir
+from os.path import join, exists, isdir, dirname
 from os import listdir
 
 try:
@@ -168,8 +168,8 @@ class CaliFinder(object):
 
                 # update config
                 self._serial = tarname.split('-')[-1].split('.')[0]
-                self.cfg.params[self.cfg.cal_meta] = join(self._path.split('.')[0],
-                                                          self._serial, self._cal_fn.replace('.RAW', '.json'))
+                self.cfg.params[self.cfg.cal_meta] = join(dirname(self._path), self._serial,
+                                                          self._cal_fn.lower().replace('.raw', '.json'))
 
                 # load raw data
                 self._raw_data = tar_obj.extractfile('unitdata/' + self._cal_fn)
