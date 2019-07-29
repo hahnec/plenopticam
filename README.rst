@@ -65,7 +65,7 @@ Usage
     - Lytro 1st Generation (to come)
 
 .. note::
-    If you are `using your own Lytro Illum <https://hahnec.github.io/plenopticam/build/html/guide.html#using-your-own-lytro-illum>`__ camera, you first need to extract camera calibration data as a *tar* archive. You can follow the `instructions guide <https://hahnec.github.io/plenopticam/build/html/guide.html>`__
+    If you are `using your own Lytro Illum <https://hahnec.github.io/plenopticam/build/html/guide.html#using-your-own-lytro-illum>`__ camera, you first need to extract camera calibration data as a *tar* archive. Please follow the `instructions guide <https://hahnec.github.io/plenopticam/build/html/guide.html>`__.
 
 |
 
