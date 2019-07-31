@@ -32,6 +32,7 @@ import threading
 import queue
 import types
 import os
+import traceback
 
 # local python files
 from plenopticam.gui.constants import PX, PY
@@ -213,11 +214,14 @@ class CtrlWidget(tk.Frame):
 
     def lfp_align(self):
 
-        # align light field
-        lfp_obj = lfp_aligner.LfpAligner(self.lfp_img, self.cfg, self.sta, self.wht_img)
-        lfp_obj.main()
-        self.lfp_img_align = lfp_obj.lfp_img
-        del lfp_obj
+        try:
+            # align light field
+            lfp_obj = lfp_aligner.LfpAligner(self.lfp_img, self.cfg, self.sta, self.wht_img)
+            lfp_obj.main()
+            self.lfp_img_align = lfp_obj.lfp_img
+            del lfp_obj
+        except Exception:
+            raise misc.errors.PlenopticamError(traceback.format_exc(), cfg=self.cfg, sta=self.sta)
 
     def load_pickle_file(self):
 
@@ -229,40 +233,54 @@ class CtrlWidget(tk.Frame):
             self.lfp_img_align = pickle.load(open(fp, 'rb'))
         except EOFError:
             os.remove(fp)
+        except Exception:
+            raise misc.errors.PlenopticamError(traceback.format_exc(), cfg=self.cfg, sta=self.sta)
 
     def lfp_extract(self):
 
-        # export light field data
-        exp_obj = lfp_extractor.LfpExtractor(self.lfp_img_align, self.cfg, self.sta)
-        exp_obj.main()
-        del exp_obj
+        try:
+            # export light field data
+            exp_obj = lfp_extractor.LfpExtractor(self.lfp_img_align, self.cfg, self.sta)
+            exp_obj.main()
+            del exp_obj
+        except Exception:
+            raise misc.errors.PlenopticamError(traceback.format_exc(), cfg=self.cfg, sta=self.sta)
 
     def cal(self):
 
-        # perform centroid calibration
-        cal_obj = lfp_calibrator.LfpCalibrator(self.wht_img, self.cfg, self.sta)
-        cal_obj.main()
-        self.cfg = cal_obj.cfg
-        del cal_obj
+        try:
+            # perform centroid calibration
+            cal_obj = lfp_calibrator.LfpCalibrator(self.wht_img, self.cfg, self.sta)
+            cal_obj.main()
+            self.cfg = cal_obj.cfg
+            del cal_obj
+        except Exception:
+            raise misc.errors.PlenopticamError(traceback.format_exc(), cfg=self.cfg, sta=self.sta)
 
     def auto_find(self):
 
-        if self.wht_img is None:
-            obj = lfp_calibrator.CaliFinder(self.cfg, self.sta)
-            obj.main()
-            self.wht_img = obj.wht_img
-            del obj
+        try:
+            if self.wht_img is None:
+                obj = lfp_calibrator.CaliFinder(self.cfg, self.sta)
+                obj.main()
+                self.wht_img = obj.wht_img
+                del obj
+        except Exception:
+            raise misc.errors.PlenopticamError(traceback.format_exc(), cfg=self.cfg, sta=self.sta)
 
     def load_lfp(self, lfp_path=None, wht_opt=False):
 
-        # decode light field image
-        lfp_obj = lfp_reader.LfpReader(self.cfg, self.sta, lfp_path)
-        lfp_obj.main()
-        if wht_opt:
-            self.wht_img = lfp_obj.lfp_img
-        else:
-            self.lfp_img = lfp_obj.lfp_img
-        del lfp_obj
+        try:
+            # decode light field image
+            lfp_obj = lfp_reader.LfpReader(self.cfg, self.sta, lfp_path)
+            lfp_obj.main()
+            if wht_opt:
+                self.wht_img = lfp_obj.lfp_img
+            else:
+                self.lfp_img = lfp_obj.lfp_img
+            del lfp_obj
+        except Exception:
+            raise misc.errors.PlenopticamError(traceback.format_exc(), cfg=self.cfg, sta=self.sta)
 
     @staticmethod
     def toggle_btn_state(btn):
