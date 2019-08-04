@@ -11,6 +11,7 @@ PARAMS_KEYS = (
     # booleans
     'opt_cali',
     'opt_awb_',
+    'opt_cont',
     'opt_view',
     'opt_refo',
     'opt_refi',
@@ -33,7 +34,8 @@ PARAMS_VALS = (
     [0, 2],
     # booleans
     False,
-    False,
+    True,
+    True,
     True,
     True,
     False,
@@ -59,6 +61,7 @@ PARAMS_TYPE = (
     'bool',
     'bool',
     'bool',
+    'bool',
     'sel',
     'bool',
     'bool',
@@ -78,6 +81,7 @@ PARAMS_NAME = (
     # booleans
     'Force re-calibration',
     'Automatic white balance',
+    'Contrast automation',
     'Viewpoint image extraction',
     'Refocused image extraction',
     'Refocus refinement',

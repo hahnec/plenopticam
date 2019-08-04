@@ -59,6 +59,7 @@ def parse_options(argv):
     # default parameters
     cfg = PlenopticamConfig()
     cfg.params[cfg.opt_prnt] = True
+    cfg.params[cfg.opt_cont] = True
     cfg.params[cfg.opt_awb_] = False
 
     try:
