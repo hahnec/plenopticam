@@ -18,9 +18,9 @@ class PlenopticamError(Exception):
         if fp:
             with open(fp, 'a') as f:
                 f.writelines(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'))
-                f.writelines('\nPlease copy the below traceback and raise an issue online.\n')
+                f.writelines('\nOpen issue at https://github.com/hahnec/plenopticam/issues/new and paste below traceback.\n')
                 f.writelines(args.__str__())
-                f.writelines('\n\n')
+                f.writelines('\n\n\n')
 
 class LfpTypeError(PlenopticamError):
     def __init__(self, *args, **kwargs):
