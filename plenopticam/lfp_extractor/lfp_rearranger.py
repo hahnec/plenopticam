@@ -23,9 +23,6 @@ class LfpRearranger(LfpViewpoints):
 
     def main(self):
 
-        # initialize basic light-field parameters
-        self.var_init()
-
         # rearrange lightfield to viewpoint representation
         self.viewpoint_extraction()
 
@@ -55,12 +52,12 @@ class LfpRearranger(LfpViewpoints):
 
     def viewpoint_extraction(self):
 
-        # initialize light-field variables
-        self.var_init()
-
         # print status
         self.sta.status_msg('Viewpoint extraction', self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
+
+        # initialize basic light-field parameters
+        self.var_init()
 
         # rearrange light field to multi-view image representation
         for j in range(self._M):

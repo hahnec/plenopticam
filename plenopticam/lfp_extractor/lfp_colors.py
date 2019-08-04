@@ -110,12 +110,12 @@ class ContrastHandler(LfpViewpoints):
         self.auto_contrast()
 
         if len(self.vp_img_arr.shape) == 5:
-            self.proc_vp_arr(self.correct_contrast, msg='Contrast correction')
+            self.proc_vp_arr(self.correct_contrast, msg='Contrast automation')
         else:
             raise NotImplementedError
 
     def auto_contrast(self, ch=0):
-        ''' according to Adi Shavit on https://stackoverflow.com/questions/9744255/instagram-lux-effect/9761841#9761841 '''
+        ''' according to https://stackoverflow.com/questions/9744255/instagram-lux-effect/9761841#9761841 '''
 
         # estimate contrast und brightness parameters (by default: achromatic "luma" channel only)
         val_lim = 2**16-1
@@ -161,7 +161,7 @@ class ContrastHandler(LfpViewpoints):
 
     @staticmethod
     def contrast_per_channel(img_arr, sat_perc=0.1):
-        # sat_perc is the saturation percentile which will be cut-off at the lower and higher end in each color channel
+        ''' sat_perc is the saturation percentile which is cut-off at the lower and higher end in each color channel '''
 
         q = [sat_perc/100, 1-sat_perc/100]
 

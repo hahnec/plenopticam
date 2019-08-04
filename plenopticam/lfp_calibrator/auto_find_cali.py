@@ -6,11 +6,7 @@ from plenopticam.misc.status import PlenopticamStatus
 import json
 from os.path import join, exists, isdir, dirname
 from os import listdir
-
-try:
-    import tarfile
-except ImportError:
-    raise ImportError('Please install tarfile package.')
+import tarfile
 
 class CaliFinder(object):
 
@@ -146,7 +142,7 @@ class CaliFinder(object):
         if not self._file_found:
             onlyfiles = [f for f in listdir(self._path) if f.endswith('.tar')]
             tarstring = 'caldata-'+str(self._serial)+'.tar'
-            tarnames = [tarstring] if onlyfiles.count(tarstring) else onlyfiles #
+            tarnames = [tarstring] if onlyfiles.count(tarstring) else onlyfiles
 
             # iterate through tar-files
             for tarname in tarnames:
@@ -160,7 +156,7 @@ class CaliFinder(object):
         # read mla_calibration JSON file from tar archive
         try:
             tar_obj = tarfile.open(join(self._path, tarname), mode='r')
-            cal_manifest = tar_obj.extractfile('unitdata/cal_file_manifest.json')
+            cal_manifest = tar_obj.extractfile(join('unitdata', 'cal_file_manifest.json'))
             json_dict = json.loads(cal_manifest.read().decode('utf-8'))
             self._match_georef(json_dict)
             if self._cal_fn:
@@ -173,7 +169,7 @@ class CaliFinder(object):
                                                           self._cal_fn.lower().replace('.raw', '.json'))
 
                 # load raw data
-                self._raw_data = tar_obj.extractfile('unitdata/' + self._cal_fn)
+                self._raw_data = tar_obj.extractfile(join('unitdata', self._cal_fn))
 
         except FileNotFoundError:
             self.sta.status_msg('Did not find calibration file.', opt=True)
