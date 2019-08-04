@@ -1,1 +1,1 @@
-from .cfg import Config
+from .cfg import PlenopticamConfig

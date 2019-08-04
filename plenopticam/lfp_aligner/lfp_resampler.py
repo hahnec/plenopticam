@@ -179,7 +179,7 @@ class LfpResampler(object):
     def _write_lfp_align(self):
 
         # convert to 16bit unsigned integer
-        self._lfp_out = misc.uint16_norm(self._lfp_out)
+        self._lfp_out = misc.Normalizer(self._lfp_out).uint16_norm()
 
         out_path = self.cfg.params[self.cfg.lfp_path].split('.')[0]
 

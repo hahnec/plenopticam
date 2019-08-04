@@ -30,7 +30,7 @@ from plenopticam.cfg.constants import PARAMS_KEYS, PARAMS_VALS, CALIBS_KEYS
 import json
 import os
 
-class Config(object):
+class PlenopticamConfig(object):
 
     # static class variables for key parameters
     lfp_path, cal_path, cal_meta, \

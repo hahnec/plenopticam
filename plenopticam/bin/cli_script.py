@@ -31,7 +31,7 @@ from plenopticam import lfp_extractor
 from plenopticam import lfp_reader
 from plenopticam.lfp_reader.top_level import SUPP_FILE_EXT
 from plenopticam import misc
-from plenopticam.cfg import Config
+from plenopticam.cfg import PlenopticamConfig
 from plenopticam import __version__
 from plenopticam.gui import PlenopticamApp
 
@@ -57,7 +57,7 @@ def usage():
 def parse_options(argv):
 
     # default parameters
-    cfg = Config()
+    cfg = PlenopticamConfig()
     cfg.params[cfg.opt_prnt] = True
     cfg.params[cfg.opt_awb_] = False
 

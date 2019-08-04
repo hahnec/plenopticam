@@ -30,7 +30,7 @@ import os
 from plenopticam.lfp_calibrator import LfpCalibrator
 from plenopticam.lfp_aligner import LfpAligner
 from plenopticam.lfp_extractor import LfpExtractor
-from plenopticam.cfg.cfg import Config
+from plenopticam.cfg.cfg import PlenopticamConfig
 from plenopticam import misc
 
 class PlenoptiCamTester(unittest.TestCase):
@@ -81,7 +81,7 @@ class PlenoptiCamTester(unittest.TestCase):
     def test_cal(self):
 
         # set config for unit test purposes
-        cfg = Config()
+        cfg = PlenopticamConfig()
         cfg.params[cfg.opt_dbug] = True
 
         for fn_lfp, fn_wht in zip(self.fnames_lfp, self.fnames_wht):
@@ -105,7 +105,7 @@ class PlenoptiCamTester(unittest.TestCase):
     def test_lfp(self):
 
         # set config for unit test purposes
-        cfg = Config()
+        cfg = PlenopticamConfig()
         cfg.params[cfg.opt_dbug] = True
 
         for fn_lfp, fn_wht in zip(self.fnames_lfp, self.fnames_wht):

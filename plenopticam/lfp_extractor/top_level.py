@@ -22,14 +22,14 @@ __license__ = """
 
 # local imports
 from plenopticam.lfp_extractor.lfp_cropper import LfpCropper
-from plenopticam.lfp_extractor.lfp_viewer import LfpViewer
+from plenopticam.lfp_extractor.lfp_rearranger import LfpRearranger
 from plenopticam.lfp_extractor.lfp_refocuser import LfpRefocuser
 from plenopticam.lfp_extractor.scheimpflug import Scheimpflug
 from plenopticam import misc
 
 class LfpExtractor(object):
 
-    def __init__(self, lfp_img_align, cfg, sta=None):
+    def __init__(self, lfp_img_align, cfg=None, sta=None):
 
         self._lfp_img_align = lfp_img_align
         self.cfg = cfg
@@ -44,14 +44,14 @@ class LfpExtractor(object):
         self.cfg.load_cal_data()
 
         # micro image crop
-        lfp_obj = LfpCropper(self._lfp_img_align, self.cfg, self.sta)
+        lfp_obj = LfpCropper(self._lfp_img_align, cfg=self.cfg, sta=self.sta)
         lfp_obj.main()
         self._lfp_img_align = lfp_obj.lfp_img_align
         del lfp_obj
 
         # viewpoint images
         if self.cfg.params[self.cfg.opt_view]:
-            lfp_obj = LfpViewer(self._lfp_img_align, self.cfg, self.sta)
+            lfp_obj = LfpRearranger(self._lfp_img_align, cfg=self.cfg, sta=self.sta)
             lfp_obj.main()
             self._vp_img_arr = lfp_obj.vp_img_arr
             del lfp_obj

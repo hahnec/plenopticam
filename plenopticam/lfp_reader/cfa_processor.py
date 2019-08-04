@@ -55,7 +55,7 @@ class CfaProcessor(object):
             self._rgb_img = self.correct_color(self._rgb_img, ccm_mat=np.reshape(self.cfg.lfpimg['ccm'], (3, 3)).T)
 
         # convert to uint16
-        self._rgb_img = misc.uint16_norm(self._rgb_img)
+        self._rgb_img = misc.Normalizer(self._rgb_img).uint16_norm()
 
         return True
 

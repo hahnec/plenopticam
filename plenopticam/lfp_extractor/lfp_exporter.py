@@ -23,93 +23,132 @@ Copyright (c) 2017 Christopher Hahne <info@christopherhahne.de>
 
 # local imports
 from plenopticam import misc
+from plenopticam.misc import Normalizer
+from plenopticam.lfp_extractor.lfp_viewpoints import LfpViewpoints
 
 # external libs
 import os
+import numpy as np
 
-def export_thumbnail(vp_img_arr, cfg, type='tiff'):
+class LfpExporter(LfpViewpoints):
 
-    # export central viewpoint as thumbnail image
-    misc.save_img_file(vp_img_arr[cfg.params[cfg.ptc_leng]//2+1, cfg.params[cfg.ptc_leng]//2+1],
-                       os.path.join(cfg.params[cfg.lfp_path].split('.')[0], 'thumbnail'), type=type)
+    def __init__(self, refo_stack=None, *args, **kwargs):
+        super(LfpExporter, self).__init__(*args, **kwargs)
 
-    return True
+        self._refo_stack = refo_stack
 
-def export_viewpoints(vp_img_arr, cfg, type='tiff'):
+    def write_viewpoint_data(self):
 
-    ptc_leng = cfg.params[cfg.ptc_leng]
+        # print status
+        self.sta.status_msg('Write viewpoint images', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
-    # create folder
-    folderpath = os.path.join(cfg.params[cfg.lfp_path].split('.')[0], 'viewpoints_' + str(ptc_leng) + 'px')
-    misc.mkdir_p(folderpath)
+        # write central view as thumbnail image
+        self.export_thumbnail(type='png')
 
-    # normalize image array to 16-bit unsigned integer
-    vp_img_arr = misc.uint16_norm(vp_img_arr)
+        # write viewpoint image files to hard drive
+        self.export_viewpoints(type='png')
 
-    # export viewpoint images as image files
-    for j in range(ptc_leng):
-        for i in range(ptc_leng):
+        # write viewpoint gif animation
+        self.gif_vp_img(duration=.1)
 
-            misc.save_img_file(vp_img_arr[j, i], os.path.join(folderpath, str(j) + '_' + str(i)), type=type)
+        return True
 
-    return True
+    def export_thumbnail(self, type='tiff'):
 
-def export_refo_stack(refo_stack, cfg, type='tiff'):
+        # export central viewpoint as thumbnail image
+        fp = os.path.join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'thumbnail')
+        misc.save_img_file(self.central_view, file_path=fp, type=type)
 
-    refo_stack = misc.uint16_norm(refo_stack)
+        return True
 
-    patch_len = cfg.params[cfg.ptc_leng]
+    def export_viewpoints(self, type='tiff'):
 
-    # create folder
-    string = ''
-    if cfg.params[cfg.opt_refo] == 2 or cfg.params[cfg.opt_refi]:
-        string = 'subpixel_'
-    elif cfg.params[cfg.opt_refo] == 1 or cfg.params[cfg.opt_view]:
+        ptc_leng = self.cfg.params[self.cfg.ptc_leng]
+
+        # create folder
+        folderpath = os.path.join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'viewpoints_'+str(ptc_leng)+'px')
+        misc.mkdir_p(folderpath)
+
+        # normalize image array to 16-bit unsigned integer
+        vp_img_arr = Normalizer(self._vp_img_arr).uint16_norm()
+
+        # export viewpoint images as image files
+        for j in range(ptc_leng):
+            for i in range(ptc_leng):
+
+                misc.save_img_file(vp_img_arr[j, i], os.path.join(folderpath, str(j) + '_' + str(i)), type=type)
+
+        return True
+
+    def gif_vp_img(self, duration, pattern='circle'):
+
+        fp = os.path.splitext(self.cfg.params[self.cfg.lfp_path])[0]
+        fn = 'view_animation_' + str(self.cfg.params[self.cfg.ptc_leng]) + 'px'
+
+        vp_img_arr = Normalizer(self._vp_img_arr).uint8_norm()
+        dims = self._vp_img_arr.shape[:2]
+        r = int(min(dims)/2)
+        mask = [[0] * dims[1] for _ in range(dims[0])]
+
+        if pattern == 'square':
+            mask[0, :] = 1
+            mask[:, 0] = 1
+            mask[-1, :] = 1
+            mask[:, -1] = 1
+        if pattern == 'circle':
+            for x in range(-r, r+1):
+                for y in range(-r, r+1):
+                    if int(sqrt(x**2 + y**2)) == r:
+                        mask[y+r][x+r] = 1
+
+        # extract coordinates from mask
+        coords_table = [(y, x) for y in range(len(mask)) for x in range(len(mask)) if mask[y][x]]
+
+        # sort coordinates in angular order
+        coords_table.sort(key=lambda coords: atan2(coords[0]-r, coords[1]-r))
+
+        img_set = []
+        for coords in coords_table:
+                img_set.append(vp_img_arr[coords[0], coords[1], :, :, :])
+
+        misc.save_gif(img_set, duration, fp, fn)
+
+        return True
+
+    def export_refo_stack(self, type='tiff'):
+
+        refo_stack = Normalizer(np.asarray(self._refo_stack)).uint16_norm()
+
+        # create folder
         string = ''
+        if self.cfg.params[self.cfg.opt_refo] == 2 or self.cfg.params[self.cfg.opt_refi]:
+            string = 'subpixel_'
+        elif self.cfg.params[self.cfg.opt_refo] == 1 or self.cfg.params[self.cfg.opt_view]:
+            string = ''
 
-    folder_path = os.path.join(cfg.params[cfg.lfp_path].split('.')[0], 'refo_' + string + str(patch_len) + 'px')
-    misc.mkdir_p(folder_path)
+        folder_path = os.path.join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'refo_' + string + str(self._M) + 'px')
+        misc.mkdir_p(folder_path)
 
-    for i, refo_img in enumerate(refo_stack):
+        for i, refo_img in enumerate(refo_stack):
 
-        # get depth plane number for filename
-        a = range(*cfg.params[cfg.ran_refo])[i]
-        # account for sub-pixel precise depth value
-        a = round(float(a)/patch_len, 2) if cfg.params[cfg.opt_refi] else a
+            # get depth plane number for filename
+            a = range(*self.cfg.params[self.cfg.ran_refo])[i]
+            # account for sub-pixel precise depth value
+            a = round(float(a)/self._M, 2) if self.cfg.params[self.cfg.opt_refi] else a
 
-        # write image file
-        misc.save_img_file(refo_img, os.path.join(folder_path, str(a)), type=type)
+            # write image file
+            misc.save_img_file(refo_img, os.path.join(folder_path, str(a)), type=type)
 
-    return True
+        return True
 
-def gif_vp_img(vp_img_arr, duration, fp='', fn='', pattern='circle'):
+    def gif_refo(self):
 
-    dims = vp_img_arr.shape[:2]
-    r = int(min(dims)/2)
-    mask = [[0] * dims[1] for _ in range(dims[0])]
+        # export gif animation
+        fn = 'refocus_animation_' + str(self.cfg.params[self.cfg.ptc_leng]) + 'px'
+        fp = os.path.splitext(self.cfg.params[self.cfg.lfp_path])[0]
+        refo_stack = misc.Normalizer(self._refo_stack).uint8_norm()
+        refo_stack = np.asarray(refo_stack + refo_stack[::-1])      # play forward and backwards
+        misc.save_gif(refo_stack, duration=.8, fp=fp, fn=fn)
 
-    if pattern == 'square':
-        mask[0, :] = 1
-        mask[:, 0] = 1
-        mask[-1, :] = 1
-        mask[:, -1] = 1
-    if pattern == 'circle':
-        for x in range(-r, r+1):
-            for y in range(-r, r+1):
-                if int(sqrt(x**2 + y**2)) == r:
-                    mask[y+r][x+r] = 1
-
-    # extract coordinates from mask
-    coords_table = [(y, x) for y in range(len(mask)) for x in range(len(mask)) if mask[y][x]]
-
-    # sort coordinates in angular order
-    coords_table.sort(key=lambda coords: atan2(coords[0]-r, coords[1]-r))
-
-
-    img_set = []
-    for coords in coords_table:
-            img_set.append(vp_img_arr[coords[0], coords[1], :, :, :])
-
-    misc.save_gif(img_set, duration, fp, fn)
-
-    return True
+        return True

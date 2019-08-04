@@ -22,27 +22,26 @@ Copyright (c) 2017 Christopher Hahne <info@christopherhahne.de>
 
 # local imports
 from plenopticam import misc
-from plenopticam.lfp_extractor import lfp_exporter
+from plenopticam.lfp_extractor.lfp_viewpoints import LfpViewpoints
+from plenopticam.lfp_extractor.lfp_exporter import LfpExporter
 
 # external
 import numpy as np
 import os
 
-class LfpRefocuser(object):
+class LfpRefocuser(LfpViewpoints):
 
-    def __init__(self, vp_img_arr=None, lfp_img=None, cfg=None, sta=None):
+    def __init__(self, lfp_img=None, *args, **kwargs):
+        super(LfpRefocuser, self).__init__(*args, **kwargs)
 
         # input variables
-        self.vp_img_arr = vp_img_arr
         self.lfp_img = lfp_img
-        self.cfg = cfg
-        self.sta = sta
 
         # validate refocusing range
         self.validate_range()
 
         # internal variables
-        self._refo_stack = []
+        self._refo_stack = list()
 
     def main(self):
 
@@ -63,13 +62,12 @@ class LfpRefocuser(object):
 
         # check interrupt status
         if not self.sta.interrupt:
-            # export refocused images
-            lfp_exporter.export_refo_stack(np.array(self._refo_stack), self.cfg, type='png')
 
-            # export gif animation
-            fn = 'refocus_animation_'+str(self.cfg.params[self.cfg.ptc_leng])+'px'
-            misc.save_gif(misc.uint8_norm(np.array(self._refo_stack+self._refo_stack[::-1])), duration=.8,
-                 fp=os.path.splitext(self.cfg.params[self.cfg.lfp_path])[0], fn=fn)
+            # write refocused images to hard drive
+            refo_obj = LfpExporter(refo_stack=self._refo_stack, cfg=self.cfg, sta=self.sta)
+            refo_obj.export_refo_stack(type='png')
+            refo_obj.gif_refo()
+            del refo_obj
 
         return True
 
@@ -80,24 +78,24 @@ class LfpRefocuser(object):
         self.sta.progress(0, self.cfg.params[self.cfg.opt_prnt])
 
         # initialize variables
-        self._refo_stack = []
+        self._refo_stack = list()
         patch_len = self.cfg.params[self.cfg.ptc_leng]
         factor = self.cfg.params[self.cfg.ptc_leng] if self.cfg.params[self.cfg.opt_refi] else 1
 
         # divide intensity to prevent clipping in shift and sum process
-        self.vp_img_arr /= patch_len
+        self._vp_img_arr /= patch_len
 
         # iterate through
         a_list = self.cfg.params[self.cfg.ran_refo]
         for a in range(*a_list):
 
             overlap = abs(a) * (patch_len - 1)
-            img_slice = np.zeros(np.append(np.array(self.vp_img_arr.shape[2:-1]) * factor + [overlap, overlap], 3))
+            img_slice = np.zeros(np.append(np.array(self._vp_img_arr.shape[2:-1]) * factor + [overlap, overlap], 3))
             for j in range(patch_len):
                 for i in range(patch_len):
 
                     # perform sub-pixel refinement if required
-                    vp_img = misc.img_resize(self.vp_img_arr[j, i], factor) if factor > 1 else self.vp_img_arr[j, i]
+                    vp_img = misc.img_resize(self._vp_img_arr[j, i], factor) if factor > 1 else self._vp_img_arr[j, i]
 
                     # get viewpoint pad widths for each border
                     tb = (abs(a) * j, abs(a) * (patch_len - 1 - j))    # top, bottom

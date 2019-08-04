@@ -40,7 +40,7 @@ from plenopticam.gui.widget_menu import MenuWidget
 from plenopticam.gui.widget_file import FileWidget
 from plenopticam.gui.widget_cmnd import CmndWidget
 from plenopticam.gui.widget_cnfg import CnfgWidget
-from plenopticam.cfg import Config
+from plenopticam.cfg import PlenopticamConfig
 from plenopticam import misc
 
 from plenopticam import lfp_calibrator
@@ -91,7 +91,7 @@ class CtrlWidget(tk.Frame):
         self.sta.bind_to_interrupt(self.stop_thread)
 
         # instantiate config settings
-        self.cfg = Config()
+        self.cfg = PlenopticamConfig()
 
         # instantiate menu widget
         self.men_wid = MenuWidget(self)

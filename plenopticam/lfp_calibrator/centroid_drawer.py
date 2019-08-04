@@ -25,17 +25,17 @@ Copyright (c) 2017 Christopher Hahne <info@christopherhahne.de>
 import numpy as np
 
 # local imports
-from plenopticam.misc import uint8_norm, save_img_file, rgb2gray
-from plenopticam.cfg import Config
+from plenopticam.misc import Normalizer, save_img_file, rgb2gray
+from plenopticam.cfg import PlenopticamConfig
 
 class CentroidDrawer(object):
 
     def __init__(self, img, centroids, cfg=None):
 
         # input variables
-        self._img = uint8_norm(rgb2gray(img.copy()))
+        self._img = Normalizer(rgb2gray(img.copy())).uint8_norm()
         self._centroids = np.asarray(centroids)
-        self.cfg = cfg if cfg is not None else Config()
+        self.cfg = cfg if cfg is not None else PlenopticamConfig()
 
 
     def write_centroids_img(self, fn='default_filename.png'):

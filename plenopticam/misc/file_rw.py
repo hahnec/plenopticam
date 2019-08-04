@@ -48,12 +48,12 @@ def save_img_file(img, file_path, type=None):
 
     if type == 'tiff':
             obj = TIFF.open(file_path, mode='w')
-            obj.write_image(misc.uint16_norm(img), compression=None, write_rgb=True)
+            obj.write_image(misc.Normalizer(img).uint16_norm(), compression=None, write_rgb=True)
             obj.close()
 
     elif type == 'png' or type == 'bmp':
 
-        Image.fromarray(misc.uint8_norm(img)).save(file_path, type, optimize=True)
+        Image.fromarray(misc.Normalizer(img).uint8_norm()).save(file_path, type, optimize=True)
 
     return True
 
@@ -101,7 +101,7 @@ def place_dnp(dus):
 
     s, t = dus.shape[:2]
     y, x = np.array([s-n, s+(t-s)//2-n])-n//2
-    a = dus.shape[2] if len(dus.shape)==3 else 1
-    dus[y:y+n, x:x+n, ...] *= np.repeat(dnp[..., np.newaxis], a, axis=2) if a>1 else dnp
+    a = dus.shape[2] if len(dus.shape) == 3 else 1
+    dus[y:y+n, x:x+n, ...] *= np.repeat(dnp[..., np.newaxis], a, axis=2) if a > 1 else dnp
 
     return dus.astype(dtype)

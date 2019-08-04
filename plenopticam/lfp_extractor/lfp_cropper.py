@@ -1,15 +1,13 @@
-
-from plenopticam import misc
+from plenopticam.lfp_extractor import LfpViewpoints
 
 import numpy as np
 
-class LfpCropper(object):
+class LfpCropper(LfpViewpoints):
 
-    def __init__(self, lfp_img_align, cfg=None, sta=None):
+    def __init__(self, lfp_img_align=None, *args, **kwargs):
+        super(LfpCropper, self).__init__(*args, **kwargs)
 
-        self._lfp_img_align = lfp_img_align
-        self.cfg = cfg
-        self.sta = sta
+        self._lfp_img_align = lfp_img_align if lfp_img_align is not None else None
 
         self.var_init()
 
