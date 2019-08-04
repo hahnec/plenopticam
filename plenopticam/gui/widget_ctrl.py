@@ -51,6 +51,32 @@ from plenopticam import lfp_extractor
 # constants
 POLLING_RATE = 100  # millisecs
 
+
+class PropagatingThread(threading.Thread):
+    ''' Child threading class for exception handling and error traceback '''
+
+    def __init__(self, cfg=None, sta=None, *args, **kwargs):
+        super(PropagatingThread, self).__init__(*args, **kwargs)
+        self.cfg = cfg if cfg is not None else Config()
+        self.sta = sta if sta is not None else misc.PlenopticamStatus()
+
+    def run(self):
+        self.exc = None
+        try:
+            if hasattr(self, '_Thread__target'):
+                # Thread uses name mangling prior to Python 3.
+                self.ret = self._Thread__target(*self._Thread__args, **self._Thread__kwargs)
+            else:
+                self.ret = self._target(*self._args, **self._kwargs)
+        except Exception:
+            self.exc = traceback.format_exc()
+
+    def join(self):
+        super(PropagatingThread, self).join()
+        if self.exc:
+            raise misc.errors.PlenopticamError(self.exc, cfg=self.cfg, sta=self.sta)
+        return self.ret
+
 class CtrlWidget(tk.Frame):
     ''' Control widget class '''
 
@@ -301,29 +327,3 @@ class CtrlWidget(tk.Frame):
         # destroy tkinter object
         self.parent.destroy()
         sys.exit()
-
-
-class PropagatingThread(threading.Thread):
-    ''' Child threading class for exception handling and error traceback '''
-
-    def __init__(self, cfg=None, sta=None, *args, **kwargs):
-        super(PropagatingThread, self).__init__(*args, **kwargs)
-        self.cfg = cfg if cfg is not None else PlenopticamConfig()
-        self.sta = sta if sta is not None else misc.PlenopticamStatus()
-
-    def run(self):
-        self.exc = None
-        try:
-            if hasattr(self, '_Thread__target'):
-                # Thread uses name mangling prior to Python 3.
-                self.ret = self._Thread__target(*self._Thread__args, **self._Thread__kwargs)
-            else:
-                self.ret = self._target(*self._args, **self._kwargs)
-        except Exception:
-            self.exc = traceback.format_exc()
-
-    def join(self):
-        super(PropagatingThread, self).join()
-        if self.exc:
-            raise misc.errors.PlenopticamError(self.exc, cfg=self.cfg, sta=self.sta)
-        return self.ret
