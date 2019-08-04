@@ -168,7 +168,8 @@ class CaliFinder(object):
 
                 # update config
                 self._serial = tarname.split('-')[-1].split('.')[0]
-                self.cfg.params[self.cfg.cal_meta] = join(dirname(self._path), self._serial,
+                tar_path = dirname(self._path) if self._path.endswith('tar') else self._path
+                self.cfg.params[self.cfg.cal_meta] = join(tar_path, self._serial,
                                                           self._cal_fn.lower().replace('.raw', '.json'))
 
                 # load raw data
