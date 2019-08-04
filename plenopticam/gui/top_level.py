@@ -55,7 +55,7 @@ class PlenopticamApp(tk.Tk):
         self.parent = parent
 
         # window title
-        self.wm_title("Plenopticam-"+__version__)
+        self.wm_title("PlenoptiCam-"+__version__)
 
         # icon handling
         if sys.platform == 'win32':
