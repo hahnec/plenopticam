@@ -50,4 +50,4 @@ def select_file(init_dir=None, title=''):
     file_path = askopenfilename(initialdir=[init_dir], title=title)
     root.update()
 
-    return file_path
+    return file_path if file_path else None

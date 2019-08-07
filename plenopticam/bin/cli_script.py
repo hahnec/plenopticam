@@ -103,6 +103,7 @@ def main():
 
     # select light field image(s) considering provided folder or file
     #cfg.params[cfg.lfp_path] = "/Users/Admin/Pictures/Plenoptic/INRIA_SIROCCO/"
+    #cfg.params[cfg.lfp_path] = "C:\\Users\\chahne\\Downloads\\LytroIllum_Dataset_INRIA_SIROCCO\\"
     if os.path.isdir(cfg.params[cfg.lfp_path]):
         lfp_filenames = [f for f in os.listdir(cfg.params[cfg.lfp_path]) if f.lower().endswith(SUPP_FILE_EXT)]
     elif not os.path.isfile(cfg.params[cfg.lfp_path]):
@@ -110,11 +111,16 @@ def main():
     else:
         lfp_filenames = [cfg.params[cfg.lfp_path]]
 
-    # open selection window (at directory where current lfp file is located) to set calibration folder path
+    # open selection window (at current lfp file directory) to set calibration folder path
     cfg.params[cfg.cal_path] = misc.select_file(cfg.params[cfg.lfp_path], 'Select calibration image')
 
     # iterate through light field image(s)
     for lfp_filename in lfp_filenames:
+
+        # exit if either file path is not provided
+        if lfp_filename or cfg.params[cfg.cal_path] is None:
+            sta.status_msg('\r Canceled due to missing image file path', cfg.params[cfg.opt_prnt])
+            sta.interrupt = True
 
         # change path to next filename
         cfg.params[cfg.lfp_path] = os.path.join(os.path.dirname(cfg.params[cfg.lfp_path]), lfp_filename)
