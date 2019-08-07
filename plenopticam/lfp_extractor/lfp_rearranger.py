@@ -2,7 +2,9 @@ import numpy as np
 
 from plenopticam.misc import Normalizer
 from plenopticam.lfp_extractor import LfpViewpoints, LfpExporter
-from plenopticam.lfp_extractor.lfp_colors import ContrastHandler, LfpColors
+from plenopticam.lfp_extractor.lfp_colors import LfpColors
+from plenopticam.lfp_extractor.lfp_contrast import LfpContrast
+
 
 class LfpRearranger(LfpViewpoints):
 
@@ -31,7 +33,7 @@ class LfpRearranger(LfpViewpoints):
 
         # contrast automation if option is set
         if self.cfg.params[self.cfg.opt_cont]:
-            obj = ContrastHandler(vp_img_arr=self._vp_img_arr, cfg=self.cfg, sta=self.sta)
+            obj = LfpContrast(vp_img_arr=self._vp_img_arr, cfg=self.cfg, sta=self.sta)
             obj.main()
             self._vp_img_arr = obj.vp_img_arr
             del obj
@@ -45,7 +47,9 @@ class LfpRearranger(LfpViewpoints):
 
         # write viewpoint data to hard drive
         if self.cfg.params[self.cfg.opt_view]:
-            LfpExporter(vp_img_arr=self._vp_img_arr, cfg=self.cfg, sta=self.sta).write_viewpoint_data()
+            obj = LfpExporter(vp_img_arr=self._vp_img_arr, cfg=self.cfg, sta=self.sta)
+            obj.write_viewpoint_data()
+            del obj
 
         # print status
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
