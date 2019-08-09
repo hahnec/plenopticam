@@ -118,7 +118,7 @@ def main():
     for lfp_filename in lfp_filenames:
 
         # exit if either file path is not provided
-        if lfp_filename or cfg.params[cfg.cal_path] is None:
+        if lfp_filename is None or cfg.params[cfg.cal_path] is None:
             sta.status_msg('\r Canceled due to missing image file path', cfg.params[cfg.opt_prnt])
             sta.interrupt = True
 
