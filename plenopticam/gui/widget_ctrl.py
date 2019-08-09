@@ -268,7 +268,7 @@ class CtrlWidget(tk.Frame):
     @staticmethod
     def toggle_btn_state(btn):
 
-        btn['state'] = tk.DISABLED if btn['state'] == tk.NORMAL else tk.NORMAL
+        btn['state'] = tk.DISABLED if btn['state'] != tk.DISABLED else tk.NORMAL
 
     @classmethod
     def toggle_btn_list(cls, btn_list):
