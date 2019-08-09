@@ -196,6 +196,10 @@ class CtrlWidget(tk.Frame):
         # start polling
         self.after(POLLING_RATE, self.poll)
 
+        # cancel if file paths not provided
+        self.sta.validate(checklist=[self.cfg.params[self.cfg.lfp_path], self.cfg.params[self.cfg.cal_path]],
+                          msg='Canceled due to missing image file path')
+
     def cond0(self):
         return self.lfp_img is None
 

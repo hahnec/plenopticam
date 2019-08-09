@@ -114,13 +114,12 @@ def main():
     # open selection window (at current lfp file directory) to set calibration folder path
     cfg.params[cfg.cal_path] = misc.select_file(cfg.params[cfg.lfp_path], 'Select calibration image')
 
+    # cancel if file paths not provided
+    sta.validate(checklist=lfp_filenames+[cfg.params[cfg.lfp_path]], msg='Canceled due to missing image file path')
+
     # iterate through light field image(s)
     for lfp_filename in lfp_filenames:
 
-        # exit if either file path is not provided
-        if lfp_filename is None or cfg.params[cfg.cal_path] is None:
-            sta.status_msg('\r Canceled due to missing image file path', cfg.params[cfg.opt_prnt])
-            sta.interrupt = True
 
         # change path to next filename
         cfg.params[cfg.lfp_path] = os.path.join(os.path.dirname(cfg.params[cfg.lfp_path]), lfp_filename)

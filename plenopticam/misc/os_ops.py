@@ -9,9 +9,9 @@ def mkdir_p(path, print_opt=False):
     except OSError as exc:  # Python >2.5
         if exc.errno == errno.EEXIST and isdir(path):
             if print_opt:
-                print('\n Directory already exists. Potential loss of data as it may be overwritten.')
-        else:
-            raise OSError('\n Could not create directory.')
+                print('\n Potential data loss as directory already exists.')
+        #else:
+        #    raise OSError('\n Could not create directory.')
 
     return True
 
