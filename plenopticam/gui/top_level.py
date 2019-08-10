@@ -32,15 +32,11 @@ import os
 # local python files
 from plenopticam.misc.status import PlenopticamStatus
 from plenopticam import __version__
-from plenopticam.gui.constants import PX, PY
+from plenopticam.gui.constants import PX, PY, ICON
 from plenopticam.gui.widget_ctrl import CtrlWidget
 from plenopticam.gui.widget_view import ViewWidget
 
 # generate blank icon on windows
-ICON = (b'\x00\x00\x01\x00\x01\x00\x10\x10\x00\x00\x01\x00\x08\x00h\x05\x00\x00'
-        b'\x16\x00\x00\x00(\x00\x00\x00\x10\x00\x00\x00 \x00\x00\x00\x01\x00'
-        b'\x08\x00\x00\x00\x00\x00@\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-        b'\x00\x01\x00\x00\x00\x01') + b'\x00'*1282 + b'\xff'*64
 _, ICON_PATH = mkstemp()
 with open(ICON_PATH, 'wb') as icon_file:
     icon_file.write(ICON)
