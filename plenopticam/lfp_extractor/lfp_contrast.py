@@ -20,10 +20,8 @@ class LfpContrast(LfpViewpoints):
         # estimate contrast and brightness via least-squares method
         self.auto_contrast()
 
-        if len(self.vp_img_arr.shape) == 5:
-            self.proc_vp_arr(self.correct_contrast, msg='Contrast automation')
-        else:
-            raise NotImplementedError
+        # apply estimated brightness and contrast levels to viewpoint array
+        self.proc_vp_arr(self.correct_contrast, msg='Contrast automation')
 
     def auto_contrast(self, ch=0):
         ''' according to https://stackoverflow.com/questions/9744255/instagram-lux-effect/9761841#9761841 '''
