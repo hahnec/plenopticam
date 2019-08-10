@@ -50,9 +50,10 @@ class LfpResampler(object):
 
                     # find MIC by indices
                     curr_mic = centroids[(centroids[:, 3] == lx) & (centroids[:, 2] == ly), [0, 1]]
+                    curr_mic = np.round(curr_mic).astype('int')     # round to integer type
 
                     # interpolate each micro image with its MIC as the center with consistent micro image size
-                    window = self.lfp_raw[int(curr_mic[0])-c-1:int(curr_mic[0])+c+2, int(curr_mic[1])-c-1:int(curr_mic[1])+c+2]
+                    window = self.lfp_raw[curr_mic[0]-c-1:curr_mic[0]+c+2, curr_mic[1]-c-1:curr_mic[1]+c+2]
                     self._lfp_out[ly * patch_size:(ly+1) * patch_size, lx * patch_size:(lx+1) * patch_size] = \
                         self._patch_align(window, curr_mic, method=self._method)[1:-1, 1:-1]
 
@@ -79,9 +80,10 @@ class LfpResampler(object):
 
                     # find MIC by indices
                     curr_mic = centroids[(centroids[:, 3] == lx) & (centroids[:, 2] == ly), [0, 1]]
+                    curr_mic = np.round(curr_mic).astype('int')     # round to integer type
 
-                    # interpolate each micro image with its MIC as the center with consistent micro image size
-                    window = self.lfp_raw[int(curr_mic[0])-c-1:int(curr_mic[0])+c+2, int(curr_mic[1])-c-1: int(curr_mic[1])+c+2]
+                    # interpolate each micro image with its MIC as the center and consistent micro image size
+                    window = self.lfp_raw[curr_mic[0]-c-1:curr_mic[0]+c+2, curr_mic[1]-c-1: curr_mic[1]+c+2]
                     patch_stack[lx, :, :] = self._patch_align(window, curr_mic, method=self._method)[1:-1, 1:-1]
 
                     # do interpolation of two adjacent micro images
@@ -96,7 +98,8 @@ class LfpResampler(object):
                             interpol_vals = np.arange(hex_stretch)/hex_stretch*lens_x_max
                             interpol_stack[:, y, x, p] = np.interp(interpol_vals, range(lens_x_max), patch_stack[:, y, x, p])
 
-                self._lfp_out[ly*patch_size:ly*patch_size+patch_size, :] = np.concatenate(interpol_stack, axis=1).reshape((patch_size, hex_stretch * patch_size, P))
+                self._lfp_out[ly*patch_size:ly*patch_size+patch_size, :] = \
+                    np.concatenate(interpol_stack, axis=1).reshape((patch_size, hex_stretch * patch_size, P))
 
                 # check interrupt status
                 if self.sta.interrupt:
