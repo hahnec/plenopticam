@@ -27,7 +27,7 @@ except ImportError:
 
 from plenopticam.gui.constants import PX, PY, BTN_W
 
-# make object for plot widget
+# make object for command widget
 class CmndWidget(tk.Frame):
 
     def __init__(self, parent):
