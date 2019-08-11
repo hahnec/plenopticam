@@ -41,7 +41,8 @@ def usage():
     print("Usage: plenopticam <options>\n")
     print("Options:")
     print("-g                                Open up graphical user interface")
-    print("-f <filename>, --file=<filename>  Specify image file to process")
+    print("-f <filepath>, --file=<filepath>  Specify image file to process")
+    print("-c <calipath>, --cali=<calipath>  Specify calibration file to process")
 
     # img extract options
     print("-r <type>, --refo=<type>          Refocusing image synthesis flag")
@@ -58,12 +59,9 @@ def parse_options(argv):
 
     # default parameters
     cfg = PlenopticamConfig()
-    cfg.params[cfg.opt_prnt] = True
-    cfg.params[cfg.opt_cont] = True
-    cfg.params[cfg.opt_awb_] = False
 
     try:
-        opts, args = getopt.getopt(argv, ":ghfrvpd", ["gui", "help", "file=", "refo=", "view", "patch", "dir"])
+        opts, args = getopt.getopt(argv, ":ghfrvpd", ["gui", "help", "file=", "cali=" "refo=", "view", "patch", "dir"])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -75,6 +73,8 @@ def parse_options(argv):
                 sys.exit()
             if opt in ("-f", "--file"):
                 cfg.params[cfg.lfp_path] = arg
+            if opt in ("-c", "--cali"):
+                cfg.params[cfg.cal_path] = arg
             if opt in ("-r", "--refo"):
                 cfg.params[cfg.opt_refo] = arg
             if opt in ("-v", "--view"):
@@ -119,7 +119,6 @@ def main():
 
     # iterate through light field image(s)
     for lfp_filename in lfp_filenames:
-
 
         # change path to next filename
         cfg.params[cfg.lfp_path] = os.path.join(os.path.dirname(cfg.params[cfg.lfp_path]), lfp_filename)
