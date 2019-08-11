@@ -4,6 +4,7 @@ from plenopticam.misc import Normalizer
 from plenopticam.lfp_extractor import LfpViewpoints, LfpExporter
 from plenopticam.lfp_extractor.lfp_colors import LfpColors
 from plenopticam.lfp_extractor.lfp_contrast import LfpContrast
+from plenopticam.lfp_extractor.lfp_hotpixels import LfpHotPixels
 
 
 class LfpRearranger(LfpViewpoints):
@@ -28,8 +29,12 @@ class LfpRearranger(LfpViewpoints):
         # rearrange lightfield to viewpoint representation
         self.viewpoint_extraction()
 
-        # remove pixel outliers
-        # self.proc_vp_arr(correct_luma_outliers, msg='Remove pixel outliers')
+        # remove hot pixels if option is set
+        if self.cfg.params[self.cfg.opt_hotp]:
+            obj = LfpHotPixels(vp_img_arr=self._vp_img_arr, cfg=self.cfg, sta=self.sta)
+            obj.main()
+            self._vp_img_arr = obj.vp_img_arr
+            del obj
 
         # contrast automation if option is set
         if self.cfg.params[self.cfg.opt_cont]:

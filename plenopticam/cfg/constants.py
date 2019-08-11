@@ -10,8 +10,9 @@ PARAMS_KEYS = (
     'ran_refo',
     # booleans
     'opt_cali',
-    'opt_awb_',
+    'opt_hotp',
     'opt_cont',
+    'opt_awb_',
     'opt_view',
     'opt_refo',
     'opt_refi',
@@ -34,6 +35,7 @@ PARAMS_VALS = (
     [0, 2],
     # booleans
     False,
+    True,
     True,
     True,
     True,
@@ -62,6 +64,7 @@ PARAMS_TYPE = (
     'bool',
     'bool',
     'bool',
+    'bool',
     'sel',
     'bool',
     'bool',
@@ -80,8 +83,9 @@ PARAMS_NAME = (
     'Refocusing range',
     # booleans
     'Force re-calibration',
-    'Automatic white balance',
+    'Hot pixel correction',
     'Contrast automation',
+    'Automatic white balance',
     'Viewpoint image extraction',
     'Refocused image extraction',
     'Refocus refinement',
