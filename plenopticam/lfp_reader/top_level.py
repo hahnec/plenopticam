@@ -16,7 +16,7 @@ class LfpReader(object):
         self.sta = sta if sta is not None else misc.PlenopticamStatus()
 
         # internal variables
-        self._lfp_path = lfp_path.lower() if lfp_path is not None else cfg.params[cfg.lfp_path].lower()
+        self._lfp_path = lfp_path if lfp_path is not None else cfg.params[cfg.lfp_path]
 
         # output variables
         self._lfp_img = None
@@ -24,7 +24,7 @@ class LfpReader(object):
 
     def main(self):
 
-        if self._lfp_path.endswith(SUPP_FILE_EXT):
+        if self._lfp_path.lower().endswith(SUPP_FILE_EXT):
 
             # filename and file path from previously decoded data
             dp = os.path.splitext(self._lfp_path)[0]
@@ -56,11 +56,11 @@ class LfpReader(object):
 
                         # LFC and raw type decoding
                         obj = LfpDecoder(file, self.cfg, self.sta)
-                        if self._lfp_path.endswith(SUPP_FILE_EXT[1:]):
+                        if self._lfp_path.lower().endswith(SUPP_FILE_EXT[1:]):
                             # LFC type decoding
                             obj.decode_lfc()
                             self.cfg.save_json(os.path.join(dp, os.path.basename(dp)+'.json'), json_dict=obj.json_dict)
-                        elif self._lfp_path.endswith(SUPP_FILE_EXT[0]):
+                        elif self._lfp_path.lower().endswith(SUPP_FILE_EXT[0]):
                             # raw type decoding
                             obj.decode_raw()
                         self._lfp_img = obj.rgb_img

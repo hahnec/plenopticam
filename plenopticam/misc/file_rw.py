@@ -59,7 +59,7 @@ def save_img_file(img, file_path, type=None):
 
 def load_img_file(file_path):
 
-    type = file_path.lower().split('.')[-1]
+    type = file_path.split('.')[-1]
     img = None
 
     if type == 'tiff':

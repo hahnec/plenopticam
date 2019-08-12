@@ -105,7 +105,7 @@ def main():
     #cfg.params[cfg.lfp_path] = "/Users/Admin/Pictures/Plenoptic/INRIA_SIROCCO/"
     #cfg.params[cfg.lfp_path] = "C:\\Users\\chahne\\Downloads\\LytroIllum_Dataset_INRIA_SIROCCO\\"
     if os.path.isdir(cfg.params[cfg.lfp_path]):
-        lfp_filenames = [f for f in os.listdir(cfg.params[cfg.lfp_path]) if f.lower().endswith(SUPP_FILE_EXT)]
+        lfp_filenames = [f for f in os.listdir(cfg.params[cfg.lfp_path]) if f.endswith(SUPP_FILE_EXT)]
     elif not os.path.isfile(cfg.params[cfg.lfp_path]):
         lfp_filenames = [misc.select_file(cfg.params[cfg.lfp_path], 'Select plenoptic image')]
     else:
