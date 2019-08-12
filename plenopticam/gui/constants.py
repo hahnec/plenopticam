@@ -5,6 +5,7 @@ BTN_W = 10
 GENERIC_EXTS = ['*.bmp', '*.png', '*.tiff', '*.jpeg', '*.jpg']
 LYT_LFP_EXTS = ['*.lfp', '*.lfr', '*.raw']
 LYT_CAL_EXTS = ['*.tar', '*.raw']
+ALL_EXTS = ['*.*']
 
 # blank icon
 ICON = (b'\x00\x00\x01\x00\x01\x00\x10\x10\x00\x00\x01\x00\x08\x00h\x05\x00\x00'
