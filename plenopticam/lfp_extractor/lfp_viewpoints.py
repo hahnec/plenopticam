@@ -32,11 +32,17 @@ class LfpViewpoints(object):
         try:
             for j in range(self._vp_img_arr.shape[0]):
                 for i in range(self._vp_img_arr.shape[1]):
+
                     self._vp_img_arr[j, i, :, :, :] = fun(self._vp_img_arr[j, i, :, :, :], *args)
 
                     # progress update
                     percent = (i*self._vp_img_arr.shape[1]+(j+1))/(np.dot(*self._vp_img_arr.shape[:2])*100)
                     self.sta.progress(percent, self.cfg.params[self.cfg.opt_dbug])
+
+                # check interrupt status
+                if self.sta.interrupt:
+                    return False
+
         except:
             if len(self.vp_img_arr.shape) != 5:
                 raise NotImplementedError
