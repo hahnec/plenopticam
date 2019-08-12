@@ -1,12 +1,13 @@
 # local imports
 from plenopticam import misc
 from plenopticam.lfp_extractor.lfp_cropper import LfpCropper
+from plenopticam.misc.type_checks import rint
 
 # external libs
 import numpy as np
 import os
 import pickle
-from scipy.interpolate import interp2d#, RectBivariateSpline, griddata
+from scipy.interpolate import interp2d, RectBivariateSpline, griddata
 
 class LfpResampler(object):
 
@@ -80,8 +81,8 @@ class LfpResampler(object):
 
             # careful: interp2d() takes x first and y second
             fun = interp2d(range(window.shape[1]), range(window.shape[0]), window[:, :, p], kind=method, copy=False)
-            # fun = RectBivariateSpline(range(window.shape[1]), range(window.shape[0]), window[:, :, p])
-            patch[:, :, p] = fun(np.arange(window.shape[1])+mic[1]-int(mic[1]), np.arange(window.shape[0])+mic[0]-int(mic[0]))
+            #fun = RectBivariateSpline(range(window.shape[1]), range(window.shape[0]), window[:, :, p])
+            patch[:, :, p] = fun(np.arange(window.shape[1])+mic[1]-rint(mic[1]), np.arange(window.shape[0])+mic[0]-rint(mic[0]))
 
         # treatment of interpolated values being below or above original extrema
         patch[patch < window.min()] = window.min()
@@ -135,7 +136,7 @@ class LfpResampler(object):
                 mic = self._get_coords_by_idx(ly=ly, lx=lx)
 
                 # interpolate each micro image with its MIC as the center with consistent micro image size
-                window = self.lfp_raw[int(mic[0])-self._C-1:int(mic[0])+self._C+2, int(mic[1])-self._C-1:int(mic[1])+self._C+2]
+                window = self.lfp_raw[rint(mic[0])-self._C-1:rint(mic[0])+self._C+2, rint(mic[1])-self._C-1:rint(mic[1])+self._C+2]
                 self._lfp_out[ly * self._M:(ly + 1) * self._M, lx * self._M:(lx + 1) * self._M] = \
                     self._patch_align(window, mic, method=self._METHOD)[1:-1, 1:-1]
 
@@ -167,7 +168,7 @@ class LfpResampler(object):
                 mic = self._get_coords_by_idx(ly=ly, lx=lx)
 
                 # interpolate each micro image with its MIC as the center and consistent micro image size
-                window = self.lfp_raw[int(mic[0])-self._C-1:int(mic[0])+self._C+2, int(mic[1])-self._C-1: int(mic[1])+self._C+2]
+                window = self.lfp_raw[rint(mic[0])-self._C-1:rint(mic[0])+self._C+2, rint(mic[1])-self._C-1: rint(mic[1])+self._C+2]
                 patch_stack[lx, :, :] = self._patch_align(window, mic, method=self._METHOD)[1:-1, 1:-1]
 
                 # do interpolation of two adjacent micro images
