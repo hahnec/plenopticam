@@ -204,14 +204,14 @@ class CtrlWidget(tk.Frame):
         return self.lfp_img is None
 
     def cond1(self):
-        return (isdir(self.cfg.params[self.cfg.cal_path]) or self.cfg.params[self.cfg.cal_path].endswith('.tar'))
+        return (isdir(self.cfg.params[self.cfg.cal_path]) or self.cfg.params[self.cfg.cal_path].lower().endswith('.tar'))
 
     def cond2(self):
         return not self.cond1()
 
     def cond3(self):
         meta_path = self.cfg.params[self.cfg.cal_meta]
-        return (not (exists(meta_path) and meta_path.endswith('json')) or self.cfg.params[self.cfg.opt_cali])
+        return (not (exists(meta_path) and meta_path.lower().endswith('json')) or self.cfg.params[self.cfg.opt_cali])
 
     def cond4(self):
         return not exists(join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'lfp_img_align.pkl'))

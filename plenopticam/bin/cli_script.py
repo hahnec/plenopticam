@@ -105,7 +105,7 @@ def main():
     #cfg.params[cfg.lfp_path] = "/Users/Admin/Pictures/Plenoptic/INRIA_SIROCCO/"
     #cfg.params[cfg.lfp_path] = "C:\\Users\\chahne\\Downloads\\LytroIllum_Dataset_INRIA_SIROCCO\\"
     if os.path.isdir(cfg.params[cfg.lfp_path]):
-        lfp_filenames = [f for f in os.listdir(cfg.params[cfg.lfp_path]) if f.endswith(SUPP_FILE_EXT)]
+        lfp_filenames = [f for f in os.listdir(cfg.params[cfg.lfp_path]) if f.lower().endswith(SUPP_FILE_EXT)]
     elif not os.path.isfile(cfg.params[cfg.lfp_path]):
         lfp_filenames = [misc.select_file(cfg.params[cfg.lfp_path], 'Select plenoptic image')]
     else:
@@ -138,7 +138,7 @@ def main():
             # manual calibration data selection
             sta.status_msg('\r Please select white image calibration source manually', cfg.params[cfg.opt_prnt])
 
-            if os.path.isdir(cfg.params[cfg.cal_path]) or cfg.params[cfg.cal_path].endswith('.tar'):
+            if os.path.isdir(cfg.params[cfg.cal_path]) or cfg.params[cfg.cal_path].lower().endswith('.tar'):
                 # automatic calibration data selection
                 obj = lfp_calibrator.CaliFinder(cfg, sta)
                 obj.main()
@@ -152,7 +152,7 @@ def main():
                 cfg.save_params()
 
             # perform calibration if previously computed calibration data does not exist
-            meta_cond = not (os.path.exists(cfg.params[cfg.cal_meta]) and cfg.params[cfg.cal_meta].endswith('json'))
+            meta_cond = not (os.path.exists(cfg.params[cfg.cal_meta]) and cfg.params[cfg.cal_meta].lower().endswith('json'))
             if meta_cond or cfg.params[cfg.opt_cali]:
 
                 # perform centroid calibration

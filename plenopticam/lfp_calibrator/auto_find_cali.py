@@ -32,7 +32,7 @@ class CaliFinder(object):
     def main(self):
 
         # auto calibration can only be used if calibration source path is either directory or tar archive
-        if isdir(self._path) or self._path.endswith('.tar'):
+        if isdir(self._path) or self._path.lower().endswith('.tar'):
 
             # read JSON file from selected *.lfp image
             self._lfp_json = self.cfg.load_json(self.cfg.params[self.cfg.lfp_path])
@@ -59,7 +59,7 @@ class CaliFinder(object):
                 # look for geo data in calibration tar-files (skip if already found in folders with file_found==True)
                 self._search_cal_file()
 
-            elif self._path.endswith('.tar'):
+            elif self._path.lower().endswith('.tar'):
 
                 # look for geo data in provided calibration tar-file
                 self._search_tar_file(self._path)
@@ -140,7 +140,7 @@ class CaliFinder(object):
 
         # skip if file already found
         if not self._file_found:
-            onlyfiles = [f for f in listdir(self._path) if f.endswith('.tar')]
+            onlyfiles = [f for f in listdir(self._path) if f.lower().endswith('.tar')]
             tarstring = 'caldata-'+str(self._serial)+'.tar'
             tarnames = [tarstring] if onlyfiles.count(tarstring) else onlyfiles
 
@@ -156,7 +156,7 @@ class CaliFinder(object):
         # read mla_calibration JSON file from tar archive
         try:
             tar_obj = tarfile.open(join(self._path, tarname), mode='r')
-            cal_manifest = tar_obj.extractfile(join('unitdata', 'cal_file_manifest.json'))
+            cal_manifest = tar_obj.extractfile('unitdata/cal_file_manifest.json')
             json_dict = json.loads(cal_manifest.read().decode('utf-8'))
             self._match_georef(json_dict)
             if self._cal_fn:
@@ -164,12 +164,12 @@ class CaliFinder(object):
 
                 # update config
                 self._serial = tarname.split('-')[-1].split('.')[0]
-                tar_path = dirname(self._path) if self._path.endswith('tar') else self._path
+                tar_path = dirname(self._path) if self._path.lower().endswith('tar') else self._path
                 self.cfg.params[self.cfg.cal_meta] = join(tar_path, self._serial,
                                                           self._cal_fn.lower().replace('.raw', '.json'))
 
                 # load raw data
-                self._raw_data = tar_obj.extractfile(join('unitdata', self._cal_fn))
+                self._raw_data = tar_obj.extractfile('unitdata/' + self._cal_fn)
 
         except FileNotFoundError:
             self.sta.status_msg('Did not find calibration file.', opt=True)
