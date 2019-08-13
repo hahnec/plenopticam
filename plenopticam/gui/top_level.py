@@ -60,6 +60,10 @@ class PlenopticamApp(tk.Tk):
             fp = os.path.join(cwd, 'icns', '1055104.ico')
             fp = fp if os.path.exists(fp) else ICON_PATH
             self.iconbitmap(fp)
+        elif sys.platform == 'linux':
+            cwd = os.path.dirname(os.path.realpath(__file__))
+            logo = tk.PhotoImage(file=os.path.join(cwd, 'icns', '1055104_48px.gif'))
+            self.call('wm', 'iconphoto', self._w, logo)
 
         # initialize parameters
         self.sta = PlenopticamStatus()
