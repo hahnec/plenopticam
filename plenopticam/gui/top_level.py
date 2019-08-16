@@ -98,5 +98,8 @@ class PlenopticamApp(tk.Tk):
 
 if __name__ == "__main__":
 
-    MainWin = PlenopticamApp(None)
-    MainWin.mainloop()
+    try:
+        MainWin = PlenopticamApp(None)
+        MainWin.mainloop()
+    except Exception as e:
+        PlenopticamError(e)
