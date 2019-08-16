@@ -28,10 +28,11 @@ from sys import platform
 APP = ['plenopticam/gui/top_level.py']
 DATA_FILES = [
         # ('subdir' , ['file_path'])
+        ('gui/icns', ['plenopticam/gui/icns/1055104.ico'])
 ]
 UNIX_FILES = [
         # ('subdir' , ['file_path'])
-        ('gui/icns', ['plenopticam/gui/icns/1055104_48px.gif'])
+        ('gui/icns', ['plenopticam/gui/icns/1055104.gif'])
 ]
 
 OPTIONS = {
