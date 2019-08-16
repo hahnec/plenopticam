@@ -81,13 +81,14 @@ class PlenopticamApp(tk.Tk):
             self.call('wm', 'iconphoto', self._w, logo)
 
         elif sys.platform == 'win32':
-            # generate blank window icon on Windows
+            # generate blank window icon
             _, ICON_PATH = mkstemp()
             with open(ICON_PATH, 'wb') as icon_file:
                 icon_file.write(ICON)
 
             # load icon on Windows
-            fp = ICON_PATH if not os.path.exists(fp.replace('gif', 'ico')) else fp.replace('gif', 'ico')
+            fp = fp.replace('gif', 'ico')
+            fp = ICON_PATH if not os.path.exists(fp) else fp
             self.iconbitmap(fp)
             self.wm_iconbitmap(default=fp)
 
