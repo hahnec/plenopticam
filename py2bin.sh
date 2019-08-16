@@ -14,6 +14,12 @@ pyinstaller3.cp plenopticam/gui/top_level.py \
 	--noconsole \
 	--add-data=/home/chris/.local/lib/python3.6/site-packages/libtiff/:./libtiff \
 	--name=plenopticam \
-	--icon=plenopticam/gui/icns/1055104.ico \
+	--icon=plenopticam/gui/icns/1055104.gif \
 	--add-data=./docs/build/html/:./docs/build/html/ \
-	--add-data=plenopticam/gui/icns/1055104.ico:./icns/
+	--add-data=plenopticam/gui/icns/1055104.gif:./icns/
+
+# change distribution folder ownership to user
+sudo chown -R chris: ./dist
+
+# set absolute path to icon file
+gio set -t string ./dist/plenopticam 'metadata::custom-icon' 'file:/home/chris/MyRepos/plenopticam/gui/icns/1055104.gif'

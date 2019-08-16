@@ -25,24 +25,22 @@ try:
 except ImportError:
     import Tkinter as tk
 
-from tempfile import mkstemp
-import sys
 import os
+import sys
+from tempfile import mkstemp
 
 # local python files
-from plenopticam.misc.status import PlenopticamStatus
 from plenopticam import __version__
 from plenopticam.gui.constants import PX, PY, ICON
 from plenopticam.gui.widget_ctrl import CtrlWidget
 from plenopticam.gui.widget_view import ViewWidget
-
-# generate blank icon on windows
-_, ICON_PATH = mkstemp()
-with open(ICON_PATH, 'wb') as icon_file:
-    icon_file.write(ICON)
+from plenopticam.misc.status import PlenopticamStatus
+from plenopticam.misc import PlenopticamError
 
 # object for application window
 class PlenopticamApp(tk.Tk):
+
+    REL_PATH = os.path.join('icns', '1055104.gif')
 
     def __init__(self, parent):
 
@@ -54,16 +52,7 @@ class PlenopticamApp(tk.Tk):
         self.wm_title("PlenoptiCam-"+__version__)
 
         # icon handling
-        if sys.platform == 'win32':
-            self.wm_iconbitmap(default=ICON_PATH)
-            cwd = sys._MEIPASS if hasattr(sys, '_MEIPASS') else os.getcwd()
-            fp = os.path.join(cwd, 'icns', '1055104.ico')
-            fp = fp if os.path.exists(fp) else ICON_PATH
-            self.iconbitmap(fp)
-        elif sys.platform == 'linux':
-            cwd = os.path.dirname(os.path.realpath(__file__))
-            logo = tk.PhotoImage(file=os.path.join(cwd, 'icns', '1055104_48px.gif'))
-            self.call('wm', 'iconphoto', self._w, logo)
+        self.icon_handling()
 
         # initialize parameters
         self.sta = PlenopticamStatus()
@@ -78,6 +67,34 @@ class PlenopticamApp(tk.Tk):
 
         # enable tkinter resizing
         self.resizable(True, False)
+
+    def icon_handling(self):
+        ''' use OS temp folder if present or current working directory '''
+
+        # icon path for app bundle (tmp) or non-bundled package (cwd)
+        cwd = os.path.join(os.getcwd(), self.REL_PATH)
+        fp = os.path.join(sys._MEIPASS, self.REL_PATH) if hasattr(sys, '_MEIPASS') else cwd
+
+        # use blank icon if icon path does not exist
+        if not os.path.exists(fp):
+            fp = os.path.join(os.path.dirname(os.path.realpath(__file__)), self.REL_PATH)
+
+        if sys.platform == 'linux':
+            # load icon on linux
+            logo = tk.PhotoImage(file=fp)
+            self.call('wm', 'iconphoto', self._w, logo)
+
+        elif sys.platform == 'win32':
+
+            # generate blank window icon on Windows
+            _, ICON_PATH = mkstemp()
+            with open(ICON_PATH, 'wb') as icon_file:
+                icon_file.write(ICON)
+            self.wm_iconbitmap(default=ICON_PATH)
+
+            # load icon on Windows
+            fp = ICON_PATH if fp == cwd else fp
+            self.iconbitmap(fp)
 
 if __name__ == "__main__":
 
