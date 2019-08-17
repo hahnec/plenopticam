@@ -36,8 +36,9 @@ Usage
 
 .. |gui| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/develop/docs/img/gui_ubuntu.png" width="75%" align="middle" style="display: block;
-    margin: 0 auto;">
+    <p align="center">
+        <img src="https://raw.githubusercontent.com/hahnec/plenopticam/develop/docs/img/gui_ubuntu.png" width="66%">
+    <p>
 
 .. note::
     "Pick folder" checkbox is useful to point to a directory containing calibration archive files of Lytro Illum cameras.
