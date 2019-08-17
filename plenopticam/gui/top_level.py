@@ -56,6 +56,7 @@ class PlenopticamApp(tk.Tk):
 
         # initialize parameters
         self.sta = PlenopticamStatus()
+        self.sta.status_msg(msg='\n', opt=True)     # status message placeholder
 
         # instantiate controller
         self.ctrl_wid = CtrlWidget(self)
@@ -64,9 +65,6 @@ class PlenopticamApp(tk.Tk):
         # instantiate view
         self.view_wid = ViewWidget(self)
         self.view_wid.pack(fill='both', expand=True, side='bottom', padx=PX, pady=PY)
-
-        # enable tkinter resizing
-        self.resizable(True, False)
 
     def icon_handling(self):
         ''' use OS temp folder if present or current working directory '''
