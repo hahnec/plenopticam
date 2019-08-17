@@ -36,7 +36,7 @@ Usage
 
 .. |gui| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/gui_ubuntu.png" width="75%" align="middle" style="display: block;
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/develop/docs/img/gui_ubuntu.png" width="75%" align="middle" style="display: block;
     margin: 0 auto;">
 
 .. note::
