@@ -108,6 +108,15 @@ class PlenopticamConfig(object):
 
         return True
 
+    def reset_values(self):
+
+        self.params[self.lfp_path] = ''
+        self.params[self.cal_path] = ''
+        self.params[self.cal_meta] = ''
+        self.params[self.opt_awb_] = False
+        self.params[self.opt_cont] = False
+        self.params[self.opt_hotp] = False
+
     def load_cal_data(self):
 
         # construct file path

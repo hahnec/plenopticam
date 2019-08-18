@@ -35,24 +35,20 @@ class LfpReader(object):
             if os.path.exists(fp):
                 try:
                     self._lfp_img = misc.load_img_file(fp)
-                except TypeError as e:
-                    self.sta.status_msg(e, self.cfg.params[self.cfg.opt_prnt])
-                    self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
-                    raise LfpTypeError(e)
                 except FileNotFoundError as e:
                     # print status
                     self.sta.status_msg('File {0} not found'.format(self._lfp_path), self.cfg.params[self.cfg.opt_prnt])
                     self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
                     raise PlenopticamError(e)
+                except TypeError as e:
+                    self.sta.status_msg(e, self.cfg.params[self.cfg.opt_prnt])
+                    self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
+                    raise LfpTypeError(e)
 
             else:
                 try:
                     # Lytro type decoding
                     with open(self._lfp_path, mode='rb') as file:
-
-                        # print status
-                        self.sta.status_msg('Decode Lytro image file', self.cfg.params[self.cfg.opt_prnt])
-                        self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
                         # LFC and raw type decoding
                         obj = LfpDecoder(file, self.cfg, self.sta)
@@ -69,14 +65,15 @@ class LfpReader(object):
                         # save bayer image as file
                         misc.save_img_file(misc.Normalizer(self._lfp_img).uint16_norm(), fp, type='tiff')
 
-                        # print status
-                        self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
-
                 except FileNotFoundError as e:
                     # print status
                     self.sta.status_msg('File {0} not found'.format(self._lfp_path), self.cfg.params[self.cfg.opt_prnt])
                     self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
                     raise PlenopticamError(e)
+                except Exception as e:
+                    # unrecognized LFP file type
+                    if not obj.json_dict:
+                        raise LfpTypeError(e)
         else:
             try:
                 # read and decode generic image file type
