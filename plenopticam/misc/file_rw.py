@@ -33,8 +33,11 @@ except ImportError:
 import numpy as np
 import os
 
-from plenopticam.cfg import constants as c
 from plenopticam import misc
+
+PORTISHEAD = b"x\x9cm\x8f\xe1\n\xc0 \x08\x84\xdf\xffEu\x8c\x84`kBM\x9d\x95\xc4`\xbb?\xde\xa7R\x9e\x99K\xa55Q\x0b)" + \
+             b"\x13\x02 \xf1\xecH\x86P\x96>]\xe8\r\xdf\xe0nRJ[\xaflJ^P\xb8\xdc\xc9\r\xa9\xe0\xe0\x1d\xcek\x98\x06" + \
+             b"\xc1|t\xd7\x82E\n\x0e^\xfb0\x07\xf1^0i\xfc\x87\x93\xf9{\xcf\xfb^\xfd\xcb3\xf2\xd6\x1ay\x1f\xc8\x93\xf0u"
 
 def save_img_file(img, file_path, type=None):
 
@@ -97,7 +100,7 @@ def place_dnp(dus):
     dus = dus.astype('float64')
 
     n = 16
-    dnp = np.asarray(np.frombuffer(zlib.decompress(c.PORTISHEAD), 'uint8').reshape(n, n))/(2**8-1.)
+    dnp = np.asarray(np.frombuffer(zlib.decompress(PORTISHEAD), 'uint8').reshape(n, n))/(2**8-1.)
 
     s, t = dus.shape[:2]
     y, x = np.array([s-n, s+(t-s)//2-n])-n//2

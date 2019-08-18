@@ -23,7 +23,7 @@ class CaliFinder(object):
         self._cal_fn = None
         self._raw_data = None
         self._file_found = None
-        self._opt_prnt = self.cfg.params[self.cfg.opt_prnt]
+        self._opt_prnt = False if sta is not None else self.cfg.params[self.cfg.opt_prnt]
         self._path = self.cfg.params[self.cfg.cal_path]
 
         # output variables

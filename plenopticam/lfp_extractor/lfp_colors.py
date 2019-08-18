@@ -73,7 +73,7 @@ class LfpColors(LfpViewpoints):
                 delta = 2 * np.sign(err) * u  # accelerate gain adjustment if far off
             elif abs(err) < b:  # converged when u_bar and v_bar < b
                 # delta = 0
-                self.sta.status_msg('AWB convergence reached', self.cfg.params[self.cfg.opt_prnt])
+                #self.sta.status_msg('AWB convergence reached', self.cfg.params[self.cfg.opt_prnt])
                 break
             else:
                 delta = err * u

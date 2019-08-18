@@ -19,6 +19,7 @@ Copyright (c) 2019 Christopher Hahne <inbox@christopherhahne.de>
 __version__ = '0.1.3'
 
 from . import misc
+from . import cfg
 from . import lfp_reader
 from . import lfp_calibrator
 from . import lfp_aligner

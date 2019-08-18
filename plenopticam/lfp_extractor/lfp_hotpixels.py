@@ -20,7 +20,7 @@ class LfpHotPixels(LfpViewpoints):
                 num_hi = len(win[win > img[j, i]*(1-perc)])
 
                 # dead pixel detection
-                num_lo = len(win[win < img[j, i]*(perc)])
+                num_lo = len(win[win < img[j, i]*perc])
 
                 if num_hi < win.size/5 or num_lo > win.size/5:
                     # replace outlier by average of all directly adjacent pixels

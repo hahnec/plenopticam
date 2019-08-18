@@ -21,9 +21,8 @@ Copyright (c) 2019 Christopher Hahne <info@christopherhahne.de>
 """
 
 # local imports
-from plenopticam import misc
+from plenopticam.misc import mkdir_p, PlenopticamStatus, PlenopticamError
 from plenopticam.misc.type_checks import *
-from plenopticam.misc.errors import PlenopticamError
 from plenopticam.cfg.constants import PARAMS_KEYS, PARAMS_VALS, CALIBS_KEYS
 
 # external libs
@@ -90,7 +89,7 @@ class PlenopticamConfig(object):
 
         try:
             # create config folder (if not already present)
-            misc.mkdir_p(self._dir_path)
+            mkdir_p(self._dir_path)
             # write config file
             with open(fp, 'w+') as f:
                 json.dump(self.params, f, sort_keys=True, indent=4, cls=NumpyTypeEncoder)
@@ -143,7 +142,7 @@ class PlenopticamConfig(object):
     @staticmethod
     def load_json(fp=None, sta=None):
 
-        sta = sta if sta is not None else misc.PlenopticamStatus()
+        sta = sta if sta is not None else PlenopticamStatus()
 
         # filename and filepath handling
         if fp is not None and os.path.splitext(fp)[-1] != '.json':
@@ -179,7 +178,7 @@ class PlenopticamConfig(object):
                 fp = os.path.join(os.path.dirname(os.path.splitext(fp)[0]), fn)
 
             # create folder
-            misc.mkdir_p(os.path.dirname(fp), False)
+            mkdir_p(os.path.dirname(fp), False)
 
         # save calibration data as json file
         json_dict = kwargs['json_dict'] if 'json_dict' in kwargs else kwargs
