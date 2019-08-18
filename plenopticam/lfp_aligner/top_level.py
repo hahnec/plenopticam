@@ -50,10 +50,6 @@ class LfpAligner(object):
         self._lfp_img = obj.lfp_out
         del obj
 
-        # print status
-        self.sta.status_msg('Alignment finished', opt=True)
-        self.sta.progress(100, opt=True)
-
         return True
 
     @property
