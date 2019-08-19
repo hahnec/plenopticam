@@ -90,11 +90,17 @@ Application
 Command Line
 ============
 
-For a stack of light-field images, it may be convenient to iterate through them. This can be done as follows:
+For a stack of light-field images, it may be convenient to iterate through them. This can be done by:
 
-``$ plenopticam --file="C:/../Folder/" --cali="C:/../caldata-B5144000XXX.tar"``
+``$ sudo plenopticam -f '/Users/../Folder/' -c 'Users/../caldata-B5144000XXX.tar'``
 
-with necessary write privileges (consider ``sudo``).
+with necessary write privileges on Unix Systems. A Windows-equivalent command would be as follows:
+
+``plenopticam --file="C:\..\Folder\" --cali="C:\..\caldata-B5144000XXX.tar"`` for Windows or
+
+More information on optional arguments, can be found using the help parameter
+
+``plenopticam -h``
 
 Results
 -------
