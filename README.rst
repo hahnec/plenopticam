@@ -32,6 +32,9 @@ Installation
 Usage
 -----
 
+Application
+===========
+
 |gui|
 
 .. |gui| raw:: html
@@ -83,6 +86,15 @@ Usage
 4. Press **Process** to start the computation.
 
 |
+
+Command Line
+============
+
+For a stack of light-field images, it may be convenient to iterate through them. This can be done as follows:
+
+``$ plenopticam --file="C:/../Folder/" --cali="C:/../caldata-B5144000XXX.tar"``
+
+with necessary write privileges (consider ``sudo``).
 
 Results
 -------
