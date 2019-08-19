@@ -69,7 +69,7 @@ class CentroidRefiner(object):
 
         # window thresholding
         th_img = np.zeros_like(input_win, dtype=np.bool)
-        th_val = np.quantile(weight_win, 0.5)
+        th_val = np.percentile(weight_win, 50)
         th_img[weight_win > th_val] = 1
         if np.sum(th_img) == 0:
             raise Exception('Binary object not found')
