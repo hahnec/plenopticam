@@ -13,6 +13,7 @@ class LfpContrast(LfpViewpoints):
         self.p_hi = p_hi if p_hi is not None else 0.99
 
         # internal variables
+        self._img_lum = misc.yuv_conv(self.central_view) if len(self.central_view.shape) == 3 else self.central_view
         self._contrast, self._brightness = (1., 1.)
 
     def main(self):
@@ -28,8 +29,7 @@ class LfpContrast(LfpViewpoints):
 
         # estimate contrast und brightness parameters (by default: achromatic "luma" channel only)
         val_lim = 2**16-1
-        img_yuv = misc.yuv_conv(self.central_view)
-        h = np.histogram(img_yuv[..., ch], bins=np.arange(val_lim))[0]
+        h = np.histogram(self._img_lum[..., ch], bins=np.arange(val_lim))[0]
         H = np.cumsum(h)/float(np.sum(h))
         try:
             px_lo = self.find_x_given_y(self.p_lo, np.arange(val_lim), H)
@@ -51,7 +51,7 @@ class LfpContrast(LfpViewpoints):
         ''' Application of contrast and brightness values to luminance channel of provided RGB image '''
 
         # color model conversion
-        img_yuv = misc.yuv_conv(img_arr)
+        img_yuv = misc.yuv_conv(img_arr) if len(img_arr.shape) == 3 else img_arr
 
         # convert to float
         f = img_yuv[..., ch].astype(np.float32)
