@@ -135,7 +135,7 @@ class CentroidSorter(object):
                 # retrieve single MIC
                 if len(found_center) != 2:
                     if len(found_center) > 2:
-                        # average over found centroids
+                        # average of found centroids
                         found_center = np.mean(found_center.reshape(-1, 2), axis=0)
                     else:
                         # create missing centroid
@@ -150,7 +150,7 @@ class CentroidSorter(object):
                 # retrieve single MIC
                 if len(found_center) != 2:
                     if len(found_center) > 2:
-                        # average over found centroids
+                        # average of found centroids
                         found_center = np.mean(found_center.reshape(-1, 2), axis=0)
                     else:
                         # create missing centroid (considering MLA packing)
@@ -245,23 +245,15 @@ class CentroidSorter(object):
             lens_max += 1
             if len(found_center) != 2:
                 if len(found_center) > 2:
-                    found_center = np.mean(found_center.reshape(-1, 2), axis=0)  # average over found centroids
+                    # average of found centroids
+                    found_center = np.mean(found_center.reshape(-1, 2), axis=0)
                 else:
                     if cur_mic[axis] > (self._bounding_box[axis] - 1.5*self._pitch[axis]):
                         break
                     else:
-                        # look into other vertical hex direction (if applicable)
-                        found_center = find_centroid(self._centroids, cur_mic, self._pitch, axis, self._pattern, odd)
-                        if len(found_center) != 2:
-                            if len(found_center) > 2:
-                                found_center = np.mean(found_center.reshape(-1, 2), axis=0)  # average over found centroids
-                            else:
-                                # row/column of previous starting centroid incomplete: thus find new starting centroid
-                                odd = self.estimate_odd(start_mic, axis)
-                                start_mic = find_centroid(self._centroids, start_mic, self._pitch, not axis, self._pattern, not odd)
-                                found_center = start_mic
-                        else:
-                            start_mic = found_center
+                        odd = self.estimate_odd(start_mic, axis)
+                        start_mic = find_centroid(self._centroids, start_mic, self._pitch, not axis, self._pattern, not odd)
+                        found_center = start_mic
                         lens_max = 0
             cur_mic = found_center
 
