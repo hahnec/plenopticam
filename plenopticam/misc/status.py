@@ -56,10 +56,14 @@ class PlenopticamStatus(object):
         checklist = checklist if checklist is not None else list()
 
         for el in checklist:
-            if not el:
-                self.status_msg('\r '+msg, msg is not None)
-                self.interrupt = True
-                break
+            if el:
+                return True
+
+        # list elements are all "None" or empty
+        self.status_msg('\r ' + msg, msg is not None)
+        self.interrupt = True
+
+        return False
 
     # event trigger on parameter change (according to observer pattern)
     @property
