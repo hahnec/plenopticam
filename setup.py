@@ -30,6 +30,7 @@ APP = ['plenopticam/gui/top_level.py']
 MAC_FILES = [
         # ('subdir' , ['file_path'])
         ('cfg', ['plenopticam/cfg/cfg.json']),
+        ('gui/icns', ['plenopticam/gui/icns/1055104.ico'])
 ]
 
 WIN_FILES = [
