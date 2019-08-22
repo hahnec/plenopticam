@@ -40,7 +40,7 @@ Application
 .. |gui| raw:: html
 
     <p align="center">
-        <img src="https://raw.githubusercontent.com/hahnec/plenopticam/develop/docs/img/gui_ubuntu.png" width="66%">
+        <img src="https://raw.githubusercontent.com/hahnec/plenopticam/develop/docs/img/gui_linux.png" width="66%">
     <p>
 
 .. note::
