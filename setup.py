@@ -26,7 +26,13 @@ from sys import platform
 
 
 APP = ['plenopticam/gui/top_level.py']
-DATA_FILES = [
+
+MAC_FILES = [
+        # ('subdir' , ['file_path'])
+        ('cfg', ['plenopticam/cfg/cfg.json']),
+]
+
+WIN_FILES = [
         # ('subdir' , ['file_path'])
         ('gui/icns', ['plenopticam/gui/icns/1055104.ico'])
 ]
@@ -49,14 +55,14 @@ if platform == 'darwin':
  extra_options = dict(
      setup_requires=['py2app'],
      app=APP,
-     data_files=DATA_FILES,
+     data_files=MAC_FILES,
      options=dict(py2app=OPTIONS),
  )
 elif platform == 'win32':
  extra_options = dict(
      setup_requires=[],
      app=APP,
-     data_files=DATA_FILES,
+     data_files=WIN_FILES,
  )
 else:
  extra_options = dict(
