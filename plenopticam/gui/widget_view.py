@@ -52,7 +52,7 @@ class ViewWidget(tk.Frame):
                                  ("LabeledProgressbar.label",
                                   {"sticky": ""})],
                   'sticky': 'nswe'})])
-        self.s.configure("LabeledProgressbar", foreground='gray1', background='RoyalBlue3')    # progress bar color
+        self.s.configure("LabeledProgressbar", foreground='gray1', background='SteelBlue2')    # progress bar color
 
         # instantiate progress bar
         self.tk_prog_bar = ttk.Progressbar(self, orient=tk.HORIZONTAL, mode='determinate', style="LabeledProgressbar")
