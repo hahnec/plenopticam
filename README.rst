@@ -6,7 +6,7 @@ PlenoptiCam
 Description
 -----------
 
-*PlenoptiCam* is an open-source software (macOS_ or Win_) for scientific light field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
+*PlenoptiCam* is an open-source software (macOS_, Win_ or Linux_) for scientific light field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
 Raw exposures from a plenoptic camera require four-dimensional image alignment in order to be decoded as a light field. Provided software addresses this by its ability to extract depth by means of sub-aperture images or synthetically focused photographs.
 This application is meant for researchers, developers, beginners and other fiddlers who like to experiment with light field technology. Its scope comprises custom-types of plenoptic cameras and is thus not limited to Lytro's image data.
 
@@ -16,7 +16,7 @@ Installation
 ------------
 
 * executable:
-    1. download bundled apps_ for macOS_ or Win_
+    1. download bundled apps_ for macOS_, Win_ or Linux_
     2. extract archive
     3. run app to open up the user interface (see below)
 
@@ -26,18 +26,22 @@ Installation
     1. install Python from https://www.python.org/
     2. download the source_ using ``$ git clone https://github.com/hahnec/plenopticam.git``
     3. go to the root directory ``$ cd plenopticam``
-    4. install with ``$ sudo python setup.py install`` from the root directory
+    4. install with ``$ sudo python setup.py install`` from root directory
     5. if installation ran smoothly, enter ``$ sudo plenopticam -g`` to the command line after which a lean user interface will pop up (see below)
 
 Usage
 -----
 
+Application
+===========
+
 |gui|
 
 .. |gui| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/gui_v3.png" width="75%" align="middle" style="display: block;
-    margin: 0 auto;">
+    <p align="center">
+        <img src="https://raw.githubusercontent.com/hahnec/plenopticam/develop/docs/img/gui_linux.png" width="66%">
+    <p>
 
 .. note::
     "Pick folder" checkbox is useful to point to a directory containing calibration archive files of Lytro Illum cameras.
@@ -65,7 +69,7 @@ Usage
     - Lytro 1st Generation (to come)
 
 .. note::
-    If you are `using your own Lytro Illum <https://hahnec.github.io/plenopticam/build/html/guide.html#using-your-own-lytro-illum>`__ camera, you first need to extract camera calibration data as a *tar* archive. You can follow the `instructions guide <https://hahnec.github.io/plenopticam/build/html/guide.html>`__
+    If you are `using your own Lytro Illum <https://hahnec.github.io/plenopticam/build/html/guide.html#using-your-own-lytro-illum>`__ camera, you first need to extract camera calibration data as a *tar* archive. To do so, please follow the `instructions guide <https://hahnec.github.io/plenopticam/build/html/guide.html>`__.
 
 |
 
@@ -82,6 +86,21 @@ Usage
 4. Press **Process** to start the computation.
 
 |
+
+Command Line
+============
+
+For a stack of light-field images, it may be convenient to iterate through them. This can be done by:
+
+``$ sudo plenopticam -f '/Users/../Folder/' -c 'Users/../caldata-B5144000XXX.tar'``
+
+with necessary write privileges on Unix Systems. A Windows-equivalent command would be as follows:
+
+``plenopticam --file="C:\..\Folder\" --cali="C:\..\caldata-B5144000XXX.tar"``
+
+More information on optional arguments, can be found using the help parameter
+
+``plenopticam -h``
 
 Results
 -------
@@ -196,8 +215,9 @@ Further information
 .. Hyperlink aliases
 
 .. _source: https://github.com/hahnec/plenopticam/archive/master.zip
-.. _macOS: https://github.com/hahnec/plenopticam/releases/download/v0.1.2-beta/plenopticam_0.1.2-beta_macOS.zip
-.. _Win: https://github.com/hahnec/plenopticam/releases/download/v0.1.2-beta/plenopticam_0.1.2-beta_win.zip
+.. _macOS: https://github.com/hahnec/plenopticam/releases/download/v0.1.3-beta/plenopticam_0.1.3-beta_macOS.zip
+.. _Win: https://github.com/hahnec/plenopticam/releases/download/v0.1.3-beta/plenopticam_0.1.3-beta_win.zip
+.. _Linux: https://github.com/hahnec/plenopticam/releases/download/v0.1.3-beta/plenopticam_0.1.3-beta_linux.zip
 .. _PlenoptiSign: https://github.com/hahnec/plenoptisign/
 .. _apps: https://github.com/hahnec/plenopticam/releases/
 

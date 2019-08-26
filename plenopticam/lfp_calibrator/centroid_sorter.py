@@ -132,11 +132,13 @@ class CentroidSorter(object):
             for lx in range(self._lens_x_max-1):
                 # get adjacent MIC
                 found_center = find_centroid(self._centroids, last_neighbor, self._pitch, 1, 'rec', None)
-                # retrieve missing MIC
+                # retrieve single MIC
                 if len(found_center) != 2:
                     if len(found_center) > 2:
-                        found_center = np.mean(found_center.reshape(-1, 2), axis=0) # average over found centroids
+                        # average of found centroids
+                        found_center = np.mean(found_center.reshape(-1, 2), axis=0)
                     else:
+                        # create missing centroid
                         found_center = self._mic_list[j][:2]+np.array([0, self._pitch[1]])
                 j += 1
                 self._mic_list.append([found_center[0], found_center[1], ly, lx+1])
@@ -145,11 +147,13 @@ class CentroidSorter(object):
             if ly < self._lens_y_max-1:
                 # get adjacent MIC
                 found_center = find_centroid(self._centroids, self._upper_l, self._pitch, 0, self._pattern, odd)
-                # retrieve missing MIC
+                # retrieve single MIC
                 if len(found_center) != 2:
                     if len(found_center) > 2:
-                        found_center = np.mean(found_center.reshape(-1, 2), axis=0) # average over found centroids
+                        # average of found centroids
+                        found_center = np.mean(found_center.reshape(-1, 2), axis=0)
                     else:
+                        # create missing centroid (considering MLA packing)
                         if self._pattern == 'rec':
                             found_center = self._upper_l + np.array([self._pitch[0], 0])
                         elif self._pattern == 'hex':
@@ -157,8 +161,6 @@ class CentroidSorter(object):
                                 found_center = self._upper_l + np.array([self._pitch[0], +self._pitch[1]/2])
                             else:
                                 found_center = self._upper_l + np.array([self._pitch[0], -self._pitch[1]/2])
-                elif len(found_center) > 2:
-                    found_center = found_center[:2]
                 j += 1
                 self._mic_list.append([found_center[0], found_center[1], ly+1, 0])
                 last_neighbor = found_center
@@ -243,23 +245,15 @@ class CentroidSorter(object):
             lens_max += 1
             if len(found_center) != 2:
                 if len(found_center) > 2:
-                    found_center = np.mean(found_center.reshape(-1, 2), axis=0)  # average over found centroids
+                    # average of found centroids
+                    found_center = np.mean(found_center.reshape(-1, 2), axis=0)
                 else:
                     if cur_mic[axis] > (self._bounding_box[axis] - 1.5*self._pitch[axis]):
                         break
                     else:
-                        # look into other vertical hex direction (if applicable)
-                        found_center = find_centroid(self._centroids, cur_mic, self._pitch, axis, self._pattern, odd)
-                        if len(found_center) != 2:
-                            if len(found_center) > 2:
-                                found_center = np.mean(found_center.reshape(-1, 2), axis=0)  # average over found centroids
-                            else:
-                                # row/column of previous starting centroid incomplete: thus find new starting centroid
-                                odd = self.estimate_odd(start_mic, axis)
-                                start_mic = find_centroid(self._centroids, start_mic, self._pitch, not axis, self._pattern, not odd)
-                                found_center = start_mic
-                        else:
-                            start_mic = found_center
+                        odd = self.estimate_odd(start_mic, axis)
+                        start_mic = find_centroid(self._centroids, start_mic, self._pitch, not axis, self._pattern, not odd)
+                        found_center = start_mic
                         lens_max = 0
             cur_mic = found_center
 

@@ -83,8 +83,16 @@ class MenuWidget(tk.Frame):
         elif os.path.exists(os.path.join(os.path.dirname(os.path.dirname(cwd)), REL_PATH)):
             url = "file:///" + os.path.join(os.path.dirname(os.path.dirname(cwd)), REL_PATH)
         else:
-            url = 'https://github.com/hahnec/plenoptisign/blob/master/README.rst'
+            url = 'https://hahnec.github.io/plenopticam/build/html/index.html'
 
         # open in a new tab, if possible
-        import webbrowser
-        webbrowser.open(url, new=2)
+        if sys.platform != 'linux':
+            import webbrowser
+            webbrowser.open(url, new=2)
+        else:
+            # workaround for linux app bundle inspired by https://github.com/pyinstaller/pyinstaller/issues/3668
+            myEnv = dict(os.environ)
+            myEnv['XDG_DATA_DIRS'] = '/usr/local/share:/usr/share:/var/lib/snapd/desktop'
+            import subprocess
+            subprocess.Popen(["xdg-open", url], env=myEnv)
+            print(url)

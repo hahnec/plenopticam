@@ -47,3 +47,6 @@ def str2type(x):
             return x
     except:
         return x
+
+def rint(val):
+    return int(round(val))

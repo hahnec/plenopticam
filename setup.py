@@ -26,15 +26,27 @@ from sys import platform
 
 
 APP = ['plenopticam/gui/top_level.py']
-DATA_FILES = [
+
+MAC_FILES = [
         # ('subdir' , ['file_path'])
+        ('cfg', ['plenopticam/cfg/cfg.json']),
+        ('gui/icns', ['plenopticam/gui/icns/1055104.ico'])
+]
+
+WIN_FILES = [
+        # ('subdir' , ['file_path'])
+        ('gui/icns', ['plenopticam/gui/icns/1055104.ico'])
+]
+UNIX_FILES = [
+        # ('subdir' , ['file_path'])
+        ('gui/icns', ['plenopticam/gui/icns/1055104.gif'])
 ]
 
 OPTIONS = {
     "argv_emulation": True,
     "compressed": True,
     "optimize": 2,
-    "iconfile":'plenopticam/gui/icns/1055104.icns',
+    "iconfile": 'plenopticam/gui/icns/1055104.icns',
     "excludes": ['matplotlib'],
     "plist": dict(NSHumanReadableCopyright='2019 Christopher Hahne'),
     "packages": ['numpy', 'scipy', 'libtiff', 'colour_demosaicing', 'colour'],
@@ -44,19 +56,19 @@ if platform == 'darwin':
  extra_options = dict(
      setup_requires=['py2app'],
      app=APP,
-     data_files=DATA_FILES,
+     data_files=MAC_FILES,
      options=dict(py2app=OPTIONS),
  )
 elif platform == 'win32':
  extra_options = dict(
      setup_requires=[],
      app=APP,
-     data_files=DATA_FILES,
+     data_files=WIN_FILES,
  )
 else:
  extra_options = dict(
      setup_requires=[],
-     scripts=APP,
+     data_files=UNIX_FILES,
  )
 
 setup(
@@ -68,7 +80,7 @@ setup(
       author_email='inbox@christopherhahne.de',
       license='GNU GPL V3.0',
       scripts=['plenopticam/bin/cli_script.py'],
-      entry_points={'console_scripts': ['plenopticam=plenopticam.bin.cli_script:main'],},
+      entry_points={'console_scripts': ['plenopticam=plenopticam.bin.cli_script:main'], },
       packages=find_packages(),
       install_requires=['numpy', 'scipy', 'libtiff', 'colour_demosaicing', 'colour'],
       include_package_data=True,

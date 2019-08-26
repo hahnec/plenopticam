@@ -32,6 +32,7 @@ import threading
 import queue
 import types
 import os
+import traceback
 
 # local python files
 from plenopticam.gui.constants import PX, PY
@@ -39,7 +40,7 @@ from plenopticam.gui.widget_menu import MenuWidget
 from plenopticam.gui.widget_file import FileWidget
 from plenopticam.gui.widget_cmnd import CmndWidget
 from plenopticam.gui.widget_cnfg import CnfgWidget
-from plenopticam.cfg import Config
+from plenopticam.cfg import PlenopticamConfig
 from plenopticam import misc
 
 from plenopticam import lfp_calibrator
@@ -50,8 +51,8 @@ from plenopticam import lfp_extractor
 # constants
 POLLING_RATE = 100  # millisecs
 
-# object for application window
 class CtrlWidget(tk.Frame):
+    ''' Control widget class '''
 
     def __init__(self, parent):
 
@@ -64,7 +65,7 @@ class CtrlWidget(tk.Frame):
         self.sta.bind_to_interrupt(self.stop_thread)
 
         # instantiate config settings
-        self.cfg = Config()
+        self.cfg = PlenopticamConfig()
 
         # instantiate menu widget
         self.men_wid = MenuWidget(self)
@@ -121,7 +122,7 @@ class CtrlWidget(tk.Frame):
 
         # start next thread if condition is met
         if cond and self.cur_thread is None:
-            self.cur_thread = threading.Thread(target=func, args=args)
+            self.cur_thread = PropagatingThread(target=func, args=args)
             self.cur_thread.start()
 
     def stop_thread(self):
@@ -129,7 +130,7 @@ class CtrlWidget(tk.Frame):
         #self.cur_thread.join(POLLING_RATE) if self.cur_thread else None
 
         while not self.job_queue.empty():
-            self.job_queue.get(True, POLLING_RATE)
+            self.job_queue.get(block=True, timeout=POLLING_RATE)
             self.job_queue.task_done()
 
         # reset member variables
@@ -195,18 +196,22 @@ class CtrlWidget(tk.Frame):
         # start polling
         self.after(POLLING_RATE, self.poll)
 
+        # cancel if file paths not provided
+        self.sta.validate(checklist=[self.cfg.params[self.cfg.lfp_path], self.cfg.params[self.cfg.cal_path]],
+                          msg='Canceled due to missing image file path')
+
     def cond0(self):
         return self.lfp_img is None
 
     def cond1(self):
-        return (isdir(self.cfg.params[self.cfg.cal_path]) or self.cfg.params[self.cfg.cal_path].endswith('.tar'))
+        return (isdir(self.cfg.params[self.cfg.cal_path]) or self.cfg.params[self.cfg.cal_path].lower().endswith('.tar'))
 
     def cond2(self):
         return not self.cond1()
 
     def cond3(self):
         meta_path = self.cfg.params[self.cfg.cal_meta]
-        return (not (exists(meta_path) and meta_path.endswith('json')) or self.cfg.params[self.cfg.opt_cali])
+        return (not (exists(meta_path) and meta_path.lower().endswith('json')) or self.cfg.params[self.cfg.opt_cali])
 
     def cond4(self):
         return not exists(join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'lfp_img_align.pkl'))
@@ -267,7 +272,7 @@ class CtrlWidget(tk.Frame):
     @staticmethod
     def toggle_btn_state(btn):
 
-        btn['state'] = tk.DISABLED if btn['state'] == tk.NORMAL else tk.NORMAL
+        btn['state'] = tk.DISABLED if btn['state'] != tk.DISABLED else tk.NORMAL
 
     @classmethod
     def toggle_btn_list(cls, btn_list):
@@ -300,3 +305,29 @@ class CtrlWidget(tk.Frame):
         # destroy tkinter object
         self.parent.destroy()
         sys.exit()
+
+
+class PropagatingThread(threading.Thread):
+    ''' Child threading class for exception handling and error traceback '''
+
+    def __init__(self, cfg=None, sta=None, *args, **kwargs):
+        super(PropagatingThread, self).__init__(*args, **kwargs)
+        self.cfg = cfg if cfg is not None else PlenopticamConfig()
+        self.sta = sta if sta is not None else misc.PlenopticamStatus()
+
+    def run(self):
+        self.exc = None
+        try:
+            if hasattr(self, '_Thread__target'):
+                # Thread uses name mangling prior to Python 3.
+                self.ret = self._Thread__target(*self._Thread__args, **self._Thread__kwargs)
+            else:
+                self.ret = self._target(*self._args, **self._kwargs)
+        except Exception:
+            self.exc = traceback.format_exc()
+
+    def join(self):
+        super(PropagatingThread, self).join()
+        if self.exc:
+            raise misc.errors.PlenopticamError(self.exc, cfg=self.cfg, sta=self.sta)
+        return self.ret

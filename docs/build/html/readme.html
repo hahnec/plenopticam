@@ -41,7 +41,11 @@
 <li><a class="reference internal" href="#">1. PlenoptiCam</a><ul>
 <li><a class="reference internal" href="#description">1.1. Description</a></li>
 <li><a class="reference internal" href="#installation">1.2. Installation</a></li>
-<li><a class="reference internal" href="#usage">1.3. Usage</a></li>
+<li><a class="reference internal" href="#usage">1.3. Usage</a><ul>
+<li><a class="reference internal" href="#application">1.3.1. Application</a></li>
+<li><a class="reference internal" href="#command-line">1.3.2. Command Line</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#results">1.4. Results</a></li>
 <li><a class="reference internal" href="#credits">1.5. Credits</a><ul>
 <li><a class="reference internal" href="#contributors">1.5.1. Contributors</a></li>
@@ -91,7 +95,7 @@
 <h1>1. PlenoptiCam<a class="headerlink" href="#plenopticam" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="description">
 <h2>1.1. Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p><em>PlenoptiCam</em> is an open-source software (<a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.1.2-beta/plenopticam_0.1.2-beta_macOS.zip">macOS</a> or <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.1.2-beta/plenopticam_0.1.2-beta_win.zip">Win</a>) for scientific light field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
+<p><em>PlenoptiCam</em> is an open-source software (<a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.1.3-beta/plenopticam_0.1.3-beta_macOS.zip">macOS</a>, <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.1.3-beta/plenopticam_0.1.3-beta_win.zip">Win</a> or <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.1.3-beta/plenopticam_0.1.3-beta_linux.zip">Linux</a>) for scientific light field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
 Raw exposures from a plenoptic camera require four-dimensional image alignment in order to be decoded as a light field. Provided software addresses this by its ability to extract depth by means of sub-aperture images or synthetically focused photographs.
 This application is meant for researchers, developers, beginners and other fiddlers who like to experiment with light field technology. Its scope comprises custom-types of plenoptic cameras and is thus not limited to Lytro’s image data.</p>
 <p><a class="reference external" href="https://github.com/hahnec/plenopticam/releases/"><img alt="release" src="https://img.shields.io/github/release/hahnec/plenopticam.svg?style=flat-square" /></a> <a class="reference external" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img alt="License" src="https://img.shields.io/badge/License-GPL%20v3.0-orange.svg?style=flat-square" /></a> <a class="reference external" href="https://github.com/hahnec/plenopticam/archive/master.zip"><img alt="Code size" src="https://img.shields.io/github/languages/code-size/hahnec/plenopticam.svg?style=flat-square" /></a> <a class="reference external" href="https://github.com/hahnec/plenopticam/archive/master.zip"><img alt="Repo size" src="https://img.shields.io/github/repo-size/hahnec/plenopticam.svg?style=flat-square" /></a> <a class="reference external" href="https://github.com/hahnec/plenopticam/archive/master.zip"><img alt="Downloads" src="https://img.shields.io/github/downloads/hahnec/plenopticam/total.svg?style=flat-square" /></a></p>
@@ -102,7 +106,7 @@ This application is meant for researchers, developers, beginners and other fiddl
 <li><dl class="first docutils">
 <dt>executable:</dt>
 <dd><ol class="first last arabic">
-<li>download bundled <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/">apps</a> for <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.1.2-beta/plenopticam_0.1.2-beta_macOS.zip">macOS</a> or <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.1.2-beta/plenopticam_0.1.2-beta_win.zip">Win</a></li>
+<li>download bundled <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/">apps</a> for <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.1.3-beta/plenopticam_0.1.3-beta_macOS.zip">macOS</a>, <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.1.3-beta/plenopticam_0.1.3-beta_win.zip">Win</a> or <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.1.3-beta/plenopticam_0.1.3-beta_linux.zip">Linux</a></li>
 <li>extract archive</li>
 <li>run app to open up the user interface (see below)</li>
 </ol>
@@ -120,7 +124,7 @@ This application is meant for researchers, developers, beginners and other fiddl
 <li>install Python from <a class="reference external" href="https://www.python.org/">https://www.python.org/</a></li>
 <li>download the <a class="reference external" href="https://github.com/hahnec/plenopticam/archive/master.zip">source</a> using <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/hahnec/plenopticam.git</span></code></li>
 <li>go to the root directory <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">cd</span> <span class="pre">plenopticam</span></code></li>
-<li>install with <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">sudo</span> <span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code> from the root directory</li>
+<li>install with <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">sudo</span> <span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code> from root directory</li>
 <li>if installation ran smoothly, enter <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">sudo</span> <span class="pre">plenopticam</span> <span class="pre">-g</span></code> to the command line after which a lean user interface will pop up (see below)</li>
 </ol>
 </dd>
@@ -130,8 +134,11 @@ This application is meant for researchers, developers, beginners and other fiddl
 </div>
 <div class="section" id="usage">
 <h2>1.3. Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
-<p><img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/gui_v3.png" width="75%" align="middle" style="display: block;
-margin: 0 auto;"></p>
+<div class="section" id="application">
+<h3>1.3.1. Application<a class="headerlink" href="#application" title="Permalink to this headline">¶</a></h3>
+<p><p align="center">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/develop/docs/img/gui_linux.png" width="66%">
+<p></p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">“Pick folder” checkbox is useful to point to a directory containing calibration archive files of Lytro Illum cameras.
@@ -184,7 +191,7 @@ In such case, the white image calibration file corresponding to the Lytro Illum 
 </ol>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">If you are <a class="reference external" href="https://hahnec.github.io/plenopticam/build/html/guide.html#using-your-own-lytro-illum">using your own Lytro Illum</a> camera, you first need to extract camera calibration data as a <em>tar</em> archive. You can follow the <a class="reference external" href="https://hahnec.github.io/plenopticam/build/html/guide.html">instructions guide</a></p>
+<p class="last">If you are <a class="reference external" href="https://hahnec.github.io/plenopticam/build/html/guide.html#using-your-own-lytro-illum">using your own Lytro Illum</a> camera, you first need to extract camera calibration data as a <em>tar</em> archive. To do so, please follow the <a class="reference external" href="https://hahnec.github.io/plenopticam/build/html/guide.html">instructions guide</a>.</p>
 </div>
 <div class="line-block">
 <div class="line"><br /></div>
@@ -212,6 +219,16 @@ In such case, the white image calibration file corresponding to the Lytro Illum 
 </ol>
 <div class="line-block">
 <div class="line"><br /></div>
+</div>
+</div>
+<div class="section" id="command-line">
+<h3>1.3.2. Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline">¶</a></h3>
+<p>For a stack of light-field images, it may be convenient to iterate through them. This can be done by:</p>
+<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">sudo</span> <span class="pre">plenopticam</span> <span class="pre">-f</span> <span class="pre">'/Users/../Folder/'</span> <span class="pre">-c</span> <span class="pre">'Users/../caldata-B5144000XXX.tar'</span></code></p>
+<p>with necessary write privileges on Unix Systems. A Windows-equivalent command would be as follows:</p>
+<p><code class="docutils literal notranslate"><span class="pre">plenopticam</span> <span class="pre">--file=&quot;C:\..\Folder\&quot;</span> <span class="pre">--cali=&quot;C:\..\caldata-B5144000XXX.tar&quot;</span></code></p>
+<p>More information on optional arguments, can be found using the help parameter</p>
+<p><code class="docutils literal notranslate"><span class="pre">plenopticam</span> <span class="pre">-h</span></code></p>
 </div>
 </div>
 <div class="section" id="results">

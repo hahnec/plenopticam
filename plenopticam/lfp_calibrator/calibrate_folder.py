@@ -8,7 +8,8 @@ import tarfile
 
 def calibrate_folder(cfg, sta):
 
-    tarnames = [f for f in listdir(cfg.params[cfg.cal_path]) if isfile(join(cfg.params[cfg.cal_path], f)) and f.endswith(".tar")]
+    tarnames = [f for f in listdir(cfg.params[cfg.cal_path])
+                if isfile(join(cfg.params[cfg.cal_path], f)) and f.lower().endswith(".tar")]
 
     for tarname in tarnames:
 

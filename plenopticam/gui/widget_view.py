@@ -40,7 +40,7 @@ class ViewWidget(tk.Frame):
 
         # instantiate status
         self.tk_stat = tk.Label(self, text=self.parent.sta.stat_var)
-        self.tk_stat.pack(fill='both',expand=True,side='top')
+        self.tk_stat.pack(fill='both', expand=True, side='top')
 
         # style definitions
         self.s = ttk.Style(self)
@@ -52,10 +52,11 @@ class ViewWidget(tk.Frame):
                                  ("LabeledProgressbar.label",
                                   {"sticky": ""})],
                   'sticky': 'nswe'})])
+        self.s.configure("LabeledProgressbar", foreground='gray1', background='SteelBlue2')    # progress bar color
 
         # instantiate progress bar
         self.tk_prog_bar = ttk.Progressbar(self, orient=tk.HORIZONTAL, mode='determinate', style="LabeledProgressbar")
-        self.tk_prog_bar.pack(fill='both',expand=True,side='bottom', pady=PX, padx=PX)
+        self.tk_prog_bar.pack(fill='both', expand=True, side='bottom', pady=PX, padx=PX)
         self.tk_prog_bar['value'] = 0
         self.tk_prog_bar['maximum'] = 100
 

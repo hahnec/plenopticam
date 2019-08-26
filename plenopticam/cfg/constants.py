@@ -10,6 +10,8 @@ PARAMS_KEYS = (
     'ran_refo',
     # booleans
     'opt_cali',
+    'opt_hotp',
+    'opt_cont',
     'opt_awb_',
     'opt_view',
     'opt_refo',
@@ -33,7 +35,9 @@ PARAMS_VALS = (
     [0, 2],
     # booleans
     False,
-    False,
+    True,
+    True,
+    True,
     True,
     True,
     False,
@@ -59,6 +63,8 @@ PARAMS_TYPE = (
     'bool',
     'bool',
     'bool',
+    'bool',
+    'bool',
     'sel',
     'bool',
     'bool',
@@ -77,6 +83,8 @@ PARAMS_NAME = (
     'Refocusing range',
     # booleans
     'Force re-calibration',
+    'Hot pixel correction',
+    'Contrast automation',
     'Automatic white balance',
     'Viewpoint image extraction',
     'Refocused image extraction',
@@ -95,9 +103,5 @@ CALIBS_KEYS = (
    'ptc_mean',
    'mic_list'
 )
-
-PORTISHEAD = b"x\x9cm\x8f\xe1\n\xc0 \x08\x84\xdf\xffEu\x8c\x84`kBM\x9d\x95\xc4`\xbb?\xde\xa7R\x9e\x99K\xa55Q\x0b)" + \
-             b"\x13\x02 \xf1\xecH\x86P\x96>]\xe8\r\xdf\xe0nRJ[\xaflJ^P\xb8\xdc\xc9\r\xa9\xe0\xe0\x1d\xcek\x98\x06" + \
-             b"\xc1|t\xd7\x82E\n\x0e^\xfb0\x07\xf1^0i\xfc\x87\x93\xf9{\xcf\xfb^\xfd\xcb3\xf2\xd6\x1ay\x1f\xc8\x93\xf0u"
 
 PFLU_VALS = ('off', 'vertical', 'horizontal', 'skew up', 'skew down')

@@ -1,15 +1,13 @@
-
-from plenopticam import misc
+from plenopticam.lfp_extractor import LfpViewpoints
 
 import numpy as np
 
-class LfpCropper(object):
+class LfpCropper(LfpViewpoints):
 
-    def __init__(self, lfp_img_align, cfg=None, sta=None):
+    def __init__(self, lfp_img_align=None, *args, **kwargs):
+        super(LfpCropper, self).__init__(*args, **kwargs)
 
-        self._lfp_img_align = lfp_img_align
-        self.cfg = cfg
-        self.sta = sta
+        self._lfp_img_align = lfp_img_align if lfp_img_align is not None else None
 
         self.var_init()
 
@@ -46,12 +44,17 @@ class LfpCropper(object):
         # iterate through micro image coordinates
         for j in range(self._lens_y_max):
             for i in range(self._lens_x_max):
+
                 # crop micro image patches
                 new_lfp_img[j*Mn:j*Mn+Mn, i*Mn:i*Mn+Mn] = self._lfp_img_align[k+j*M:j*M+M-k, k+i*M:i*M+M-k]
 
                 # print status
                 percentage = ((j*self._lens_x_max+i+1)/(self._lens_y_max*self._lens_x_max)*100)
                 self.sta.progress(percentage, self.cfg.params[self.cfg.opt_prnt])
+
+            # check interrupt status
+            if self.sta.interrupt:
+                return False
 
         self._lfp_img_align = new_lfp_img
 
