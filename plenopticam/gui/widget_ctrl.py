@@ -253,9 +253,10 @@ class CtrlWidget(tk.Frame):
     def auto_find(self):
 
         if self.wht_img is None:
+            # find calibration file automatically
             obj = lfp_calibrator.CaliFinder(self.cfg, self.sta)
             obj.main()
-            self.wht_img = obj.wht_img
+            self.wht_img = obj._wht_img
             del obj
 
     def load_lfp(self, lfp_path=None, wht_opt=False):

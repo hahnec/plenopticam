@@ -9,14 +9,12 @@ import os
 import pickle
 from scipy.interpolate import interp2d, RectBivariateSpline, griddata
 
-from plenopticam.lfp_extractor.lfp_vign_fitter import *
-
 class LfpResampler(object):
 
-    def __init__(self, lfp_raw, cfg, sta=None, method='cubic'):
+    def __init__(self, lfp_img, cfg, sta=None, method='cubic'):
 
         # input variables
-        self.lfp_raw = lfp_raw[..., np.newaxis] if len(lfp_raw.shape) == 2 else lfp_raw     # add 3rd axis for 2D image
+        self._lfp_img = lfp_img[..., np.newaxis] if len(lfp_img.shape) == 2 else lfp_img     # add 3rd axis for 2D image
         self.cfg = cfg
         self.sta = sta if sta is not None else misc.PlenopticamStatus()
 
@@ -27,10 +25,10 @@ class LfpResampler(object):
         self._C = int((self._M-1)/2)
         self._LENS_Y_MAX = int(max(self._CENTROIDS[:, 2]))
         self._LENS_X_MAX = int(max(self._CENTROIDS[:, 3]))
-        self._DIMS = self.lfp_raw.shape if len(self.lfp_raw.shape) == 3 else None
+        self._DIMS = self._lfp_img.shape if len(self._lfp_img.shape) == 3 else None
 
         # output variable
-        self._lfp_out = np.zeros(lfp_raw.shape)
+        self._lfp_out = np.zeros(lfp_img.shape)
 
     def main(self):
         ''' cropping micro images to square shape while interpolating around their detected center (MIC) '''
@@ -66,7 +64,7 @@ class LfpResampler(object):
         # create output data folder
         misc.mkdir_p(self.cfg.params[self.cfg.lfp_path].split('.')[0], self.cfg.params[self.cfg.opt_prnt])
 
-         # write aligned light field as pickle file to avoid recalculation
+        # write aligned light field as pickle file to avoid recalculation
         with open(os.path.join(out_path, 'lfp_img_align.pkl'), 'wb') as f:
             pickle.dump(self._lfp_out, f)
 
@@ -138,7 +136,7 @@ class LfpResampler(object):
                 mic = self._get_coords_by_idx(ly=ly, lx=lx)
 
                 # interpolate each micro image with its MIC as the center with consistent micro image size
-                window = self.lfp_raw[rint(mic[0])-self._C-1:rint(mic[0])+self._C+2, rint(mic[1])-self._C-1:rint(mic[1])+self._C+2]
+                window = self._lfp_img[rint(mic[0]) - self._C - 1:rint(mic[0]) + self._C + 2, rint(mic[1]) - self._C - 1:rint(mic[1]) + self._C + 2]
                 self._lfp_out[ly * self._M:(ly + 1) * self._M, lx * self._M:(lx + 1) * self._M] = \
                     self._patch_align(window, mic, method=self._METHOD)[1:-1, 1:-1]
 
@@ -170,11 +168,8 @@ class LfpResampler(object):
                 mic = self._get_coords_by_idx(ly=ly, lx=lx)
 
                 # interpolate each micro image with its MIC as the center and consistent micro image size
-                window = self.lfp_raw[rint(mic[0])-self._C-1:rint(mic[0])+self._C+2, rint(mic[1])-self._C-1: rint(mic[1])+self._C+2]
-                patch_stack[lx, :, :] = self._patch_align(window, mic, method=self._METHOD)#[1:-1, 1:-1]
-
-                coeffs = high_lev(patch_stack[lx, :, :].copy())
-                patch_stack[lx, :, :] = inv(patch_stack[lx, :, :].copy(), coeffs)[1:-1, 1:-1]
+                window = self._lfp_img[rint(mic[0]) - self._C - 1:rint(mic[0]) + self._C + 2, rint(mic[1]) - self._C - 1: rint(mic[1]) + self._C + 2]
+                patch_stack[lx, :, :] = self._patch_align(window, mic, method=self._METHOD)[1:-1, 1:-1]
 
                 # do interpolation of two adjacent micro images
                 if np.mod(ly + hex_odd, 2) and lx > 0:
@@ -221,7 +216,7 @@ class LfpResampler(object):
 
                 # interpolate each micro image with its MIC as the center with consistent micro image size
                 r_mic = self._CENTROIDS[(self._CENTROIDS[:, 3] == lx) & (self._CENTROIDS[:, 2] == ly), [0, 1]]
-                r_win = self.lfp_raw[int(r_mic[0])-self._C-1:int(r_mic[0])+self._C+2,
+                r_win = self._lfp_img[int(r_mic[0]) - self._C - 1:int(r_mic[0]) + self._C + 2,
                         int(r_mic[1])-self._C-1:int(r_mic[1])+self._C+2, :]
                 r = self._patch_align(r_win, r_mic, method=self._METHOD)[1:-1, 1:-1, :]
 
@@ -235,13 +230,13 @@ class LfpResampler(object):
                         # interpolate upper adjacent patch while considering hex shift alignment (take same column if row "left-handed", next otherwise)
                         t_mic = self._CENTROIDS[
                             (self._CENTROIDS[:, 3] == lx - np.mod(ly + hex_odd, 2)) & (self._CENTROIDS[:, 2] == ly - 1), [0, 1]]
-                        t_win = self.lfp_raw[int(t_mic[0])-self._C-1:int(t_mic[0])+self._C+2,
+                        t_win = self._lfp_img[int(t_mic[0]) - self._C - 1:int(t_mic[0]) + self._C + 2,
                                 int(t_mic[1])-self._C-1:int(t_mic[1])+self._C+2, :]
                         t = self._patch_align(t_win, t_mic, method=self._METHOD)[1:-1, 1:-1, :]
 
                         b_mic = self._CENTROIDS[
                             (self._CENTROIDS[:, 3] == lx - np.mod(ly + hex_odd, 2)) & (self._CENTROIDS[:, 2] == ly + 1), [0, 1]]
-                        b_win = self.lfp_raw[int(b_mic[0])-self._C-1:int(b_mic[0])+self._C+2,
+                        b_win = self._lfp_img[int(b_mic[0]) - self._C - 1:int(b_mic[0]) + self._C + 2,
                                 int(b_mic[1])-self._C-1:int(b_mic[1])+self._C+2, :]
                         b = self._patch_align(b_win, b_mic, method=self._METHOD)[1:-1, 1:-1, :]
 

@@ -24,6 +24,7 @@ __license__ = """
 from plenopticam import misc
 from plenopticam.lfp_aligner.lfp_resampler import LfpResampler
 from plenopticam.lfp_aligner.lfp_rotator import LfpRotator
+from plenopticam.lfp_aligner.lfp_vign_fitter import LfpVignFitter
 
 class LfpAligner(object):
 
@@ -37,11 +38,17 @@ class LfpAligner(object):
 
     def main(self):
 
-        if self.cfg.params[self.cfg.opt_rota] and self._lfp_img is not None:
-            # de-rotate centroids
-            obj = LfpRotator(self._lfp_img, self.cfg.calibs[self.cfg.mic_list], rad=None, cfg=self.cfg, sta=self.sta)
+        #if self.cfg.params[self.cfg.opt_rota] and self._lfp_img is not None:
+        #    # de-rotate centroids
+        #    obj = LfpRotator(self._lfp_img, self.cfg.calibs[self.cfg.mic_list], rad=None, cfg=self.cfg, sta=self.sta)
+        #    obj.main()
+        #    self._lfp_img, self.cfg.calibs[self.cfg.mic_list] = obj.lfp_img, obj.centroids
+        #    del obj
+
+        if self.cfg.params[self.cfg.opt_vign] and self._wht_img is not None:
+            obj = LfpVignFitter(lfp_img=self._lfp_img, wht_img=self._wht_img, cfg=self.cfg, sta=self.sta)
             obj.main()
-            self._lfp_img, self.cfg.calibs[self.cfg.mic_list] = obj.lfp_img, obj.centroids
+            self._lfp_img = obj.lfp_img
             del obj
 
         # interpolate each micro image with its MIC as the center with consistent micro image size

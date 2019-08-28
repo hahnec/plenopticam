@@ -10,6 +10,7 @@ PARAMS_KEYS = (
     'ran_refo',
     # booleans
     'opt_cali',
+    'opt_vign',
     'opt_hotp',
     'opt_cont',
     'opt_awb_',
@@ -36,13 +37,14 @@ PARAMS_VALS = (
     # booleans
     False,
     True,
+    False,
     True,
-    True,
+    False,
     True,
     True,
     False,
     'off',
-    False,
+    True,
     False,
     True,
     False
@@ -58,6 +60,7 @@ PARAMS_TYPE = (
     # lists
     'ran',
     # booleans
+    'bool',
     'bool',
     'bool',
     'bool',
@@ -83,6 +86,7 @@ PARAMS_NAME = (
     'Refocusing range',
     # booleans
     'Force re-calibration',
+    'De-Vignetting',
     'Hot pixel correction',
     'Contrast automation',
     'Automatic white balance',
