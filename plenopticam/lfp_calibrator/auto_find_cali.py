@@ -87,11 +87,19 @@ class CaliFinder(object):
         if self._raw_data:
 
             from plenopticam.lfp_reader.lfp_decoder import LfpDecoder
+            import numpy as np
 
             # decode raw data
             obj = LfpDecoder(self._raw_data, self.cfg, self.sta)
             obj.decode_raw()
-            self._wht_img = obj.rgb_img
+            self._wht_img = obj.rgb_img.astype('float64')
+
+            chs = np.ones(self._wht_img.shape[2]) if len(self._wht_img.shape) == 3 else 1
+            ch_max = np.argmax(self._wht_img.sum(axis=0).sum(axis=0))
+            for idx in range(len(chs)):
+                chs[idx] = np.mean(self._wht_img[..., ch_max]) / np.mean(self._wht_img[..., idx])
+                self._wht_img[..., idx] *= chs[idx]
+
             del obj
 
         return True

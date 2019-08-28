@@ -17,7 +17,7 @@ class LfpDecoder(object):
     SHA1_LEN = 45
     SHA_PADDING_LEN = 35
 
-    def __init__(self, file=None, cfg=None, sta=None):
+    def __init__(self, file=None, cfg=None, sta=None, **kwargs):
 
         # input variables
         self.cfg = cfg
@@ -28,7 +28,7 @@ class LfpDecoder(object):
 
         # internal variables
         self._bay_img = None
-        self._json_dict = {}
+        self._json_dict = kwargs['json_dict'] if 'json_dict' in kwargs else {}
 
         # output variable
         self.cfg.lfpimg = {}
