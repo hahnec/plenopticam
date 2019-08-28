@@ -14,7 +14,7 @@ class LfpViewpoints(object):
 
     @property
     def vp_img_arr(self):
-        return self._vp_img_arr.copy() if self._vp_img_arr is not None else False
+        return self._vp_img_arr.astype('float64').copy() if self._vp_img_arr is not None else False
 
     @property
     def central_view(self):

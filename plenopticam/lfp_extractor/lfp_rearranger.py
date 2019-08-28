@@ -13,6 +13,7 @@ class LfpRearranger(LfpViewpoints):
         super(LfpRearranger, self).__init__(*args, **kwargs)
 
         self._lfp_img_align = Normalizer(lfp_img_align).uint16_norm() if lfp_img_align is not None else None
+        self._dtype = self._lfp_img_align.dtype
 
     def var_init(self):
 
@@ -22,7 +23,7 @@ class LfpRearranger(LfpViewpoints):
         else:
             m, n, p = (self._lfp_img_align.shape[0], self._lfp_img_align.shape[1], 1)
 
-        self._vp_img_arr = np.zeros([int(self._M), int(self._M), int(m/self._M), int(n/self._M), p])
+        self._vp_img_arr = np.zeros([int(self._M), int(self._M), int(m/self._M), int(n/self._M), p], dtype=self._dtype)
 
     def main(self):
 

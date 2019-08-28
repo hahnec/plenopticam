@@ -1,4 +1,5 @@
 from plenopticam.lfp_extractor import LfpViewpoints
+from plenopticam import misc
 
 import numpy as np
 
@@ -39,7 +40,7 @@ class LfpCropper(LfpViewpoints):
         k = int((self._M - self._Mn)/2)
 
         m, n, p = self._lfp_img_align.shape if len(self._lfp_img_align.shape) == 3 else (self._lfp_img_align.shape[0], self._lfp_img_align.shape[1], 1)
-        new_lfp_img = np.zeros([int(self._Mn*self._lens_y_max), int(self._Mn*self._lens_x_max), p])
+        new_lfp_img = np.zeros([int(self._Mn*self._lens_y_max), int(self._Mn*self._lens_x_max), p], dtype=self._lfp_img_align.dtype)
 
         # iterate through micro image coordinates
         for j in range(self._lens_y_max):
