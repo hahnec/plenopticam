@@ -96,7 +96,7 @@ For a stack of light-field images, it may be convenient to iterate through them.
 
 with necessary write privileges on Unix Systems. A Windows-equivalent command would be as follows:
 
-``plenopticam --file="C:\..\Folder\" --cali="C:\..\caldata-B5144000XXX.tar"``
+``plenopticam --file="C:\\..\\Folder\\" --cali="C:\\..\\caldata-B5144000XXX.tar"``
 
 More information on optional arguments, can be found using the help parameter
 
