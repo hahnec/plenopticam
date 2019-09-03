@@ -7,14 +7,14 @@ class LfpViewpoints(object):
 
     def __init__(self, *args, **kwargs):
 
-        self._vp_img_arr = kwargs['vp_img_arr'] if 'vp_img_arr' in kwargs else None
+        self._vp_img_arr = kwargs['vp_img_arr'].astype('float64') if 'vp_img_arr' in kwargs else None
         self.cfg = kwargs['cfg'] if 'cfg' in kwargs else PlenopticamConfig()
         self.sta = kwargs['sta'] if 'sta' in kwargs else PlenopticamStatus()
         self._M = self.cfg.params[self.cfg.ptc_leng]
 
     @property
     def vp_img_arr(self):
-        return self._vp_img_arr.astype('float64').copy() if self._vp_img_arr is not None else False
+        return self._vp_img_arr.copy() if self._vp_img_arr is not None else False
 
     @property
     def central_view(self):
