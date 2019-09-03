@@ -9,9 +9,43 @@ class LfpVignFitter(LfpLensIter):
     def __init__(self, *args, **kwargs):
         super(LfpVignFitter, self).__init__(*args, **kwargs)
 
+        self._th = kwargs['th'] if 'th' in kwargs else np.std(self._wht_img/self._wht_img.max())*6
+        self._noise_lev = kwargs['noise_lev'] if 'noise_lev' in kwargs else 0
+
     def main(self):
 
-        self.proc_lfp_img(self.patch_devignetting, msg='Devignetting process')
+        # print status
+        self.sta.status_msg('De-vignetting', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
+
+        # based on provided noise level in white image
+        if self._noise_lev < .5:
+            # perform raw white image division (low noise)
+            self.wht_img_divide()
+        else:
+            # perform fitted white micro image division (high noise)
+            self.proc_lfp_img(self.patch_devignetting, msg='Devignetting process')
+
+        # print status
+        self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
+
+    def wht_img_divide(self, th=None):
+
+        self._th = th if th is not None else self._th
+
+        # equalize channel balance for white image channels
+        self._wht_img = misc.eq_channels(self._wht_img)
+
+        # normalize white image
+        self._wht_img /= self._wht_img.max()
+
+        # threshold dark areas to prevent large number after division
+        self._wht_img[self._wht_img < self._th] = self._th
+
+        # divide light-field image
+        self._lfp_img /= self._wht_img
+
+        return True
 
     def compose_vandermonde(self, x, y, deg=2):
         if deg == 1:
@@ -24,6 +58,8 @@ class LfpVignFitter(LfpLensIter):
                              x ** 3 * y ** 3]).T
 
     def fit_patch(self, patch, th=None):
+
+        self._th = th if th is not None else self._th
 
         x = np.linspace(0, 1, patch.shape[1])
         y = np.linspace(0, 1, patch.shape[0])
@@ -43,8 +79,7 @@ class LfpVignFitter(LfpLensIter):
         weight_win /= weight_win.max()
 
         # thresholding (to prevent too large numbers in corrected image)
-        th = .4 if th is None else th
-        weight_win[weight_win < th] = th
+        weight_win[weight_win < self._th] = self._th
 
         return coeffs, weight_win
 
@@ -62,11 +97,9 @@ class LfpVignFitter(LfpLensIter):
 
         f = surf_z[..., np.newaxis]
 
-        # yuv_img = misc.yuv_conv(patch)
-        # yuv_img[..., 0] = yuv_img[..., 0] / surf_z
-        patch /= f  # normalize f?
+        patch /= f
 
-        return patch  # misc.yuv_conv(yuv_img, inverse=True)
+        return patch
 
     def patch_devignetting(self, mic):
 
@@ -76,7 +109,6 @@ class LfpVignFitter(LfpLensIter):
 
         lfp_win = self._lfp_img[rint(mic[0]) - self._C - 1:rint(mic[0]) + self._C + 2,
                  rint(mic[1]) - self._C - 1: rint(mic[1]) + self._C + 2]
-
 
         _, weight_win = self.fit_patch(wht_win)
 

@@ -47,6 +47,7 @@ def usage():
 
     # boolean options
     print("-r , --refi                       Refocusing refinement flag")
+    print("--vgn                             De-vignetting flag")
     print("--awb                             Auto white balance flag")
     print("--con                             Contrast automation flag")
     print("--hot                             Hot pixel treatment flag")
@@ -60,7 +61,7 @@ def parse_options(argv, cfg):
 
     try:
         opts, args = getopt.getopt(argv, "ghf:c:p:r",
-                                        ["gui", "help", "file=", "cali=", "patch=", "refi", "awb", "con", "hot"])
+                                        ["gui", "help", "file=", "cali=", "patch=", "refi", "vgn", "awb", "con", "hot"])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -81,6 +82,8 @@ def parse_options(argv, cfg):
                 cfg.params[cfg.ptc_leng] = misc.str2type(arg)
             if opt in ("-r", "--refi"):
                 cfg.params[cfg.opt_refi] = True
+            if opt == "--vgn":
+                cfg.params[cfg.opt_vign] = True
             if opt == "--awb":
                 cfg.params[cfg.opt_awb_] = True
             if opt == "--con":

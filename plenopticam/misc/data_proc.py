@@ -61,3 +61,14 @@ def img_resize(img, x_scale=1, y_scale=None):
         new_img[:, :, p] = f(np.linspace(0, m - 1, m * x_scale), np.linspace(0, n - 1, n * y_scale))
 
     return new_img
+
+def eq_channels(img):
+    ''' equalize channels of RGB image (make channels of even power) '''
+
+    chs = np.ones(img.shape[2]) if len(img.shape) == 3 else 1
+    ch_max = np.argmax(img.sum(axis=0).sum(axis=0))
+    for idx in range(len(chs)):
+        chs[idx] = np.mean(img[..., ch_max]) / np.mean(img[..., idx])
+        img[..., idx] *= chs[idx]
+
+    return img

@@ -72,8 +72,11 @@ class CaliFinder(object):
                 self.sta.status_msg('White image file not found. Revise calibration path settings', self._opt_prnt)
                 self.sta.interrupt = True
 
-            # load if file found and rotation option is set or calibration data is missing or re-calibration is required
-            cond = self.cfg.params[self.cfg.opt_rota] or not exists(self.cfg.params[self.cfg.cal_meta]) or self.cfg.params[self.cfg.opt_cali]
+            # load white image if found and rotation option is set or calibration data is missing or re-calibration is required
+            cond = self.cfg.params[self.cfg.opt_rota] or \
+                   not exists(self.cfg.params[self.cfg.cal_meta]) or \
+                   self.cfg.params[self.cfg.opt_cali] or \
+                   self.cfg.params[self.cfg.opt_vign]
             if self._file_found and cond:
                 # convert raw data to image array and get metadata
                 self._raw2img()
@@ -87,19 +90,11 @@ class CaliFinder(object):
         if self._raw_data:
 
             from plenopticam.lfp_reader.lfp_decoder import LfpDecoder
-            import numpy as np
 
             # decode raw data
             obj = LfpDecoder(self._raw_data, self.cfg, self.sta)
             obj.decode_raw()
-            self._wht_img = obj.rgb_img.astype('float64')
-
-            chs = np.ones(self._wht_img.shape[2]) if len(self._wht_img.shape) == 3 else 1
-            ch_max = np.argmax(self._wht_img.sum(axis=0).sum(axis=0))
-            for idx in range(len(chs)):
-                chs[idx] = np.mean(self._wht_img[..., ch_max]) / np.mean(self._wht_img[..., idx])
-                self._wht_img[..., idx] *= chs[idx]
-
+            self._wht_img = obj.rgb_img
             del obj
 
         return True
