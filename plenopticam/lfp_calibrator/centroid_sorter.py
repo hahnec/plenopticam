@@ -238,7 +238,7 @@ class CentroidSorter(object):
         odd = self.estimate_odd(start_mic, axis)
 
         # check if column of upper left is complete
-        while cur_mic[axis] < self._bounding_box[axis]:
+        while cur_mic[axis] < self._lower_r[axis]:
             # get adjacent MIC
             found_center = find_centroid(self._centroids, cur_mic, self._pitch, axis, self._pattern, odd)
             odd = not odd
@@ -248,7 +248,7 @@ class CentroidSorter(object):
                     # average of found centroids
                     found_center = np.mean(found_center.reshape(-1, 2), axis=0)
                 else:
-                    if cur_mic[axis] > (self._bounding_box[axis] - 1.5*self._pitch[axis]):
+                    if cur_mic[axis] > (self._bounding_box[axis] - self._pitch[axis]):
                         break
                     else:
                         odd = self.estimate_odd(start_mic, axis)
