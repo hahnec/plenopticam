@@ -60,8 +60,8 @@ class LfpContrast(LfpViewpoints):
         img_yuv[..., ch] = self._contrast * f + self._brightness
 
         # clip to input extrema to remove contrast outliers
-        img_yuv[..., ch][img_yuv[..., ch] < img_arr.min()] = img_arr.min()
-        img_yuv[..., ch][img_yuv[..., ch] > img_arr.max()] = img_arr.max()
+        #img_yuv[..., ch][img_yuv[..., ch] < self.central_view.min()] = self.central_view.min()
+        #img_yuv[..., ch][img_yuv[..., ch] > self.central_view.max()] = self.central_view.max()
 
         # color model conversion
         img = misc.yuv_conv(img_yuv, inverse=True)
