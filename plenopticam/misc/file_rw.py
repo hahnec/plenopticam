@@ -74,7 +74,7 @@ def load_img_file(file_path):
         img = np.asarray(Image.open(file_path))
 
     elif not any(type in ext for ext in ('bmp', 'png', 'tiff', 'jpeg', 'jpg')):
-        raise TypeError('Filetype not recognized')
+        raise TypeError('Filetype %s not recognized' % type)
 
     return img
 
