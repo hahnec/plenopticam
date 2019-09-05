@@ -17,6 +17,10 @@ class LfpContrast(LfpViewpoints):
 
     def contrast_bal(self):
 
+        # status update
+        self.sta.status_msg(msg='Contrast balance', opt=self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(None, opt=self.cfg.params[self.cfg.opt_prnt])
+
         # estimate contrast and brightness via least-squares method
         self.set_stretch_lum()
 
@@ -25,15 +29,30 @@ class LfpContrast(LfpViewpoints):
 
     def auto_wht_bal(self):
 
+        # status update
+        self.sta.status_msg(msg='Auto white balance', opt=self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(None, opt=self.cfg.params[self.cfg.opt_prnt])
+
         ch_num = self.vp_img_arr.shape[-1] if len(self.vp_img_arr.shape) > 4 else 1
         for i in range(ch_num):
             self.set_stretch(ref_ch=self.central_view[..., i])
             self.apply_stretch(ch=i)
 
+            # status update
+            self.sta.progress((i+1)/ch_num*100, opt=self.cfg.params[self.cfg.opt_prnt])
+
+
     def sat_bal(self):
+
+        # status update
+        self.sta.status_msg(msg='Color Saturation', opt=self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(None, opt=self.cfg.params[self.cfg.opt_prnt])
 
         self.set_stretch_hsv()
         self.apply_stretch_hsv()
+
+        # status update
+        self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt])
 
     def set_stretch(self, ref_ch, val_lim=None):
         ''' according to https://stackoverflow.com/questions/9744255/instagram-lux-effect/9761841#9761841 '''
