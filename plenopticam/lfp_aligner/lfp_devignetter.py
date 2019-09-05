@@ -4,12 +4,15 @@ from plenopticam.misc.type_checks import rint
 
 import numpy as np
 
-class LfpVignFitter(LfpLensIter):
+class LfpDevignetter(LfpLensIter):
 
     def __init__(self, *args, **kwargs):
-        super(LfpVignFitter, self).__init__(*args, **kwargs)
+        super(LfpDevignetter, self).__init__(*args, **kwargs)
 
-        self._th = kwargs['th'] if 'th' in kwargs else np.std(self._wht_img/self._wht_img.max())*6
+        # threshold from white image intensity distribution (key to find balance between edges turning black or white)
+        self._th = kwargs['th'] if 'th' in kwargs else np.std(self._wht_img/self._wht_img.max())*3.5
+
+        # noise level for decision making whether division by raw image or fit values
         self._noise_lev = kwargs['noise_lev'] if 'noise_lev' in kwargs else 0
 
     def main(self):

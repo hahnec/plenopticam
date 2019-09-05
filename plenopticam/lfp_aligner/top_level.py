@@ -24,7 +24,7 @@ __license__ = """
 from plenopticam import misc
 from plenopticam.lfp_aligner.lfp_resampler import LfpResampler
 from plenopticam.lfp_aligner.lfp_rotator import LfpRotator
-from plenopticam.lfp_aligner.lfp_devignetter import LfpVignFitter
+from plenopticam.lfp_aligner.lfp_devignetter import LfpDevignetter
 
 class LfpAligner(object):
 
@@ -40,7 +40,7 @@ class LfpAligner(object):
 
         if self.cfg.params[self.cfg.opt_vign] and self._wht_img is not None:
             # apply de-vignetting
-            obj = LfpVignFitter(lfp_img=self._lfp_img, wht_img=self._wht_img, cfg=self.cfg, sta=self.sta)
+            obj = LfpDevignetter(lfp_img=self._lfp_img, wht_img=self._wht_img, cfg=self.cfg, sta=self.sta)
             obj.main()
             self._lfp_img = obj.lfp_img
             del obj
