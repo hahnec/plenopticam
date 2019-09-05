@@ -18,17 +18,28 @@ class LfpContrast(LfpViewpoints):
     def contrast_bal(self):
 
         # estimate contrast and brightness via least-squares method
-        self.set_params_lum()
+        self.set_stretch_lum()
 
         # apply estimated brightness and contrast levels to viewpoint array
-        #self.proc_vp_arr(self.correct_contrast, msg='Contrast automation')
-        self.correct_contrast_lum()
+        self.apply_stretch_lum()
 
-    def set_params(self, ref_ch):
+    def auto_wht_bal(self):
+
+        ch_num = self.vp_img_arr.shape[-1] if len(self.vp_img_arr.shape) > 4 else 1
+        for i in range(ch_num):
+            self.set_stretch(ref_ch=self.central_view[..., i])
+            self.apply_stretch(ch=i)
+
+    def sat_bal(self):
+
+        self.set_stretch_hsv()
+        self.apply_stretch_hsv()
+
+    def set_stretch(self, ref_ch, val_lim=None):
         ''' according to https://stackoverflow.com/questions/9744255/instagram-lux-effect/9761841#9761841 '''
 
         # estimate contrast und brightness parameters (by default: first channel only)
-        val_lim = 2**16-1
+        val_lim = 2**16-1 if not val_lim else val_lim
         h = np.histogram(ref_ch, bins=np.arange(val_lim))[0]
         H = np.cumsum(h)/float(np.sum(h))
         try:
@@ -47,7 +58,7 @@ class LfpContrast(LfpViewpoints):
     def find_x_given_y(value, x, y, tolerance=1e-3):
         return np.mean(np.array([(xi, yi) for (xi, yi) in zip(x, y) if abs(yi - value) <= tolerance]).T[0])
 
-    def correct_contrast(self, ch=0):
+    def apply_stretch(self, ch=0):
         ''' contrast and brightness rectification to provided RGB image '''
 
         # convert to float
@@ -62,32 +73,45 @@ class LfpContrast(LfpViewpoints):
 
         return True
 
-    def correct_contrast_lum(self):
+    def set_stretch_lum(self):
+
+        # use luminance channel for parameter analysis
+        ref_img = misc.yuv_conv(self.central_view)
+        self.set_stretch(ref_ch=ref_img[..., 0])
+
+    def apply_stretch_lum(self):
         ''' contrast and brightness rectification to luminance channel of provided RGB image '''
 
         # color model conversion
         self.vp_img_arr = misc.yuv_conv(self.vp_img_arr) if len(self.vp_img_arr.shape) > 4 else self.vp_img_arr
 
         # apply histogram stretching to luminance channel only
-        self.correct_contrast(ch=0)
+        self.apply_stretch(ch=0)
 
         # color model conversion
         self.vp_img_arr = misc.yuv_conv(self.vp_img_arr, inverse=True)
 
         return True
 
-    def set_params_lum(self):
+    def set_stretch_hsv(self):
 
         # use luminance channel for parameter analysis
-        ref_img = misc.yuv_conv(self.central_view)
-        self.set_params(ref_ch=ref_img[..., 0])
+        ref_img = misc.hsv_conv(self.central_view)
+        self.set_stretch(ref_ch=ref_img[..., 1]*(2**16-1))
 
-    def auto_wht_bal(self):
+    def apply_stretch_hsv(self):
+        ''' contrast and brightness rectification to luminance channel of provided RGB image '''
 
-        ch_num = self.vp_img_arr.shape[-1] if len(self.vp_img_arr.shape) > 4 else 1
-        for i in range(ch_num):
-            self.set_params(ref_ch=self.central_view[..., i])
-            self.correct_contrast(ch=i)
+        # color model conversion
+        self.vp_img_arr = misc.hsv_conv(self.vp_img_arr) if len(self.vp_img_arr.shape) > 4 else self.vp_img_arr
+
+        # apply histogram stretching to luminance channel only
+        self.vp_img_arr[..., 1] *= (2**16-1)
+        self.apply_stretch(ch=1)
+        self.vp_img_arr[..., 1] /= (2**16-1)
+
+        # color model conversion
+        self.vp_img_arr = misc.hsv_conv(self.vp_img_arr, inverse=True)
 
         return True
 

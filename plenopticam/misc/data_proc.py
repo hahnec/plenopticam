@@ -31,7 +31,7 @@ def rgb2gray(rgb, standard='HDTV'):
 
     return np.dot(rgb[..., :3], GRAY) if len(rgb.shape) == 3 else rgb
 
-def yuv_conv(rgb, inverse=False, standard='HDTV'):
+def yuv_conv(img, inverse=False, standard='HDTV'):
 
     # excludes foot- and headroom
     YUV_MAT_HDTV = np.array([[0.2126, -0.09991, 0.615], [0.7152, -0.33609, -0.55861], [0.0722, 0.436, -0.05639]])
@@ -46,7 +46,18 @@ def yuv_conv(rgb, inverse=False, standard='HDTV'):
     else:
         yuv_mat = YUV_MAT_SDTV_INV if inverse else YUV_MAT_SDTV
 
-    return np.dot(rgb, yuv_mat)
+    return np.dot(img, yuv_mat)
+
+def hsv_conv(img, inverse=False):
+
+    import colorsys
+
+    if not inverse:
+        fun = np.vectorize(colorsys.rgb_to_hsv)
+    else:
+        fun = np.vectorize(colorsys.hsv_to_rgb)
+
+    return np.stack(fun(img[..., 0], img[..., 1], img[..., 2]), axis=len(img.shape)-1)
 
 def img_resize(img, x_scale=1, y_scale=None):
     ''' perform image interpolation based on scipy lib '''
