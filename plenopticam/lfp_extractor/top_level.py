@@ -24,7 +24,7 @@ __license__ = """
 from plenopticam.lfp_extractor.lfp_cropper import LfpCropper
 from plenopticam.lfp_extractor.lfp_rearranger import LfpRearranger
 from plenopticam.lfp_extractor.lfp_refocuser import LfpRefocuser
-from plenopticam.lfp_extractor.scheimpflug import Scheimpflug
+from plenopticam.lfp_extractor.lfp_scheimpflug import LfpScheimpflug
 from plenopticam import misc
 
 class LfpExtractor(object):
@@ -65,7 +65,7 @@ class LfpExtractor(object):
 
         # scheimpflug focus
         if self.cfg.params[self.cfg.opt_pflu] != 'off':
-            lfp_obj = Scheimpflug(refo_stack=self._refo_stack, cfg=self.cfg, sta=self.sta)
+            lfp_obj = LfpScheimpflug(refo_stack=self._refo_stack, cfg=self.cfg, sta=self.sta)
             lfp_obj.main()
             del lfp_obj
 
