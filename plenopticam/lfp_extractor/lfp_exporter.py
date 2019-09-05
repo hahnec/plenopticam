@@ -26,6 +26,8 @@ from plenopticam import misc
 from plenopticam.misc import Normalizer
 from plenopticam.lfp_extractor.lfp_viewpoints import LfpViewpoints
 
+from plenopticam.lfp_reader import CfaProcessor
+
 # external libs
 import os
 import numpy as np
@@ -71,7 +73,7 @@ class LfpExporter(LfpViewpoints):
         misc.mkdir_p(folderpath)
 
         # normalize image array to 16-bit unsigned integer
-        vp_img_arr = Normalizer(self._vp_img_arr).uint16_norm()
+        vp_img_arr = Normalizer(self.vp_img_arr).uint16_norm()
 
         # export viewpoint images as image files
         for j in range(ptc_leng):

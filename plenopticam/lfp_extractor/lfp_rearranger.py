@@ -27,33 +27,30 @@ class LfpRearranger(LfpViewpoints):
 
     def main(self):
 
-        # rearrange lightfield to viewpoint representation
+        # rearrange light-field to viewpoint representation
         self.viewpoint_extraction()
+
+        # colour and contrast handling
+        obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
+        # automatic white balance if option is set
+        if self.cfg.params[self.cfg.opt_awb_]:
+            obj.auto_wht_bal()
+        # contrast automation if option is set
+        if self.cfg.params[self.cfg.opt_cont]:
+            obj.contrast_bal()
+        self.vp_img_arr = obj.vp_img_arr
+        del obj
 
         # remove hot pixels if option is set
         if self.cfg.params[self.cfg.opt_hotp]:
-            obj = LfpHotPixels(vp_img_arr=self._vp_img_arr, cfg=self.cfg, sta=self.sta)
+            obj = LfpHotPixels(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
             obj.main()
-            self._vp_img_arr = obj.vp_img_arr
-            del obj
-
-        # contrast automation if option is set
-        if self.cfg.params[self.cfg.opt_cont]:
-            obj = LfpContrast(vp_img_arr=self._vp_img_arr, cfg=self.cfg, sta=self.sta)
-            obj.main()
-            self._vp_img_arr = obj.vp_img_arr
-            del obj
-
-        # automatic white balance if option is set
-        if self.cfg.params[self.cfg.opt_awb_]:
-            obj = LfpColors(vp_img_arr=self._vp_img_arr, cfg=self.cfg, sta=self.sta)
-            obj.main()
-            self._vp_img_arr = obj.vp_img_arr
+            self.vp_img_arr = obj.vp_img_arr
             del obj
 
         # write viewpoint data to hard drive
         if self.cfg.params[self.cfg.opt_view]:
-            obj = LfpExporter(vp_img_arr=self._vp_img_arr, cfg=self.cfg, sta=self.sta)
+            obj = LfpExporter(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
             obj.write_viewpoint_data()
             del obj
 
