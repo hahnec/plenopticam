@@ -9,8 +9,8 @@ class LfpContrast(LfpViewpoints):
     def __init__(self, p_lo=None, p_hi=None, *args, **kwargs):
         super(LfpContrast, self).__init__(*args, **kwargs)
 
-        self.p_lo = p_lo if p_lo is not None else 0.01
-        self.p_hi = p_hi if p_hi is not None else 0.99
+        self.p_lo = p_lo if p_lo is not None else 0.0
+        self.p_hi = p_hi if p_hi is not None else 1.0
 
         # internal variables
         self._contrast, self._brightness = (1., 1.)
