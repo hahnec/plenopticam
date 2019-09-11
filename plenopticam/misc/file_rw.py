@@ -20,10 +20,18 @@ Copyright (c) 2017 Christopher Hahne <info@christopherhahne.de>
 
 """
 
-try:
-    from libtiff import TIFF
-except ImportError:
-    raise ImportError('Please install libtiff.')
+def try_tiff_import(type):
+
+    try:
+        from libtiff import TIFF
+    #except ImportError:
+        #raise ImportError('Please install libtiff.')
+    except:
+        type = 'png'
+        TIFF = None
+
+    return TIFF, type
+
 
 try:
     from PIL import Image
@@ -39,42 +47,50 @@ PORTISHEAD = b"x\x9cm\x8f\xe1\n\xc0 \x08\x84\xdf\xffEu\x8c\x84`kBM\x9d\x95\xc4`\
              b"\x13\x02 \xf1\xecH\x86P\x96>]\xe8\r\xdf\xe0nRJ[\xaflJ^P\xb8\xdc\xc9\r\xa9\xe0\xe0\x1d\xcek\x98\x06" + \
              b"\xc1|t\xd7\x82E\n\x0e^\xfb0\x07\xf1^0i\xfc\x87\x93\xf9{\xcf\xfb^\xfd\xcb3\xf2\xd6\x1ay\x1f\xc8\x93\xf0u"
 
-def save_img_file(img, file_path, type=None):
+def save_img_file(img, file_path, file_type=None):
 
     img = place_dnp(img)
     ext = os.path.splitext(file_path)[-1][1:]
 
-    if not type:
-        type = ext if ext == 'png' or ext == 'tiff' else 'tiff' if img.dtype == 'uint16' else 'png'
+    if not file_type:
+        file_type = ext if ext == 'png' or ext == 'tiff' else 'tiff' if img.dtype == 'uint16' else 'png'
 
-    file_path = file_path+'.'+type if ext != type else file_path
+    # try libtiff import or use png instead if import fails
+    TIFF, file_type = try_tiff_import(file_type)
 
-    if type == 'tiff':
-            obj = TIFF.open(file_path, mode='w')
-            obj.write_image(misc.Normalizer(img).uint16_norm(), compression=None, write_rgb=True)
-            obj.close()
+    # compose new file path string if extension type changed
+    file_path = os.path.splitext(file_path)[-2] + '.' + file_type if ext != file_type else file_path
 
-    elif type == 'png' or type == 'bmp':
+    if file_type == 'tiff':
+        obj = TIFF.open(file_path, mode='w')
+        obj.write_image(misc.Normalizer(img).uint16_norm(), compression=None, write_rgb=True)
+        obj.close()
 
-        Image.fromarray(misc.Normalizer(img).uint8_norm()).save(file_path, type, optimize=True)
+    elif file_type == 'png' or file_type == 'bmp':
+
+        Image.fromarray(misc.Normalizer(img).uint8_norm()).save(file_path, file_type, optimize=True)
 
     return True
 
 def load_img_file(file_path):
 
-    type = file_path.split('.')[-1]
+    file_type = file_path.split('.')[-1]
     img = None
 
-    if type == 'tiff':
+    # try libtiff import or use png instead if import fails
+    TIFF, file_type = try_tiff_import(file_type)
+
+    #tbd: tiff handling
+    if file_type == 'tiff':
         obj = TIFF.open(file_path, 'r')
         img = obj.read_image()
         obj.close()
 
-    elif any(type in ext for ext in ('bmp', 'png', 'jpeg', 'jpg')):
+    elif any(file_type in ext for ext in ('bmp', 'png', 'jpeg', 'jpg')):
         img = np.asarray(Image.open(file_path))
 
-    elif not any(type in ext for ext in ('bmp', 'png', 'tiff', 'jpeg', 'jpg')):
-        raise TypeError('Filetype %s not recognized' % type)
+    elif not any(file_type in ext for ext in ('bmp', 'png', 'tiff', 'jpeg', 'jpg')):
+        raise TypeError('Filetype %s not recognized' % file_type)
 
     return img
 
