@@ -49,7 +49,7 @@ OPTIONS = {
     "iconfile": 'plenopticam/gui/icns/1055104.icns',
     "excludes": ['matplotlib'],
     "plist": dict(NSHumanReadableCopyright='2019 Christopher Hahne'),
-    "packages": ['numpy', 'scipy', 'libtiff', 'colour_demosaicing', 'colour'],
+    "packages": ['numpy', 'scipy', 'libtiff', 'colour_demosaicing', 'colour', 'pillow'],
 }
 
 if platform == 'darwin':
@@ -82,7 +82,7 @@ setup(
       scripts=['plenopticam/bin/cli_script.py'],
       entry_points={'console_scripts': ['plenopticam=plenopticam.bin.cli_script:main'], },
       packages=find_packages(),
-      install_requires=['numpy', 'scipy', 'libtiff', 'colour_demosaicing', 'colour'],
+      install_requires=['numpy', 'scipy', 'colour_demosaicing', 'colour', 'pillow', 'libtiff', 'imageio'],
       include_package_data=True,
       zip_safe=False,
       **extra_options
