@@ -4,6 +4,7 @@ from plenopticam.misc import Normalizer
 from plenopticam.lfp_extractor import LfpViewpoints, LfpExporter
 from plenopticam.lfp_extractor.lfp_colors import LfpColors
 from plenopticam.lfp_extractor.lfp_contrast import LfpContrast
+from plenopticam.misc.hist_eq import HistogramEqualizer
 from plenopticam.lfp_extractor.lfp_hotpixels import LfpHotPixels
 
 
@@ -29,6 +30,12 @@ class LfpRearranger(LfpViewpoints):
 
         # rearrange light-field to viewpoint representation
         self.viewpoint_extraction()
+
+        # histogram equalization
+        if self.cfg.params[self.cfg.opt_cont]:
+            obj = HistogramEqualizer(img=self.vp_img_arr)
+            self.vp_img_arr = obj.main()
+            del obj
 
         # colour and contrast handling
         obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)

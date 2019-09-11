@@ -63,7 +63,7 @@ class LfpReader(object):
                         del obj
 
                         # save bayer image as file
-                        misc.save_img_file(misc.Normalizer(self._lfp_img).uint16_norm(), fp, type='tiff')
+                        misc.save_img_file(misc.Normalizer(self._lfp_img).uint16_norm(), fp, file_type='tiff')
 
                 except FileNotFoundError as e:
                     # print status
