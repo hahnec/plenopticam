@@ -60,7 +60,7 @@ class LfpExporter(LfpViewpoints):
 
         # export central viewpoint as thumbnail image
         fp = os.path.join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'thumbnail')
-        misc.save_img_file(self.central_view, file_path=fp, type=type)
+        misc.save_img_file(self.central_view, file_path=fp, file_type=type)
 
         return True
 
@@ -79,7 +79,7 @@ class LfpExporter(LfpViewpoints):
         for j in range(ptc_leng):
             for i in range(ptc_leng):
 
-                misc.save_img_file(vp_img_arr[j, i], os.path.join(folderpath, str(j) + '_' + str(i)), type=type)
+                misc.save_img_file(vp_img_arr[j, i], os.path.join(folderpath, str(j) + '_' + str(i)), file_type=type)
 
         return True
 
@@ -140,7 +140,7 @@ class LfpExporter(LfpViewpoints):
             a = round(float(a)/self._M, 2) if self.cfg.params[self.cfg.opt_refi] else a
 
             # write image file
-            misc.save_img_file(refo_img, os.path.join(folder_path, str(a)), type=type)
+            misc.save_img_file(refo_img, os.path.join(folder_path, str(a)), file_type=type)
 
         return True
 
