@@ -2,8 +2,9 @@ import numpy as np
 
 class Normalizer(object):
 
-    def __init__(self, img=None, min=None, max=None):
+    def __init__(self, img=None, min=None, max=None, dtype=None):
 
+        self._dtype = img.dtype.__str__() if dtype is None else dtype
         self._img = np.asarray(img, dtype='float64') if img is not None else None
 
         self._min = self._img.min() if min is None else min
@@ -24,20 +25,20 @@ class Normalizer(object):
 
         return (self._img - self._min) / (self._max - self._min)
 
-    def type_norm(self, dtype='float16', lim_min=None, lim_max=None):
+    def type_norm(self, lim_min=None, lim_max=None):
         ''' normalize numpy image array for provided data type '''
 
         # e.g.         # RGB image normalization
         #         #self._rgb_img = misc.type_norm(self._rgb_img, dtype='float32', lim_min=2**10, lim_max=2**16-2**10)
 
-        if dtype.startswith('float'):
-            lim_max = np.finfo(np.dtype(dtype)).max if lim_max is None else lim_max
-            lim_min = np.finfo(np.dtype(dtype)).min if lim_min is None else lim_min
+        if self._dtype.startswith('float'):
+            lim_max = np.finfo(np.dtype(self._dtype)).max if lim_max is None else lim_max
+            lim_min = np.finfo(np.dtype(self._dtype)).min if lim_min is None else lim_min
             img_norm = self.norm_fun()*(lim_max-lim_min)+lim_min
 
-        elif dtype.startswith(('int', 'uint')):
-            lim_max = np.iinfo(np.dtype(dtype)).max if lim_max is None else lim_max
-            lim_min = np.iinfo(np.dtype(dtype)).min if lim_min is None else lim_min
+        elif self._dtype.startswith(('int', 'uint')):
+            lim_max = np.iinfo(np.dtype(self._dtype)).max if lim_max is None else lim_max
+            lim_min = np.iinfo(np.dtype(self._dtype)).min if lim_min is None else lim_min
             img_norm = np.round(self.norm_fun()*(lim_max-lim_min)+lim_min)
 
         else:
@@ -45,4 +46,4 @@ class Normalizer(object):
             lim_min = 0.0 if lim_min is None else lim_min
             img_norm = self.norm_fun()*(lim_max-lim_min)+lim_min
 
-        return np.asarray(img_norm, dtype=dtype)
+        return np.asarray(img_norm, dtype=self._dtype)
