@@ -90,7 +90,7 @@ Application
 Command Line
 ============
 
-For a stack of light-field images, it may be convenient to iterate through them. This can be done by:
+For computing a stack of light-field images, it may be convenient to iterate through them. This can be done by:
 
 ``$ sudo plenopticam -f '/Users/../Folder/' -c 'Users/../caldata-B5144000XXX.tar'``
 
