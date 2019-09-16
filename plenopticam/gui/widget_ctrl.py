@@ -174,20 +174,23 @@ class CtrlWidget(tk.Frame):
         # read light field photo and calibration source paths
         self.fetch_paths()
 
-        # safely remove output folder if option is set
+        # remove output folder if option is set
         misc.rmdir_p(self.cfg.params[self.cfg.lfp_path].split('.')[0]) if self.cfg.params[self.cfg.dir_remo] else None
 
-        # safely create output data folder
+        # remove calibrated light-field if calibration option is set
+        misc.rmdir_p(join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'lfp_img_align.pkl')) if self.cfg.params[self.cfg.opt_cali] else None
+
+        # create output data folder
         misc.mkdir_p(self.cfg.params[self.cfg.lfp_path].split('.')[0], self.cfg.params[self.cfg.opt_prnt])
 
         # put tasks in the job queue to be run
         for task_info in (
-                         (self.load_lfp, self.cond0, self.cfg.params[self.cfg.lfp_path]),
-                         (self.auto_find, self.cond1),
-                         (self.load_lfp, self.cond2, self.cfg.params[self.cfg.cal_path], True),
-                         (self.cal, self.cond3),
-                         (self.cfg.load_cal_data, True),
-                         (self.lfp_align, self.cond4),
+                         (self.load_lfp, self.cfg.load_limg_cond0, self.cfg.params[self.cfg.lfp_path]),
+                         (self.auto_find, self.cfg.auto_find_cond1),
+                         (self.load_lfp, self.cfg.load_wimg_cond2, self.cfg.params[self.cfg.cal_path], True),
+                         (self.cal, self.cfg.cali_meta_cond3),
+                         (self.cfg.load_cal_data, self.cfg.auto_find_cond1),
+                         (self.lfp_align, self.cfg.lfp_align_cond4),
                          (self.load_pickle_file, True),
                          (self.lfp_extract, True)
                         ):
@@ -199,22 +202,6 @@ class CtrlWidget(tk.Frame):
         # cancel if file paths not provided
         self.sta.validate(checklist=[self.cfg.params[self.cfg.lfp_path], self.cfg.params[self.cfg.cal_path]],
                           msg='Canceled due to missing image file path')
-
-    def cond0(self):
-        return self.lfp_img is None
-
-    def cond1(self):
-        return (isdir(self.cfg.params[self.cfg.cal_path]) or self.cfg.params[self.cfg.cal_path].lower().endswith('.tar'))
-
-    def cond2(self):
-        return not self.cond1()
-
-    def cond3(self):
-        meta_path = self.cfg.params[self.cfg.cal_meta]
-        return (not (exists(meta_path) and meta_path.lower().endswith('json')) or self.cfg.params[self.cfg.opt_cali])
-
-    def cond4(self):
-        return not exists(join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'lfp_img_align.pkl'))
 
     def lfp_align(self):
 
@@ -262,7 +249,7 @@ class CtrlWidget(tk.Frame):
     def load_lfp(self, lfp_path=None, wht_opt=False):
 
         # decode light field image
-        lfp_obj = lfp_reader.LfpReader(self.cfg, self.sta, lfp_path)
+        lfp_obj = lfp_reader.LfpReader(cfg=self.cfg, sta=self.sta, lfp_path=lfp_path)
         lfp_obj.main()
         if wht_opt:
             self.wht_img = lfp_obj.lfp_img

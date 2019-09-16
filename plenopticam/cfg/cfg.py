@@ -27,7 +27,8 @@ from plenopticam.cfg.constants import PARAMS_KEYS, PARAMS_VALS, CALIBS_KEYS
 
 # external libs
 import json
-import os
+from os.path import join, abspath, dirname, basename, splitext, isdir, isfile, exists
+from os import remove
 
 class PlenopticamConfig(object):
 
@@ -49,9 +50,9 @@ class PlenopticamConfig(object):
         self.lfpimg = {}
 
         self._file_name = 'cfg.json'
-        self._dir_path = os.path.dirname(os.path.abspath(__file__)) # for pip installed versions
-        if not os.path.isdir(self._dir_path):
-            self._dir_path = os.path.join(os.path.abspath('.'), 'cfg') # for py2app contents
+        self._dir_path = dirname(abspath(__file__)) # for pip installed versions
+        if not isdir(self._dir_path):
+            self._dir_path = join(abspath('.'), 'cfg') # for py2app contents
 
         try:
             self.read_params()
@@ -68,7 +69,7 @@ class PlenopticamConfig(object):
     def read_params(self, fp=None):
 
         if not fp:
-            fp = os.path.join(self._dir_path, 'cfg.json')
+            fp = join(self._dir_path, 'cfg.json')
 
         try:
             with open(fp, 'r') as f:
@@ -86,7 +87,7 @@ class PlenopticamConfig(object):
     def save_params(self, fp=None):
 
         if not fp:
-            fp = os.path.join(self._dir_path, 'cfg.json')
+            fp = join(self._dir_path, 'cfg.json')
 
         try:
             # create config folder (if not already present)
@@ -114,6 +115,8 @@ class PlenopticamConfig(object):
         self.params[self.lfp_path] = ''
         self.params[self.cal_path] = ''
         self.params[self.cal_meta] = ''
+        self.params[self.ran_refo] = [0, 2]
+        self.params[self.opt_refi] = False
         self.params[self.opt_awb_] = False
         self.params[self.opt_cont] = False
         self.params[self.opt_hotp] = False
@@ -140,8 +143,8 @@ class PlenopticamConfig(object):
 
         # construct file path
         if not self.params[self.cal_meta]:
-            if os.path.isfile(self.params[self.cal_path]):
-                fp = os.path.splitext(self.params[self.cal_path])[0]+'.json'
+            if isfile(self.params[self.cal_path]):
+                fp = splitext(self.params[self.cal_path])[0]+'.json'
             else:
                 fp = self.params[self.cal_meta]
         else:
@@ -155,16 +158,16 @@ class PlenopticamConfig(object):
         sta = sta if sta is not None else PlenopticamStatus()
 
         # filename and filepath handling
-        if fp is not None and os.path.splitext(fp)[-1] != '.json':
-            fn = os.path.splitext(os.path.basename(fp))[0]+'.json'
-            fp = os.path.join(os.path.splitext(fp)[0], fn)
+        if fp is not None and splitext(fp)[-1] != '.json':
+            fn = splitext(basename(fp))[0]+'.json'
+            fp = join(splitext(fp)[0], fn)
 
         # load calibration data from json file
         try:
             with open(fp, 'r') as f:
                 json_dict = json.load(f)
         except json.decoder.JSONDecodeError:
-            os.remove(fp)
+            remove(fp)
             sta.status_msg('Calibration JSON File may be corrupted. Attempt to delete file %s' % fp, opt=True)
             raise PlenopticamError('Calibration JSON File may be corrupted. Attempt to delete file %s' % fp)
         except IsADirectoryError:
@@ -183,12 +186,12 @@ class PlenopticamConfig(object):
         if fp is not None:
 
             # json extension handling
-            if os.path.splitext(fp)[-1] != '.json':
-                fn = os.path.basename(os.path.splitext(fp)[0])+'.json'
-                fp = os.path.join(os.path.dirname(os.path.splitext(fp)[0]), fn)
+            if splitext(fp)[-1] != '.json':
+                fn = basename(splitext(fp)[0])+'.json'
+                fp = join(dirname(splitext(fp)[0]), fn)
 
             # create folder
-            mkdir_p(os.path.dirname(fp), False)
+            mkdir_p(dirname(fp), False)
 
         # save calibration data as json file
         json_dict = kwargs['json_dict'] if 'json_dict' in kwargs else kwargs
@@ -199,6 +202,22 @@ class PlenopticamConfig(object):
             return False
 
         return True
+
+    def load_limg_cond0(self, img=None):
+        return img is None and self.lfp_align_cond4()
+
+    def auto_find_cond1(self):
+        return isdir(self.params[self.cal_path]) or self.params[self.cal_path].lower().endswith('.tar')
+
+    def load_wimg_cond2(self):
+        return not self.auto_find_cond1() and self.lfp_align_cond4()
+
+    def cali_meta_cond3(self):
+        meta_path = self.params[self.cal_meta]
+        return (not (exists(meta_path) and meta_path.lower().endswith('json')) or self.params[self.opt_cali]) and self.lfp_align_cond4()
+
+    def lfp_align_cond4(self):
+        return not exists(join(self.params[self.lfp_path].split('.')[0], 'lfp_img_align.pkl'))
 
 class NumpyTypeEncoder(json.JSONEncoder):
     def default(self, obj):
