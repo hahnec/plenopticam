@@ -59,7 +59,8 @@ def save_img_file(img, file_path, file_type=None):
     TIFF, file_type = try_tiff_import(file_type)
 
     # compose new file path string if extension type changed
-    file_path = os.path.splitext(file_path)[-2] + '.' + file_type if ext != file_type else file_path
+    file_path = os.path.splitext(file_path)[-2] if file_path.endswith(('.tiff', '.png', '.bmp')) else file_path
+    file_path = file_path + '.' + file_type
 
     if file_type == 'tiff':
         obj = TIFF.open(file_path, mode='w')
