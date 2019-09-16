@@ -43,10 +43,11 @@ def usage():
     print("-g                                Open up graphical user interface")
     print("-f <filepath>, --file=<filepath>  Specify image file or folder to process")
     print("-c <calipath>, --cali=<calipath>  Specify calibration file to process")
-    print("-p <size>,     --patch=<number>   Patch size")
+    print("-p <number>,   --patch=<number>   Patch size")
+    print("-r <list>,     --refo=[0, 2]      Refocusing range")
 
     # boolean options
-    print("-r , --refi                       Refocusing refinement flag")
+    print("--refi                            Refocusing refinement flag")
     print("--vgn                             De-vignetting flag")
     print("--awb                             Auto white balance flag")
     print("--con                             Contrast automation flag")
@@ -60,8 +61,8 @@ def usage():
 def parse_options(argv, cfg):
 
     try:
-        opts, args = getopt.getopt(argv, "ghf:c:p:r",
-                                        ["gui", "help", "file=", "cali=", "patch=", "refi", "vgn", "awb", "con", "hot"])
+        opts, args = getopt.getopt(argv, "ghf:c:p:r:",
+                                        ["gui", "help", "file=", "cali=", "patch=", "refo=", "refi", "vgn", "awb", "con", "hot"])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -80,7 +81,10 @@ def parse_options(argv, cfg):
                 cfg.params[cfg.cal_path] = arg
             if opt in ("-p", "--patch"):
                 cfg.params[cfg.ptc_leng] = misc.str2type(arg)
-            if opt in ("-r", "--refi"):
+            if opt in ("-r", "--refo"):
+                refo_range = misc.str2list(arg)
+                cfg.params[cfg.ran_refo] = refo_range if isinstance(refo_range, list) else [0, 2]
+            if opt == "--refi":
                 cfg.params[cfg.opt_refi] = True
             if opt == "--vgn":
                 cfg.params[cfg.opt_vign] = True
