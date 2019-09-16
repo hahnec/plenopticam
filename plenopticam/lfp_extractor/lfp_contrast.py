@@ -27,6 +27,9 @@ class LfpContrast(LfpViewpoints):
         # apply estimated brightness and contrast levels to viewpoint array
         self.apply_stretch_lum()
 
+        # status update
+        self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt])
+
     def auto_wht_bal(self):
 
         # status update
@@ -41,6 +44,7 @@ class LfpContrast(LfpViewpoints):
             # status update
             self.sta.progress((i+1)/ch_num*100, opt=self.cfg.params[self.cfg.opt_prnt])
 
+        return True
 
     def sat_bal(self):
 
@@ -53,6 +57,8 @@ class LfpContrast(LfpViewpoints):
 
         # status update
         self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt])
+
+        return True
 
     def set_stretch(self, ref_ch, val_lim=None):
         ''' according to https://stackoverflow.com/questions/9744255/instagram-lux-effect/9761841#9761841 '''

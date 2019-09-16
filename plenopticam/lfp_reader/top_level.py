@@ -63,7 +63,10 @@ class LfpReader(object):
                         del obj
 
                         # save bayer image as file
+                        self.sta.status_msg(msg='Save raw image', opt=self.cfg.params[self.cfg.opt_prnt])
+                        self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
                         misc.save_img_file(misc.Normalizer(self._lfp_img).uint16_norm(), fp, file_type='tiff')
+                        self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
 
                 except FileNotFoundError as e:
                     # print status
