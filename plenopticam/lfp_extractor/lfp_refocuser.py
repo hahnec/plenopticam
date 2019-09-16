@@ -27,7 +27,6 @@ from plenopticam.lfp_extractor.lfp_exporter import LfpExporter
 
 # external
 import numpy as np
-import os
 
 class LfpRefocuser(LfpViewpoints):
 
