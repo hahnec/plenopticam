@@ -8,29 +8,35 @@ class HistogramEqualizer(object):
     def __init__(self, img=None, bin_num=None, ch=None):
 
         self._ref_img = None if img is None else img
-        self._bin_num = 2**16-1 if bin_num is None else bin_num
+        self._bin_num = self.set_bin_num() if bin_num is None else bin_num
         self._ch = 0 if ch is None else ch
 
-    def set_histeq_params(self, ch=None):
+    def set_bin_num(self):
 
-        # color conversion
-        #img = misc.yuv_conv(self._ref_img)
+        dtype = self._ref_img.dtype.__str__()
+        if dtype.startswith('float'):
+            lim_max = np.finfo(np.dtype(dtype)).max
+        elif dtype.startswith(('int', 'uint')):
+            lim_max = np.iinfo(np.dtype(dtype)).max
+        else:
+            lim_max = 1.0
+
+        return lim_max if lim_max is not None and lim_max < 2**16-1 else 2**16-1
+
+    def set_histeq_params(self, ch=None):
 
         # channel selection
         self._ch = self._ch if ch is None else ch
         img_ch = self._ref_img[..., self._ch]
 
         # get image histogram
-        imhist, self._bins = np.histogram(img_ch.flatten(), np.arange(self._bin_num))   #, normed=True
+        imhist, self._bins = np.histogram(img_ch.flatten(), np.arange(self._bin_num))
         self._cdf = imhist.cumsum()  # cumulative distribution
         self._cdf = self._bin_num * self._cdf / self._cdf[-1]  # normalize
 
         return True
 
     def correct_histeq(self, ch=None):
-
-        # color conversion
-        #img = misc.yuv_conv(self._ref_img)
 
         # channel selection
         self._ch = self._ch if ch is None else ch
@@ -47,12 +53,14 @@ class HistogramEqualizer(object):
 
     def main(self):
 
-
+        # RGB/YUV color conversion
         self._ref_img = misc.yuv_conv(self._ref_img)
 
+        # create cumulative distribution function of reference image
         self.set_histeq_params()
 
-        # self.proc_vp_arr(self.correct_histeq, self.vp_img_arr)
+        # histogram mapping using cumulative distribution function
         self.correct_histeq()
 
+        # YUV/RGB color conversion
         return misc.yuv_conv(self._ref_img, inverse=True)
