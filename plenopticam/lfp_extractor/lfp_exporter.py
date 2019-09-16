@@ -118,7 +118,7 @@ class LfpExporter(LfpViewpoints):
 
         return True
 
-    def export_refo_stack(self, type='tiff'):
+    def export_refo_stack(self, type=None):
 
         refo_stack = Normalizer(np.asarray(self._refo_stack)).uint16_norm()
 
@@ -149,8 +149,8 @@ class LfpExporter(LfpViewpoints):
         # export gif animation
         fn = 'refocus_animation_' + str(self.cfg.params[self.cfg.ptc_leng]) + 'px'
         fp = os.path.splitext(self.cfg.params[self.cfg.lfp_path])[0]
-        refo_stack = misc.Normalizer(self._refo_stack).uint8_norm()
-        refo_stack = np.concatenate((refo_stack, refo_stack), axis=0)      # play forward and backwards
-        misc.save_gif(refo_stack, duration=.8, fp=fp, fn=fn)
+        refo_stack = misc.Normalizer(np.asarray(self._refo_stack)).uint8_norm()
+        refo_stack = np.concatenate((refo_stack, refo_stack[::-1]), axis=0)      # play forward and backwards
+        misc.save_gif(refo_stack, duration=.5, fp=fp, fn=fn)
 
         return True
