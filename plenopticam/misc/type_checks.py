@@ -31,7 +31,7 @@ def str2list(x):
     try:
         x = [int(k) if isint(k) else float(k) if isfloat(k) else k for k in x.replace(' ', '').split(',')]
     except:
-        pass
+        return False
 
     return x
 
