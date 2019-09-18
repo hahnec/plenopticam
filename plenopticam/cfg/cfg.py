@@ -203,19 +203,24 @@ class PlenopticamConfig(object):
 
         return True
 
+    @property
     def load_limg_cond0(self, img=None):
-        return img is None and self.lfp_align_cond4()
+        return img is None and self.lfp_align_cond4
 
+    @property
     def auto_find_cond1(self):
         return isdir(self.params[self.cal_path]) or self.params[self.cal_path].lower().endswith('.tar')
 
+    @property
     def load_wimg_cond2(self):
-        return not self.auto_find_cond1() and self.lfp_align_cond4()
+        return not self.auto_find_cond1 and self.lfp_align_cond4
 
+    @property
     def cali_meta_cond3(self):
         meta_path = self.params[self.cal_meta]
-        return (not (exists(meta_path) and meta_path.lower().endswith('json')) or self.params[self.opt_cali]) and self.lfp_align_cond4()
+        return (not (exists(meta_path) and meta_path.lower().endswith('json')) or self.params[self.opt_cali]) and self.lfp_align_cond4
 
+    @property
     def lfp_align_cond4(self):
         return not exists(join(self.params[self.lfp_path].split('.')[0], 'lfp_img_align.pkl'))
 
