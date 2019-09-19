@@ -81,6 +81,10 @@ class LfpExporter(LfpViewpoints):
 
                 misc.save_img_file(vp_img_arr[j, i], os.path.join(folderpath, str(j) + '_' + str(i)), file_type=type)
 
+                # print status
+                percentage = (((j*self._M+i+1)/self._M**2)*100)
+                self.sta.progress(percentage, self.cfg.params[self.cfg.opt_prnt])
+
         return True
 
     def gif_vp_img(self, duration, pattern='circle'):
