@@ -45,7 +45,7 @@ class LfpRefocuser(LfpViewpoints):
     def main(self):
 
         # print status
-        self.sta.status_msg('Refocusing', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.status_msg('Compute stack of refocused images', self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
         if self.vp_img_arr is not None:
