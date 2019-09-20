@@ -51,7 +51,7 @@ class HistogramEqualizer(object):
 
         return True
 
-    def main(self):
+    def lum_eq(self):
 
         # RGB/YUV color conversion
         self._ref_img = misc.yuv_conv(self._ref_img)
@@ -64,3 +64,32 @@ class HistogramEqualizer(object):
 
         # YUV/RGB color conversion
         return misc.yuv_conv(self._ref_img, inverse=True)
+
+    def uv_eq(self):
+
+        # RGB/YUV color conversion
+        self._ref_img = misc.yuv_conv(self._ref_img)
+
+        for i in range(1, self._ref_img.shape[-1]):
+
+            # create cumulative distribution function of reference image
+            self.set_histeq_params(ch=i)
+
+            # histogram mapping using cumulative distribution function
+            self.correct_histeq(ch=i)
+
+        # YUV/RGB color conversion
+        return misc.yuv_conv(self._ref_img, inverse=True)
+
+    def awb_eq(self):
+
+        # iterate through all colour channels
+        for i in range(self._ref_img.shape[-1]):
+
+            # create cumulative distribution function of reference image
+            self.set_histeq_params(ch=i)
+
+            # histogram mapping using cumulative distribution function
+            self.correct_histeq(ch=i)
+
+        return self._ref_img
