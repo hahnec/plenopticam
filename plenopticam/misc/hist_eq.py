@@ -36,14 +36,45 @@ class HistogramEqualizer(object):
 
         return True
 
+    def hist_spec(self, type='linear', param=1., flip=False):
+
+        # set linear function as default
+        des_hist = np.linspace(0, 1, self._bin_num)
+
+        # modify function shape according to provided parameters
+        if type == 'linear':
+            des_hist *= param
+            des_hist -= (param-1)/2 if param != 1 and param != 0 else 0
+            # clip range below 0 and above 1
+            des_hist[des_hist < 0] = 0
+            des_hist[des_hist > 1] = 1
+        elif type == 'exp' or type == 's-curve':
+            des_hist **= param
+            if flip:
+                des_hist = 1-des_hist[::-1]
+            if type == 's-curve':
+                lower_pt = (des_hist[::2]/2)[:-1]
+                des_hist = np.concatenate((lower_pt, 1-lower_pt[::-1]))
+                des_hist = np.append(des_hist, 1) if len(des_hist)+1 == len(self._bins) else des_hist
+
+        # normalize to maximum value of data type
+        des_hist *= self._bin_num
+
+        # convert to integer if required
+        if self._ref_img.dtype.__str__().startswith(('int', 'uint')):
+            des_hist = np.round(des_hist).astype(self._ref_img.dtype)
+
+        return des_hist
+
     def correct_histeq(self, ch=None):
 
         # channel selection
         self._ch = self._ch if ch is None else ch
         img_ch = self._ref_img[..., self._ch]
 
-        # use linear interpolation of cdf to find new pixel values
-        new_img = np.interp(img_ch.flatten(), self._bins[:-1], self._cdf)
+        # use specified histogram and cdf to generate desired histogram
+        des_hist = self.hist_spec(type='s-curve', param=1.5, flip=False)
+        new_img = np.interp(img_ch.flatten(), des_hist[:-1], self._cdf)
 
         # reconstruct new image
         new_img = new_img.reshape(self._ref_img[..., self._ch].shape)
