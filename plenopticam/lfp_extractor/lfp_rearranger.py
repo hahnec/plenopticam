@@ -34,18 +34,22 @@ class LfpRearranger(LfpViewpoints):
         # histogram equalization
         if self.cfg.params[self.cfg.opt_cont]:
             obj = HistogramEqualizer(img=self.vp_img_arr)
-            self.vp_img_arr = obj.main()
+            self.vp_img_arr = obj.lum_eq()
+            #self.vp_img_arr = obj.awb_eq()
             del obj
 
         # colour and contrast handling
-        obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
-        # automatic white balance if option is set
+        obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.0, p_hi=1.0)
+
+        # contrast automation
+        obj.contrast_bal()
+
+        # automatic white balance
+        obj.auto_wht_bal()
+
         if self.cfg.params[self.cfg.opt_awb_]:
             obj.sat_bal()
-            obj.auto_wht_bal()
-        # contrast automation if option is set
-        if self.cfg.params[self.cfg.opt_cont]:
-            obj.contrast_bal()
+
         self.vp_img_arr = obj.vp_img_arr
         del obj
 
