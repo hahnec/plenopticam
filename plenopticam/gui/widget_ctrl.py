@@ -178,7 +178,9 @@ class CtrlWidget(tk.Frame):
         misc.rmdir_p(self.cfg.params[self.cfg.lfp_path].split('.')[0]) if self.cfg.params[self.cfg.dir_remo] else None
 
         # remove calibrated light-field if calibration option is set
-        misc.rmdir_p(join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'lfp_img_align.pkl')) if self.cfg.params[self.cfg.opt_cali] else None
+        if self.cfg.params[self.cfg.opt_cali]:
+            misc.rmdir_p(join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'lfp_img_align.pkl'))
+            misc.rmdir_p(self.cfg.params[self.cfg.cal_meta])
 
         # create output data folder
         misc.mkdir_p(self.cfg.params[self.cfg.lfp_path].split('.')[0], self.cfg.params[self.cfg.opt_prnt])
