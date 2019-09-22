@@ -45,9 +45,11 @@ class LfpRearranger(LfpViewpoints):
         obj.contrast_bal()
 
         # automatic white balance
-        obj.auto_wht_bal()
-
         if self.cfg.params[self.cfg.opt_awb_]:
+            obj.auto_wht_bal()
+
+        experimental = False
+        if experimental:
             obj.sat_bal()
 
         self.vp_img_arr = obj.vp_img_arr

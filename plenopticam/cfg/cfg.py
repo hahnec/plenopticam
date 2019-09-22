@@ -117,7 +117,7 @@ class PlenopticamConfig(object):
         self.params[self.cal_meta] = ''
         self.params[self.ran_refo] = [0, 2]
         self.params[self.opt_refi] = False
-        self.params[self.opt_awb_] = False
+        self.params[self.opt_awb_] = True
         self.params[self.opt_cont] = False
         self.params[self.opt_hotp] = False
 
