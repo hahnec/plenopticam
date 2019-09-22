@@ -208,21 +208,27 @@ class PlenopticamConfig(object):
         return img is None and self.lfp_align_cond4
 
     @property
-    def auto_find_cond1(self):
+    def cond_auto_find(self):
         return isdir(self.params[self.cal_path]) or self.params[self.cal_path].lower().endswith('.tar')
 
     @property
-    def load_wimg_cond2(self):
-        return not self.auto_find_cond1 and self.lfp_align_cond4
+    def cond_load_wimg(self):
+        return not self.cond_auto_find and (self.params[self.opt_cali] or self.params[self.opt_vign] or self.cond_lfp_align)
 
     @property
-    def cali_meta_cond3(self):
-        meta_path = self.params[self.cal_meta]
-        return (not (exists(meta_path) and meta_path.lower().endswith('json')) or self.params[self.opt_cali]) and self.lfp_align_cond4
+    def cond_perf_cali(self):
+        return self.params[self.opt_cali] and self.cond_lfp_align
 
     @property
-    def lfp_align_cond4(self):
-        return not exists(join(self.params[self.lfp_path].split('.')[0], 'lfp_img_align.pkl'))
+    def cond_lfp_align(self):
+        return not exists(join(self.exp_path, 'lfp_img_align.pkl'))
+
+    @property
+    def cond_meta_file(self):
+        pot_meta = splitext(self.params[self.cal_path])[0] + '.json'
+        cal_meta = self.params[self.cal_meta]
+        self.params[self.cal_meta] = pot_meta if not isfile(cal_meta) and isfile(pot_meta) else cal_meta
+        return isfile(self.params[self.cal_meta])
 
 class NumpyTypeEncoder(json.JSONEncoder):
     def default(self, obj):

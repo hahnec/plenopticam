@@ -187,12 +187,12 @@ class CtrlWidget(tk.Frame):
 
         # put tasks in the job queue to be run
         for task_info in (
-                         (self.load_lfp, self.cfg.load_limg_cond0, self.cfg.params[self.cfg.lfp_path]),
-                         (self.auto_find, self.cfg.auto_find_cond1),
-                         (self.load_lfp, self.cfg.load_wimg_cond2, self.cfg.params[self.cfg.cal_path], True),
-                         (self.cal, self.cfg.cali_meta_cond3),
-                         (self.cfg.load_cal_data, self.cfg.auto_find_cond1),
-                         (self.lfp_align, self.cfg.lfp_align_cond4),
+                         (self.load_lfp, self.cfg.cond_load_limg, self.cfg.params[self.cfg.lfp_path]),
+                         (self.auto_find, self.cfg.cond_auto_find),
+                         (self.load_lfp, self.cfg.cond_load_wimg, self.cfg.params[self.cfg.cal_path], True),
+                         (self.cal, self.cfg.cond_perf_cali),
+                         (self.cfg.load_cal_data, self.cfg.cond_lfp_align),
+                         (self.lfp_align, self.cfg.cond_lfp_align),
                          (self.load_pickle_file, True),
                          (self.lfp_extract, True)
                         ):

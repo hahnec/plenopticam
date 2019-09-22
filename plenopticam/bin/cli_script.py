@@ -147,7 +147,7 @@ def main():
         # create output data folder
         misc.mkdir_p(cfg.params[cfg.lfp_path].split('.')[0], cfg.params[cfg.opt_prnt])
 
-        if os.path.isdir(cfg.params[cfg.cal_path]) or cfg.params[cfg.cal_path].lower().endswith('.tar'):
+        if cfg.cond_auto_find:
             # automatic calibration data selection
             obj = lfp_calibrator.CaliFinder(cfg, sta)
             obj.main()
@@ -175,8 +175,7 @@ def main():
         cfg.load_cal_data()
 
         #  check if light field alignment has been done before
-        fp = os.path.join(cfg.params[cfg.lfp_path].split('.')[0], 'lfp_img_align.pkl')
-        if not os.path.exists(fp):
+        if cfg.cond_lfp_align:
             # align light field
             lfp_obj = lfp_aligner.LfpAligner(lfp_img, cfg, sta, wht_img)
             lfp_obj.main()
