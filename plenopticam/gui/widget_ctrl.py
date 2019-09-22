@@ -161,8 +161,8 @@ class CtrlWidget(tk.Frame):
     def process(self):
 
         # status update
-        self.sta.status_msg('Starting ...', self.cfg.params[self.cfg.opt_dbug])
-        self.sta.progress(None, self.cfg.params[self.cfg.opt_dbug])
+        self.sta.status_msg('Starting ...', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
         # reset
         self.var_init()

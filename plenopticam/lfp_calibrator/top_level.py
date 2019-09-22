@@ -68,19 +68,19 @@ class LfpCalibrator(object):
         del obj
 
         # save calibration metadata
-        self.sta.status_msg('Save calibration data', opt=self.cfg.params[self.cfg.opt_dbug])
-        self.sta.progress(None, opt=self.cfg.params[self.cfg.opt_dbug])
+        self.sta.status_msg('Save calibration data', opt=self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(None, opt=self.cfg.params[self.cfg.opt_prnt])
         try:
             self.cfg.save_cal_data(mic_list=mic_list, pat_type=pattern, ptc_mean=pitch)
         except:
-            self.sta.status_msg('Could not save calibration data', opt=self.cfg.params[self.cfg.opt_dbug])
+            self.sta.status_msg('Could not save calibration data', opt=self.cfg.params[self.cfg.opt_prnt])
 
         # write image to hard drive if debug option is set
         if not self.sta.interrupt:
             CentroidDrawer(self._wht_img, mic_list, self.cfg).write_centroids_img(fn='wht_img+mics_sorted.png')
 
         # print status
-        self.sta.status_msg('Finished calibration', opt=True)
-        self.sta.progress(100, opt=True)
+        self.sta.status_msg('Finished calibration', opt=not self.sta.interrupt)
+        self.sta.progress(100, opt=not self.sta.interrupt)
 
         return True
