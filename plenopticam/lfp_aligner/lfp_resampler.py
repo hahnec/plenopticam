@@ -59,17 +59,15 @@ class LfpResampler(object):
         # convert to 16bit unsigned integer
         self._lfp_out = misc.Normalizer(self._lfp_out).uint16_norm()
 
-        out_path = self.cfg.params[self.cfg.lfp_path].split('.')[0]
-
         # create output data folder
-        misc.mkdir_p(self.cfg.params[self.cfg.lfp_path].split('.')[0], self.cfg.params[self.cfg.opt_prnt])
+        misc.mkdir_p(self.cfg.exp_path, self.cfg.params[self.cfg.opt_prnt])
 
         # write aligned light field as pickle file to avoid recalculation
-        with open(os.path.join(out_path, 'lfp_img_align.pkl'), 'wb') as f:
+        with open(os.path.join(self.cfg.exp_path, 'lfp_img_align.pkl'), 'wb') as f:
             pickle.dump(self._lfp_out, f)
 
         if self.cfg.params[self.cfg.opt_dbug]:
-            misc.save_img_file(self._lfp_out, os.path.join(out_path, 'lfp_img_align.tiff'))
+            misc.save_img_file(self._lfp_out, os.path.join(self.cfg.exp_path, 'lfp_img_align.tiff'))
 
     @staticmethod
     def _patch_align(window, mic, method='linear'):

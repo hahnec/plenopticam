@@ -59,7 +59,7 @@ class LfpExporter(LfpViewpoints):
     def export_thumbnail(self, type='tiff'):
 
         # export central viewpoint as thumbnail image
-        fp = os.path.join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'thumbnail')
+        fp = os.path.join(self.cfg.exp_path, 'thumbnail')
         misc.save_img_file(self.central_view, file_path=fp, file_type=type)
 
         return True
@@ -69,7 +69,7 @@ class LfpExporter(LfpViewpoints):
         ptc_leng = self.cfg.params[self.cfg.ptc_leng]
 
         # create folder
-        folderpath = os.path.join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'viewpoints_'+str(ptc_leng)+'px')
+        folderpath = os.path.join(self.cfg.exp_path, 'viewpoints_'+str(ptc_leng)+'px')
         misc.mkdir_p(folderpath)
 
         # normalize image array to 16-bit unsigned integer
@@ -89,7 +89,6 @@ class LfpExporter(LfpViewpoints):
 
     def gif_vp_img(self, duration, pattern='circle'):
 
-        fp = os.path.splitext(self.cfg.params[self.cfg.lfp_path])[0]
         fn = 'view_animation_' + str(self.cfg.params[self.cfg.ptc_leng]) + 'px'
 
         vp_img_arr = Normalizer(self._vp_img_arr).uint8_norm()
@@ -118,7 +117,7 @@ class LfpExporter(LfpViewpoints):
         for coords in coords_table:
                 img_set.append(vp_img_arr[coords[0], coords[1], :, :, :])
 
-        misc.save_gif(img_set, duration, fp, fn)
+        misc.save_gif(img_set, duration=duration, fp=self.cfg.exp_path, fn=fn)
 
         return True
 
@@ -133,7 +132,7 @@ class LfpExporter(LfpViewpoints):
         elif self.cfg.params[self.cfg.opt_refo] == 1 or self.cfg.params[self.cfg.opt_view]:
             string = ''
 
-        folder_path = os.path.join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'refo_' + string + str(self._M) + 'px')
+        folder_path = os.path.join(self.cfg.exp_path, 'refo_' + string + str(self._M) + 'px')
         misc.mkdir_p(folder_path)
 
         for i, refo_img in enumerate(refo_stack):
@@ -152,9 +151,8 @@ class LfpExporter(LfpViewpoints):
 
         # export gif animation
         fn = 'refocus_animation_' + str(self.cfg.params[self.cfg.ptc_leng]) + 'px'
-        fp = os.path.splitext(self.cfg.params[self.cfg.lfp_path])[0]
         refo_stack = misc.Normalizer(np.asarray(self._refo_stack)).uint8_norm()
         refo_stack = np.concatenate((refo_stack, refo_stack[::-1]), axis=0)      # play forward and backwards
-        misc.save_gif(refo_stack, duration=.5, fp=fp, fn=fn)
+        misc.save_gif(refo_stack, duration=.5, fp=self.cfg.exp_path, fn=fn)
 
         return True

@@ -204,8 +204,13 @@ class PlenopticamConfig(object):
         return True
 
     @property
-    def load_limg_cond0(self, img=None):
-        return img is None and self.lfp_align_cond4
+    def exp_path(self):
+        ''' export directory path '''
+        return splitext(self.params[self.lfp_path])[0]
+
+    @property
+    def cond_load_limg(self, img=None):
+        return img is None and self.cond_lfp_align
 
     @property
     def cond_auto_find(self):

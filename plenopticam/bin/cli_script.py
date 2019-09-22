@@ -145,7 +145,7 @@ def main():
             continue
 
         # create output data folder
-        misc.mkdir_p(cfg.params[cfg.lfp_path].split('.')[0], cfg.params[cfg.opt_prnt])
+        misc.mkdir_p(cfg.exp_path, cfg.params[cfg.opt_prnt])
 
         if cfg.cond_auto_find:
             # automatic calibration data selection
@@ -183,7 +183,7 @@ def main():
             del lfp_obj
 
         # load previously computed light field alignment
-        with open(fp, 'rb') as f:
+        with open(os.path.join(cfg.exp_path, 'lfp_img_align.pkl'), 'rb') as f:
             lfp_img_align = pickle.load(f)
 
         # export light field data

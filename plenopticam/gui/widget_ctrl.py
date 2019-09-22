@@ -175,15 +175,15 @@ class CtrlWidget(tk.Frame):
         self.fetch_paths()
 
         # remove output folder if option is set
-        misc.rmdir_p(self.cfg.params[self.cfg.lfp_path].split('.')[0]) if self.cfg.params[self.cfg.dir_remo] else None
+        misc.rmdir_p(self.cfg.exp_path) if self.cfg.params[self.cfg.dir_remo] else None
 
         # remove calibrated light-field if calibration option is set
         if self.cfg.params[self.cfg.opt_cali]:
-            misc.rmdir_p(join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'lfp_img_align.pkl'))
+            misc.rmdir_p(join(self.cfg.exp_path, 'lfp_img_align.pkl'))
             misc.rmdir_p(self.cfg.params[self.cfg.cal_meta])
 
         # create output data folder
-        misc.mkdir_p(self.cfg.params[self.cfg.lfp_path].split('.')[0], self.cfg.params[self.cfg.opt_prnt])
+        misc.mkdir_p(self.cfg.exp_path, self.cfg.params[self.cfg.opt_prnt])
 
         # put tasks in the job queue to be run
         for task_info in (
@@ -216,7 +216,7 @@ class CtrlWidget(tk.Frame):
     def load_pickle_file(self):
 
         # file path
-        fp = join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'lfp_img_align.pkl')
+        fp = join(self.cfg.exp_path, 'lfp_img_align.pkl')
 
         try:
             # load previously computed light field alignment
