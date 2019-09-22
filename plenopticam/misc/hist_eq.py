@@ -45,7 +45,7 @@ class HistogramEqualizer(object):
         if type == 'linear':
             des_hist *= param
             des_hist -= (param-1)/2 if param != 1 and param != 0 else 0
-            # clip range below 0 and above 1
+            # clip to input extrema to remove contrast outliers
             des_hist[des_hist < 0] = 0
             des_hist[des_hist > 1] = 1
         elif type == 'exp' or type == 's-curve':
