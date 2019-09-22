@@ -7,8 +7,5 @@ from .non_max_supp import NonMaxSuppression
 from .auto_find_cali import CaliFinder
 from .top_level import *
 
-# not fully supported yet
-from .calibrate_folder import *
-
 # Downsample rate for image processing speed-up
 DR = 4
