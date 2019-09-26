@@ -180,11 +180,12 @@ class CtrlWidget(tk.Frame):
         misc.rmdir_p(self.cfg.exp_path) if self.cfg.params[self.cfg.dir_remo] else None
 
         # remove calibrated light-field if calibration option is set
-        if self.cfg.params[self.cfg.opt_cali]:
-            misc.rmdir_p(join(self.cfg.exp_path, 'lfp_img_align.pkl'))
-            misc.rmdir_p(self.cfg.params[self.cfg.cal_meta])
+        if self.cfg.params[self.cfg.opt_cali] or self.cfg.params[self.cfg.opt_vign]:
+            misc.rm_file(join(self.cfg.exp_path, 'lfp_img_align.pkl'))
+            if self.cfg.params[self.cfg.opt_cali]:
+                misc.rm_file(self.cfg.params[self.cfg.cal_meta])
 
-        # create output data folder
+        # create output data folder (prevent override)
         misc.mkdir_p(self.cfg.exp_path, self.cfg.params[self.cfg.opt_prnt])
 
         # put tasks in the job queue to be run
