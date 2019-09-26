@@ -91,7 +91,7 @@ class LfpScheimpflug(object):
         # write image file to hard drive
         fp = os.path.splitext(self.cfg.params[self.cfg.lfp_path])[0]
         fn = 'scheimpflug_' + str(a_start) + '_' + str(a_stop) + '_' + self.cfg.params[self.cfg.opt_pflu] + '.png'
-        misc.save_img_file(misc.uint16_norm(scheimpflug_img), os.path.join(fp, fn))
+        misc.save_img_file(misc.Normalizer(scheimpflug_img).uint16_norm(), os.path.join(fp, fn))
 
         return True
 
