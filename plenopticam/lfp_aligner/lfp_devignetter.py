@@ -27,7 +27,7 @@ class LfpDevignetter(LfpLensIter):
             self.wht_img_divide()
         else:
             # perform fitted white micro image division (high noise)
-            self.proc_lfp_img(self.patch_devignetting, msg='Devignetting process')
+            self.proc_lfp_img(self.patch_devignetting, msg='De-vignetting')
 
         # print status
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
