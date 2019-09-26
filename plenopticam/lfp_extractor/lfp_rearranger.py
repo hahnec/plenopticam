@@ -2,7 +2,6 @@ import numpy as np
 
 from plenopticam.misc import Normalizer
 from plenopticam.lfp_extractor import LfpViewpoints, LfpExporter
-from plenopticam.lfp_extractor.lfp_colors import LfpColors
 from plenopticam.lfp_extractor.lfp_contrast import LfpContrast
 from plenopticam.misc.hist_eq import HistogramEqualizer
 from plenopticam.lfp_extractor.lfp_hotpixels import LfpHotPixels
