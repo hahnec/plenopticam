@@ -50,9 +50,9 @@ class PlenopticamConfig(object):
         self.lfpimg = {}
 
         self._file_name = 'cfg.json'
-        self._dir_path = dirname(abspath(__file__)) # for pip installed versions
+        self._dir_path = dirname(abspath(__file__))     # for pip installed versions
         if not isdir(self._dir_path):
-            self._dir_path = join(abspath('.'), 'cfg') # for py2app contents
+            self._dir_path = join(abspath('.'), 'cfg')  # for py2app contents
 
         try:
             self.read_params()
