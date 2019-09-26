@@ -7,7 +7,7 @@ Description
 -----------
 
 *PlenoptiCam* is an open-source software (macOS_, Win_ or Linux_) for scientific light field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
-Raw exposures from a plenoptic camera require four-dimensional image alignment in order to be decoded as a light field. Provided software addresses this by its ability to extract depth by means of sub-aperture images or synthetically focused photographs.
+Raw exposures from a plenoptic camera require four-dimensional image alignment in order to be decoded as a light field. Provided software addresses this by its ability to calibrate an image taken by a plenoptic camera and extract sub-aperture images or synthetically focused photographs.
 This application is meant for researchers, developers, beginners and other fiddlers who like to experiment with light field technology. Its scope comprises custom-types of plenoptic cameras and is thus not limited to Lytro's image data.
 
 |release| |license| |code| |repo| |downloads|
@@ -18,7 +18,8 @@ Installation
 * executable:
     1. download bundled apps_ for macOS_, Win_ or Linux_
     2. extract archive
-    3. run app to open up the user interface (see below)
+    3. run executable (may take a while on first start-up)
+    4. user interface will show up (see below)
 
 |
 
@@ -185,7 +186,7 @@ Further information
     :alt: Repo size
 
 .. |downloads| image:: https://img.shields.io/github/downloads/hahnec/plenopticam/total.svg?style=flat-square
-    :target: https://github.com/hahnec/plenopticam/archive/master.zip
+    :target: https://github.com/hahnec/plenopticam/releases/
     :alt: Downloads
 
 .. |spiderman| raw:: html
