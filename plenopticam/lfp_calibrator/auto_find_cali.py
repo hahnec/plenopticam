@@ -64,10 +64,7 @@ class CaliFinder(object):
                 # look for geo data in provided calibration tar-file
                 self._search_tar_file(self._path)
 
-            if self._file_found:
-                # print status
-                self.sta.status_msg('Found white image file '+self._cal_fn, self._opt_prnt)
-            else:
+            if not self._file_found:
                 # print status and interrupt process
                 self.sta.status_msg('White image file not found. Revise calibration path settings', self._opt_prnt)
                 self.sta.interrupt = True

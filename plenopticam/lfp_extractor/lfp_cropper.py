@@ -32,7 +32,7 @@ class LfpCropper(LfpViewpoints):
     def reduce_angular_domain(self):
 
         # print status
-        self.sta.status_msg('Reduce angular domain', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.status_msg('Render angular domain', self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
         Mn = self._Mn
