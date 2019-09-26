@@ -41,13 +41,10 @@ class MenuWidget(tk.Frame):
 
         menubar = tk.Menu(self)
 
-        filemenu = tk.Menu(menubar, tearoff=0)
+        filemenu = MenuBtns(menubar, tearoff=0)
         filemenu.add_command(label="Process", command=self.parent.process)
         filemenu.add_command(label="Settings", command=self.parent.cfg_change)
         filemenu.add_command(label="Stop", command=self.parent.stp)
-
-        filemenu.add_separator()
-
         filemenu.add_command(label="Quit", command=self.parent.qit)
         menubar.add_cascade(label="File", menu=filemenu)
 
@@ -57,6 +54,8 @@ class MenuWidget(tk.Frame):
         menubar.add_cascade(label="Help", menu=helpmenu)
 
         self.parent.parent.config(menu=menubar)
+
+        self.btn_list = [filemenu]
 
     def open_about_dialog(self):
         ''' open about window '''
@@ -96,3 +95,35 @@ class MenuWidget(tk.Frame):
             import subprocess
             subprocess.Popen(["xdg-open", url], env=myEnv)
             print(url)
+
+class MenuBtns(tk.Menu):
+    ''' child of menu class that supports "state" as key for disabling menu buttons '''
+
+    def __init__(self, *args, **kwargs):
+        super(MenuBtns, self).__init__(*args, **kwargs)
+
+        self._labels = []
+        self._state = tk.NORMAL
+
+    def add_command(self, cnf={}, **kw):
+
+        # keep track of labels
+        self._labels.append(kw['label']) if 'label' in kw else None
+
+        # add command
+        self.add('command', cnf or kw)
+
+    def __getitem__(self, key):
+
+        return self._state if key == 'state' else self[key]
+
+    def __setitem__(self, key, value):
+
+        if key == 'state' and self._labels:
+            if value == tk.NORMAL or value == tk.DISABLED:
+                for i, label in enumerate(self._labels):
+                    if label not in ('Stop', 'Quit'):
+                        self.entryconfig(index=i, state=value)
+                        self._state = value
+        else:
+            self[key] = value
