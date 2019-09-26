@@ -44,6 +44,7 @@ class MenuWidget(tk.Frame):
         filemenu = MenuBtns(menubar, tearoff=0)
         filemenu.add_command(label="Process", command=self.parent.process)
         filemenu.add_command(label="Settings", command=self.parent.cfg_change)
+        filemenu.add_separator()
         filemenu.add_command(label="Stop", command=self.parent.stp)
         filemenu.add_command(label="Quit", command=self.parent.qit)
         menubar.add_cascade(label="File", menu=filemenu)
