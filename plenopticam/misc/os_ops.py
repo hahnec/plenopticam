@@ -1,6 +1,6 @@
 import sys, errno
-from os import makedirs
-from os.path import isdir, expanduser
+from os import makedirs, remove
+from os.path import isdir, isfile, expanduser
 
 def mkdir_p(path, print_opt=False):
 
@@ -25,6 +25,15 @@ def rmdir_p(path, print_opt=False):
             print('\n Directory {0} could not be removed'.format(path))
 
     return True
+
+def rm_file(path, print_opt=False):
+
+    try:
+        if isfile(path):
+            remove(path)
+    except OSError as e:
+        if print_opt:
+            print("\n Error: %s - %s." % (e.filename, e.strerror))
 
 def select_file(init_dir=None, title=''):
     ''' get filepath from tkinter dialog '''
