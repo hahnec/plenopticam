@@ -48,8 +48,8 @@ class LfpRearranger(LfpViewpoints):
         if self.cfg.params[self.cfg.opt_awb_]:
             obj.auto_wht_bal()
 
-        experimental = False
-        if experimental:
+        # automatic saturation
+        if self.cfg.params[self.cfg.opt_sat_]:
             obj.sat_bal()
 
         self.vp_img_arr = obj.vp_img_arr

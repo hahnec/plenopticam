@@ -14,6 +14,7 @@ PARAMS_KEYS = (
     'opt_hotp',
     'opt_cont',
     'opt_awb_',
+    'opt_sat_',
     'opt_view',
     'opt_refo',
     'opt_refi',
@@ -40,6 +41,7 @@ PARAMS_VALS = (
     True,
     False,
     True,
+    False,
     True,
     True,
     False,
@@ -60,6 +62,7 @@ PARAMS_TYPE = (
     # lists
     'ran',
     # booleans
+    'bool',
     'bool',
     'bool',
     'bool',
@@ -90,6 +93,7 @@ PARAMS_NAME = (
     'Hot pixel correction',
     'Contrast automation',
     'Automatic white balance',
+    'Automatic saturation',
     'Viewpoint image extraction',
     'Refocused image extraction',
     'Refocus refinement',

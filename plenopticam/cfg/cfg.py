@@ -36,8 +36,8 @@ class PlenopticamConfig(object):
     lfp_path, cal_path, cal_meta, \
     ptc_leng, \
     ran_refo, \
-    opt_cali, opt_vign, opt_hotp, opt_cont, opt_awb_, opt_view, opt_refo, opt_refi, opt_pflu, opt_rota, opt_dbug, \
-    opt_prnt, dir_remo, \
+    opt_cali, opt_vign, opt_hotp, opt_cont, opt_awb_, opt_sat_, opt_view, opt_refo, opt_refi, opt_pflu, opt_rota, \
+    opt_dbug, opt_prnt, dir_remo, \
     = PARAMS_KEYS
 
     pat_type, ptc_mean, mic_list = CALIBS_KEYS
@@ -118,6 +118,7 @@ class PlenopticamConfig(object):
         self.params[self.ran_refo] = [0, 2]
         self.params[self.opt_refi] = False
         self.params[self.opt_awb_] = True
+        self.params[self.opt_sat_] = False
         self.params[self.opt_cont] = False
         self.params[self.opt_hotp] = False
 
