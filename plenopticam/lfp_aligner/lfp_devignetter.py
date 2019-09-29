@@ -16,6 +16,8 @@ class LfpDevignetter(LfpLensIter):
         # noise level for decision making whether division by raw image or fit values
         self._noise_lev = kwargs['noise_lev'] if 'noise_lev' in kwargs else 0
 
+        self._patch_mode = True
+
         self._lfp_div = np.zeros(self._lfp_img.shape)
 
     def main(self):
@@ -25,12 +27,12 @@ class LfpDevignetter(LfpLensIter):
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
         # based on provided noise level in white image
-        if self._noise_lev < .5:
-            # perform raw white image division (low noise)
-            self.wht_img_divide()
-        else:
+        if self._patch_mode:
             # perform fitted white micro image division (high noise)
             self.proc_lfp_img(self.patch_devignetting, msg='De-vignetting fit')
+        else:
+            # perform raw white image division (low noise)
+            self.wht_img_divide()
 
         # identify pixels requiring treatment from significantly large intensity variations
         self._lfp_div[self._lfp_div > self._lfp_img.max()] = self._lfp_img.max()
@@ -45,7 +47,7 @@ class LfpDevignetter(LfpLensIter):
         lfp_vgn[lfp_vgn < thresh] = 0
 
         # add selected pixels to light-field image
-        self._lfp_img += lfp_vgn*.3
+        self._lfp_img += lfp_vgn*.5
 
         #misc.save_img_file(lfp_vgn, file_path=os.path.join(os.getcwd(), 'lfp_vgn_thresh.bmp'))
         #misc.save_img_file(self._lfp_img, file_path=os.path.join(os.getcwd(), 'lfp_out.bmp'))
