@@ -10,10 +10,13 @@ class LfpDevignetter(LfpLensIter):
         super(LfpDevignetter, self).__init__(*args, **kwargs)
 
         # threshold from white image intensity distribution (key to find balance between edges turning black or white)
-        self._th = kwargs['th'] if 'th' in kwargs else np.std(self._wht_img/self._wht_img.max())*2.5
+        default_thresh = np.mean(self._wht_img/self._wht_img.max()) - np.std(self._wht_img/self._wht_img.max())
+        self._th = kwargs['th'] if 'th' in kwargs else default_thresh
 
         # noise level for decision making whether division by raw image or fit values
         self._noise_lev = kwargs['noise_lev'] if 'noise_lev' in kwargs else 0
+
+        self._lfp_div = np.zeros(self._lfp_img.shape)
 
     def main(self):
 
@@ -27,7 +30,25 @@ class LfpDevignetter(LfpLensIter):
             self.wht_img_divide()
         else:
             # perform fitted white micro image division (high noise)
-            self.proc_lfp_img(self.patch_devignetting, msg='De-vignetting')
+            self.proc_lfp_img(self.patch_devignetting, msg='De-vignetting fit')
+
+        # identify pixels requiring treatment from significantly large intensity variations
+        self._lfp_div[self._lfp_div > self._lfp_img.max()] = self._lfp_img.max()
+        lfp_vgn = self._lfp_div - self._lfp_img
+        lfp_vgn[lfp_vgn < 0] = 0
+
+        #import os
+        #misc.save_img_file(self._lfp_img, file_path=os.path.join(os.getcwd(), 'lfp_img.bmp'))
+        #misc.save_img_file(lfp_vgn, file_path=os.path.join(os.getcwd(), 'lfp_vgn.bmp'))
+
+        thresh = np.mean(lfp_vgn) - np.std(lfp_vgn)
+        lfp_vgn[lfp_vgn < thresh] = 0
+
+        # add selected pixels to light-field image
+        self._lfp_img += lfp_vgn*.3
+
+        #misc.save_img_file(lfp_vgn, file_path=os.path.join(os.getcwd(), 'lfp_vgn_thresh.bmp'))
+        #misc.save_img_file(self._lfp_img, file_path=os.path.join(os.getcwd(), 'lfp_out.bmp'))
 
         # print status
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
@@ -46,7 +67,7 @@ class LfpDevignetter(LfpLensIter):
         self._wht_img[self._wht_img < self._th] = self._th
 
         # divide light-field image
-        self._lfp_img /= self._wht_img
+        self._lfp_div = self._lfp_img / self._wht_img
 
         return True
 
@@ -81,9 +102,6 @@ class LfpDevignetter(LfpLensIter):
         weight_win = np.dot(A, coeffs).reshape(patch.shape[1], patch.shape[0])[..., np.newaxis]
         weight_win /= weight_win.max()
 
-        # thresholding (to prevent too large numbers in corrected image)
-        weight_win[weight_win < self._th] = self._th
-
         return coeffs, weight_win
 
     def apply_fit(self, patch, coeffs):
@@ -107,15 +125,27 @@ class LfpDevignetter(LfpLensIter):
     def patch_devignetting(self, mic):
 
         # slice images
-        wht_win = self._wht_img[rint(mic[0]) - self._C - 1:rint(mic[0]) + self._C + 2,
-                 rint(mic[1]) - self._C - 1: rint(mic[1]) + self._C + 2]
+        margin = 1
+        wht_win = self._extract_win(self._wht_img, mic, margin)
+        lfp_win = self._extract_win(self._lfp_img, mic)
+        div_win = self._extract_win(self._lfp_div, mic)
 
-        lfp_win = self._lfp_img[rint(mic[0]) - self._C - 1:rint(mic[0]) + self._C + 2,
-                 rint(mic[1]) - self._C - 1: rint(mic[1]) + self._C + 2]
+        # fit micro image
+        if self._noise_lev > .5:
+            _, weight_win = self.fit_patch(wht_win)
+        else:
+            weight_win = wht_win/wht_win.max()
 
-        _, weight_win = self.fit_patch(wht_win)
+        # thresholding (to prevent too large numbers in corrected image)
+        th = .2
+        weight_win[weight_win < th] = th
 
         # apply vignetting correction
-        lfp_win /= weight_win
+        div_win += lfp_win / weight_win[margin:-margin, margin:-margin, ...]
 
-        return lfp_win
+        return True
+
+    def _extract_win(self, img, mic, margin=0):
+        win = img[rint(mic[0]) - self._C-margin:rint(mic[0]) + self._C+margin+1,
+                  rint(mic[1]) - self._C-margin:rint(mic[1]) + self._C+margin+1]
+        return win
