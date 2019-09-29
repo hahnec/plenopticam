@@ -223,7 +223,7 @@ class PlenopticamConfig(object):
 
     @property
     def cond_perf_cali(self):
-        return self.params[self.opt_cali] and self.cond_lfp_align
+        return self.params[self.opt_cali] and self.cond_lfp_align or not self.cond_meta_file
 
     @property
     def cond_lfp_align(self):
