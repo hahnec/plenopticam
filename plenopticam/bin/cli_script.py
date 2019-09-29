@@ -52,6 +52,7 @@ def usage():
     print("--awb                             Auto white balance flag")
     print("--con                             Contrast automation flag")
     print("--hot                             Hot pixel treatment flag")
+    print("--sat                             Saturation automation flag")
 
     print("-h , --help                       Print this help message.")
     print("")
@@ -62,7 +63,8 @@ def parse_options(argv, cfg):
 
     try:
         opts, args = getopt.getopt(argv, "ghf:c:p:r:",
-                                        ["gui", "help", "file=", "cali=", "patch=", "refo=", "refi", "vgn", "awb", "con", "hot"])
+                                        ["gui", "help", "file=", "cali=", "patch=", "refo=", "refi",
+                                         "vgn", "awb", "con", "hot", "sat"])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -94,6 +96,8 @@ def parse_options(argv, cfg):
                 cfg.params[cfg.opt_cont] = True
             if opt == "--hot":
                 cfg.params[cfg.opt_hotp] = True
+            if opt == "--sat":
+                cfg.params[cfg.opt_sat_] = True
 
     # create dictionary containing all parameters for the light field
     return cfg
