@@ -49,7 +49,7 @@ OPTIONS = {
     "iconfile": 'plenopticam/gui/icns/1055104.icns',
     "excludes": ['matplotlib'],
     "plist": dict(NSHumanReadableCopyright='2019 Christopher Hahne'),
-    "packages": ['numpy', 'scipy', 'libtiff', 'colour_demosaicing', 'colour', 'pillow'],
+    "packages": ['numpy', 'scipy', 'libtiff', 'colour_demosaicing', 'colour'],
 }
 
 if platform == 'darwin':
