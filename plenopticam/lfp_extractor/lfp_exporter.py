@@ -26,8 +26,6 @@ from plenopticam import misc
 from plenopticam.misc import Normalizer
 from plenopticam.lfp_extractor.lfp_viewpoints import LfpViewpoints
 
-from plenopticam.lfp_reader import CfaProcessor
-
 # external libs
 import os
 import numpy as np
