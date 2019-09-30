@@ -44,27 +44,28 @@ class LfpExtractor(object):
         self.cfg.load_cal_data()
 
         # micro image crop
-        lfp_obj = LfpCropper(self._lfp_img_align, cfg=self.cfg, sta=self.sta)
-        lfp_obj.main()
-        self._lfp_img_align = lfp_obj.lfp_img_align
-        del lfp_obj
+        if not self.sta.interrupt:
+            lfp_obj = LfpCropper(self._lfp_img_align, cfg=self.cfg, sta=self.sta)
+            lfp_obj.main()
+            self._lfp_img_align = lfp_obj.lfp_img_align
+            del lfp_obj
 
         # viewpoint images
-        if self.cfg.params[self.cfg.opt_view]:
+        if self.cfg.params[self.cfg.opt_view] and not self.sta.interrupt:
             lfp_obj = LfpRearranger(self._lfp_img_align, cfg=self.cfg, sta=self.sta)
             lfp_obj.main()
             self._vp_img_arr = lfp_obj.vp_img_arr
             del lfp_obj
 
         # refocused image stack
-        if self.cfg.params[self.cfg.opt_refo]:
+        if self.cfg.params[self.cfg.opt_refo] and not self.sta.interrupt:
             lfp_obj = LfpRefocuser(vp_img_arr=self._vp_img_arr, cfg=self.cfg, sta=self.sta)
             lfp_obj.main()
             self._refo_stack = lfp_obj.refo_stack
             del lfp_obj
 
         # scheimpflug focus
-        if self.cfg.params[self.cfg.opt_pflu] != 'off':
+        if self.cfg.params[self.cfg.opt_pflu] != 'off' and not self.sta.interrupt:
             lfp_obj = LfpScheimpflug(refo_stack=self._refo_stack, cfg=self.cfg, sta=self.sta)
             lfp_obj.main()
             del lfp_obj

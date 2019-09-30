@@ -210,7 +210,7 @@ class PlenopticamConfig(object):
         return splitext(self.params[self.lfp_path])[0]
 
     def cond_load_limg(self, img=None):
-        return img is None and self.cond_lfp_align
+        return img is None and self.cond_lfp_align()
 
     def cond_auto_find(self):
         return isdir(self.params[self.cal_path]) or self.params[self.cal_path].lower().endswith('.tar')
@@ -225,10 +225,20 @@ class PlenopticamConfig(object):
         return not exists(join(self.exp_path, 'lfp_img_align.pkl'))
 
     def cond_meta_file(self):
+
+        # look for meta data file (optionally find json file named after calibration image file)
         pot_meta = splitext(self.params[self.cal_path])[0] + '.json'
         cal_meta = self.params[self.cal_meta]
         self.params[self.cal_meta] = pot_meta if not isfile(cal_meta) and isfile(pot_meta) else cal_meta
-        return isfile(self.params[self.cal_meta])
+        exist = isfile(self.params[self.cal_meta])
+
+        # load meta data file
+        self.load_cal_data()
+
+        # validate meta data content
+        valid = len(self.calibs[self.mic_list]) > 0
+
+        return exist and valid
 
 class NumpyTypeEncoder(json.JSONEncoder):
     def default(self, obj):
