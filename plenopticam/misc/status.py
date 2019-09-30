@@ -10,6 +10,7 @@ class PlenopticamStatus(object):
         self._prog_var = 0
         self._stat_var = ''
         self._interrupt = threading.Event()
+        self._error = False
 
         # observer lists to bind to
         self._prog_observers = []
@@ -53,7 +54,7 @@ class PlenopticamStatus(object):
             if opt:
                 print('\n', msg)
         else:
-            self.stat_var = 'Stopped'
+            self.stat_var = 'Stopped' if self._error is False else self.stat_var
             self.progress('', opt=False)
 
             return True
@@ -124,3 +125,17 @@ class PlenopticamStatus(object):
 
     def bind_to_interrupt(self, callback):
         self._interrupt_observers.append(callback)
+
+    # error getter
+    @property
+    def error(self):
+        return self._error
+
+    # error setter
+    @interrupt.setter
+    def error(self, val):
+        if val:
+            self._error = True
+            self.interrupt = True
+        else:
+            self._error = False

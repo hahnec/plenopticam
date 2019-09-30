@@ -39,7 +39,7 @@ class LfpReader(object):
                     # print status
                     self.sta.status_msg('File {0} not found'.format(self._lfp_path), self.cfg.params[self.cfg.opt_prnt])
                     self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
-                    raise PlenopticamError(e)
+                    self.sta.error = True
                 except TypeError as e:
                     self.sta.status_msg(e, self.cfg.params[self.cfg.opt_prnt])
                     self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
@@ -72,7 +72,7 @@ class LfpReader(object):
                     # print status
                     self.sta.status_msg('File {0} not found'.format(self._lfp_path), self.cfg.params[self.cfg.opt_prnt])
                     self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
-                    raise PlenopticamError(e)
+                    self.sta.error = True
                 except Exception as e:
                     # unrecognized LFP file type
                     if not obj.json_dict:

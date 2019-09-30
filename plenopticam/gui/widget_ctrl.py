@@ -169,6 +169,7 @@ class CtrlWidget(tk.Frame):
         # reset
         self.var_init()
         self.sta.interrupt = False
+        self.sta.error = False
 
         # disable button activity
         self.toggle_btn_list(self.all_btn_list)
