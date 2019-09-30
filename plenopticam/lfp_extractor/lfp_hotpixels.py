@@ -14,6 +14,7 @@ class LfpHotPixels(LfpViewpoints):
 
         for j in range(n, img.shape[0]-n):
             for i in range(n, img.shape[1]-n):
+
                 win = img[j-n:j+n+1, i-n:i+n+1]
 
                 # hot pixel detection
@@ -25,6 +26,10 @@ class LfpHotPixels(LfpViewpoints):
                 if num_hi < win.size/5 or num_lo > win.size/5:
                     # replace outlier by average of all directly adjacent pixels
                     img[j, i] = (sum(sum(img[j-1:j+2, i-1:i+2]))-img[j, i])/8.
+
+                # check interrupt status
+                if self.sta.interrupt:
+                    return False
 
         return img
 
@@ -46,6 +51,10 @@ class LfpHotPixels(LfpViewpoints):
                 if num_hi < win.size/5 or num_lo < win.size/5:
                     # replace outlier by average of all directly adjacent pixels
                     img[j, i, :] = (sum(sum(img[j-1:j+2, i-1:i+2, :]))-img[j, i, :])/8.
+
+                # check interrupt status
+                if self.sta.interrupt:
+                    return False
 
         return img
 

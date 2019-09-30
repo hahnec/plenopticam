@@ -53,9 +53,9 @@ class LfpCropper(LfpViewpoints):
                 percentage = ((j*self._lens_x_max+i+1)/(self._lens_y_max*self._lens_x_max)*100)
                 self.sta.progress(percentage, self.cfg.params[self.cfg.opt_prnt])
 
-            # check interrupt status
-            if self.sta.interrupt:
-                return False
+                # check interrupt status
+                if self.sta.interrupt:
+                    return False
 
         self._lfp_img_align = new_lfp_img
 
