@@ -1,6 +1,6 @@
 # local imports
 from plenopticam import misc
-from plenopticam.misc.errors import LfpTypeError, PlenopticamError
+from plenopticam.misc.errors import LfpTypeError
 from plenopticam.lfp_reader.lfp_decoder import LfpDecoder
 
 import os
@@ -35,9 +35,9 @@ class LfpReader(object):
             if os.path.exists(fp):
                 try:
                     self._lfp_img = misc.load_img_file(fp)
-                except FileNotFoundError as e:
+                except FileNotFoundError:
                     # print status
-                    self.sta.status_msg('File {0} not found'.format(self._lfp_path), self.cfg.params[self.cfg.opt_prnt])
+                    self.sta.status_msg('{0} not found'.format(os.path.basename(self._lfp_path)), self.cfg.params[self.cfg.opt_prnt])
                     self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
                     self.sta.error = True
                 except TypeError as e:
@@ -70,7 +70,7 @@ class LfpReader(object):
 
                 except FileNotFoundError as e:
                     # print status
-                    self.sta.status_msg('File {0} not found'.format(self._lfp_path), self.cfg.params[self.cfg.opt_prnt])
+                    self.sta.status_msg('{0} not found'.format(os.path.basename(self._lfp_path)), self.cfg.params[self.cfg.opt_prnt])
                     self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
                     self.sta.error = True
                 except Exception as e:
