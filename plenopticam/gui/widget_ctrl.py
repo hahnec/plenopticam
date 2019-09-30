@@ -79,6 +79,8 @@ class CtrlWidget(tk.Frame):
         self.cmd_wid = CmndWidget(self)
         self.cmd_wid.grid(padx=PX, pady=PY)
 
+        self.all_btn_list = self.cmd_wid.btn_list + self.fil_wid.btn_list + self.men_wid.btn_list
+
         self.var_init()
 
     def var_init(self):
@@ -89,10 +91,10 @@ class CtrlWidget(tk.Frame):
         self.lfp_img_align = None
 
         # threading
+        self.sta.interrupt = False
+        self.sta.error = False
         self.job_queue = queue.Queue()
         self.cur_thread = None
-
-        self.all_btn_list = self.cmd_wid.btn_list+self.fil_wid.btn_list+self.men_wid.btn_list
 
     def fetch_paths(self):
 
@@ -135,9 +137,6 @@ class CtrlWidget(tk.Frame):
             self.job_queue.get(block=True, timeout=POLLING_RATE)
             self.job_queue.task_done()
 
-        # reset member variables
-        self.var_init()
-
     def poll(self):
 
         if self.cur_thread is not None:
@@ -162,14 +161,12 @@ class CtrlWidget(tk.Frame):
 
     def process(self):
 
+        # reset
+        self.var_init()
+
         # status update
         self.sta.status_msg('Starting ...', self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
-
-        # reset
-        self.var_init()
-        self.sta.interrupt = False
-        self.sta.error = False
 
         # disable button activity
         self.toggle_btn_list(self.all_btn_list)
