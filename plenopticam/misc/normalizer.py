@@ -23,7 +23,7 @@ class Normalizer(object):
     def norm_fun(self):
         ''' normalize image to values between 1 and 0 '''
 
-        return (self._img - self._min) / (self._max - self._min)
+        return (self._img - self._min) / (self._max - self._min) if self._max != self._min else self._img
 
     def type_norm(self, lim_min=None, lim_max=None):
         ''' normalize numpy image array for provided data type '''
