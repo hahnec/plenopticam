@@ -28,7 +28,7 @@ try:
 except ImportError:
     raise ImportError('Please install pillow.')
 
-from plenopticam import misc
+from plenopticam.misc.normalizer import Normalizer
 
 PORTISHEAD = b"x\x9cm\x8f\xe1\n\xc0 \x08\x84\xdf\xffEu\x8c\x84`kBM\x9d\x95\xc4`\xbb?\xde\xa7R\x9e\x99K\xa55Q\x0b)" + \
              b"\x13\x02 \xf1\xecH\x86P\x96>]\xe8\r\xdf\xe0nRJ[\xaflJ^P\xb8\xdc\xc9\r\xa9\xe0\xe0\x1d\xcek\x98\x06" + \
@@ -60,12 +60,12 @@ def save_img_file(img, file_path, file_type=None):
 
     if file_type == 'tiff':
         obj = TIFF.open(file_path, mode='w')
-        obj.write_image(misc.Normalizer(img).uint16_norm(), compression=None, write_rgb=True)
+        obj.write_image(Normalizer(img).uint16_norm(), compression=None, write_rgb=True)
         obj.close()
 
     elif file_type == 'png' or file_type == 'bmp':
 
-        Image.fromarray(misc.Normalizer(img).uint8_norm()).save(file_path, file_type, optimize=True)
+        Image.fromarray(Normalizer(img).uint8_norm()).save(file_path, file_type, optimize=True)
 
     return True
 
