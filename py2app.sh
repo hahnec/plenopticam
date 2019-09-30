@@ -14,3 +14,6 @@ sudo sed -i -e '71,85 s/^/#/' ./dist/plenopticam.app/Contents/Resources/lib/pyth
 
 # copy docs folder to app bundle
 sudo cp -r ./docs ./dist/plenopticam.app/Contents/Resources/
+
+# rename tifflib as version 5 causes error
+mv ./dist/plenopticam.app/Contents/Frameworks/libtiff.5.dylib ./dist/plenopticam.app/Contents/Frameworks/libtiff.4.dylib
