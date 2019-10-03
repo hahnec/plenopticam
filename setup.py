@@ -23,7 +23,7 @@ __license__ = """
 from setuptools import setup, find_packages
 from plenopticam import __version__
 from sys import platform
-
+from docutils import core
 
 APP = ['plenopticam/gui/top_level.py']
 
@@ -71,14 +71,25 @@ else:
      data_files=UNIX_FILES,
  )
 
+# parse description section text
+with open("README.rst", "r") as f:
+    data = f.read()
+    readme_nodes = list(core.publish_doctree(data))
+    for node in readme_nodes:
+        if node.astext().startswith('Description'):
+                long_description = node.astext().rsplit('\n\n')[1]
+
 setup(
       name='plenopticam',
       version=__version__,
-      description='Software for scientific light field computation',
+      description='Light field photography application',
+      long_description=long_description,
+      long_description_content_type='text/x-rst',
       url='http://github.com/hahnec/plenopticam',
       author='Christopher Hahne',
       author_email='inbox@christopherhahne.de',
       license='GNU GPL V3.0',
+      keywords='plenoptic camera rendering software',
       scripts=['plenopticam/bin/cli_script.py'],
       entry_points={'console_scripts': ['plenopticam=plenopticam.bin.cli_script:main'], },
       packages=find_packages(),
