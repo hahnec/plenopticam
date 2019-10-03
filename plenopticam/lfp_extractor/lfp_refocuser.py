@@ -84,7 +84,7 @@ class LfpRefocuser(LfpViewpoints):
         # divide intensity to prevent clipping in shift and sum process
         self._vp_img_arr /= patch_len
 
-        # iterate through
+        # iterate through refocusing parameter a
         a_list = self.cfg.params[self.cfg.ran_refo]
         for a in range(*a_list):
 
@@ -96,11 +96,11 @@ class LfpRefocuser(LfpViewpoints):
                     # perform sub-pixel refinement if required
                     vp_img = misc.img_resize(self._vp_img_arr[j, i], factor) if factor > 1 else self._vp_img_arr[j, i]
 
-                    # get viewpoint pad widths for each border
+                    # get viewpoint padding for each border
                     tb = (abs(a) * j, abs(a) * (patch_len - 1 - j))    # top, bottom
                     lr = (abs(a) * i, abs(a) * (patch_len - 1 - i))    # left, right
 
-                    # flip pad widths for each axis if a is negative
+                    # flip padding for each axis if a is negative
                     pad_width = (tb, lr, (0, 0)) if a >= 0 else (tb[::-1], lr[::-1], (0, 0))
 
                     # shift viewpoint image and add its values to refocused image slice

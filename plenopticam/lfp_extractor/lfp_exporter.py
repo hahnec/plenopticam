@@ -39,10 +39,6 @@ class LfpExporter(LfpViewpoints):
 
     def write_viewpoint_data(self):
 
-        # print status
-        self.sta.status_msg('Write viewpoint images', self.cfg.params[self.cfg.opt_prnt])
-        self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
-
         # write central view as thumbnail image
         self.export_thumbnail(type='png')
 
@@ -63,6 +59,10 @@ class LfpExporter(LfpViewpoints):
         return True
 
     def export_viewpoints(self, type='tiff'):
+
+        # print status
+        self.sta.status_msg('Write viewpoint images', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
         ptc_leng = self.cfg.params[self.cfg.ptc_leng]
 
@@ -121,6 +121,10 @@ class LfpExporter(LfpViewpoints):
 
     def export_refo_stack(self, type=None):
 
+        # print status
+        self.sta.status_msg('Write refocused images', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
+
         refo_stack = Normalizer(np.asarray(self._refo_stack)).uint16_norm()
 
         # create folder
@@ -142,6 +146,10 @@ class LfpExporter(LfpViewpoints):
 
             # write image file
             misc.save_img_file(refo_img, os.path.join(folder_path, str(a)), file_type=type)
+
+            # print status
+            percentage = (i / len(refo_stack)) * 100
+            self.sta.progress(percentage, self.cfg.params[self.cfg.opt_prnt])
 
         return True
 
