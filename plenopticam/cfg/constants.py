@@ -46,7 +46,7 @@ PARAMS_VALS = (
     True,
     False,
     'off',
-    False,
+    True,
     False,
     True,
     False
