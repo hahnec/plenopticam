@@ -89,7 +89,7 @@ setup(
       author='Christopher Hahne',
       author_email='inbox@christopherhahne.de',
       license='GNU GPL V3.0',
-      keywords='plenoptic camera rendering software',
+      keywords='lightfield plenoptic rendering engine image processing software application lytro toolbox',
       scripts=['plenopticam/bin/cli_script.py'],
       entry_points={'console_scripts': ['plenopticam=plenopticam.bin.cli_script:main'], },
       packages=find_packages(),
