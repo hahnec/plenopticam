@@ -23,12 +23,18 @@ Installation
 
 |
 
+* via pip:
+    1. install with ``$ pip install plenopticam``
+    2. type ``$ plenopticam -g`` to the command line once installation finished
+
+|
+
 * from source:
     1. install Python from https://www.python.org/
     2. download the source_ using ``$ git clone https://github.com/hahnec/plenopticam.git``
     3. go to the root directory ``$ cd plenopticam``
     4. install with ``$ sudo python setup.py install`` from root directory
-    5. if installation ran smoothly, enter ``$ sudo plenopticam -g`` to the command line after which a lean user interface will pop up (see below)
+    5. if installation ran smoothly, enter ``$ sudo plenopticam -g`` to the command line
 
 Usage
 -----
@@ -93,11 +99,11 @@ Command Line
 
 For computing a stack of light-field images, it may be convenient to iterate through them. This can be done by:
 
-``$ sudo plenopticam -f '/Users/../Folder/' -c 'Users/../caldata-B5144000XXX.tar' --awb``
+``$ sudo plenopticam -f '/Users/../Folder/' -c 'Users/../caldata-B5144000XXX.tar'``
 
 with necessary write privileges on Unix Systems. A Windows-equivalent command would be as follows:
 
-``plenopticam --file="C:\\..\\Folder\\" --cali="C:\\..\\caldata-B5144000XXX.tar" --awb``
+``plenopticam --file="C:\\..\\Folder\\" --cali="C:\\..\\caldata-B5144000XXX.tar"``
 
 More information on optional arguments, can be found using the help parameter
 
