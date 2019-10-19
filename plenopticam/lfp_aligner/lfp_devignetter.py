@@ -3,6 +3,7 @@ from plenopticam import misc
 from plenopticam.misc.type_checks import rint
 
 import numpy as np
+from scipy.signal import convolve2d
 
 class LfpDevignetter(LfpLensIter):
 
@@ -14,7 +15,8 @@ class LfpDevignetter(LfpLensIter):
         self._th = kwargs['th'] if 'th' in kwargs else default_thresh
 
         # noise level for decision making whether division by raw image or fit values
-        self._noise_lev = kwargs['noise_lev'] if 'noise_lev' in kwargs else 0
+        self._noise_lev = kwargs['noise_lev'] if 'noise_lev' in kwargs else self._estimate_noise_level()
+        self._noise_th = 0.1
 
         self._patch_mode = True
 
@@ -29,7 +31,7 @@ class LfpDevignetter(LfpLensIter):
         # based on provided noise level in white image
         if self._patch_mode:
             # perform fitted white micro image division (high noise)
-            self.proc_lfp_img(self.patch_devignetting, msg='De-vignetting fit')
+            self.proc_lfp_img(self.patch_devignetting, msg='De-vignetting')
         else:
             # perform raw white image division (low noise)
             self.wht_img_divide()
@@ -133,7 +135,7 @@ class LfpDevignetter(LfpLensIter):
         div_win = self._extract_win(self._lfp_div, mic)
 
         # fit micro image
-        if self._noise_lev > .5:
+        if self._noise_lev > self._noise_th:
             _, weight_win = self.fit_patch(wht_win)
         else:
             weight_win = wht_win/wht_win.max()
@@ -151,3 +153,19 @@ class LfpDevignetter(LfpLensIter):
         win = img[rint(mic[0]) - self._C-margin:rint(mic[0]) + self._C+margin+1,
                   rint(mic[1]) - self._C-margin:rint(mic[1]) + self._C+margin+1]
         return win
+
+    def _estimate_noise_level(self):
+        ''' estimate white image noise level '''
+
+        # print status
+        self.sta.status_msg('Estimaten white image noise level', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
+
+        M = np.mean(self.cfg.calibs[self.cfg.ptc_mean])
+        lp_kernel = misc.create_gauss_kernel(l=M)
+        bw_img = np.mean(self._wht_img, axis=2)
+        flt_img = convolve2d(bw_img, lp_kernel, 'same')
+
+        self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
+
+        return np.std(bw_img-flt_img)
