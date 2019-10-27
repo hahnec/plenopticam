@@ -53,8 +53,8 @@ class LfpLensIter(object):
                     # perform provided function
                     fun(mic, *args)
 
-                    # print progress status
-                    self.sta.progress((ly + 1) / self._LENS_Y_MAX * 100, self.cfg.params[self.cfg.opt_prnt])
+                # print progress status
+                self.sta.progress((ly + 1) / self._LENS_Y_MAX * 100, self.cfg.params[self.cfg.opt_prnt])
 
                 # check interrupt status
                 if self.sta.interrupt:

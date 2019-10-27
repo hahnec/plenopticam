@@ -54,9 +54,6 @@ class LfpDevignetter(LfpLensIter):
         #misc.save_img_file(lfp_vgn, file_path=os.path.join(os.getcwd(), 'lfp_vgn_thresh.bmp'))
         #misc.save_img_file(self._lfp_img, file_path=os.path.join(os.getcwd(), 'lfp_out.bmp'))
 
-        # print status
-        self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
-
     def wht_img_divide(self, th=None):
 
         self._th = th if th is not None else self._th
@@ -158,7 +155,7 @@ class LfpDevignetter(LfpLensIter):
         ''' estimate white image noise level '''
 
         # print status
-        self.sta.status_msg('Estimaten white image noise level', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.status_msg('Estimate white image noise level', self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
         M = np.mean(self.cfg.calibs[self.cfg.ptc_mean])
