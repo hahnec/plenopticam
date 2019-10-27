@@ -27,7 +27,7 @@ except ImportError:
 
 import sys
 import pickle
-from os.path import join, dirname, exists, isdir
+from os.path import join, dirname
 import threading
 import queue
 import types
