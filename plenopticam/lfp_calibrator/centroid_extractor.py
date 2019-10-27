@@ -34,14 +34,14 @@ DR = 1  # down-sample rate
 
 class CentroidExtractor(object):
 
-    def __init__(self, img, cfg, sta=None, M=9, method='area'):
+    def __init__(self, img, cfg, sta=None, M=None, method=None):
 
         # input variables
         self._img = img
         self._cfg = cfg
         self._sta = sta if sta is not None else PlenopticamStatus()
-        self._M = M
-        self._method = method
+        self._M = M if M is not None else 9
+        self._method = method if method is not None else 'area'
 
         # private variables
         self._peak_img = self._img.copy()
