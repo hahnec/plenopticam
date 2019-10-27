@@ -43,10 +43,11 @@ def try_tiff_import(type):
 
     return TIFF, type
 
-def save_img_file(img, file_path, file_type=None):
+def save_img_file(img, file_path=None, file_type=None):
 
-    img = place_dnp(img)
+    file_path = os.getcwd() if file_path is None else file_path
     ext = os.path.splitext(file_path)[-1][1:]
+    img = place_dnp(img)
 
     if not file_type:
         file_type = ext if ext == 'png' or ext == 'tiff' else 'tiff' if img.dtype == 'uint16' else 'png'
