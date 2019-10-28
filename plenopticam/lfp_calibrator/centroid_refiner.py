@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import division
 
 __author__ = "Christopher Hahne"
 __email__ = "info@christopherhahne.de"
@@ -20,7 +21,6 @@ Copyright (c) 2017 Christopher Hahne <info@christopherhahne.de>
 
 """
 
-from __future__ import division
 import numpy as np
 
 # local imports
