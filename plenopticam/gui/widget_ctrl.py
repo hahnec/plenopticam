@@ -126,7 +126,7 @@ class CtrlWidget(tk.Frame):
 
         # start next thread if condition is met
         if cond and self.cur_thread is None:
-            self.cur_thread = PropagatingThread(target=func, args=args)
+            self.cur_thread = PropagatingThread(target=func, args=args, cfg=self.cfg, sta=self.sta)
             self.cur_thread.start()
 
     def stop_thread(self):
@@ -314,6 +314,7 @@ class PropagatingThread(threading.Thread):
                 self.ret = self._Thread__target(*self._Thread__args, **self._Thread__kwargs)
             else:
                 self.ret = self._target(*self._args, **self._kwargs)
+                self.sta.stat_var = 'Stopped' if self.sta.interrupt else self.sta.stat_var
         except Exception:
             self.exc = traceback.format_exc()
 

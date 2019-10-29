@@ -54,7 +54,7 @@ class PlenopticamStatus(object):
             if opt:
                 print('\n', msg)
         else:
-            self.stat_var = 'Stopped' if self._error is False else self.stat_var
+            self.stat_var = 'Cancelling ...' if self._error is False else self.stat_var
             self.progress('', opt=False)
 
             return True
@@ -82,7 +82,7 @@ class PlenopticamStatus(object):
     def stat_var(self, msg):
         self._stat_var = msg
         for callback in self._stat_observers:
-           callback(self._stat_var)
+            callback(self._stat_var)
 
     @property
     def prog_var(self):
@@ -92,7 +92,7 @@ class PlenopticamStatus(object):
     def prog_var(self, val):
         self._prog_var = val
         for callback in self._prog_observers:
-           callback(self._prog_var)
+            callback(self._prog_var)
 
     def bind_to_prog(self, callback):
         self._prog_observers.append(callback)
