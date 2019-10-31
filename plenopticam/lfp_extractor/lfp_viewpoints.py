@@ -52,3 +52,48 @@ class LfpViewpoints(object):
                 raise NotImplementedError
 
         return True
+
+    @staticmethod
+    def get_move_coords(pattern, arr_dims):
+
+        # parameter initialization
+        pattern = 'circle' if pattern is None else pattern
+        r = int(min(arr_dims) / 2)
+        mask = [[0] * arr_dims[1] for _ in range(arr_dims[0])]
+
+        if pattern == 'square':
+            mask[0, :] = 1
+            mask[:, 0] = 1
+            mask[-1, :] = 1
+            mask[:, -1] = 1
+        if pattern == 'circle':
+            for x in range(-r, r + 1):
+                for y in range(-r, r + 1):
+                    if int(np.sqrt(x ** 2 + y ** 2)) == r:
+                        mask[y + r][x + r] = 1
+
+        # extract coordinates from mask
+        coords_table = [(y, x) for y in range(len(mask)) for x in range(len(mask)) if mask[y][x]]
+
+        # sort coordinates in angular order
+        coords_table.sort(key=lambda coords: np.arctan2(coords[0] - r, coords[1] - r))
+
+        return coords_table
+
+    def reorder_vp_arr(self, pattern=None):
+
+        # parameter initialization
+        pattern = 'circle' if pattern is None else pattern
+        arr_dims = self.vp_img_arr.shape[:2]
+        move_coords = self.get_move_coords(pattern, arr_dims)
+
+        vp_img_set = []
+        for coords in move_coords:
+            vp_img_set.append(self.vp_img_arr[coords[0], coords[1], ...])
+
+        return vp_img_set
+
+    @property
+    def views_stacked_img(self):
+        ''' concatenation of all sub-aperture images for single image representation '''
+        return np.moveaxis(np.concatenate(np.moveaxis(np.concatenate(np.moveaxis(self.vp_img_arr, 1, 2)), 0, 2)), 0, 1)
