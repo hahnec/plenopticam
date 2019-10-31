@@ -5,6 +5,7 @@ from plenopticam.lfp_extractor import LfpViewpoints, LfpExporter
 from plenopticam.lfp_extractor.lfp_contrast import LfpContrast
 from plenopticam.misc.hist_eq import HistogramEqualizer
 from plenopticam.lfp_extractor.lfp_hotpixels import LfpHotPixels
+from plenopticam.lfp_extractor.lfp_color_eq import LfpColorEqualizer
 
 
 class LfpRearranger(LfpViewpoints):
@@ -59,6 +60,13 @@ class LfpRearranger(LfpViewpoints):
             obj = LfpHotPixels(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
             obj.main()
             self.vp_img_arr = obj.vp_img_arr
+            del obj
+
+        # color consistency
+        if self.cfg.params[self.cfg.opt_colo]:
+            obj = LfpColorEqualizer(vp_img_arr=self.vp_img_arr)
+            obj.main()
+            self.vp_img_arr = obj._vp_img_arr
             del obj
 
         # write viewpoint data to hard drive
