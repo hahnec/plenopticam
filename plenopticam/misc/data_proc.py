@@ -1,6 +1,10 @@
 import numpy as np
 from scipy.interpolate import interp2d
 
+from plenopticam import misc
+from plenopticam.misc import Normalizer
+
+
 def create_gauss_kernel(l=25, sig=1.):
     
     # ensure length is odd
@@ -83,3 +87,52 @@ def eq_channels(img):
         img[..., idx] *= chs[idx]
 
     return img
+
+
+def robust_awb(img, t=0.3, max_iter=1000):
+    ''' inspired by Jun-yan Huo et al. and http://web.stanford.edu/~sujason/ColorBalancing/Code/robustAWB.m '''
+
+    img = Normalizer(img).type_norm(lim_min=0, lim_max=1.0)
+    ref_pixel = img[0, 0, :].copy()
+
+    u = .01  # gain step size
+    a = .8  # double step threshold
+    b = .001  # convergence threshold
+
+    gains_adj = np.array([1., 1., 1.])
+
+    for i in range(max_iter):
+        img_yuv = misc.yuv_conv(img)
+        f = (abs(img_yuv[..., 1]) + abs(img_yuv[..., 2])) / img_yuv[..., 0]
+        grays = np.zeros(img_yuv.shape)
+        grays[f < t] = img_yuv[f < t]
+        if np.sum(f < t) == 0:
+            print('No valid gray pixels found.')
+            break
+
+        u_bar = np.mean(grays[..., 1])  # estimate
+        v_bar = np.mean(grays[..., 2])  # estimate
+
+        # rgb_est = misc.yuv_conv(np.array([100, u_bar, v_bar]), inverse=True)    # convert average gray from YUV to RGB
+
+        # U > V: blue needs adjustment otherwise red is treated
+        err, ch = (u_bar, 2) if abs(u_bar) > abs(v_bar) else (v_bar, 0)
+
+        if abs(err) >= a:
+            delta = 2 * np.sign(err) * u  # accelerate gain adjustment if far off
+        elif abs(err) < b:  # converged when u_bar and v_bar < b
+            # delta = 0
+            #self.sta.status_msg('AWB convergence reached', self.cfg.params[self.cfg.opt_prnt])
+            break
+        else:
+            delta = err * u
+
+        # negative feedback loop
+        gains_adj[ch] -= delta
+
+        img = np.dot(img, np.diag(gains_adj))
+
+    # take gains only if result is obtained by convergence
+    gains = img[0, 0, :] / ref_pixel if i != max_iter - 1 else (1, 1, 1)
+
+    return img, gains
