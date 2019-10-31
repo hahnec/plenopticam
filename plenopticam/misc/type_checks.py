@@ -23,18 +23,6 @@ def islist(x):
 def isbool(x):
     return x.lower() in ("true", "false")
 
-def str2list(x):
-    # remove list brackets from string
-    if x.startswith('[') and x.endswith(']'):
-        x = x[1:-1]
-
-    try:
-        x = [int(k) if isint(k) else float(k) if isfloat(k) else k for k in x.replace(' ', '').split(',')]
-    except:
-        return False
-
-    return x
-
 def str2type(x):
     try:
         if isint(x):
@@ -47,6 +35,18 @@ def str2type(x):
             return x
     except:
         return x
+
+def str2list(x):
+    # remove list brackets from string
+    if x.startswith('[') and x.endswith(']'):
+        x = x[1:-1]
+
+    try:
+        x = [int(k) if isint(k) else float(k) if isfloat(k) else k for k in x.replace(' ', '').split(',')]
+    except:
+        return False
+
+    return x
 
 def rint(val):
     return int(round(val))
