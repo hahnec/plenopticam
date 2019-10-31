@@ -54,7 +54,7 @@ class PlenopticamStatus(object):
             if opt:
                 print('\n', msg)
         else:
-            self.stat_var = 'Cancelling ...' if self._error is False else self.stat_var
+            self.stat_var = 'Canceling ...' if self._error is False else self.stat_var
             self.progress('', opt=False)
 
             return True
