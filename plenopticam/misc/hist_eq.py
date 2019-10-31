@@ -5,11 +5,13 @@ from plenopticam import misc
 
 class HistogramEqualizer(object):
 
-    def __init__(self, img=None, bin_num=None, ch=None):
+    def __init__(self, img=None, bin_num=None, ch=None, **kwargs):
 
         self._ref_img = None if img is None else img
         self._bin_num = self.set_bin_num() if bin_num is None else bin_num
         self._ch = 0 if ch is None else ch
+
+        self._vp_img_arr = kwargs['vp_img_arr'] if 'vp_img_arr' in kwargs else None
 
     def set_bin_num(self):
 
@@ -56,6 +58,12 @@ class HistogramEqualizer(object):
                 lower_pt = (des_hist[::2]/2)[:-1]
                 des_hist = np.concatenate((lower_pt, 1-lower_pt[::-1]))
                 des_hist = np.append(des_hist, 1) if len(des_hist)+1 == len(self._bins) else des_hist
+        elif type == 'gaussian':
+            mu = des_hist.max() / 2
+            sig = 1/param
+            des_hist = 1. / (np.sqrt(2. * np.pi) * sig) * np.exp(-np.power((des_hist - mu) / sig, 2.) / 2)
+            des_hist /= des_hist.sum()
+            des_hist = des_hist.cumsum()
 
         # normalize to maximum value of data type
         des_hist *= self._bin_num
@@ -73,7 +81,7 @@ class HistogramEqualizer(object):
         img_ch = self._ref_img[..., self._ch]
 
         # use specified histogram and cdf to generate desired histogram
-        des_hist = self.hist_spec(type='s-curve', param=1.5, flip=False)
+        des_hist = self.hist_spec(type='gaussian', param=4, flip=False)
         new_img = np.interp(img_ch.flatten(), des_hist[:-1], self._cdf)
 
         # reconstruct new image
