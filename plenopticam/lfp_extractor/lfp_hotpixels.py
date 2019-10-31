@@ -8,7 +8,7 @@ class LfpHotPixels(LfpViewpoints):
 
     def main(self):
 
-        self.proc_vp_arr(self.correct_outliers, msg='Remove pixel outliers')
+        self.proc_vp_arr(self.correct_outliers, msg='Pixel outlier removal')
 
     def correct_outliers(self, img, n=2, perc=.2):
 

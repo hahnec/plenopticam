@@ -38,7 +38,7 @@ class LfpRearranger(LfpViewpoints):
             #self.vp_img_arr = obj.awb_eq()
             del obj
 
-        # colour and contrast handling
+        # color and contrast handling
         obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.0, p_hi=1.0)
 
         # contrast automation
@@ -74,9 +74,6 @@ class LfpRearranger(LfpViewpoints):
             obj = LfpExporter(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
             obj.write_viewpoint_data()
             del obj
-
-        # print status
-        self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
 
     def viewpoint_extraction(self):
 

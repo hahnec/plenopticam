@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from math import sqrt, atan2
 
 __author__ = "Christopher Hahne"
 __email__ = "info@christopherhahne.de"
@@ -83,39 +82,9 @@ class LfpExporter(LfpViewpoints):
                 percentage = (((j*self._M+i+1)/self._M**2)*100)
                 self.sta.progress(percentage, self.cfg.params[self.cfg.opt_prnt])
 
-        return True
-
-    def gif_vp_img(self, duration, pattern='circle'):
-
-        fn = 'view_animation_' + str(self.cfg.params[self.cfg.ptc_leng]) + 'px'
-
-        vp_img_arr = Normalizer(self._vp_img_arr).uint8_norm()
-        dims = self._vp_img_arr.shape[:2]
-        r = int(min(dims)/2)
-        mask = [[0] * dims[1] for _ in range(dims[0])]
-
-        if pattern == 'square':
-            mask[0, :] = 1
-            mask[:, 0] = 1
-            mask[-1, :] = 1
-            mask[:, -1] = 1
-        if pattern == 'circle':
-            for x in range(-r, r+1):
-                for y in range(-r, r+1):
-                    if int(sqrt(x**2 + y**2)) == r:
-                        mask[y+r][x+r] = 1
-
-        # extract coordinates from mask
-        coords_table = [(y, x) for y in range(len(mask)) for x in range(len(mask)) if mask[y][x]]
-
-        # sort coordinates in angular order
-        coords_table.sort(key=lambda coords: atan2(coords[0]-r, coords[1]-r))
-
-        img_set = []
-        for coords in coords_table:
-                img_set.append(vp_img_arr[coords[0], coords[1], :, :, :])
-
-        misc.save_gif(img_set, duration=duration, fp=self.cfg.exp_path, fn=fn)
+        # export all viewpoints in single image
+        views_stacked_path = os.path.join(self.cfg.exp_path, 'views_stacked_img_'+str(self._M)+'px')
+        misc.save_img_file(self.views_stacked_img, file_path=views_stacked_path, file_type=type)
 
         return True
 
@@ -150,6 +119,15 @@ class LfpExporter(LfpViewpoints):
             # print status
             percentage = (i / len(refo_stack)) * 100
             self.sta.progress(percentage, self.cfg.params[self.cfg.opt_prnt])
+
+        return True
+
+    def gif_vp_img(self, duration, pattern='circle'):
+
+        fn = 'view_animation_' + str(self.cfg.params[self.cfg.ptc_leng]) + 'px'
+        img_set = self.reorder_vp_arr(pattern=pattern)
+        img_set = Normalizer(img_set, dtype=self.vp_img_arr.dtype).uint8_norm()
+        misc.save_gif(img_set, duration=duration, fp=self.cfg.exp_path, fn=fn)
 
         return True
 
