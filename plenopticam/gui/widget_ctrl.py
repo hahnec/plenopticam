@@ -314,7 +314,7 @@ class PropagatingThread(threading.Thread):
                 self.ret = self._Thread__target(*self._Thread__args, **self._Thread__kwargs)
             else:
                 self.ret = self._target(*self._args, **self._kwargs)
-                self.sta.stat_var = 'Stopped' if self.sta.interrupt else self.sta.stat_var
+                self.sta.stat_var = 'Stopped' if self.sta.interrupt and not self.sta._error else self.sta.stat_var
         except Exception:
             self.exc = traceback.format_exc()
 

@@ -67,7 +67,7 @@ class CaliFinder(object):
             if not self._file_found:
                 # print status and interrupt process
                 self.sta.status_msg('White image file not found. Revise calibration path settings', self._opt_prnt)
-                self.sta.interrupt = True
+                self.sta.error = True
 
             # load white image if found and options are set or meta data is missing
             cond = self.cfg.params[self.cfg.opt_rota] or \
