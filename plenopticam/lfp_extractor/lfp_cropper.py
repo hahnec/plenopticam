@@ -74,7 +74,7 @@ class LfpCropper(LfpViewpoints):
 
         # comparison of patch size and mean size
         msg_str = None
-        if patch_size < mean_pitch and patch_size > 3:
+        if patch_size <= mean_pitch+2 and patch_size > 3:
             patch_safe = patch_size
         elif patch_size > mean_pitch:
             patch_safe = mean_pitch
@@ -100,7 +100,7 @@ class LfpCropper(LfpViewpoints):
 
         # estimate maximum patch size
         central_row_idx = int(max(centroids[:, 3])/2)
-        mean_pitch = int(np.round(np.mean(np.diff(centroids[centroids[:, 3] == central_row_idx, 0]))))
+        mean_pitch = int(np.ceil(np.mean(np.diff(centroids[centroids[:, 3] == central_row_idx, 0]))))
 
         # ensure mean patch size is odd
         mean_pitch += np.mod(mean_pitch, 2)-1
