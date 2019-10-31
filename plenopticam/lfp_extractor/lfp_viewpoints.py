@@ -11,6 +11,7 @@ class LfpViewpoints(object):
         self.cfg = kwargs['cfg'] if 'cfg' in kwargs else PlenopticamConfig()
         self.sta = kwargs['sta'] if 'sta' in kwargs else PlenopticamStatus()
         self._M = self.cfg.params[self.cfg.ptc_leng]
+        self._c = self._M//2
 
     @property
     def vp_img_arr(self):
