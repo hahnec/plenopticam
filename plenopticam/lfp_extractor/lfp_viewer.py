@@ -29,35 +29,33 @@ from PIL import Image, ImageTk
 import os
 from functools import partial
 
+from plenopticam.cfg import PlenopticamConfig
+from plenopticam.misc import PlenopticamStatus
 from plenopticam.lfp_extractor import LfpViewpoints
 from plenopticam.gui.constants import GENERIC_EXTS
 from plenopticam import __version__
 
-vp_dir = ['C:\\Users\\chahne\\Pictures\\Dataset_INRIA_SIROCCO\\Data\\Bee_2\\viewpoints_7px\\']  #cfg.exp_path
-rf_dir = ['C:\\Users\\chahne\\Pictures\\Dataset_INRIA_SIROCCO\\Data\\Bee_2\\refo_7px\\']  #cfg.exp_path
 
-def get_list(dir_list, vp=1):
+def get_list(img_dir, vp=1):
 
     from plenopticam import misc
     import numpy as np
 
+    dir_list = os.listdir(img_dir)
+    dir_list.sort()
     img_list = []
-    for img_dir in dir_list:
-        for i in os.listdir(img_dir):
-            img_path = os.path.join(img_dir, i)
-            ext = img_path.split('.')[::-1][0].lower()
-            if ext in [gen_ext.replace('*.', '') for gen_ext in GENERIC_EXTS]:
-                img = misc.load_img_file(img_path)
-                img_list.append(img)
+    for i in dir_list:
+        img_path = os.path.join(img_dir, i)
+        ext = img_path.split('.')[::-1][0].lower()
+        if ext in [gen_ext.replace('*.', '') for gen_ext in GENERIC_EXTS]:
+            img = misc.load_img_file(img_path)
+            img_list.append(img)
 
     if vp:
         vp_dim = int(np.sqrt(len(img_list)))
         img_list = np.asarray(img_list).reshape((vp_dim, vp_dim) + img_list[0].shape)
     else:
         img_tuples = tuple(zip(os.listdir(img_dir), img_list))
-        #name_list = [int(dir.split('.')[0]) for dir in os.listdir(img_dir)]
-        #from operator import itemgetter
-        #img_tuples = sorted(img_tuples, key=itemgetter(0))
         img_tuples = sorted(img_tuples, key=lambda k: int(k[0].split('.')[0]))
         _, img_list = zip(*img_tuples)
 
@@ -69,18 +67,24 @@ class PictureWindow(tk.Canvas, LfpViewpoints):
         tk.Canvas.__init__(self, *args, **kwargs)
         LfpViewpoints.__init__(self, *args, **kwargs)
 
+        # app reltated data
+        self.cfg = kwargs['cfg'] if 'cfg' in kwargs else PlenopticamConfig()
+        self.sta = kwargs['sta'] if 'sta' in kwargs else PlenopticamStatus()
+
         # window dimensions
         self._ht = self.winfo_screenheight()
         self._wd = self.winfo_screenwidth()
 
         # light-field related data
-        self.vp_img_arr = kwargs['vp_img_arr'] if 'vp_img_arr' in kwargs else get_list(vp_dir, vp=1)
-        self.refo_stack = kwargs['refo_stack'] if 'refo_stack' in kwargs else get_list(rf_dir, vp=0)
-
-        self._M = self.vp_img_arr.shape[0]
+        self._M = self.cfg.params[self.cfg.ptc_leng]    #self.vp_img_arr.shape[0]
         self._v = self._M//2+1
         self._u = self._M//2+1
         self._a = 0
+
+        vp_dir = os.path.join(self.cfg.exp_path, 'viewpoints_'+str(self._M)+'px')
+        rf_dir = os.path.join(self.cfg.exp_path, 'refo_'+str(self._M)+'px')
+        self.vp_img_arr = kwargs['vp_img_arr'] if 'vp_img_arr' in kwargs else get_list(vp_dir, vp=1)
+        self.refo_stack = kwargs['refo_stack'] if 'refo_stack' in kwargs else get_list(rf_dir, vp=0)
 
         # initialize member variables
         self.vp_mode = True
@@ -128,7 +132,7 @@ class PictureWindow(tk.Canvas, LfpViewpoints):
                 self._v -= 1 if self._v > 0 else 0
         else:
             if arg == 0:
-                self._a += 1 if self._a < len(self.refo_stack) else 0
+                self._a += 1 if self._a < len(self.refo_stack)-1 else 0
             if arg == 1:
                 self._a -= 1 if self._a > 0 else 0
 
@@ -145,13 +149,16 @@ class PictureWindow(tk.Canvas, LfpViewpoints):
         return True
 
     def all_function_trigger(self):
+
         self.create_buttons()
         self.window_settings()
         return True
 
     def window_settings(self):
+
         self['width'] = self._wd/2
         self['height'] = self._ht/2
+
         return True
 
     def create_buttons(self):
@@ -217,7 +224,6 @@ class PictureWindow(tk.Canvas, LfpViewpoints):
             # wait
             #_ = [_ for _ in range(200000)]
 
-# Main Function
 def main():
 
     # Creating Window
@@ -232,6 +238,6 @@ def main():
     return True
 
 
-# Main Function Trigger
 if __name__ == '__main__':
+
     main()
