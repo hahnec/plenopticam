@@ -23,7 +23,7 @@ class LfpViewpoints(object):
 
     @property
     def central_view(self):
-        return self.vp_img_arr[self._M//2+1, self._M//2+1].copy() if self._vp_img_arr is not None else None
+        return self.vp_img_arr[self._c, self._c].copy() if self._vp_img_arr is not None else None
 
     def proc_vp_arr(self, fun, **kwargs):
         ''' process viewpoint images based on provided function handle and argument data '''
