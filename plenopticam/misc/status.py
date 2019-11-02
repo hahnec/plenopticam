@@ -132,7 +132,7 @@ class PlenopticamStatus(object):
         return self._error
 
     # error setter
-    @interrupt.setter
+    @error.setter
     def error(self, val):
         if val:
             self._error = True
