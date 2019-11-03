@@ -117,7 +117,7 @@ class LfpExporter(LfpViewpoints):
             misc.save_img_file(refo_img, os.path.join(folder_path, str(a)), file_type=type)
 
             # print status
-            percentage = (i / len(refo_stack)) * 100
+            percentage = ((i+1) / len(refo_stack)) * 100
             self.sta.progress(percentage, self.cfg.params[self.cfg.opt_prnt])
 
         return True
