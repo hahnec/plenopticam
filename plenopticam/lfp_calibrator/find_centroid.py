@@ -3,7 +3,7 @@
 __author__ = "Christopher Hahne"
 __email__ = "info@christopherhahne.de"
 __license__ = """
-Copyright (c) 2019 Christopher Hahne <info@christopherhahne.de>
+    Copyright (c) 2019 Christopher Hahne <info@christopherhahne.de>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@ Copyright (c) 2019 Christopher Hahne <info@christopherhahne.de>
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
+
 
 def find_centroid(centroids, ref_point, pitch, axis, pattern='hex', odd=True):
 
@@ -46,6 +47,7 @@ def find_centroid(centroids, ref_point, pitch, axis, pattern='hex', odd=True):
         raise Exception('pattern type not recognized.')
 
     return found_centroid
+
 
 def find_centroid_backwards(centroids, ref_point, pitch, axis, pattern='hex', odd=True):
 

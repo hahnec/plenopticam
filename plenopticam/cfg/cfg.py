@@ -3,7 +3,7 @@
 __author__ = "Christopher Hahne"
 __email__ = "info@christopherhahne.de"
 __license__ = """
-Copyright (c) 2019 Christopher Hahne <info@christopherhahne.de>
+    Copyright (c) 2019 Christopher Hahne <info@christopherhahne.de>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

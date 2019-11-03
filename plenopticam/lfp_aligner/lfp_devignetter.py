@@ -1,11 +1,33 @@
-from plenopticam.lfp_aligner.lfp_lensiter import LfpLensIter
+#!/usr/bin/env python
+
+__author__ = "Christopher Hahne"
+__email__ = "info@christopherhahne.de"
+__license__ = """
+Copyright (c) 2019 Christopher Hahne <info@christopherhahne.de>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""
+
+from plenopticam.lfp_aligner.lfp_microlenses import LfpMicroLenses
 from plenopticam import misc
 from plenopticam.misc.type_checks import rint
 
 import numpy as np
 from scipy.signal import convolve2d
 
-class LfpDevignetter(LfpLensIter):
+class LfpDevignetter(LfpMicroLenses):
 
     def __init__(self, *args, **kwargs):
         super(LfpDevignetter, self).__init__(*args, **kwargs)
@@ -18,7 +40,7 @@ class LfpDevignetter(LfpLensIter):
         self._noise_lev = kwargs['noise_lev'] if 'noise_lev' in kwargs else self._estimate_noise_level()
         self._noise_th = 0.1
 
-        self._patch_mode = True
+        self._patch_mode = False
 
         self._lfp_div = np.zeros(self._lfp_img.shape)
 
