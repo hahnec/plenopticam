@@ -92,8 +92,7 @@ class CaliFinder(object):
                 self.sta.error = True
 
             # load white image if found and options are set or meta data is missing
-            cond = self.cfg.params[self.cfg.opt_rota] or \
-                   self.cfg.params[self.cfg.opt_cali] or \
+            cond = self.cfg.params[self.cfg.opt_cali] or \
                    self.cfg.params[self.cfg.opt_vign] or \
                    not self.cfg.cond_meta_file()
             if self._file_found and cond:
