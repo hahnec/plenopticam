@@ -37,7 +37,7 @@ from plenopticam.gui.widget_view import ViewWidget
 from plenopticam.misc.status import PlenopticamStatus
 from plenopticam.misc import PlenopticamError
 
-# object for application window
+
 class PlenopticamApp(tk.Tk):
 
     REL_PATH = os.path.join('icns', '1055104.gif')
@@ -89,6 +89,7 @@ class PlenopticamApp(tk.Tk):
             fp = ICON_PATH if not os.path.exists(fp) else fp
             self.iconbitmap(fp)
             self.wm_iconbitmap(default=fp)
+
 
 if __name__ == "__main__":
 

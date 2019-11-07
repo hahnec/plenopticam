@@ -131,4 +131,4 @@ class LfpCropper(LfpViewpoints):
 
     @property
     def lfp_img_align(self):
-        return self._lfp_img_align.copy()
+        return self.new_lfp_img.copy()

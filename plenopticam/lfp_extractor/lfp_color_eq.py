@@ -29,6 +29,7 @@ try:
 except ImportError:
     raise ImportError('Please install scipy package.')
 
+
 class LfpColorEqualizer(LfpViewpoints):
 
     def __init__(self, *args, **kwargs):
