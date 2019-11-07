@@ -232,11 +232,12 @@ class PlenopticamConfig(object):
         self.params[self.cal_meta] = pot_meta if not isfile(cal_meta) and isfile(pot_meta) else cal_meta
         exist = isfile(self.params[self.cal_meta])
 
-        # load meta data file
-        self.load_cal_data()
-
-        # validate meta data content
-        valid = len(self.calibs[self.mic_list]) > 0
+        if exist:
+            # load meta data file and validate content
+            self.load_cal_data()
+            valid = len(self.calibs[self.mic_list]) > 0
+        else:
+            valid = False
 
         return exist and valid
 
