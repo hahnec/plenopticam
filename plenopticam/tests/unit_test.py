@@ -31,12 +31,12 @@ from plenopticam.lfp_calibrator import LfpCalibrator
 from plenopticam.lfp_aligner import LfpAligner
 from plenopticam.lfp_extractor import LfpExtractor
 from plenopticam.cfg.cfg import PlenopticamConfig
-from plenopticam import misc
+from plenopticam.misc import PlenopticamStatus, mkdir_p, load_img_file
 
 class PlenoptiCamTester(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
-        super(PlenoptiCamTester, self).__init__()
+        super(PlenoptiCamTester, self).__init__(*args, **kwargs)
 
     def setUp(self):
 
@@ -81,8 +81,11 @@ class PlenoptiCamTester(unittest.TestCase):
     def test_cal(self):
 
         # set config for unit test purposes
+        sta = PlenopticamStatus()
         cfg = PlenopticamConfig()
-        cfg.params[cfg.opt_dbug] = True
+        cfg.reset_values()
+        cfg.params[cfg.opt_dbug] = False
+        cfg.params[cfg.opt_prnt] = True
 
         for fn_lfp, fn_wht in zip(self.fnames_lfp, self.fnames_wht):
 
@@ -91,11 +94,11 @@ class PlenoptiCamTester(unittest.TestCase):
             cfg.params[cfg.cal_path] = os.path.join(self.fp, fn_wht)
 
             # create folder (if it doesn't already exist)
-            misc.mkdir_p(os.path.splitext(cfg.params[cfg.lfp_path])[0])
+            mkdir_p(os.path.splitext(cfg.params[cfg.lfp_path])[0])
 
             # test light field calibration
-            wht_img = misc.load_img_file(cfg.params[cfg.cal_path])
-            cal_obj = LfpCalibrator(wht_img=wht_img, cfg=cfg, sta=None)
+            wht_img = load_img_file(cfg.params[cfg.cal_path])
+            cal_obj = LfpCalibrator(wht_img=wht_img, cfg=cfg, sta=sta)
             ret_val = cal_obj.main()
             del cal_obj
 
@@ -105,7 +108,9 @@ class PlenoptiCamTester(unittest.TestCase):
     def test_lfp(self):
 
         # set config for unit test purposes
+        sta = PlenopticamStatus()
         cfg = PlenopticamConfig()
+        cfg.reset_values()
         cfg.params[cfg.opt_dbug] = True
 
         for fn_lfp, fn_wht in zip(self.fnames_lfp, self.fnames_wht):
@@ -117,11 +122,11 @@ class PlenoptiCamTester(unittest.TestCase):
             cfg.load_cal_data()
 
             # create folder (if it doesn't already exist)
-            misc.mkdir_p(os.path.splitext(cfg.params[cfg.lfp_path])[0])
+            mkdir_p(os.path.splitext(cfg.params[cfg.lfp_path])[0])
 
             # test light field alignment
-            lfp_img = misc.load_img_file(cfg.params[cfg.lfp_path])
-            lfp_obj = LfpAligner(lfp_img=lfp_img, cfg=cfg, sta=None)
+            lfp_img = load_img_file(cfg.params[cfg.lfp_path])
+            lfp_obj = LfpAligner(lfp_img=lfp_img, cfg=cfg, sta=sta)
             ret_val = lfp_obj.main()
             lfp_img = lfp_obj.lfp_img
             del lfp_obj
@@ -130,7 +135,7 @@ class PlenoptiCamTester(unittest.TestCase):
             self.assertEqual(True, ret_val)
 
             # test light field extraction
-            lfp_obj = LfpExtractor(lfp_img_align=lfp_img, cfg=cfg, sta=None)
+            lfp_obj = LfpExtractor(lfp_img_align=lfp_img, cfg=cfg, sta=sta)
             ret_val = lfp_obj.main()
             del lfp_obj
 
