@@ -37,14 +37,14 @@ class LfpColorEqualizer(LfpViewpoints):
 
         self._ref_img = kwargs['ref_img'] if 'ref_img' in kwargs else self.central_view
 
-        self.proc_type = 'proc_vp_arr'
+        self.proc_type = 'proc_ax_prop'
 
     def main(self):
 
         if self.proc_type == 'proc_vp_arr':
             self.proc_vp_arr(self.hist_match, ref=self._ref_img, msg='Color equalization')
-        elif 'prop_ax':
-            self.hist_ax_propagation()
+        elif 'proc_ax_prop':
+            self.proc_ax_propagate_2d(fun=self.hist_match, msg='Color equalization')
 
     def hist_match(self, src, ref):
         ''' channel-wise histogram matching inspired by Matthew Perry's implementation '''
@@ -76,54 +76,3 @@ class LfpColorEqualizer(LfpViewpoints):
                 return False
 
         return result
-
-    def proc_ax_propagation(self, fun, idx=None, axis=None):
-        ''' apply provided function along axes direction '''
-
-        axis = 0 if axis is None else axis
-        j = 0 if idx is None else idx
-        m, n = (0, 1) if axis == 0 else (1, 0)
-        p, q = (1, -1) if axis == 0 else (-1, 1)
-
-        for i in range(self._c):
-
-            # swap axes indices
-            j, i = (i, j) if axis == 1 else (j, i)
-
-            print("j-src:"+str(self._c+j+m)+", i-src:"+str(self._c+i+n)+", j-ref:"+str(self._c+j)+", i-ref:"+str(self._c+i))
-            print("j-src:"+str(self._c+(j+m)*p)+", i-src:"+str(self._c+(i+n)*q)+", j-ref:"+str(self._c+j*p)+", i-ref:"+str(self._c+i*q))
-
-            ref_pos = self.vp_img_arr[self._c+j, self._c+i, ...]
-            ref_neg = self.vp_img_arr[self._c+j*p, self._c+i*q, ...]
-
-            self._vp_img_arr[self._c+j+m, self._c+i+n, ...] = fun(self.vp_img_arr[self._c+j+m, self._c+i+n, ...], ref_pos)
-            self._vp_img_arr[self._c+(j+m)*p, self._c+(i+n)*q, ...] = fun(self.vp_img_arr[self._c+(j+m)*p, self._c+(i+n)*q, ...], ref_neg)
-
-            # swap axes indices
-            j, i = (i, j) if axis == 1 else (j, i)
-
-            # check interrupt status
-            if self.sta.interrupt:
-                return False
-
-        return True
-
-    def hist_ax_propagation(self):
-        ''' apply provided histogram matching along axes '''
-
-        self.proc_ax_propagation(self.hist_match, idx=0, axis=0)
-
-        for j in range(-self._c, self._c+1):
-
-            # apply histogram matching along entire column
-            self.proc_ax_propagation(self.hist_match, idx=j, axis=1)
-
-            # progress update
-            percent = (j+self._c+1) / self._vp_img_arr.shape[0] * 100
-            self.sta.progress(percent, self.cfg.params[self.cfg.opt_prnt])
-
-            # check interrupt status
-            if self.sta.interrupt:
-                return False
-
-        return True
