@@ -33,7 +33,7 @@ class LfpViewpoints(object):
         self.cfg = kwargs['cfg'] if 'cfg' in kwargs else PlenopticamConfig()
         self.sta = kwargs['sta'] if 'sta' in kwargs else PlenopticamStatus()
         self._M = self.cfg.params[self.cfg.ptc_leng]
-        self._c = self._M//2
+        self._C = self._M // 2
 
     @property
     def vp_img_arr(self):
@@ -45,7 +45,7 @@ class LfpViewpoints(object):
 
     @property
     def central_view(self):
-        return self.vp_img_arr[self._c, self._c].copy() if self._vp_img_arr is not None else None
+        return self.vp_img_arr[self._C, self._C, ...].copy() if self._vp_img_arr is not None else None
 
     def proc_vp_arr(self, fun, **kwargs):
         ''' process viewpoint images based on provided function handle and argument data '''
