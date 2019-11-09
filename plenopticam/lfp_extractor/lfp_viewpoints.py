@@ -50,9 +50,9 @@ class LfpViewpoints(object):
     def proc_vp_arr(self, fun, **kwargs):
         ''' process viewpoint images based on provided function handle and argument data '''
 
+        # status message handling
         msg = kwargs['msg'] if 'msg' in kwargs else 'Viewpoint process'
-
-        self.sta.status_msg(msg, self.cfg.params[self.cfg.opt_dbug])
+        self.sta.status_msg(msg, self.cfg.params[self.cfg.opt_prnt])
 
         args = [kwargs[key] for key in kwargs.keys() if key not in ('cfg', 'sta', 'msg')]
 

@@ -42,6 +42,10 @@ class LfpCalibrator(object):
 
     def main(self):
 
+        if self._wht_img is None:
+            self.sta.status_msg(msg='White image file not present', opt=self.cfg.params[self.cfg.opt_prnt])
+            self.sta.error = True
+
         # ensure white image is monochromatic
         self._wht_img = rgb2gray(self._wht_img) if len(self._wht_img.shape) is 3 else self._wht_img
 
@@ -72,15 +76,11 @@ class LfpCalibrator(object):
         self.sta.progress(None, opt=self.cfg.params[self.cfg.opt_prnt])
         try:
             self.cfg.save_cal_data(mic_list=mic_list, pat_type=pattern, ptc_mean=pitch)
+            self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt])
         except:
             self.sta.status_msg('Could not save calibration data', opt=self.cfg.params[self.cfg.opt_prnt])
 
-        # write image to hard drive if debug option is set
-        if not self.sta.interrupt:
-            CentroidDrawer(self._wht_img, mic_list, self.cfg).write_centroids_img(fn='wht_img+mics_sorted.png')
-
-        # print status
-        self.sta.status_msg('Finished calibration', opt=not self.sta.interrupt)
-        self.sta.progress(100, opt=not self.sta.interrupt)
+        # write image to hard drive (only if debug option is set)
+        CentroidDrawer(self._wht_img, mic_list, self.cfg, self.sta).write_centroids_img(fn='wht_img+mics_sorted.png')
 
         return True

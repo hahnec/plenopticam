@@ -92,6 +92,9 @@ class LfpDevignetter(LfpMicroLenses):
         # divide light-field image
         self._lfp_div = self._lfp_img / self._wht_img
 
+        # status
+        self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
+
         return True
 
     def compose_vandermonde(self, x, y, deg=2):

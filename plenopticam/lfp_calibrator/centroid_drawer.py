@@ -25,27 +25,35 @@ __license__ = """
 import numpy as np
 
 # local imports
-from plenopticam.misc import Normalizer, save_img_file, rgb2gray
+from plenopticam.misc import Normalizer, save_img_file, rgb2gray, PlenopticamStatus
 from plenopticam.cfg import PlenopticamConfig
 
 class CentroidDrawer(object):
 
-    def __init__(self, img, centroids, cfg=None):
+    def __init__(self, img, centroids, cfg=None, sta=None):
 
         # input variables
         self._img = Normalizer(rgb2gray(img.copy())).uint8_norm()
         self._centroids = np.asarray(centroids)
         self.cfg = cfg if cfg is not None else PlenopticamConfig()
+        self.sta = sta if sta is not None else PlenopticamStatus()
 
 
-    def write_centroids_img(self, fn='default_filename.png'):
+    def write_centroids_img(self, fn='centroids_img.png'):
 
         # draw MICs in binary image and save image file for debug purposes
-        if self.cfg.params[self.cfg.opt_dbug]:
+        if self.cfg.params[self.cfg.opt_dbug] and not self.sta.interrupt:
+
+            # status message handling
+            self.sta.status_msg(msg='Save centroids image', opt=self.cfg.params[self.cfg.opt_prnt])
+            self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
             plot_img = self.draw_centroids_img()
             save_img_file(plot_img, os.path.join(os.path.splitext(self.cfg.params[self.cfg.lfp_path])[0], fn))
-            # plot_centroids(img, centroids)
+            # self.plot_centroids()
+
+            # status message handling
+            self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
 
         return True
 

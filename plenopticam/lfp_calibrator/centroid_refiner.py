@@ -48,8 +48,9 @@ class CentroidRefiner(object):
 
     def main(self):
 
-        # print status
+        # status message handling
         self.sta.status_msg('Refine micro image centers', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
         fun = self._peak_centroid if self._method == 'peak' else self._area_centroid
 
@@ -72,10 +73,7 @@ class CentroidRefiner(object):
             self._centroids_refined.append(self._get_coords())
 
             # print status
-            self.sta.progress(i/len(self._centroids)*100, self.cfg.params[self.cfg.opt_prnt])
-
-        # print "Progress: Done!"
-        self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
+            self.sta.progress((i+1)/len(self._centroids)*100, self.cfg.params[self.cfg.opt_prnt])
 
         # coordinate upsampling to compensate for downsampling
         self._centroids_refined = [(x*DR, y*DR) for x, y in self._centroids_refined]

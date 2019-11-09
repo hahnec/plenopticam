@@ -48,7 +48,7 @@ class HistogramEqualizer(object):
 
         return lim_max if lim_max is not None and lim_max < 2**16-1 else 2**16-1
 
-    def set_histeq_params(self, ch=None):
+    def cdf_from_img(self, ch=None):
 
         # channel selection
         self._ch = self._ch if ch is None else ch
@@ -61,7 +61,7 @@ class HistogramEqualizer(object):
 
         return True
 
-    def hist_spec(self, type='linear', param=1., flip=False):
+    def cdf_spec(self, type='linear', param=1., flip=False):
 
         # set linear function as default
         des_hist = np.linspace(0, 1, self._bin_num)
@@ -104,11 +104,12 @@ class HistogramEqualizer(object):
         img_ch = self._ref_img[..., self._ch]
 
         # use specified histogram and cdf to generate desired histogram
-        des_hist = self.hist_spec(type='gaussian', param=4, flip=False)
-        new_img = np.interp(img_ch.flatten(), des_hist[:-1], self._cdf)
+        des_cdf = self.cdf_spec(type='gaussian', param=3, flip=False)
+        new_img = np.interp(img_ch.flatten(), des_cdf[:-1], self._cdf)
 
         # reconstruct new image
         new_img = new_img.reshape(self._ref_img[..., self._ch].shape)
+        #interp_vals[src_idxs].reshape(src[..., ch].shape)
         self._ref_img[..., self._ch] = new_img
 
         return True
@@ -119,7 +120,7 @@ class HistogramEqualizer(object):
         self._ref_img = misc.yuv_conv(self._ref_img)
 
         # create cumulative distribution function of reference image
-        self.set_histeq_params()
+        self.cdf_from_img()
 
         # histogram mapping using cumulative distribution function
         self.correct_histeq()
@@ -135,7 +136,7 @@ class HistogramEqualizer(object):
         for i in range(1, self._ref_img.shape[-1]):
 
             # create cumulative distribution function of reference image
-            self.set_histeq_params(ch=i)
+            self.cdf_from_img(ch=i)
 
             # histogram mapping using cumulative distribution function
             self.correct_histeq(ch=i)
@@ -149,7 +150,7 @@ class HistogramEqualizer(object):
         for i in range(self._ref_img.shape[-1]):
 
             # create cumulative distribution function of reference image
-            self.set_histeq_params(ch=i)
+            self.cdf_from_img(ch=i)
 
             # histogram mapping using cumulative distribution function
             self.correct_histeq(ch=i)
