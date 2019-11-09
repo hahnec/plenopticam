@@ -53,7 +53,7 @@ class LfpDevignetter(LfpMicroLenses):
         # based on provided noise level in white image
         if self._patch_mode:
             # perform fitted white micro image division (high noise)
-            self.proc_lfp_img(self.patch_devignetting, msg='De-vignetting')
+            self.proc_lens_iter(self.patch_devignetting, msg='De-vignetting')
         else:
             # perform raw white image division (low noise)
             self.wht_img_divide()
@@ -145,7 +145,10 @@ class LfpDevignetter(LfpMicroLenses):
 
         return patch
 
-    def patch_devignetting(self, mic):
+    def patch_devignetting(self, ly, lx):
+
+        # find MIC by indices
+        mic = self.get_coords_by_idx(ly=ly, lx=lx)
 
         # slice images
         margin = 1

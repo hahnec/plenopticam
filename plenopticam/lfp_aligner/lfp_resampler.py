@@ -1,7 +1,7 @@
 # local imports
 from plenopticam import misc
-from plenopticam.lfp_extractor.lfp_cropper import LfpCropper
 from plenopticam.misc.type_checks import rint
+from plenopticam.lfp_aligner.lfp_microlenses import LfpMicroLenses
 
 # external libs
 import numpy as np
@@ -9,26 +9,16 @@ import os
 import pickle
 from scipy.interpolate import interp2d, RectBivariateSpline, griddata
 
-class LfpResampler(object):
+class LfpResampler(LfpMicroLenses):
 
-    def __init__(self, lfp_img, cfg, sta=None, method='cubic'):
+    def __init__(self, *args, **kwargs):
+        super(LfpResampler, self).__init__(*args, **kwargs)
 
-        # input variables
-        self._lfp_img = lfp_img[..., np.newaxis] if len(lfp_img.shape) == 2 else lfp_img     # add 3rd axis for 2D image
-        self.cfg = cfg
-        self.sta = sta if sta is not None else misc.PlenopticamStatus()
-
-        # internal variables
-        self._METHOD = method
-        self._CENTROIDS = np.asarray(self.cfg.calibs[self.cfg.mic_list])
-        self._M = LfpCropper.pitch_max(self.cfg.calibs[self.cfg.mic_list])
-        self._C = int((self._M-1)/2)
-        self._LENS_Y_MAX = int(max(self._CENTROIDS[:, 2]))
-        self._LENS_X_MAX = int(max(self._CENTROIDS[:, 3]))
-        self._DIMS = self._lfp_img.shape if len(self._lfp_img.shape) == 3 else None
+        self._METHOD = kwargs['method'] if 'method' in kwargs else 'cubic'
 
         # output variable
-        self._lfp_out = np.zeros(lfp_img.shape)
+        if self._lfp_img is not None:
+            self._lfp_out = np.zeros(self._lfp_img.shape)
 
     def main(self):
         ''' cropping micro images to square shape while interpolating around their detected center (MIC) '''
@@ -38,15 +28,10 @@ class LfpResampler(object):
 
         # start resampling process (taking micro lens arrangement into account)
         if self.cfg.calibs[self.cfg.pat_type] == 'rec':
-
             self.resample_rec()
-
         elif self.cfg.calibs[self.cfg.pat_type] == 'hex':
-
             self.resample_hex()
-
         elif self.cfg.calibs[self.cfg.pat_type] == 'hex_alt':
-
             self.resample_hex_alt()
 
         # save aligned image to hard drive
@@ -88,13 +73,6 @@ class LfpResampler(object):
 
         return patch
 
-    def _get_coords_by_idx(self, ly, lx):
-
-        # filter mic by provided indices
-        mic = self._CENTROIDS[(self._CENTROIDS[:, 2] == ly) & (self._CENTROIDS[:, 3] == lx), [0, 1]]
-
-        return mic
-
     @staticmethod
     def _get_hex_direction(centroids):
         """ check if lower neighbor of upper left MIC is shifted to left or right in hex grid """
@@ -131,7 +109,7 @@ class LfpResampler(object):
             for lx in range(self._LENS_X_MAX):
 
                 # find MIC by indices
-                mic = self._get_coords_by_idx(ly=ly, lx=lx)
+                mic = self.get_coords_by_idx(ly=ly, lx=lx)
 
                 # interpolate each micro image with its MIC as the center with consistent micro image size
                 window = self._lfp_img[rint(mic[0]) - self._C - 1:rint(mic[0]) + self._C + 2, rint(mic[1]) - self._C - 1:rint(mic[1]) + self._C + 2]
@@ -163,7 +141,7 @@ class LfpResampler(object):
             for lx in range(self._LENS_X_MAX):
 
                 # find MIC by indices
-                mic = self._get_coords_by_idx(ly=ly, lx=lx)
+                mic = self.get_coords_by_idx(ly=ly, lx=lx)
 
                 # interpolate each micro image with its MIC as the center and consistent micro image size
                 window = self._lfp_img[rint(mic[0]) - self._C - 1:rint(mic[0]) + self._C + 2, rint(mic[1]) - self._C - 1: rint(mic[1]) + self._C + 2]

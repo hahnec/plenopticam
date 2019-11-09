@@ -21,13 +21,11 @@ Copyright (c) 2019 Christopher Hahne <info@christopherhahne.de>
 """
 
 from plenopticam.cfg import PlenopticamConfig
-from plenopticam.misc import PlenopticamStatus
-
-from plenopticam.lfp_extractor.lfp_cropper import LfpCropper
+from plenopticam import misc
 
 import numpy as np
 
-class LfpLensIter(object):
+class LfpMicroLenses(object):
 
     def __init__(self, *args, **kwargs):
 
@@ -35,32 +33,40 @@ class LfpLensIter(object):
         self._lfp_img = kwargs['lfp_img'] if 'lfp_img' in kwargs else None
         self._wht_img = kwargs['wht_img'] if 'wht_img' in kwargs else None
         self.cfg = kwargs['cfg'] if 'cfg' in kwargs else PlenopticamConfig()
-        self.sta = kwargs['sta'] if 'sta' in kwargs else PlenopticamStatus()
-
-        # add 3rd axis for 2D image
-        self._lfp_img = self._lfp_img[..., np.newaxis] if len(self._lfp_img.shape) == 2 else self._lfp_img
+        self.sta = kwargs['sta'] if 'sta' in kwargs else misc.PlenopticamStatus()
 
         # convert to float
-        self._lfp_img = self._lfp_img.astype('float64')
-        self._wht_img = self._wht_img.astype('float64')
+        self._lfp_img = self._lfp_img.astype('float64') if self._lfp_img is not None else None
+        self._wht_img = self._wht_img.astype('float64') if self._wht_img is not None else None
 
+        # micro lens array variables
         self._CENTROIDS = np.asarray(self.cfg.calibs[self.cfg.mic_list])
-        self._M = LfpCropper.pitch_max(self.cfg.calibs[self.cfg.mic_list])
-        self._C = int((self._M-1)/2)
-        self._LENS_Y_MAX = int(max(self._CENTROIDS[:, 2]))
-        self._LENS_X_MAX = int(max(self._CENTROIDS[:, 3]))
-        self._DIMS = self._lfp_img.shape if len(self._lfp_img.shape) == 3 else None
+        self._LENS_Y_MAX = int(max(self._CENTROIDS[:, 2])+1)    # +1 to account for index 0
+        self._LENS_X_MAX = int(max(self._CENTROIDS[:, 3])+1)    # +1 to account for index 0
+
+        # micro image size evaluation
+        self._M = self.pitch_max(self.cfg.calibs[self.cfg.mic_list])
+        self._M = self.pitch_eval(self._M, self.cfg.params[self.cfg.ptc_leng], self.sta)
+        self._C = self._M//2
+
+        if self._lfp_img is not None:
+
+            # get light field dimensions
+            self._DIMS = self._lfp_img.shape
+
+            # add 3rd axis for 2D image
+            self._lfp_img = self._lfp_img[..., np.newaxis] if len(self._lfp_img.shape) == 2 else self._lfp_img
 
     @property
     def lfp_img(self):
         return self._lfp_img.copy() if self._lfp_img is not None else False
 
-    def proc_lfp_img(self, fun, **kwargs):
+    def proc_lens_iter(self, fun, **kwargs):
         ''' process light-field based on provided function handle and argument data '''
 
+        # status message handling
         msg = kwargs['msg'] if 'msg' in kwargs else 'Light-field alignment process'
-
-        self.sta.status_msg(msg, self.cfg.params[self.cfg.opt_dbug])
+        self.sta.status_msg(msg, self.cfg.params[self.cfg.opt_prnt])
 
         args = [kwargs[key] for key in kwargs.keys() if key not in ('cfg', 'sta', 'msg')]
 
@@ -69,11 +75,8 @@ class LfpLensIter(object):
             for ly in range(self._LENS_Y_MAX):
                 for lx in range(self._LENS_X_MAX):
 
-                    # find MIC by indices
-                    mic = self._get_coords_by_idx(ly=ly, lx=lx)
-
                     # perform provided function
-                    fun(mic, *args)
+                    fun(ly, lx, *args)
 
                 # print progress status
                 self.sta.progress((ly + 1) / self._LENS_Y_MAX * 100, self.cfg.params[self.cfg.opt_prnt])
@@ -87,9 +90,70 @@ class LfpLensIter(object):
 
         return True
 
-    def _get_coords_by_idx(self, ly, lx):
+    def get_coords_by_idx(self, ly, lx):
 
         # filter mic by provided indices
         mic = self._CENTROIDS[(self._CENTROIDS[:, 2] == ly) & (self._CENTROIDS[:, 3] == lx), [0, 1]]
 
         return mic
+
+    @staticmethod
+    def pitch_eval(mean_pitch, patch_size, sta=None):
+        ''' provide odd patch size that is safe to use '''
+
+        sta = sta if sta is not None else misc.PlenopticamStatus()
+
+        # ensure patch size and mean patch size are odd
+        patch_size += np.mod(patch_size, 2)-1
+        mean_pitch += np.mod(mean_pitch, 2)-1
+        patch_safe = 3
+
+        # comparison of patch size and mean size
+        msg_str = None
+        if patch_size <= mean_pitch+2 and patch_size > 3:
+            patch_safe = patch_size
+        elif patch_size > mean_pitch:
+            patch_safe = mean_pitch
+            msg_str = 'Patch size ({0} px) is larger than micro image size and reduced to {1} pixels.'
+        elif patch_size < 3 and mean_pitch > 3:
+            patch_safe = mean_pitch
+            msg_str = 'Patch size ({0} px) is too small and increased to {1} pixels.'
+        elif patch_size < 3 and mean_pitch < 3:
+            sta.interrupt = True
+            raise Exception('Micro image dimensions are too small for light field computation.')
+
+        if msg_str:
+            # status update
+            sta.status_msg(msg_str.format(patch_size, mean_pitch), True)
+
+        return patch_safe
+
+    @staticmethod
+    def pitch_max(centroids):
+
+        # convert to numpy array
+        centroids = np.asarray(centroids)
+
+        # estimate maximum patch size
+        central_row_idx = int(max(centroids[:, 3])/2)
+        mean_pitch = int(np.ceil(np.mean(np.diff(centroids[centroids[:, 3] == central_row_idx, 0]))))
+
+        # ensure mean patch size is odd
+        mean_pitch += np.mod(mean_pitch, 2)-1
+
+        return mean_pitch
+
+    def pitch_analyse(self, shape):
+
+        # estimate patch size
+        lens_max_x = self._CENTROIDS[:, 2].max() + 1     # +1 to account for index 0
+        pitch_estimate = shape[0]/lens_max_x
+
+        if pitch_estimate-int(pitch_estimate) != 0:
+            msg = 'Micro image patch size error. Remove output folder or select re-calibration in settings.'
+            self.sta.status_msg(msg=msg, opt=self.cfg.params[self.cfg.opt_prnt])
+            self.sta.error = True
+        else:
+            pitch_estimate = int(pitch_estimate)
+
+        return pitch_estimate

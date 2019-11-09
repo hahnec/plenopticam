@@ -45,7 +45,7 @@ class LfpExtractor(object):
 
         # micro image crop
         if not self.sta.interrupt:
-            lfp_obj = LfpCropper(self._lfp_img_align, cfg=self.cfg, sta=self.sta)
+            lfp_obj = LfpCropper(lfp_img_align=self._lfp_img_align, cfg=self.cfg, sta=self.sta)
             lfp_obj.main()
             self._lfp_img_align = lfp_obj.lfp_img_align
             del lfp_obj
