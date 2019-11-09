@@ -105,7 +105,7 @@ PARAMS_NAME = (
     'Rotation of light field',
     'Debug option',
     'Status print option',
-    'Override output folder'
+    'Remove output folder'
 )
 
 # dictionary keys for calibration parameters names in json file
