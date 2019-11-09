@@ -44,6 +44,9 @@ class LfpExporter(LfpViewpoints):
         # write viewpoint image files to hard drive
         self.export_viewpoints(type='png')
 
+        # write viewpoints as single image
+        self.export_vp_stack(type='png')
+
         # write viewpoint gif animation
         self.gif_vp_img(duration=.1)
 
@@ -82,9 +85,19 @@ class LfpExporter(LfpViewpoints):
                 percentage = (((j*self._M+i+1)/self._M**2)*100)
                 self.sta.progress(percentage, self.cfg.params[self.cfg.opt_prnt])
 
+        return True
+
+    def export_vp_stack(self, type='tiff'):
+
+        # print status
+        self.sta.status_msg('Write viewpoint image stack', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
+
         # export all viewpoints in single image
         views_stacked_path = os.path.join(self.cfg.exp_path, 'views_stacked_img_'+str(self._M)+'px')
         misc.save_img_file(self.views_stacked_img, file_path=views_stacked_path, file_type=type)
+
+        self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
 
         return True
 
