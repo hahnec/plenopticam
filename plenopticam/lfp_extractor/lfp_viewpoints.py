@@ -116,6 +116,69 @@ class LfpViewpoints(object):
 
         return vp_img_set
 
+    def proc_ax_propagate_1d(self, fun, idx=None, axis=None, **kwargs):
+        ''' apply provided function along axis direction '''
+
+        # status message handling
+        if 'msg' in kwargs:
+            self.sta.status_msg(kwargs['msg'], self.cfg.params[self.cfg.opt_prnt])
+
+        axis = 0 if axis is None else axis
+        j = 0 if idx is None else idx
+        m, n = (0, 1) if axis == 0 else (1, 0)
+        p, q = (1, -1) if axis == 0 else (-1, 1)
+
+        for i in range(self._C):
+
+            # swap axes indices
+            j, i = (i, j) if axis == 1 else (j, i)
+
+            #print("j-src:"+str(self._c+j+m)+", i-src:"+str(self._c+i+n)+", j-ref:"+str(self._c+j)+", i-ref:"+str(self._c+i))
+            #print("j-src:"+str(self._c+(j+m)*p)+", i-src:"+str(self._c+(i+n)*q)+", j-ref:"+str(self._c+j*p)+", i-ref:"+str(self._c+i*q))
+
+            ref_pos = self.vp_img_arr[self._C + j, self._C + i, ...]
+            ref_neg = self.vp_img_arr[self._C + j * p, self._C + i * q, ...]
+
+            self._vp_img_arr[self._C + j + m, self._C + i + n, ...] = \
+                fun(self.vp_img_arr[self._C + j + m, self._C + i + n, ...], ref_pos, **kwargs)
+            self._vp_img_arr[self._C + (j + m) * p, self._C + (i + n) * q, ...] = \
+                fun(self.vp_img_arr[self._C + (j + m) * p, self._C + (i + n) * q, ...], ref_neg, **kwargs)
+
+            # swap axes indices
+            j, i = (i, j) if axis == 1 else (j, i)
+
+            # check interrupt status
+            if self.sta.interrupt:
+                return False
+
+        return True
+
+    def proc_ax_propagate_2d(self, fun, **kwargs):
+        ''' apply provided function along axes '''
+
+        # status message handling
+        msg = kwargs['msg'] if 'msg' in kwargs else 'Viewpoint process'
+        self.sta.status_msg(msg, self.cfg.params[self.cfg.opt_prnt])
+
+        kwargs = dict((key, kwargs[key]) for key in kwargs if key not in ('cfg', 'sta', 'msg'))
+
+        self.proc_ax_propagate_1d(fun, idx=0, axis=0, **kwargs)
+
+        for j in range(-self._C, self._C + 1):
+
+            # apply histogram matching along entire column
+            self.proc_ax_propagate_1d(fun, idx=j, axis=1, **kwargs)
+
+            # progress update
+            percent = (j + self._C + 1) / self._vp_img_arr.shape[0] * 100
+            self.sta.progress(percent, self.cfg.params[self.cfg.opt_prnt])
+
+            # check interrupt status
+            if self.sta.interrupt:
+                return False
+
+        return True
+
     @property
     def views_stacked_img(self):
         ''' concatenation of all sub-aperture images for single image representation '''
