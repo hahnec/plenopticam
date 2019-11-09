@@ -55,7 +55,7 @@ class CentroidRefiner(object):
         fun = self._peak_centroid if self._method == 'peak' else self._area_centroid
 
         # coordinate and image downsampling preparation
-        self._centroids = [(x//DR, y//DR) for x, y in self._centroids]
+        self._centroids = [(x//DR, y//DR) for x, y in self._centroids] if DR > 1 else self._centroids
         img_scale = self._img[::DR, ::DR]
 
         r = self._M//2//DR
@@ -76,7 +76,7 @@ class CentroidRefiner(object):
             self.sta.progress((i+1)/len(self._centroids)*100, self.cfg.params[self.cfg.opt_prnt])
 
         # coordinate upsampling to compensate for downsampling
-        self._centroids_refined = [(x*DR, y*DR) for x, y in self._centroids_refined]
+        self._centroids_refined = [(x*DR, y*DR) for x, y in self._centroids_refined] if DR > 1 else self._centroids_refined
 
         return True
 
