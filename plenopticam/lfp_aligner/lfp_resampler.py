@@ -65,7 +65,8 @@ class LfpResampler(LfpMicroLenses):
             # careful: interp2d() takes x first and y second
             fun = interp2d(range(window.shape[1]), range(window.shape[0]), window[:, :, p], kind=method, copy=False)
             #fun = RectBivariateSpline(range(window.shape[1]), range(window.shape[0]), window[:, :, p])
-            patch[:, :, p] = fun(np.arange(window.shape[1])+mic[1]-rint(mic[1]), np.arange(window.shape[0])+mic[0]-rint(mic[0]))
+            patch[:, :, p] = fun(np.arange(window.shape[1])+mic[1]-rint(mic[1]),
+                                 np.arange(window.shape[0])+mic[0]-rint(mic[0]))
 
         # treatment of interpolated values being below or above original extrema
         patch[patch < window.min()] = window.min()
