@@ -74,7 +74,7 @@ class CentroidDrawer(object):
 
     @staticmethod
     def non_wrap_subtract(a, b):
-        ''' prevent wrap-around for np.array() '''
+        ''' prevent wrap-around for np.ndarray '''
 
         x = (a - b)
         x[b > a] = 0
