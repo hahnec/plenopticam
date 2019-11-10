@@ -25,7 +25,8 @@ __license__ = """
 import numpy as np
 
 # local imports
-from plenopticam.misc import Normalizer, save_img_file, rgb2gray, PlenopticamStatus
+from plenopticam.misc import Normalizer, save_img_file, PlenopticamStatus
+from plenopticam.misc.clr_spc_conv import rgb2gray
 from plenopticam.cfg import PlenopticamConfig
 
 class CentroidDrawer(object):

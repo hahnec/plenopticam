@@ -21,7 +21,7 @@ __license__ = """
 """
 
 # local imports
-from plenopticam.misc.data_proc import rgb2gray
+from plenopticam.misc.clr_spc_conv import rgb2gray
 from plenopticam.lfp_calibrator.pitch_estimator import PitchEstimator
 from plenopticam.lfp_calibrator.centroid_extractor import CentroidExtractor
 from plenopticam.lfp_calibrator.centroid_sorter import CentroidSorter

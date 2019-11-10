@@ -62,18 +62,8 @@ class LfpRearranger(LfpViewpoints):
 
         # color and contrast handling
         obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.0, p_hi=1.0)
-
         # contrast automation
-        obj.contrast_bal()
-
-        # automatic white balance
-        if self.cfg.params[self.cfg.opt_awb_]:
-            obj.auto_wht_bal()
-
-        # automatic saturation
-        if self.cfg.params[self.cfg.opt_sat_]:
-            obj.sat_bal()
-
+        #obj.contrast_bal()
         self.vp_img_arr = obj.vp_img_arr
         del obj
 
@@ -84,12 +74,28 @@ class LfpRearranger(LfpViewpoints):
             self.vp_img_arr = obj.vp_img_arr
             del obj
 
-        # color consistency
+        # color equalization
         if self.cfg.params[self.cfg.opt_colo]:
-            obj = LfpColorEqualizer(vp_img_arr=self.vp_img_arr)
+            obj = LfpColorEqualizer(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
             obj.main()
             self.vp_img_arr = obj._vp_img_arr
             del obj
+
+        obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.0, p_hi=1.0)
+        # automatic white balance
+        if self.cfg.params[self.cfg.opt_awb_]:
+            obj.p_lo = 0.005
+            obj.p_hi = 0.995
+            obj.auto_wht_bal()
+            obj.p_lo = 0
+            obj.p_hi = 1
+
+        # automatic saturation
+        if self.cfg.params[self.cfg.opt_sat_]:
+            obj.sat_bal()
+
+        self.vp_img_arr = obj.vp_img_arr
+        del obj
 
         # write viewpoint data to hard drive
         if self.cfg.params[self.cfg.opt_view]:

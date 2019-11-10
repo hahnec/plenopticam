@@ -1,4 +1,5 @@
 from plenopticam.misc.data_proc import *
+from plenopticam.misc.clr_spc_conv import *
 from plenopticam.misc.normalizer import Normalizer
 from plenopticam.misc.os_ops import mkdir_p, rmdir_p, rm_file, select_file
 from plenopticam.misc.file_rw import load_img_file, save_img_file, save_gif

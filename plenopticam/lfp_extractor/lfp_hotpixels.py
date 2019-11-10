@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import plenopticam.misc.clr_spc_conv
 
 __author__ = "Christopher Hahne"
 __email__ = "info@christopherhahne.de"
@@ -58,7 +59,7 @@ class LfpHotPixels(LfpViewpoints):
     def correct_luma_outliers(self, img, n=2, perc=.2):
 
         # luma channel conversion
-        luma = misc.yuv_conv(img.copy())[..., 0]
+        luma = plenopticam.misc.clr_spc_conv.yuv_conv(img.copy())[..., 0]
 
         for j in range(n, luma.shape[0]-n):
             for i in range(n, luma.shape[1]-n):

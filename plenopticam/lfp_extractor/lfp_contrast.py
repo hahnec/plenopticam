@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import plenopticam.misc.clr_spc_conv
 
 __author__ = "Christopher Hahne"
 __email__ = "info@christopherhahne.de"
@@ -44,13 +45,54 @@ class LfpContrast(LfpViewpoints):
         self.sta.progress(None, opt=self.cfg.params[self.cfg.opt_prnt])
 
         # estimate contrast and brightness via least-squares method
-        self.set_stretch_lum()
+        self.set_stretch_lum(img=self.vp_img_arr)
 
         # apply estimated brightness and contrast levels to viewpoint array
-        self.apply_stretch_lum()
+        self.vp_img_arr = self.apply_stretch_lum(img=self.vp_img_arr)
 
         # status update
         self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt])
+
+    def post_lum(self):
+
+        self.proc_vp_arr(self.stretch_lum_vp, ch=0, msg='contrast eq')
+
+    def stretch_lum_vp(self, img, ch=None):
+
+        ch = ch if ch is not None else 0
+
+        img = plenopticam.misc.clr_spc_conv.yuv_conv(img)
+        #img = misc.hsv_conv(img)
+        from plenopticam.misc import HistogramEqualizer
+        obj = HistogramEqualizer(img=img, ch=0)
+        obj.cdf_from_img()
+        obj.correct_histeq()
+        img = obj._ref_img
+        del obj
+        #from plenopticam.lfp_extractor import LfpColorEqualizer
+        #img[..., ch] = LfpColorEqualizer().hist_match(src=img[..., ch], ref=misc.yuv_conv(self.central_view)[..., ch])[..., 0]
+        #img = misc.hsv_conv(img, inverse=True)
+        img = plenopticam.misc.clr_spc_conv.yuv_conv(img, inverse=True)
+
+        #self.set_stretch_lum(img=img)
+        #img = self.apply_stretch_lum(img=img)
+
+        #img = misc.Normalizer(img=img).uint16_norm()
+
+        return img
+
+    def proc_auto_wht(self):
+
+        self.proc_vp_arr(self.auto_wht_img, msg='VP auto white balance')
+
+    def auto_wht_img(self, img):
+
+        ch_num = img.shape[-1] if len(img.shape) > 2 else 1
+        for i in range(ch_num):
+            self.set_stretch(ref_ch=img[..., i])
+            img = self.apply_stretch(img=img.copy(), ch=i)
+
+        return img
 
     def auto_wht_bal(self):
 
@@ -70,15 +112,8 @@ class LfpContrast(LfpViewpoints):
 
     def sat_bal(self):
 
-        # status update
-        self.sta.status_msg(msg='Color Saturation', opt=self.cfg.params[self.cfg.opt_prnt])
-        self.sta.progress(None, opt=self.cfg.params[self.cfg.opt_prnt])
-
         self.set_stretch_hsv()
-        self.apply_stretch_hsv()
-
-        # status update
-        self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt])
+        self.proc_vp_arr(self.apply_stretch_hsv, msg='Color saturation')
 
         return True
 
@@ -105,62 +140,69 @@ class LfpContrast(LfpViewpoints):
     def find_x_given_y(value, x, y, tolerance=1e-3):
         return np.mean(np.array([(xi, yi) for (xi, yi) in zip(x, y) if abs(yi - value) <= tolerance]).T[0])
 
-    def apply_stretch(self, ch=0):
-        ''' contrast and brightness rectification to provided RGB image '''
+    def apply_stretch(self, img=None, ch=None):
+        ''' contrast and brightness rectification For provided RGB image '''
+
+        img = img if img is not None else self.vp_img_arr
+        ch = ch if ch is not None else 0
 
         # convert to float
-        f = self.vp_img_arr[..., ch].astype(np.float32)
+        f = img[..., ch].astype(np.float32)
 
         # perform auto contrast (by default: "value" channel only)
-        self.vp_img_arr[..., ch] = self._contrast * f + self._brightness
+        img[..., ch] = self._contrast * f + self._brightness
 
         # clip to input extrema to remove contrast outliers
-        self.vp_img_arr[..., ch][self.vp_img_arr[..., ch] < f.min()] = f.min()
-        self.vp_img_arr[..., ch][self.vp_img_arr[..., ch] > f.max()] = f.max()
+        img[..., ch][img[..., ch] < f.min()] = f.min()
+        img[..., ch][img[..., ch] > f.max()] = f.max()
 
-        return True
+        return img
 
-    def set_stretch_lum(self):
+    def set_stretch_lum(self, img=None):
+
+        img = img if img is not None else self.central_view
 
         # use luminance channel for parameter analysis
-        ref_img = misc.yuv_conv(self.central_view)
+        ref_img = plenopticam.misc.clr_spc_conv.yuv_conv(img)
         self.set_stretch(ref_ch=ref_img[..., 0])
 
-    def apply_stretch_lum(self):
+    def apply_stretch_lum(self, img=None):
         ''' contrast and brightness rectification to luminance channel of provided RGB image '''
 
+        img = img if img is not None else self.vp_img_arr
+
         # color model conversion
-        self.vp_img_arr = misc.yuv_conv(self.vp_img_arr) if len(self.vp_img_arr.shape) > 4 else self.vp_img_arr
+        img = plenopticam.misc.clr_spc_conv.yuv_conv(img) if img is not None else plenopticam.misc.clr_spc_conv.yuv_conv(self.vp_img_arr)
 
         # apply histogram stretching to luminance channel only
-        self.apply_stretch(ch=0)
+        img = self.apply_stretch(img=img, ch=0)
 
         # color model conversion
-        self.vp_img_arr = misc.yuv_conv(self.vp_img_arr, inverse=True)
+        img = plenopticam.misc.clr_spc_conv.yuv_conv(img, inverse=True)
 
-        return True
+        return img
 
     def set_stretch_hsv(self):
 
         # use luminance channel for parameter analysis
-        ref_img = misc.hsv_conv(self.central_view)
+        ref_img = plenopticam.misc.clr_spc_conv.hsv_conv(self.central_view)
         self.set_stretch(ref_ch=ref_img[..., 1]*(2**16-1))
 
-    def apply_stretch_hsv(self):
+    def apply_stretch_hsv(self, img):
         ''' contrast and brightness rectification to luminance channel of provided RGB image '''
 
         # color model conversion
-        self.vp_img_arr = misc.hsv_conv(self.vp_img_arr) if len(self.vp_img_arr.shape) > 4 else self.vp_img_arr
+        hsv = plenopticam.misc.clr_spc_conv.hsv_conv(img)
 
-        # apply histogram stretching to luminance channel only
-        self.vp_img_arr[..., 1] *= (2**16-1)
-        self.apply_stretch(ch=1)
-        self.vp_img_arr[..., 1] /= (2**16-1)
+        # apply histogram stretching to saturation channel only
+        hsv[..., 1] *= (2**16-1)
+        self.apply_stretch(hsv, ch=1)
+        hsv[..., 1] /= (2**16-1)
 
         # color model conversion
-        self.vp_img_arr = misc.hsv_conv(self.vp_img_arr, inverse=True)
+        rgb = plenopticam.misc.clr_spc_conv.hsv_conv(hsv, inverse=True)
 
-        return True
+        return rgb
 
     @staticmethod
     def contrast_per_channel(img_arr, sat_perc=0.1):

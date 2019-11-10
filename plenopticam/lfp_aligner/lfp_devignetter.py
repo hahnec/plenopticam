@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import plenopticam.misc.clr_spc_conv
 
 __author__ = "Christopher Hahne"
 __email__ = "info@christopherhahne.de"
@@ -117,7 +118,7 @@ class LfpDevignetter(LfpMicroLenses):
 
         X = X.flatten()
         Y = Y.flatten()
-        b = misc.yuv_conv(patch)[..., 0].flatten()
+        b = plenopticam.misc.clr_spc_conv.yuv_conv(patch)[..., 0].flatten()
 
         A = self.compose_vandermonde(X, Y, deg=3)
 

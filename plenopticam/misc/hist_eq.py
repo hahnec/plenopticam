@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import plenopticam.misc.clr_spc_conv
 
 __author__ = "Christopher Hahne"
 __email__ = "info@christopherhahne.de"
@@ -117,7 +118,7 @@ class HistogramEqualizer(object):
     def lum_eq(self):
 
         # RGB/YUV color conversion
-        self._ref_img = misc.yuv_conv(self._ref_img)
+        self._ref_img = plenopticam.misc.clr_spc_conv.yuv_conv(self._ref_img)
 
         # create cumulative distribution function of reference image
         self.cdf_from_img()
@@ -126,12 +127,12 @@ class HistogramEqualizer(object):
         self.correct_histeq()
 
         # YUV/RGB color conversion
-        return misc.yuv_conv(self._ref_img, inverse=True)
+        return plenopticam.misc.clr_spc_conv.yuv_conv(self._ref_img, inverse=True)
 
     def uv_eq(self):
 
         # RGB/YUV color conversion
-        self._ref_img = misc.yuv_conv(self._ref_img)
+        self._ref_img = plenopticam.misc.clr_spc_conv.yuv_conv(self._ref_img)
 
         for i in range(1, self._ref_img.shape[-1]):
 
@@ -142,7 +143,7 @@ class HistogramEqualizer(object):
             self.correct_histeq(ch=i)
 
         # YUV/RGB color conversion
-        return misc.yuv_conv(self._ref_img, inverse=True)
+        return plenopticam.misc.clr_spc_conv.yuv_conv(self._ref_img, inverse=True)
 
     def awb_eq(self):
 
