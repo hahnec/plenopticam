@@ -45,7 +45,7 @@ def rgb2hsv(rgb):
     hsv[maxc == 1, 0] = (((rgb[..., 2] - rgb[..., 0]) * 60.0 / (maxv - minv +np.spacing(1))) + 120.0)[maxc == 1]
     hsv[maxc == 2, 0] = (((rgb[..., 0] - rgb[..., 1]) * 60.0 / (maxv - minv +np.spacing(1))) + 240.0)[maxc == 2]
     hsv[maxv == 0, 1] = np.zeros(hsv[maxv == 0, 1].shape)
-    hsv[maxv != 0, 1] = (1 - (minv * 1.0 / maxv))[maxv != 0]
+    hsv[maxv != 0, 1] = (1 - (minv * 1.0 / (maxv+np.spacing(1))))[maxv != 0]
     hsv[..., 2] = maxv
 
     return hsv
