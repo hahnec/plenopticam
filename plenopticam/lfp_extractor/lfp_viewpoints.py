@@ -37,7 +37,7 @@ class LfpViewpoints(object):
 
     @property
     def vp_img_arr(self):
-        return self._vp_img_arr if self._vp_img_arr is not None else None
+        return self._vp_img_arr
 
     @vp_img_arr.setter
     def vp_img_arr(self, vp_img_arr):
