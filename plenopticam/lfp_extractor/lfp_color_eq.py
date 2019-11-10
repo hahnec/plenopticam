@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 __author__ = "Christopher Hahne"
 __email__ = "info@christopherhahne.de"
 __license__ = """
@@ -46,11 +48,13 @@ class LfpColorEqualizer(LfpViewpoints):
         elif 'proc_ax_prop':
             self.proc_ax_propagate_2d(fun=self.hist_match, msg='Color equalization')
 
-    def hist_match(self, src, ref):
+    @staticmethod
+    def hist_match(src, ref):
         ''' channel-wise histogram matching inspired by Matthew Perry's implementation '''
 
         # parameter init
         src = src if len(src.shape) == 3 else src[..., np.newaxis]
+        ref = ref if len(ref.shape) == 3 else ref[..., np.newaxis]
         result = np.zeros_like(src)
 
         for ch in range(src.shape[2]):
@@ -60,7 +64,7 @@ class LfpColorEqualizer(LfpViewpoints):
             ref_vec = ref[..., ch].ravel()
 
             # analyze histograms
-            src_vals, src_idxs, src_cnts = np.unique(src_vec, return_inverse=True, return_counts=True)
+            _, src_idxs, src_cnts = np.unique(src_vec, return_inverse=True, return_counts=True)
             ref_vals, ref_cnts = np.unique(ref_vec, return_counts=True)
 
             # compute cumulative distribution functions
@@ -70,9 +74,5 @@ class LfpColorEqualizer(LfpViewpoints):
             # do the histogram mapping
             interp_vals = np.interp(src_cdf, ref_cdf, ref_vals)
             result[..., ch] = interp_vals[src_idxs].reshape(src[..., ch].shape)
-
-            # check interrupt status
-            if self.sta.interrupt:
-                return False
 
         return result
