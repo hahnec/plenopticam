@@ -35,6 +35,13 @@ from plenopticam.lfp_extractor import LfpViewpoints
 from plenopticam.gui.constants import GENERIC_EXTS
 from plenopticam import __version__
 
+def idx_str_sort(s, mode=0):
+
+    if mode:
+        return [int(s.split('.')[0].split('_')[0]),
+                int(s.split('.')[0].split('_')[1])]
+    else:
+        return int(s.split('.')[0])
 
 def get_list(img_dir, vp=1):
 
@@ -49,15 +56,15 @@ def get_list(img_dir, vp=1):
         ext = img_path.split('.')[::-1][0].lower()
         if ext in [gen_ext.replace('*.', '') for gen_ext in GENERIC_EXTS]:
             img = misc.load_img_file(img_path)
-            img_list.append(img)
+            img_list.append((i, img))
+
+    # sort image list by indices in file names
+    img_tuples = sorted(img_list, key=lambda k: idx_str_sort(k[0], 1 if vp else 0))
+    _, img_list = zip(*img_tuples)
 
     if vp:
         vp_dim = int(np.sqrt(len(img_list)))
-        img_list = np.asarray(img_list).reshape((vp_dim, vp_dim) + img_list[0].shape)
-    else:
-        img_tuples = tuple(zip(os.listdir(img_dir), img_list))
-        img_tuples = sorted(img_tuples, key=lambda k: int(k[0].split('.')[0]))
-        _, img_list = zip(*img_tuples)
+        img_list = np.reshape(img_list, newshape=(vp_dim, vp_dim) + img_list[0].shape, order='C')
 
     return img_list
 
@@ -77,8 +84,8 @@ class PictureWindow(tk.Canvas, LfpViewpoints):
 
         # light-field related data
         self._M = self.cfg.params[self.cfg.ptc_leng]    #self.vp_img_arr.shape[0]
-        self._v = self._M//2+1
-        self._u = self._M//2+1
+        self._v = self._M//2
+        self._u = self._M//2
         self._a = 0
 
         vp_dir = os.path.join(self.cfg.exp_path, 'viewpoints_'+str(self._M)+'px')
