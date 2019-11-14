@@ -44,11 +44,12 @@ def create_gauss_kernel(l=25, sig=1.):
 
 def safe_get(dict, *keys):
 
-    for key in keys:
-        try:
-            dict = dict[key]
-        except KeyError:
-            return None
+    if dict:
+        for key in keys:
+            try:
+                dict = dict[key]
+            except KeyError:
+                return None
 
     return dict
 
