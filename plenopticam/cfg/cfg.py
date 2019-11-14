@@ -164,19 +164,17 @@ class PlenopticamConfig(object):
             fp = join(splitext(fp)[0], fn)
 
         # load calibration data from json file
-        try:
-            with open(fp, 'r') as f:
-                json_dict = json.load(f)
-        except json.decoder.JSONDecodeError:
-            remove(fp)
-            sta.status_msg('Calibration JSON File may be corrupted. Attempt to delete file %s' % fp, opt=True)
-            raise PlenopticamError('Calibration JSON File may be corrupted. Attempt to delete file %s' % fp)
-        except IsADirectoryError:
-            sta.status_msg('Provided location %s is a directory' % fp, opt=True)
-            raise PlenopticamError('Provided location %s is a directory' % fp)
-        except FileNotFoundError:
+        if exists(fp):
+            try:
+                with open(fp, 'r') as f:
+                    json_dict = json.load(f)
+            except json.decoder.JSONDecodeError:
+                remove(fp)
+                sta.status_msg('Calibration JSON File may be corrupted. Attempt to delete file %s' % fp, opt=True)
+                raise PlenopticamError('Calibration JSON File may be corrupted. Attempt to delete file %s' % fp)
+        else:
+            json_dict = None
             sta.status_msg('Provided file %s does not exist' % fp, opt=True)
-            raise PlenopticamError('Provided file %s does not exist' % fp)
 
         return json_dict
 
