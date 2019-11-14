@@ -3,8 +3,8 @@ import numpy as np
 def hsv2rgb(hsv):
     """ Convert HSV color space to RGB color space
 
-    @param hsv: np.ndarray
-    return rgb: np.ndarray
+    :param hsv: numpy.ndarray
+    :return: numpy.ndarray
     """
 
     hi = np.floor(hsv[..., 0] / 60.0) % 6
@@ -28,8 +28,8 @@ def hsv2rgb(hsv):
 def rgb2hsv(rgb):
     """ Convert RGB color space to HSV color space
 
-    @param rgb: np.ndarray
-    return hsv: np.ndarray
+    :param rgb: numpy.ndarray
+    :return: numpy.ndarray
     """
 
     rgb = rgb.astype('float')
@@ -45,7 +45,7 @@ def rgb2hsv(rgb):
     hsv[maxc == 1, 0] = (((rgb[..., 2] - rgb[..., 0]) * 60.0 / (maxv - minv +np.spacing(1))) + 120.0)[maxc == 1]
     hsv[maxc == 2, 0] = (((rgb[..., 0] - rgb[..., 1]) * 60.0 / (maxv - minv +np.spacing(1))) + 240.0)[maxc == 2]
     hsv[maxv == 0, 1] = np.zeros(hsv[maxv == 0, 1].shape)
-    hsv[maxv != 0, 1] = (1 - (minv * 1.0 / (maxv+np.spacing(1))))[maxv != 0]
+    hsv[maxv != 0, 1] = (1 - minv / (maxv + np.spacing(1)))[maxv != 0]
     hsv[..., 2] = maxv
 
     return hsv
