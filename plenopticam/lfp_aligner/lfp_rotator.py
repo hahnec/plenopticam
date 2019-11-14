@@ -24,6 +24,8 @@ import numpy as np
 import scipy
 
 from plenopticam.lfp_calibrator.centroid_drawer import CentroidDrawer
+from plenopticam.misc import PlenopticamStatus
+from plenopticam.cfg import PlenopticamConfig
 
 class LfpRotator(object):
 
@@ -31,8 +33,8 @@ class LfpRotator(object):
 
         # input and output variable
         self._lfp_img = lfp_img
-        self.cfg = cfg
-        self.sta = sta
+        self.cfg = cfg if cfg is not None else PlenopticamConfig()
+        self.sta = sta if sta is not None else PlenopticamStatus()
 
         # internal variables
         self._centroids = np.asarray(mic_list)
