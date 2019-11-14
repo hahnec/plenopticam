@@ -29,6 +29,7 @@ from plenopticam.misc import Normalizer, save_img_file, PlenopticamStatus
 from plenopticam.misc.clr_spc_conv import rgb2gray
 from plenopticam.cfg import PlenopticamConfig
 
+
 class CentroidDrawer(object):
 
     def __init__(self, img, centroids, cfg=None, sta=None):
@@ -38,7 +39,6 @@ class CentroidDrawer(object):
         self._centroids = np.asarray(centroids)
         self.cfg = cfg if cfg is not None else PlenopticamConfig()
         self.sta = sta if sta is not None else PlenopticamStatus()
-
 
     def write_centroids_img(self, fn='centroids_img.png'):
 
@@ -81,18 +81,3 @@ class CentroidDrawer(object):
         x[b > a] = 0
 
         return x
-
-    # def plot_centroids(self):
-    #
-    #     try:
-    #         import matplotlib.pyplot as plt
-    #     except ImportError:
-    #         raise ImportError("Package matplotlib wasn't found.")
-    #
-    #     plt.figure()
-    #     plt.imshow(self._img)
-    #     plt.plot(self._centroids[:, 1], self._centroids[:, 0], 'rx')
-    #     plt.show()
-    #     #plt.savefig('input+mics.png')
-    #
-    #     return True
