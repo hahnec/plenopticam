@@ -139,7 +139,7 @@ class LfpExporter(LfpViewpoints):
 
     def gif_vp_img(self, duration, pattern='circle'):
 
-        fn = 'view_animation_' + str(self.cfg.params[self.cfg.ptc_leng]) + 'px'
+        fn = 'view_animation_' + str((max(self.cfg.calibs[self.cfg.ptc_mean])+1)//2+1) + 'px'
         img_set = self.reorder_vp_arr(pattern=pattern)
         img_set = Normalizer(img_set, dtype=self.vp_img_arr.dtype).uint8_norm()
         misc.save_gif(img_set, duration=duration, fp=self.cfg.exp_path, fn=fn)
