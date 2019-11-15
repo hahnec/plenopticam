@@ -61,10 +61,9 @@ class LfpContrast(LfpViewpoints):
 
         ch = ch if ch is not None else 0
 
-        img = plenopticam.misc.clr_spc_conv.yuv_conv(img)
+        img = misc.clr_spc_conv.yuv_conv(img)
         #img = misc.hsv_conv(img)
-        from plenopticam.misc import HistogramEqualizer
-        obj = HistogramEqualizer(img=img, ch=0)
+        obj = misc.HistogramEqualizer(img=img, ch=0)
         obj.cdf_from_img()
         obj.correct_histeq()
         img = obj._ref_img
@@ -72,7 +71,7 @@ class LfpContrast(LfpViewpoints):
         #from plenopticam.lfp_extractor import LfpColorEqualizer
         #img[..., ch] = LfpColorEqualizer().hist_match(src=img[..., ch], ref=misc.yuv_conv(self.central_view)[..., ch])[..., 0]
         #img = misc.hsv_conv(img, inverse=True)
-        img = plenopticam.misc.clr_spc_conv.yuv_conv(img, inverse=True)
+        img = misc.clr_spc_conv.yuv_conv(img, inverse=True)
 
         #self.set_stretch_lum(img=img)
         #img = self.apply_stretch_lum(img=img)
@@ -174,7 +173,7 @@ class LfpContrast(LfpViewpoints):
         img = img if img is not None else self.central_view
 
         # use luminance channel for parameter analysis
-        ref_img = plenopticam.misc.clr_spc_conv.yuv_conv(img)
+        ref_img = misc.clr_spc_conv.yuv_conv(img)
         self.set_stretch(ref_ch=ref_img[..., 0])
 
     def apply_stretch_lum(self, img=None):
@@ -183,13 +182,13 @@ class LfpContrast(LfpViewpoints):
         img = img if img is not None else self.vp_img_arr
 
         # color model conversion
-        img = plenopticam.misc.clr_spc_conv.yuv_conv(img) if img is not None else plenopticam.misc.clr_spc_conv.yuv_conv(self.vp_img_arr)
+        img = misc.clr_spc_conv.yuv_conv(img) if img is not None else misc.clr_spc_conv.yuv_conv(self.vp_img_arr)
 
         # apply histogram stretching to luminance channel only
         img = self.apply_stretch(img=img, ch=0)
 
         # color model conversion
-        img = plenopticam.misc.clr_spc_conv.yuv_conv(img, inverse=True)
+        img = misc.clr_spc_conv.yuv_conv(img, inverse=True)
 
         return img
 
