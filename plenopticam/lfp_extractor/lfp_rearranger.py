@@ -81,11 +81,9 @@ class LfpRearranger(LfpViewpoints):
             self.vp_img_arr = obj._vp_img_arr
             del obj
 
-        obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.0, p_hi=1.0)
+        obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.005, p_hi=0.995)
         # automatic white balance
         if self.cfg.params[self.cfg.opt_awb_]:
-            obj.p_lo = 0.005
-            obj.p_hi = 0.995
             obj.auto_wht_bal()
             obj.p_lo = 0
             obj.p_hi = 1
