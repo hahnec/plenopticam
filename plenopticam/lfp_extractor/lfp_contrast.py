@@ -129,7 +129,7 @@ class LfpContrast(LfpViewpoints):
             px_hi = self.find_x_given_y(self.p_hi, np.arange(val_lim), H)
         except:
             px_lo = 0
-            px_hi = 1
+            px_hi = val_lim
         A = np.array([[px_lo, 1], [px_hi, 1]])
         b = np.array([0, val_lim])
         self._contrast, self._brightness = np.dot(np.linalg.inv(A), b)
@@ -137,8 +137,19 @@ class LfpContrast(LfpViewpoints):
         return self._contrast, self._brightness
 
     @staticmethod
-    def find_x_given_y(value, x, y, tolerance=1e-3):
-        return np.mean(np.array([(xi, yi) for (xi, yi) in zip(x, y) if abs(yi - value) <= tolerance]).T[0])
+    def find_x_given_y(value, x, y, tolerance=1e-4):
+
+        i = 0
+        iter_max = 10
+        arr = np.array([])
+        while arr.size == 0 and i != iter_max:
+            arr = np.array([(xi, yi) for (xi, yi) in zip(x, y) if abs(yi - value) <= tolerance])
+            i += 1
+            tolerance = 10**(-4+i)
+
+        found_y = np.mean(arr.T[0]) if i != iter_max else round(value)
+
+        return found_y
 
     def apply_stretch(self, img=None, ch=None):
         ''' contrast and brightness rectification For provided RGB image '''

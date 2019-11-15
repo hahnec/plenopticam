@@ -34,6 +34,7 @@ PORTISHEAD = b"x\x9cm\x8f\xe1\n\xc0 \x08\x84\xdf\xffEu\x8c\x84`kBM\x9d\x95\xc4`\
              b"\x13\x02 \xf1\xecH\x86P\x96>]\xe8\r\xdf\xe0nRJ[\xaflJ^P\xb8\xdc\xc9\r\xa9\xe0\xe0\x1d\xcek\x98\x06" + \
              b"\xc1|t\xd7\x82E\n\x0e^\xfb0\x07\xf1^0i\xfc\x87\x93\xf9{\xcf\xfb^\xfd\xcb3\xf2\xd6\x1ay\x1f\xc8\x93\xf0u"
 
+
 def try_tiff_import(type):
 
     try:
@@ -42,6 +43,7 @@ def try_tiff_import(type):
         TIFF, type = None, 'png'
 
     return TIFF, type
+
 
 def save_img_file(img, file_path=None, file_type=None):
 
@@ -70,6 +72,7 @@ def save_img_file(img, file_path=None, file_type=None):
 
     return True
 
+
 def load_img_file(file_path):
 
     file_type = file_path.split('.')[-1]
@@ -92,6 +95,7 @@ def load_img_file(file_path):
 
     return img
 
+
 def save_gif(img_set, duration=.1, fp='', fn='default'):
 
     fn = '%s.gif' % fn
@@ -105,6 +109,7 @@ def save_gif(img_set, duration=.1, fp='', fn='default'):
         pil_arr[0].save(os.path.join(fp, fn), save_all=True, append_images=pil_arr[1:], duration=duration, loop=0)
 
     return True
+
 
 def place_dnp(dus):
 
