@@ -48,7 +48,7 @@ class LfpColorEqualizer(LfpViewpoints):
         if self.method == 'hist_match':
             fun = self.hist_match
         else:
-            fun = self.color_transfer_MKL
+            fun = self.color_transfer_mkl
 
         self.proc_vp_arr(fun=self.hist_match, ref=self._ref_img, msg='Color equalization')
         if self.proc_type == 'proc_vp_arr':
@@ -86,7 +86,7 @@ class LfpColorEqualizer(LfpViewpoints):
 
         return result
 
-    def color_transfer_MKL(self, I0, I1):
+    def color_transfer_mkl(self, I0, I1):
 
         if (I0.shape[2] != 3):
             print('pictures must have 3 dimensions')
@@ -97,21 +97,19 @@ class LfpColorEqualizer(LfpViewpoints):
         A = np.cov(X0.T)
         B = np.cov(X1.T)
 
-        T = self.MKL(A, B)
+        T = self.mkl(A, B)
 
         mX0 = np.repeat(np.mean(X0, axis=0)[..., np.newaxis], X0.shape[0], axis=1).T
         mX1 = np.repeat(np.mean(X1, axis=0)[..., np.newaxis], X1.shape[0], axis=1).T
 
         XR = np.dot((X0 - mX0), T) + mX1
-
         IR = np.reshape(XR, I0.shape)
-
         IR = misc.Normalizer(IR).uint16_norm()
 
         return IR
 
-    def MKL(self, A, B):
-        # N = A.shape[0]
+    def mkl(self, A, B):
+
         [Da2, Ua] = np.linalg.eig(A)
         Ua = np.array([Ua[:, 2] * -1, Ua[:, 1], Ua[:, 0] * -1]).T
         # Da2 = np.diag(Da2)

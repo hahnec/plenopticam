@@ -239,6 +239,7 @@ class PlenopticamConfig(object):
 
         return exist and valid
 
+
 class NumpyTypeEncoder(json.JSONEncoder):
     def default(self, obj):
         import numpy as np

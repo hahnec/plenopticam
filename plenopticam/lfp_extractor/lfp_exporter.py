@@ -29,6 +29,7 @@ from plenopticam.lfp_extractor.lfp_viewpoints import LfpViewpoints
 import os
 import numpy as np
 
+
 class LfpExporter(LfpViewpoints):
 
     def __init__(self, refo_stack=None, *args, **kwargs):

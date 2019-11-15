@@ -35,6 +35,7 @@ from plenopticam.cfg import PlenopticamConfig
 from plenopticam import __version__
 from plenopticam.gui import PlenopticamApp
 
+
 def usage():
 
     print("Usage: plenopticam <options>\n")
@@ -100,6 +101,7 @@ def parse_options(argv, cfg):
 
     # create dictionary containing all parameters for the light field
     return cfg
+
 
 def main():
 
@@ -197,6 +199,7 @@ def main():
         exp_obj = lfp_extractor.LfpExtractor(lfp_img_align, cfg)
         exp_obj.main()
         del exp_obj
+
 
 if __name__ == "__main__":
 

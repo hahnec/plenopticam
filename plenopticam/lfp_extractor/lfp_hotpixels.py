@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import plenopticam.misc.clr_spc_conv
 
 __author__ = "Christopher Hahne"
 __email__ = "info@christopherhahne.de"
@@ -23,6 +22,7 @@ __license__ = """
 
 from plenopticam import misc
 from plenopticam.lfp_extractor import LfpViewpoints
+
 
 class LfpHotPixels(LfpViewpoints):
 
