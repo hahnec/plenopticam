@@ -95,7 +95,8 @@ class LfpExporter(LfpViewpoints):
 
         # export all viewpoints in single image
         views_stacked_path = os.path.join(self.cfg.exp_path, 'views_stacked_img_'+str(self._M)+'px')
-        misc.save_img_file(self.views_stacked_img, file_path=views_stacked_path, file_type=type)
+        misc.save_img_file(misc.img_resize(self.views_stacked_img, 1/self._M),
+                           file_path=views_stacked_path, file_type=type)
 
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
 
