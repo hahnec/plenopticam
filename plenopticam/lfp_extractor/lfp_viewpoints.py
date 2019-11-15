@@ -64,7 +64,7 @@ class LfpViewpoints(object):
 
                     # progress update
                     percent = (j*self._vp_img_arr.shape[1]+i+1)/np.dot(*self._vp_img_arr.shape[:2])*100
-                    self.sta.progress(percent, self.cfg.params[self.cfg.opt_dbug])
+                    self.sta.progress(percent, self.cfg.params[self.cfg.opt_prnt])
 
                 # check interrupt status
                 if self.sta.interrupt:
