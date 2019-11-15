@@ -37,7 +37,6 @@ from plenopticam.gui import PlenopticamApp
 
 def usage():
 
-    print("\nPlenopticam " + __version__ + " by Christopher Hahne")
     print("Usage: plenopticam <options>\n")
     print("Options:")
     print("-g                                Open up graphical user interface")
@@ -54,7 +53,7 @@ def usage():
     print("--hot                             Hot pixel treatment flag")
     print("--sat                             Saturation automation flag")
 
-    print("-h , --help                       Print this help message.")
+    print("-h,            --help             Print this help message")
     print("")
 
     sys.exit()
@@ -65,8 +64,8 @@ def parse_options(argv, cfg):
         opts, args = getopt.getopt(argv, "ghf:c:p:r:",
                                         ["gui", "help", "file=", "cali=", "patch=", "refo=", "refi",
                                          "vgn", "awb", "con", "hot", "sat"])
-    except getopt.GetoptError:
-        usage()
+    except getopt.GetoptError as e:
+        print(e)
         sys.exit(2)
 
     if opts:
@@ -103,6 +102,9 @@ def parse_options(argv, cfg):
     return cfg
 
 def main():
+
+    # program info
+    print("\nPlenopticam " + __version__ + " by Christopher Hahne\n")
 
     # create config object
     cfg = PlenopticamConfig()
