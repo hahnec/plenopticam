@@ -59,7 +59,7 @@ class LfpHotPixels(LfpViewpoints):
     def correct_luma_outliers(self, img, n=2, perc=.2):
 
         # luma channel conversion
-        luma = plenopticam.misc.clr_spc_conv.yuv_conv(img.copy())[..., 0]
+        luma = misc.clr_spc_conv.yuv_conv(img.copy())[..., 0]
 
         for j in range(n, luma.shape[0]-n):
             for i in range(n, luma.shape[1]-n):
