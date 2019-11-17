@@ -12,7 +12,7 @@ sudo rm -rf dist/
 pyinstaller3.cp plenopticam/gui/top_level.py \
     	--onefile \
 	--noconsole \
-	--add-data=/home/chris/.local/lib/python3.6/site-packages/libtiff/:./libtiff \
+	--add-data=/home/chris/.local/lib/python3.6/site-packages/imageio/:./imageio \
 	--name=plenopticam \
 	--icon=plenopticam/gui/icns/1055104.gif \
 	--add-data=./docs/build/html/:./docs/build/html/ \

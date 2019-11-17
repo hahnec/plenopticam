@@ -38,11 +38,11 @@ PORTISHEAD = b"x\x9cm\x8f\xe1\n\xc0 \x08\x84\xdf\xffEu\x8c\x84`kBM\x9d\x95\xc4`\
 def try_tiff_import(type):
 
     try:
-        from libtiff import TIFF
+        import imageio
     except:
-        TIFF, type = None, 'png'
+        imageio, type = None, 'png'
 
-    return TIFF, type
+    return imageio, type
 
 
 def save_img_file(img, file_path=None, file_type=None):
@@ -54,20 +54,17 @@ def save_img_file(img, file_path=None, file_type=None):
     if not file_type:
         file_type = ext if ext == 'png' or ext == 'tiff' else 'tiff' if img.dtype == 'uint16' else 'png'
 
-    # try libtiff import or use png instead if import fails
-    TIFF, file_type = try_tiff_import(file_type)
+    # try imageio import or use png instead if import fails
+    imageio, file_type = try_tiff_import(file_type)
 
     # compose new file path string if extension type changed
     file_path = os.path.splitext(file_path)[-2] if file_path.endswith(('.tiff', '.png', '.bmp')) else file_path
     file_path = file_path + '.' + file_type
 
     if file_type == 'tiff':
-        obj = TIFF.open(file_path, mode='w')
-        obj.write_image(Normalizer(img).uint16_norm(), compression=None, write_rgb=True)
-        obj.close()
+        imageio.imwrite(uri=file_path, im=Normalizer(img).uint16_norm())
 
     elif file_type == 'png' or file_type == 'bmp':
-
         Image.fromarray(Normalizer(img).uint8_norm()).save(file_path, file_type, optimize=True)
 
     return True
@@ -79,13 +76,10 @@ def load_img_file(file_path):
     img = None
 
     # try libtiff import or use png instead if import fails
-    TIFF, file_type = try_tiff_import(file_type)
+    imageio, file_type = try_tiff_import(file_type)
 
-    #tbd: tiff handling
     if file_type == 'tiff':
-        obj = TIFF.open(file_path, 'r')
-        img = obj.read_image()
-        obj.close()
+        img = imageio.imread(uri=file_path)
 
     elif any(file_type in ext for ext in ('bmp', 'png', 'jpeg', 'jpg')):
         img = np.asarray(Image.open(file_path))
