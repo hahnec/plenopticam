@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import plenopticam.misc.clr_spc_conv
 
 __author__ = "Christopher Hahne"
 __email__ = "info@christopherhahne.de"
@@ -68,32 +67,11 @@ class LfpContrast(LfpViewpoints):
         obj.correct_histeq()
         img = obj._ref_img
         del obj
-        #from plenopticam.lfp_extractor import LfpColorEqualizer
-        #img[..., ch] = LfpColorEqualizer().hist_match(src=img[..., ch], ref=misc.yuv_conv(self.central_view)[..., ch])[..., 0]
-        #img = misc.hsv_conv(img, inverse=True)
         img = misc.clr_spc_conv.yuv_conv(img, inverse=True)
 
-        #self.set_stretch_lum(img=img)
-        #img = self.apply_stretch_lum(img=img)
-
-        #img = misc.Normalizer(img=img).uint16_norm()
-
         return img
 
-    def proc_auto_wht(self):
-
-        self.proc_vp_arr(self.auto_wht_img, msg='VP auto white balance')
-
-    def auto_wht_img(self, img):
-
-        ch_num = img.shape[-1] if len(img.shape) > 2 else 1
-        for i in range(ch_num):
-            self.set_stretch(ref_ch=img[..., i])
-            img = self.apply_stretch(img=img.copy(), ch=i)
-
-        return img
-
-    def auto_wht_bal(self):
+    def auto_wht_bal(self, method=None):
 
         # status update
         self.sta.status_msg(msg='Auto white balance', opt=self.cfg.params[self.cfg.opt_prnt])
@@ -201,14 +179,14 @@ class LfpContrast(LfpViewpoints):
     def set_stretch_hsv(self):
 
         # use luminance channel for parameter analysis
-        ref_img = plenopticam.misc.clr_spc_conv.hsv_conv(self.central_view)
+        ref_img = misc.clr_spc_conv.hsv_conv(self.central_view)
         self.set_stretch(ref_ch=ref_img[..., 1]*(2**16-1))
 
     def apply_stretch_hsv(self, img):
         ''' contrast and brightness rectification to luminance channel of provided RGB image '''
 
         # color model conversion
-        hsv = plenopticam.misc.clr_spc_conv.hsv_conv(img)
+        hsv = misc.clr_spc_conv.hsv_conv(img)
 
         # apply histogram stretching to saturation channel only
         hsv[..., 1] *= (2**16-1)
@@ -216,23 +194,6 @@ class LfpContrast(LfpViewpoints):
         hsv[..., 1] /= (2**16-1)
 
         # color model conversion
-        rgb = plenopticam.misc.clr_spc_conv.hsv_conv(hsv, inverse=True)
+        rgb = misc.clr_spc_conv.hsv_conv(hsv, inverse=True)
 
         return rgb
-
-    @staticmethod
-    def contrast_per_channel(img_arr, sat_perc=0.1):
-        ''' sat_perc is the saturation percentile which is cut-off at the lower and higher end in each color channel '''
-
-        q = [sat_perc/100, 1-sat_perc/100]
-
-        for ch in range(img_arr.shape[2]):
-
-            # compute histogram quantiles
-            tiles = np.quantile(img_arr[..., ch], q)
-
-            # clip histogram quantiles
-            img_arr[..., ch][img_arr[..., ch] < tiles[0]] = tiles[0]
-            img_arr[..., ch][img_arr[..., ch] > tiles[1]] = tiles[1]
-
-        return img_arr
