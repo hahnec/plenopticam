@@ -52,4 +52,10 @@ class Normalizer(object):
         if self.sta.interrupt:
             return False
 
-        return (self._img - self._min) / (self._max - self._min) if self._max != self._min else self._img
+        norm = (self._img - self._min) / (self._max - self._min) if self._max != self._min else self._img
+
+        # prevent wrap-around
+        norm[norm < 0] = 0
+        norm[norm > 1] = 1
+
+        return norm
