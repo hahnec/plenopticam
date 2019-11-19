@@ -118,7 +118,10 @@ class LfpExporter(LfpViewpoints):
 
         for i, refo_img in enumerate(refo_stack):
 
-            self.save_refo_slice(i, refo_img, folder_path)
+            # get depth plane number for filename
+            a = range(*self.cfg.params[self.cfg.ran_refo])[i]
+
+            self.save_refo_slice(a, refo_img, folder_path)
 
             # print status
             percentage = ((i+1) / len(refo_stack)) * 100
@@ -126,15 +129,13 @@ class LfpExporter(LfpViewpoints):
 
         return True
 
-    def save_refo_slice(self, i, refo_img, fp=None, file_type=None, string=None):
+    def save_refo_slice(self, a, refo_img, fp=None, file_type=None, string=None):
 
         if fp is None:
             string = 'subpixel_' if self.cfg.params[self.cfg.opt_refi] and string is None else string
             fp = os.path.join(self.cfg.exp_path, 'refo_' + string + str(self._M) + 'px')
             misc.mkdir_p(fp)
 
-        # get depth plane number for filename
-        a = range(*self.cfg.params[self.cfg.ran_refo])[i]
         # account for sub-pixel precise depth value
         a = round(float(a) / self._M, 2) if self.cfg.params[self.cfg.opt_refi] else a
 
