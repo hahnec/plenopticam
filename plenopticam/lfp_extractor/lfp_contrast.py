@@ -101,8 +101,14 @@ class LfpContrast(LfpViewpoints):
 
         ch_num = self.vp_img_arr.shape[-1] if len(self.vp_img_arr.shape) > 4 else 1
         for i in range(ch_num):
-            self.set_stretch(ref_ch=self.central_view[..., i])
-            self.apply_stretch(ch=i)
+            if method is None:
+                ref_ch = self.central_view[..., i]
+                img_ch = self.vp_img_arr[..., i]
+                self.vp_img_arr[..., i] = misc.Normalizer(img=img_ch, min=np.quantile(ref_ch, self.p_lo),
+                                                                      max=np.quantile(ref_ch, self.p_hi)).uint16_norm()
+            else:
+                self.set_stretch(ref_ch=self.central_view[..., i])
+                self.apply_stretch(ch=i)
 
             # status update
             self.sta.progress((i+1)/ch_num*100, opt=self.cfg.params[self.cfg.opt_prnt])
