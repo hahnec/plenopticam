@@ -59,7 +59,8 @@ def save_img_file(img, file_path=None, file_type=None):
 
     # compose new file path string if extension type changed
     file_path = os.path.splitext(file_path)[-2] if file_path.endswith(('.tiff', '.png', '.bmp')) else file_path
-    file_path = file_path + '.' + file_type
+    file_type = 'png' if file_type is None else file_type
+    file_path += '.' + file_type
 
     if file_type == 'tiff':
         imageio.imwrite(uri=file_path, im=Normalizer(img).uint16_norm())
