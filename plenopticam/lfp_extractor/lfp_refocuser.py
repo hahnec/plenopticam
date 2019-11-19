@@ -118,6 +118,9 @@ class LfpRefocuser(LfpViewpoints):
             crop = int(overlap/2)
             final_img = img_slice[crop:-crop, crop:-crop, :] if (a != 0) else img_slice
 
+            # write upscaled version to hard drive
+            LfpExporter(cfg=self.cfg, sta=self.sta).save_refo_slice(i=a, refo_img=final_img, string='upscale_')
+
             # spatially downscale image to original resolution (for less memory usage)
             final_img = misc.img_resize(final_img, 1./factor) if factor > 1 else final_img
 
@@ -271,6 +274,9 @@ class LfpRefocuser(LfpViewpoints):
             # crop refocused image for consistent image dimensions
             crop = int(overlap/2)
             final_img = ver_refo[crop:-crop, crop:-crop, :] if (a != 0) else ver_refo
+
+            # write upscaled version to hard drive
+            LfpExporter(cfg=self.cfg, sta=self.sta).save_refo_slice(i=a, refo_img=final_img)
 
             # spatially downscale image to original resolution (for less memory usage)
             final_img = misc.img_resize(final_img, 1./factor) if factor > 1 else final_img

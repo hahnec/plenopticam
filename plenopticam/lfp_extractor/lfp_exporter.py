@@ -112,24 +112,13 @@ class LfpExporter(LfpViewpoints):
         refo_stack = Normalizer(np.asarray(self._refo_stack)).uint16_norm()
 
         # create folder
-        string = ''
-        if self.cfg.params[self.cfg.opt_refo] == 2 or self.cfg.params[self.cfg.opt_refi]:
-            string = 'subpixel_'
-        elif self.cfg.params[self.cfg.opt_refo] == 1 or self.cfg.params[self.cfg.opt_view]:
-            string = ''
-
+        string = 'subpixel_' if self.cfg.params[self.cfg.opt_refi] else ''
         folder_path = os.path.join(self.cfg.exp_path, 'refo_' + string + str(self._M) + 'px')
         misc.mkdir_p(folder_path)
 
         for i, refo_img in enumerate(refo_stack):
 
-            # get depth plane number for filename
-            a = range(*self.cfg.params[self.cfg.ran_refo])[i]
-            # account for sub-pixel precise depth value
-            a = round(float(a)/self._M, 2) if self.cfg.params[self.cfg.opt_refi] else a
-
-            # write image file
-            misc.save_img_file(refo_img, os.path.join(folder_path, str(a)), file_type=type)
+            self.save_refo_slice(i, refo_img, folder_path)
 
             # print status
             percentage = ((i+1) / len(refo_stack)) * 100
@@ -137,9 +126,26 @@ class LfpExporter(LfpViewpoints):
 
         return True
 
+    def save_refo_slice(self, i, refo_img, fp=None, file_type=None, string=None):
+
+        if fp is None:
+            string = 'subpixel_' if self.cfg.params[self.cfg.opt_refi] and string is None else string
+            fp = os.path.join(self.cfg.exp_path, 'refo_' + string + str(self._M) + 'px')
+            misc.mkdir_p(fp)
+
+        # get depth plane number for filename
+        a = range(*self.cfg.params[self.cfg.ran_refo])[i]
+        # account for sub-pixel precise depth value
+        a = round(float(a) / self._M, 2) if self.cfg.params[self.cfg.opt_refi] else a
+
+        # write image file
+        misc.save_img_file(refo_img, os.path.join(fp, str(a)), file_type=file_type)
+
+        return True
+
     def gif_vp_img(self, duration, pattern='circle'):
 
-        fn = 'view_animation_' + str((max(self.cfg.calibs[self.cfg.ptc_mean])+1)//2+1) + 'px'
+        fn = 'view_animation_'# + str((max(self.cfg.calibs[self.cfg.ptc_mean])+1)//2+1) + 'px'
         img_set = self.reorder_vp_arr(pattern=pattern)
         img_set = Normalizer(img_set, dtype=self.vp_img_arr.dtype).uint8_norm()
         misc.save_gif(img_set, duration=duration, fp=self.cfg.exp_path, fn=fn)
