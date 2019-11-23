@@ -62,7 +62,7 @@ class LfpContrast(LfpViewpoints):
 
         img = misc.clr_spc_conv.yuv_conv(img)
         #img = misc.hsv_conv(img)
-        obj = misc.HistogramEqualizer(img=img, ch=0)
+        obj = misc.HistogramEqualizer(img=img, ch=ch)
         obj.cdf_from_img()
         obj.correct_histeq()
         img = obj._ref_img

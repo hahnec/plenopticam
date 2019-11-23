@@ -27,6 +27,7 @@ from plenopticam.lfp_extractor.lfp_refocuser import LfpRefocuser
 from plenopticam.lfp_extractor.lfp_scheimpflug import LfpScheimpflug
 from plenopticam import misc
 
+
 class LfpExtractor(object):
 
     def __init__(self, lfp_img_align, cfg=None, sta=None):

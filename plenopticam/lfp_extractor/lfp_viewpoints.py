@@ -131,9 +131,6 @@ class LfpViewpoints(object):
             # swap axes indices
             j, i = (i, j) if axis == 1 else (j, i)
 
-            #print("j-src:"+str(self._c+j+m)+", i-src:"+str(self._c+i+n)+", j-ref:"+str(self._c+j)+", i-ref:"+str(self._c+i))
-            #print("j-src:"+str(self._c+(j+m)*p)+", i-src:"+str(self._c+(i+n)*q)+", j-ref:"+str(self._c+j*p)+", i-ref:"+str(self._c+i*q))
-
             ref_pos = self.vp_img_arr[self._C + j, self._C + i, ...]
             ref_neg = self.vp_img_arr[self._C + j * p, self._C + i * q, ...]
 
