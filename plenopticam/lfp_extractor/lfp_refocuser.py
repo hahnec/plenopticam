@@ -64,7 +64,7 @@ class LfpRefocuser(LfpViewpoints):
 
             # write refocused images to hard drive
             refo_obj = LfpExporter(refo_stack=self._refo_stack, cfg=self.cfg, sta=self.sta)
-            refo_obj.export_refo_stack(type='png')
+            refo_obj.export_refo_stack(file_type='png')
             refo_obj.gif_refo()
             del refo_obj
 

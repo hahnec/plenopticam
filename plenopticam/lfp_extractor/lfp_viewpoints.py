@@ -69,7 +69,6 @@ class LfpViewpoints(object):
                 # check interrupt status
                 if self.sta.interrupt:
                     return False
-
         except:
             if len(self.vp_img_arr.shape) != 5:
                 raise NotImplementedError
@@ -80,7 +79,7 @@ class LfpViewpoints(object):
 
         # parameter initialization
         pattern = 'circle' if pattern is None else pattern
-        r = r if r is not None else int(max(self.cfg.calibs[self.cfg.ptc_mean])+1)//4     #min(arr_dims) // 4
+        r = r if r is not None else int(max(self.cfg.calibs[self.cfg.ptc_mean])+1)//4
         mask = [[0] * arr_dims[1] for _ in range(arr_dims[0])]
 
         if pattern == 'square':
