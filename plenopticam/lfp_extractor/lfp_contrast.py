@@ -82,8 +82,9 @@ class LfpContrast(LfpViewpoints):
             if method is None:
                 ref_ch = self.central_view[..., i]
                 img_ch = self.vp_img_arr[..., i]
-                self.vp_img_arr[..., i] = misc.Normalizer(img=img_ch, min=np.quantile(ref_ch, self.p_lo),
-                                                                      max=np.quantile(ref_ch, self.p_hi)).uint16_norm()
+                self.vp_img_arr[..., i] = misc.Normalizer(img=img_ch,
+                                                          min=np.percentile(ref_ch, self.p_lo*100),
+                                                          max=np.percentile(ref_ch, self.p_hi*100)).uint16_norm()
             else:
                 self.set_stretch(ref_ch=self.central_view[..., i])
                 self.apply_stretch(ch=i)
