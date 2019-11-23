@@ -199,26 +199,17 @@ class CentroidSorter(object):
         # get aspect ratio of bounding box
         aspect_ratio = self._bounding_box[1] / self._bounding_box[0]
 
-        # estimate array dimensions under consideration of aspect ratio
-        s = t = np.sqrt(len(self._centroids))
-        tol = 3
-        fun = lambda x: aspect_ratio - x[1] / x[0]
-        min_val = round(fun([t, s]), tol)
-        while(min_val != 0):
-            if min_val > 0:
-                s += .1
-            elif min_val < 0:
-                s -= .1
-            t = len(self._centroids)/s
-            min_val = round(fun([t, s]), tol)
+        # get micro lens array dimensions
+        s = np.sqrt(len(self._centroids) * aspect_ratio)
+        t = np.sqrt(len(self._centroids) * aspect_ratio**-1)
 
-        # estimate horizontal spacing (pitch in px)
+        # get horizontal spacing estimate (pitch in px)
         pitch_x = self._bounding_box[1] / s
 
-        # estimate pattern
+        # estimate MLA packing geometry
         self._calc_pattern(pitch_x)
 
-        # estimate vertical spacing (pitch in px) under consideration of pattern type
+        # get vertical spacing estimate (pitch in px) under consideration of packing type
         if self._pattern == 'rec':
             pitch_y = self._bounding_box[0] / t
         elif self._pattern == 'hex':
