@@ -57,7 +57,7 @@ class CentroidSorter(object):
         self._init_var()
 
         # estimate micro image pitch lengths and pattern type
-        self._calc_mla_struc()
+        self._get_mla_pitch()
 
         # get maximum number of micro images in horizontal and vertical direction
         self._mla_dims()
@@ -177,8 +177,15 @@ class CentroidSorter(object):
         return True
 
     def _calc_pattern(self, pitch):
+        ''' This function determines whether the geometric arrangement of micro lenses is rectangular or hexagonal.
 
+        :param pitch: scalar of type int or float representing the spacing between micro image centers
+        :return: True
+        '''
+
+        # pick random micro image center in middle of centroid list
         point = self._centroids[int(len(self._centroids)/2)]
+
         diff_vertical = []
         pattern_list = ['rec', 'hex']
 
@@ -190,30 +197,31 @@ class CentroidSorter(object):
             else:
                 diff_vertical.append(float('inf'))
 
+        # store detected pattern type
         self._pattern = pattern_list[np.array(diff_vertical).argmin()]
 
         return True
 
-    def _calc_mla_struc(self):
+    def _get_mla_pitch(self):
 
         # get aspect ratio of bounding box
         aspect_ratio = self._bounding_box[1] / self._bounding_box[0]
 
         # get micro lens array dimensions
-        s = np.sqrt(len(self._centroids) * aspect_ratio)
-        t = np.sqrt(len(self._centroids) * aspect_ratio**-1)
+        J = np.sqrt(len(self._centroids) * aspect_ratio)
+        H = np.sqrt(len(self._centroids) * aspect_ratio**-1)
 
         # get horizontal spacing estimate (pitch in px)
-        pitch_x = self._bounding_box[1] / s
+        pitch_x = self._bounding_box[1] / J
 
         # estimate MLA packing geometry
         self._calc_pattern(pitch_x)
 
         # get vertical spacing estimate (pitch in px) under consideration of packing type
         if self._pattern == 'rec':
-            pitch_y = self._bounding_box[0] / t
+            pitch_y = self._bounding_box[0] / H
         elif self._pattern == 'hex':
-            pitch_y = self._bounding_box[0] / t * np.sqrt(3)/2
+            pitch_y = self._bounding_box[0] / H * np.sqrt(3)/2
         else:
             pitch_y = pitch_x
 
