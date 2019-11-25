@@ -28,7 +28,7 @@ except ImportError:
 from plenopticam.gui.constants import PX, PY, BTN_W
 from plenopticam.cfg import constants as c
 
-# make object for config window
+
 class CnfgWidget(object):
 
     def __init__(self, cfg):
@@ -140,6 +140,7 @@ class CnfgWidget(object):
 
         return True
 
+
 class TwoStringVars(tk.StringVar):
 
     def __init__(self, master=None, values=('', '')):
@@ -166,6 +167,7 @@ class TwoStringVars(tk.StringVar):
     @property
     def two(self):
         return int(self._two.get())
+
 
 class DoubleSpinbox(tk.Frame):
 

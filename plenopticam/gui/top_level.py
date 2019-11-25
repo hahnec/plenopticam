@@ -56,7 +56,6 @@ class PlenopticamApp(tk.Tk):
 
         # initialize parameters
         self.sta = PlenopticamStatus()
-        #self.sta.status_msg(msg='\n', opt=True)     # status message placeholder
 
         # instantiate controller
         self.ctrl_wid = CtrlWidget(self)

@@ -60,13 +60,6 @@ class LfpRearranger(LfpViewpoints):
             #self.vp_img_arr = obj.awb_eq()
             del obj
 
-        # color and contrast handling
-        obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.0, p_hi=1.0)
-        # contrast automation
-        #obj.contrast_bal()
-        self.vp_img_arr = obj.vp_img_arr
-        del obj
-
         # remove hot pixels if option is set
         if self.cfg.params[self.cfg.opt_hotp]:
             obj = LfpHotPixels(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
@@ -122,7 +115,7 @@ class LfpRearranger(LfpViewpoints):
                 self._vp_img_arr[j, i, :, :, :] = self._lfp_img_align[j::self._M, i::self._M, :]
 
                 # print status
-                percentage = (((j*self._M+i+1)/self._M**2)*100)
-                self.sta.progress(percentage, self.cfg.params[self.cfg.opt_prnt])
+                percentage = (j*self._M+i+1)/self._M**2
+                self.sta.progress(percentage*100, self.cfg.params[self.cfg.opt_prnt])
 
         return True

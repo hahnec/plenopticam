@@ -58,7 +58,7 @@ class LfpViewpoints(object):
         elif data_type == list:
             output = list(kwargs[key] for key in kwargs.keys() if key not in keys_to_remove)
         else:
-            None
+            output = None
 
         return output
 

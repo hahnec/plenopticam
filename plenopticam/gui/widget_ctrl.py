@@ -52,6 +52,7 @@ from plenopticam import lfp_refocuser
 # constants
 POLLING_RATE = 100  # millisecs
 
+
 class CtrlWidget(tk.Frame):
     ''' Control widget class '''
 
