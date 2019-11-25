@@ -28,12 +28,15 @@ except ImportError:
 from PIL import Image, ImageTk
 import os
 from functools import partial
+import glob
 
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc import PlenopticamStatus
 from plenopticam.lfp_extractor import LfpViewpoints
 from plenopticam.gui.constants import GENERIC_EXTS
+from plenopticam.misc import Normalizer
 from plenopticam import __version__
+
 
 def idx_str_sort(s, mode=0):
 
@@ -42,6 +45,7 @@ def idx_str_sort(s, mode=0):
                 int(s.split('.')[0].split('_')[1])]
     else:
         return int(s.split('.')[0])
+
 
 def get_list(img_dir, vp=1):
 
@@ -55,7 +59,14 @@ def get_list(img_dir, vp=1):
         img_path = os.path.join(img_dir, i)
         ext = img_path.split('.')[::-1][0].lower()
         if ext in [gen_ext.replace('*.', '') for gen_ext in GENERIC_EXTS]:
+
+            # load image
             img = misc.load_img_file(img_path)
+
+            # convert to uint8 if necessary
+            img = Normalizer(img=img).uint8_norm() if str(img.dtype) != 'uint8' else img
+
+            # append to image list
             img_list.append((i, img))
 
     # sort image list by indices in file names
@@ -68,7 +79,7 @@ def get_list(img_dir, vp=1):
 
     return img_list
 
-# Creating Canvas Widget
+
 class PictureWindow(tk.Canvas, LfpViewpoints):
     def __init__(self, *args, **kwargs):
         tk.Canvas.__init__(self, *args, **kwargs)
@@ -82,16 +93,18 @@ class PictureWindow(tk.Canvas, LfpViewpoints):
         self._ht = self.winfo_screenheight()
         self._wd = self.winfo_screenwidth()
 
-        # light-field related data
-        self._M = self.cfg.params[self.cfg.ptc_leng]    #self.vp_img_arr.shape[0]
-        self._v = self._M//2
-        self._u = self._M//2
-        self._a = 0
+        vp_dirs = glob.glob(os.path.join(self.cfg.exp_path, 'viewpoints_*px'))
+        rf_dirs = glob.glob(os.path.join(self.cfg.exp_path, 'refo_*px'))
+        try:
+            self.vp_img_arr = kwargs['vp_img_arr'] if 'vp_img_arr' in kwargs else get_list(vp_dirs[0], vp=1)
+            self.refo_stack = kwargs['refo_stack'] if 'refo_stack' in kwargs else get_list(rf_dirs[0], vp=0)
+        except Exception as e:
+            self.sta.status_msg(msg=e, opt=self.cfg.opt_prnt)
 
-        vp_dir = os.path.join(self.cfg.exp_path, 'viewpoints_'+str(self._M)+'px')
-        rf_dir = os.path.join(self.cfg.exp_path, 'refo_'+str(self._M)+'px')
-        self.vp_img_arr = kwargs['vp_img_arr'] if 'vp_img_arr' in kwargs else get_list(vp_dir, vp=1)
-        self.refo_stack = kwargs['refo_stack'] if 'refo_stack' in kwargs else get_list(rf_dir, vp=0)
+        # light-field related data
+        self._M = self.vp_img_arr.shape[0]  # self.cfg.params[self.cfg.ptc_leng]
+        self._v = self._u = self._M // 2
+        self._a = 0
 
         # initialize member variables
         self.vp_mode = True
@@ -215,8 +228,7 @@ class PictureWindow(tk.Canvas, LfpViewpoints):
         k = -1
         move_coords = self.get_move_coords(pattern='circle', arr_dims=self.vp_img_arr.shape[:2])
 
-        while self.auto_mode == True:
-
+        while self.auto_mode:
             k += 1
 
             if self.vp_mode:
