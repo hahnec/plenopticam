@@ -183,7 +183,7 @@ def main():
         cfg.load_cal_data()
 
         #  check if light field alignment has been done before
-        if cfg.cond_lfp_align:
+        if cfg.cond_lfp_align():
             # align light field
             lfp_obj = lfp_aligner.LfpAligner(lfp_img, cfg, sta, wht_img)
             lfp_obj.main()
