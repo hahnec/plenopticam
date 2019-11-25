@@ -121,7 +121,7 @@ class LfpColorEqualizer(LfpViewpoints):
         Dc2[Dc2 < 0] = 0
         # Dc = np.diag(np.sqrt(Dc2) + np.spacing(1))    #  + eps
         Dc = np.diag(np.sqrt(Dc2))  # [::-1]
-        Da_inv = np.diag(1. / (np.diag(Da)))
+        Da_inv = np.diag(1. / (np.diag(Da + np.spacing(1))))
         T = np.dot(Ua, np.dot(Da_inv, np.dot(Uc, np.dot(Dc, np.dot(Uc.T, np.dot(Da_inv, Ua.T))))))
 
         return T
