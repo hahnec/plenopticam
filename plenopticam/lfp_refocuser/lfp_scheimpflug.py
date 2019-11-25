@@ -28,6 +28,7 @@ from plenopticam.cfg import constants as c
 import numpy as np
 import os
 
+
 class LfpScheimpflug(object):
 
     def __init__(self, refo_stack=None, lfp_img=None, cfg=None, sta=None):

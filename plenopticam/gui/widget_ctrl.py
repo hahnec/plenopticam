@@ -47,6 +47,7 @@ from plenopticam import lfp_calibrator
 from plenopticam import lfp_aligner
 from plenopticam import lfp_reader
 from plenopticam import lfp_extractor
+from plenopticam import lfp_refocuser
 
 # constants
 POLLING_RATE = 100  # millisecs
@@ -89,6 +90,7 @@ class CtrlWidget(tk.Frame):
         self.lfp_img = None
         self.wht_img = None
         self.lfp_img_align = None
+        self.vp_img_arr = None
 
         # threading
         self.sta.interrupt = False
@@ -195,8 +197,10 @@ class CtrlWidget(tk.Frame):
                          (self.cfg.load_cal_data, self.cfg.cond_lfp_align),
                          (self.lfp_align, self.cfg.cond_lfp_align),
                          (self.load_pickle_file, True),
-                         (self.lfp_extract, True)
-                        ):
+                         (self.lfp_extract, True),
+                         (self.lfp_refo, self.cfg.params[self.cfg.opt_refo]),
+                         (self.finish, True)
+                         ):
             self.job_queue.put(task_info)
 
         # start polling
@@ -205,6 +209,17 @@ class CtrlWidget(tk.Frame):
         # cancel if file paths not provided
         self.sta.validate(checklist=[self.cfg.params[self.cfg.lfp_path], self.cfg.params[self.cfg.cal_path]],
                           msg='Canceled due to missing image file path')
+
+    def finish(self):
+
+        self.sta.status_msg('Export finished', opt=True)
+        self.sta.progress(100, opt=True)
+
+    def lfp_refo(self):
+
+        obj = lfp_refocuser.LfpRefocuser(self.vp_img_arr, cfg=self.cfg, sta=self.sta)
+        obj.main()
+        del obj
 
     def lfp_align(self):
 
@@ -230,6 +245,7 @@ class CtrlWidget(tk.Frame):
         # export light field data
         exp_obj = lfp_extractor.LfpExtractor(self.lfp_img_align, self.cfg, self.sta)
         exp_obj.main()
+        self.vp_img_arr = exp_obj.vp_img_arr
         del exp_obj
 
     def cal(self):

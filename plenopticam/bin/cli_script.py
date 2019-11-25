@@ -25,10 +25,11 @@ import sys, os
 import pickle
 
 # local imports
+from plenopticam import lfp_reader
 from plenopticam import lfp_calibrator
 from plenopticam import lfp_aligner
 from plenopticam import lfp_extractor
-from plenopticam import lfp_reader
+from plenopticam import lfp_refocuser
 from plenopticam.lfp_reader.top_level import SUPP_FILE_EXT
 from plenopticam import misc
 from plenopticam.cfg import PlenopticamConfig
@@ -58,6 +59,7 @@ def usage():
     print("")
 
     sys.exit()
+
 
 def parse_options(argv, cfg):
 
@@ -194,11 +196,18 @@ def main():
         with open(os.path.join(cfg.exp_path, 'lfp_img_align.pkl'), 'rb') as f:
             lfp_img_align = pickle.load(f)
 
-        # export light field data
+        # extract viewpoint data
         lfp_calibrator.CaliFinder(cfg).main()
-        exp_obj = lfp_extractor.LfpExtractor(lfp_img_align, cfg)
-        exp_obj.main()
-        del exp_obj
+        obj = lfp_extractor.LfpExtractor(lfp_img_align, cfg=cfg, sta=sta)
+        obj.main()
+        vp_img_arr = obj.vp_img_arr
+        del obj
+
+        # do refocusing
+        if cfg.params[cfg.opt_refo]:
+            obj = lfp_refocuser.LfpRefocuser(vp_img_arr, cfg=cfg, sta=sta)
+            obj.main()
+            del obj
 
 
 if __name__ == "__main__":

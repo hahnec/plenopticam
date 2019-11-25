@@ -26,6 +26,7 @@ from plenopticam.lfp_aligner.lfp_resampler import LfpResampler
 from plenopticam.lfp_aligner.lfp_rotator import LfpRotator
 from plenopticam.lfp_aligner.lfp_devignetter import LfpDevignetter
 
+
 class LfpAligner(object):
 
     def __init__(self, lfp_img, cfg=None, sta=None, wht_img=None):

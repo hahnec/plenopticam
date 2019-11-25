@@ -28,10 +28,11 @@ from plenopticam.lfp_extractor.lfp_exporter import LfpExporter
 # external
 import numpy as np
 
-class LfpRefocuser(LfpViewpoints):
+
+class LfpShiftAndSum(LfpViewpoints):
 
     def __init__(self, lfp_img=None, *args, **kwargs):
-        super(LfpRefocuser, self).__init__(*args, **kwargs)
+        super(LfpShiftAndSum, self).__init__(*args, **kwargs)
 
         # input variables
         self.lfp_img = lfp_img

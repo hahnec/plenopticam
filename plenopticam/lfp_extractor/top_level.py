@@ -23,8 +23,7 @@ __license__ = """
 # local imports
 from plenopticam.lfp_extractor.lfp_cropper import LfpCropper
 from plenopticam.lfp_extractor.lfp_rearranger import LfpRearranger
-from plenopticam.lfp_extractor.lfp_refocuser import LfpRefocuser
-from plenopticam.lfp_extractor.lfp_scheimpflug import LfpScheimpflug
+from plenopticam.cfg import PlenopticamConfig
 from plenopticam import misc
 
 
@@ -33,12 +32,11 @@ class LfpExtractor(object):
     def __init__(self, lfp_img_align, cfg=None, sta=None):
 
         self._lfp_img_align = lfp_img_align
-        self.cfg = cfg
+        self.cfg = cfg if cfg is not None else PlenopticamConfig()
         self.sta = sta if sta is not None else misc.PlenopticamStatus()
 
-        # internal variables
+        # internal variable
         self._vp_img_arr = []
-        self._refo_stack = []
 
     def main(self):
 
@@ -55,32 +53,7 @@ class LfpExtractor(object):
         if self.cfg.params[self.cfg.opt_view] and not self.sta.interrupt:
             lfp_obj = LfpRearranger(self._lfp_img_align, cfg=self.cfg, sta=self.sta)
             lfp_obj.main()
-            self._vp_img_arr = lfp_obj.vp_img_arr
+            self.vp_img_arr = lfp_obj.vp_img_arr
             del lfp_obj
-
-        # refocused image stack
-        if self.cfg.params[self.cfg.opt_refo] and not self.sta.interrupt:
-            lfp_obj = LfpRefocuser(vp_img_arr=self._vp_img_arr, cfg=self.cfg, sta=self.sta)
-            lfp_obj.main()
-            self._refo_stack = lfp_obj.refo_stack
-            del lfp_obj
-
-        # scheimpflug focus
-        if self.cfg.params[self.cfg.opt_pflu] != 'off' and not self.sta.interrupt:
-            lfp_obj = LfpScheimpflug(refo_stack=self._refo_stack, cfg=self.cfg, sta=self.sta)
-            lfp_obj.main()
-            del lfp_obj
-
-        # print status
-        self.sta.status_msg('Export finished', opt=True)
-        self.sta.progress(100, opt=True)
 
         return True
-
-    @property
-    def vp_img_arr(self):
-        return self._vp_img_arr.copy()
-
-    @property
-    def refo_stack(self):
-        return self._refo_stack.copy()

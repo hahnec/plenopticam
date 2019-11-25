@@ -24,3 +24,4 @@ from . import lfp_reader
 from . import lfp_calibrator
 from . import lfp_aligner
 from . import lfp_extractor
+from . import lfp_refocuser
