@@ -39,23 +39,19 @@ class LfpColorEqualizer(LfpViewpoints):
         super(LfpColorEqualizer, self).__init__(*args, **kwargs)
 
         self._ref_img = kwargs['ref_img'] if 'ref_img' in kwargs else self.central_view
-
-        self.proc_type = 'proc_ax_prop'#'proc_vp_arr'#
-        self.method = kwargs['method'] if 'method' in kwargs else '..'
+        self.prop_type = kwargs['prop_type'] if 'prop_type' in kwargs else 'central'
 
     def main(self):
 
-        if self.method == 'hist_match':
-            fun = self.hist_match
-        else:
-            fun = self.color_transfer_mkl
+        # color transfer functions to be iterated through
+        funs = (self.hist_match, self.mk_transfer, self.hist_match)
+        n = len(funs)
 
-        self.proc_vp_arr(fun=self.hist_match, ref=self._ref_img, msg='Color equalization')
-        if self.proc_type == 'proc_vp_arr':
-            self.proc_vp_arr(fun=fun, ref=self._ref_img, msg='Color equalization')
-        elif 'proc_ax_prop':
-            self.proc_ax_propagate_2d(fun=fun, msg='Color equalization')
-        self.proc_vp_arr(fun=self.hist_match, ref=self._ref_img, msg='Color equalization')
+        for i, fun in enumerate(funs):
+            if self.prop_type == 'central':
+                self.proc_vp_arr(fun=fun, ref=self._ref_img, msg='Color equalization', iter_num=i, iter_tot=n)
+            elif self.prop_type == 'axial':
+                self.proc_ax_propagate_2d(fun=fun, msg='Color equalization', iter_num=i, iter_tot=n)
 
     @staticmethod
     def hist_match(src, ref):
@@ -86,13 +82,14 @@ class LfpColorEqualizer(LfpViewpoints):
 
         return result
 
-    def color_transfer_mkl(self, I0, I1):
+    def mk_transfer(self, src, ref):
 
-        if (I0.shape[2] != 3):
-            print('pictures must have 3 dimensions')
+        if src.shape[2] != 3 or ref.shape[2] != 3:
+            self.sta.status_msg(msg='Image must have 3 dimensions')
+            self.sta.interrupt = True
 
-        X0 = np.reshape(I0, [-1, I0.shape[2]])
-        X1 = np.reshape(I1, [-1, I1.shape[2]])
+        X0 = np.reshape(src, [-1, src.shape[2]])
+        X1 = np.reshape(ref, [-1, ref.shape[2]])
 
         A = np.cov(X0.T)
         B = np.cov(X1.T)
@@ -103,12 +100,13 @@ class LfpColorEqualizer(LfpViewpoints):
         mX1 = np.repeat(np.mean(X1, axis=0)[..., np.newaxis], X1.shape[0], axis=1).T
 
         XR = np.dot((X0 - mX0), T) + mX1
-        IR = np.reshape(XR, I0.shape)
+        IR = np.reshape(XR, src.shape)
         IR = misc.Normalizer(IR).uint16_norm()
 
         return IR
 
-    def mkl(self, A, B):
+    @staticmethod
+    def mkl(A, B):
 
         [Da2, Ua] = np.linalg.eig(A)
         Ua = np.array([Ua[:, 2] * -1, Ua[:, 1], Ua[:, 0] * -1]).T

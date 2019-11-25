@@ -47,14 +47,34 @@ class LfpViewpoints(object):
     def central_view(self):
         return self.vp_img_arr[self._C, self._C, ...].copy() if self._vp_img_arr is not None else None
 
+    @staticmethod
+    def remove_proc_keys(kwargs, data_type=None):
+
+        data_type = dict if not data_type else data_type
+        keys_to_remove = ('cfg', 'sta', 'msg', 'iter_num', 'iter_tot')
+
+        if data_type == dict:
+            output = dict((key, kwargs[key]) for key in kwargs if key not in keys_to_remove)
+        elif data_type == list:
+            output = list(kwargs[key] for key in kwargs.keys() if key not in keys_to_remove)
+        else:
+            None
+
+        return output
+
     def proc_vp_arr(self, fun, **kwargs):
         ''' process viewpoint images based on provided function handle and argument data '''
 
-        # status message handling
-        msg = kwargs['msg'] if 'msg' in kwargs else 'Viewpoint process'
-        self.sta.status_msg(msg, self.cfg.params[self.cfg.opt_prnt])
+        # percentage indices for tasks having sub-processes
+        iter_num = kwargs['iter_num'] if 'iter_num' in kwargs else 0
+        iter_tot = kwargs['iter_tot'] if 'iter_tot' in kwargs else 1
 
-        args = [kwargs[key] for key in kwargs.keys() if key not in ('cfg', 'sta', 'msg')]
+        # status message handling
+        if iter_num == 0:
+            msg = kwargs['msg'] if 'msg' in kwargs else 'Viewpoint process'
+            self.sta.status_msg(msg, self.cfg.params[self.cfg.opt_prnt])
+
+        args = self.remove_proc_keys(kwargs, data_type=list)
 
         try:
             for j in range(self._vp_img_arr.shape[0]):
@@ -63,8 +83,9 @@ class LfpViewpoints(object):
                     self._vp_img_arr[j, i, :, :, :] = fun(self._vp_img_arr[j, i, :, :, :], *args)
 
                     # progress update
-                    percent = (j*self._vp_img_arr.shape[1]+i+1)/np.dot(*self._vp_img_arr.shape[:2])*100
-                    self.sta.progress(percent, self.cfg.params[self.cfg.opt_prnt])
+                    percent = (j*self._vp_img_arr.shape[1]+i+1)/np.dot(*self._vp_img_arr.shape[:2])
+                    percent = percent / iter_tot + iter_num / iter_tot
+                    self.sta.progress(percent*100, self.cfg.params[self.cfg.opt_prnt])
 
                 # check interrupt status
                 if self.sta.interrupt:
@@ -151,11 +172,16 @@ class LfpViewpoints(object):
     def proc_ax_propagate_2d(self, fun, **kwargs):
         ''' apply provided function along axes '''
 
-        # status message handling
-        msg = kwargs['msg'] if 'msg' in kwargs else 'Viewpoint process'
-        self.sta.status_msg(msg, self.cfg.params[self.cfg.opt_prnt])
+        # percentage indices for tasks having sub-processes
+        iter_num = kwargs['iter_num'] if 'iter_num' in kwargs else 0
+        iter_tot = kwargs['iter_tot'] if 'iter_tot' in kwargs else 1
 
-        kwargs = dict((key, kwargs[key]) for key in kwargs if key not in ('cfg', 'sta', 'msg'))
+        # status message handling
+        if iter_num == 0:
+            msg = kwargs['msg'] if 'msg' in kwargs else 'Viewpoint process'
+            self.sta.status_msg(msg, self.cfg.params[self.cfg.opt_prnt])
+
+        kwargs = self.remove_proc_keys(kwargs, data_type=dict)
 
         self.proc_ax_propagate_1d(fun, idx=0, axis=0, **kwargs)
 
@@ -165,8 +191,9 @@ class LfpViewpoints(object):
             self.proc_ax_propagate_1d(fun, idx=j, axis=1, **kwargs)
 
             # progress update
-            percent = (j + self._C + 1) / self._vp_img_arr.shape[0] * 100
-            self.sta.progress(percent, self.cfg.params[self.cfg.opt_prnt])
+            percent = (j + self._C + 1) / self._vp_img_arr.shape[0]
+            percent = percent / iter_tot + iter_num / iter_tot
+            self.sta.progress(percent*100, self.cfg.params[self.cfg.opt_prnt])
 
             # check interrupt status
             if self.sta.interrupt:
