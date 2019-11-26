@@ -26,6 +26,12 @@ from plenopticam.lfp_extractor.lfp_rearranger import LfpRearranger
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam import misc
 
+from plenopticam.lfp_extractor import LfpExporter
+from plenopticam.lfp_extractor.lfp_contrast import LfpContrast
+from plenopticam.misc.hist_eq import HistogramEqualizer
+from plenopticam.lfp_extractor.lfp_hotpixels import LfpHotPixels
+from plenopticam.lfp_extractor.lfp_color_eq import LfpColorEqualizer
+
 
 class LfpExtractor(object):
 
@@ -43,11 +49,10 @@ class LfpExtractor(object):
         self.cfg.load_cal_data()
 
         # micro image crop
-        if not self.sta.interrupt:
-            lfp_obj = LfpCropper(lfp_img_align=self._lfp_img_align, cfg=self.cfg, sta=self.sta)
-            lfp_obj.main()
-            self._lfp_img_align = lfp_obj.lfp_img_align
-            del lfp_obj
+        lfp_obj = LfpCropper(lfp_img_align=self._lfp_img_align, cfg=self.cfg, sta=self.sta)
+        lfp_obj.main()
+        self._lfp_img_align = lfp_obj.lfp_img_align
+        del lfp_obj
 
         # viewpoint images
         if self.cfg.params[self.cfg.opt_view] and not self.sta.interrupt:
@@ -55,5 +60,47 @@ class LfpExtractor(object):
             lfp_obj.main()
             self.vp_img_arr = lfp_obj.vp_img_arr
             del lfp_obj
+
+        # histogram equalization
+        if self.cfg.params[self.cfg.opt_cont] and not self.sta.interrupt:
+            obj = HistogramEqualizer(img=self.vp_img_arr)
+            self.vp_img_arr = obj.lum_eq()
+            #self.vp_img_arr = obj.awb_eq()
+            del obj
+
+        # remove hot pixels if option is set
+        if self.cfg.params[self.cfg.opt_hotp] and not self.sta.interrupt:
+            obj = LfpHotPixels(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
+            obj.main()
+            self.vp_img_arr = obj.vp_img_arr
+            del obj
+
+        # color equalization
+        if self.cfg.params[self.cfg.opt_colo] and not self.sta.interrupt:
+            obj = LfpColorEqualizer(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
+            obj.main()
+            self.vp_img_arr = obj._vp_img_arr
+            del obj
+
+        if not self.sta.interrupt:
+            obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.002, p_hi=0.998)
+            # automatic white balance
+            if self.cfg.params[self.cfg.opt_awb_]:
+                obj.auto_wht_bal()
+                obj.p_lo = 0
+                obj.p_hi = 1
+
+            # automatic saturation
+            if self.cfg.params[self.cfg.opt_sat_]:
+                obj.sat_bal()
+
+            self.vp_img_arr = obj.vp_img_arr
+            del obj
+
+        # write viewpoint data to hard drive
+        if self.cfg.params[self.cfg.opt_view] and not self.sta.interrupt:
+            obj = LfpExporter(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
+            obj.write_viewpoint_data()
+            del obj
 
         return True
