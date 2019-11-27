@@ -86,7 +86,8 @@ class LfpShiftAndSum(LfpViewpoints):
         self._vp_img_arr /= patch_len
 
         # iterate through refocusing parameter a
-        a_list = self.cfg.params[self.cfg.ran_refo]
+        ran_refo = self.cfg.params[self.cfg.ran_refo]
+        a_list = tuple([factor*a for a in ran_refo]) if self.cfg.params[self.cfg.opt_refi] else ran_refo
         for a in range(*a_list):
 
             overlap = abs(a) * (patch_len - 1)
