@@ -41,7 +41,7 @@ class LfpRefocuser(LfpViewpoints):
             self.shift_and_sum()
         # scheimpflug focus
         if self.cfg.params[self.cfg.opt_pflu] != 'off':
-            self.scheimplfug()
+            self.scheimpflug()
 
     def shift_and_sum(self):
 
