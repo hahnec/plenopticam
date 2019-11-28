@@ -100,7 +100,7 @@ class LfpViewpoints(object):
 
         # parameter initialization
         pattern = 'circle' if pattern is None else pattern
-        r = r if r is not None else int(max(self.cfg.calibs[self.cfg.ptc_mean])+1)//4
+        r = r if r is not None else self._C
         mask = [[0] * arr_dims[1] for _ in range(arr_dims[0])]
 
         if pattern == 'square':
@@ -122,12 +122,12 @@ class LfpViewpoints(object):
 
         return coords_table
 
-    def reorder_vp_arr(self, pattern=None):
+    def reorder_vp_arr(self, pattern=None, lf_radius=None):
 
         # parameter initialization
         pattern = 'circle' if pattern is None else pattern
         arr_dims = self.vp_img_arr.shape[:2]
-        move_coords = self.get_move_coords(pattern, arr_dims)
+        move_coords = self.get_move_coords(pattern, arr_dims, r=lf_radius)
 
         vp_img_set = []
         for coords in move_coords:
