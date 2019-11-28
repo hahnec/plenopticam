@@ -110,6 +110,11 @@ class LfpExporter(LfpViewpoints):
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
         refo_stack = Normalizer(np.asarray(self._refo_stack)).uint16_norm()
+        if self.cfg.params[self.cfg.opt_refi]:
+            a_list = np.arange(*np.array(self.cfg.params[self.cfg.ran_refo]) * self.cfg.params[self.cfg.ptc_leng])
+            a_list = a_list / self.cfg.params[self.cfg.ptc_leng]
+        else:
+            a_list = range(*self.cfg.params[self.cfg.ran_refo])
 
         # create folder
         string = 'subpixel_' if self.cfg.params[self.cfg.opt_refi] else ''
@@ -119,7 +124,7 @@ class LfpExporter(LfpViewpoints):
         for i, refo_img in enumerate(refo_stack):
 
             # get depth plane number for filename
-            a = range(*self.cfg.params[self.cfg.ran_refo])[i]
+            a = a_list[i]
 
             self.save_refo_slice(a, refo_img, folder_path, file_type=file_type)
 
