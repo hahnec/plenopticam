@@ -115,7 +115,6 @@ def main():
     # create config object
     cfg = PlenopticamConfig()
     cfg.default_values()
-    cfg.reset_values()
 
     # parse options
     cfg = parse_options(sys.argv[1:], cfg)
