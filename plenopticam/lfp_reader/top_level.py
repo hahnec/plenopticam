@@ -23,12 +23,13 @@ __license__ = """
 
 # local imports
 from plenopticam import misc
-from plenopticam.misc.errors import LfpTypeError
+from plenopticam.misc.errors import LfpTypeError, PlenopticamError
 from plenopticam.lfp_reader.lfp_decoder import LfpDecoder
 
 import os
 
 SUPP_FILE_EXT = ('.raw', '.lfp', '.lfr') + tuple('.c.' + str(num) for num in (0, 1, 2, 3))
+
 
 class LfpReader(object):
 
@@ -91,7 +92,7 @@ class LfpReader(object):
                         misc.save_img_file(misc.Normalizer(self._lfp_img).uint16_norm(), fp, file_type='tiff')
                         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
 
-                except FileNotFoundError as e:
+                except FileNotFoundError:
                     # print status
                     self.sta.status_msg('{0} not found'.format(os.path.basename(self._lfp_path)), self.cfg.params[self.cfg.opt_prnt])
                     self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
@@ -100,6 +101,8 @@ class LfpReader(object):
                     # unrecognized LFP file type
                     if not obj.json_dict:
                         raise LfpTypeError(e)
+                    else:
+                        raise PlenopticamError(e)
         else:
             try:
                 # read and decode generic image file type
