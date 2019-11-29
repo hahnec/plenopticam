@@ -29,6 +29,7 @@ except ImportError:
     raise ImportError('Please install pillow.')
 
 from plenopticam.misc.normalizer import Normalizer
+from plenopticam.misc.errors import PlenopticamError
 
 PORTISHEAD = b"x\x9cm\x8f\xe1\n\xc0 \x08\x84\xdf\xffEu\x8c\x84`kBM\x9d\x95\xc4`\xbb?\xde\xa7R\x9e\x99K\xa55Q\x0b)" + \
              b"\x13\x02 \xf1\xecH\x86P\x96>]\xe8\r\xdf\xe0nRJ[\xaflJ^P\xb8\xdc\xc9\r\xa9\xe0\xe0\x1d\xcek\x98\x06" + \
@@ -102,6 +103,8 @@ def save_gif(img_set, duration=.1, fp='', fn='default'):
         # only use pillow for gif animation if necessary as it yields poorer image quality
         pil_arr = [Image.fromarray(place_dnp(img)) for img in img_set]
         pil_arr[0].save(os.path.join(fp, fn), save_all=True, append_images=pil_arr[1:], duration=duration, loop=0)
+    except PermissionError as e:
+        raise PlenopticamError(e)
 
     return True
 
