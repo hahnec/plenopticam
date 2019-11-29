@@ -54,6 +54,7 @@ def usage():
     print("--con                             Contrast automation flag")
     print("--hot                             Hot pixel treatment flag")
     print("--sat                             Saturation automation flag")
+    print("--rm                              Override output folder flag")
 
     print("-h,            --help             Print this help message")
     print("")
@@ -66,7 +67,7 @@ def parse_options(argv, cfg):
     try:
         opts, args = getopt.getopt(argv, "ghf:c:p:r:",
                                         ["gui", "help", "file=", "cali=", "patch=", "refo=", "refi",
-                                         "vgn", "awb", "con", "hot", "sat"])
+                                         "vgn", "awb", "con", "hot", "sat", "rm"])
     except getopt.GetoptError as e:
         print(e)
         sys.exit(2)
@@ -100,7 +101,8 @@ def parse_options(argv, cfg):
                 cfg.params[cfg.opt_hotp] = True
             if opt == "--sat":
                 cfg.params[cfg.opt_sat_] = True
-
+            if opt == "--rm":
+                cfg.params[cfg.dir_remo] = True
     # create dictionary containing all parameters for the light field
     return cfg
 
@@ -143,6 +145,9 @@ def main():
         # change path to next filename
         cfg.params[cfg.lfp_path] = os.path.join(os.path.dirname(cfg.params[cfg.lfp_path]), lfp_filename)
         sta.status_msg(msg=cfg.params[cfg.lfp_path], opt=cfg.params[cfg.opt_prnt])
+
+        # remove output folder if option is set
+        misc.rmdir_p(cfg.exp_path) if cfg.params[cfg.dir_remo] else None
 
         try:
             # decode light field image
