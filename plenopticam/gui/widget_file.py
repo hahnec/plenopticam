@@ -40,14 +40,16 @@ class FileWidget(tk.Frame):
         self.cfg = parent.cfg
 
         # supported file extensions
-        LFP_EXTS = [('Supported files', ' '.join(LYT_LFP_EXTS+GENERIC_EXTS)),
-                    ('Lytro files', ' '.join(LYT_LFP_EXTS)),
-                    ('Generic image files', ' '.join(GENERIC_EXTS)),
-                    ('All files', ' '.join(ALL_EXTS))]
-        CAL_EXTS = [('Supported files', ' '.join(LYT_CAL_EXTS+GENERIC_EXTS)),
-                    ('Lytro files', ' '.join(LYT_CAL_EXTS)),
-                    ('Generic image files', ' '.join(GENERIC_EXTS)),
-                    ('All files', ' '.join(ALL_EXTS))]
+        MERGE_LFP_EXTS = LYT_LFP_EXTS+GENERIC_EXTS
+        MERGE_CAL_EXTS = LYT_CAL_EXTS+GENERIC_EXTS
+        LFP_EXTS = [('Supported files', ' '.join(MERGE_LFP_EXTS+[x.upper() for x in MERGE_LFP_EXTS])),
+                    ('Lytro files', ' '.join(LYT_LFP_EXTS+[x.upper() for x in LYT_LFP_EXTS])),
+                    ('Generic image files', ' '.join(GENERIC_EXTS+[x.upper() for x in GENERIC_EXTS])),
+                    ('All files', ' '.join(ALL_EXTS+[x.upper() for x in ALL_EXTS]))]
+        CAL_EXTS = [('Supported files', ' '.join(MERGE_CAL_EXTS+[x.upper() for x in MERGE_CAL_EXTS])),
+                    ('Lytro files', ' '.join(LYT_CAL_EXTS+[x.upper() for x in LYT_CAL_EXTS])),
+                    ('Generic image files', ' '.join(GENERIC_EXTS+[x.upper() for x in GENERIC_EXTS])),
+                    ('All files', ' '.join(ALL_EXTS+[x.upper() for x in ALL_EXTS]))]
 
         # instantiate light field path widget
         tk.Label(self, text='Light field image: ').grid(row=0, column=0, sticky='W')
