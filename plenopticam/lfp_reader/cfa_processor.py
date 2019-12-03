@@ -60,22 +60,24 @@ class CfaProcessor(object):
         # compose bayer image from input image buffer
         self.comp_bayer()
 
+        # auto white balance
+        if 'awb' in self.cfg.lfpimg.keys():
+            self._bay_img = self.correct_awb(self._bay_img, self.cfg.lfpimg['bay'], gains=self.cfg.lfpimg['awb'])
+            self._reshape_bayer()
+            self._bay_img = self.desaturate_clipped(self._bay_img, gains=self.cfg.lfpimg['awb'])
+            self._reshape_bayer()
+
         # debayer to rgb image
         if 'bay' in self.cfg.lfpimg.keys() and len(self._bay_img.shape) == 2:
             self.bay2rgb()
 
-        # auto white balance
-        if 'awb' in self.cfg.lfpimg.keys():
-            self._rgb_img = self.correct_awb(self._rgb_img, self.cfg.lfpimg['bay'], gains=self.cfg.lfpimg['awb'])
-            self._rgb_img = self.desaturate_clipped(self._rgb_img, gains=self.cfg.lfpimg['awb'])
+        # color matrix correction
+        if 'ccm' in self.cfg.lfpimg.keys():
+            self._rgb_img = self.correct_color(self._rgb_img, ccm_mat=np.reshape(self.cfg.lfpimg['ccm'], (3, 3)).T)
 
         # perform gamma correction
         if 'gam' in self.cfg.lfpimg.keys():
             self._rgb_img = self.correct_gamma(self._rgb_img, gamma=self.cfg.lfpimg['gam'])
-
-        # color matrix correction
-        if 'ccm' in self.cfg.lfpimg.keys():
-            self._rgb_img = self.correct_color(self._rgb_img, ccm_mat=np.reshape(self.cfg.lfpimg['ccm'], (3, 3)).T)
 
         # convert to uint16
         self._rgb_img = misc.Normalizer(self._rgb_img).uint16_norm()
@@ -111,7 +113,7 @@ class CfaProcessor(object):
             self._bay_img[1::4] = t1        # red
             self._bay_img[2::4] = t2        # green-blue
             self._bay_img[3::4] = t3        # blue
-#
+
         elif self._bit_pac == 12:
 
             t0 = np.array(self._img_buf[0::3], 'uint16')
@@ -129,8 +131,8 @@ class CfaProcessor(object):
         # rearrange column vector to 2-D image array
         self._bay_img = np.reshape(self._bay_img, (self._shape[1], self._shape[0]))
 
-        # normalize to uint16 since maximum pixel data is 10-bit
-        self._bay_img = self._bay_img.astype('uint16')
+        # convert to float
+        self._bay_img = self._bay_img.astype('float')
 
         return True
 
@@ -218,21 +220,28 @@ class CfaProcessor(object):
         return img_arr
 
     @staticmethod
-    def desaturate_clipped(img_arr, gains=None, thresh=.96):
+    def desaturate_clipped(img_arr, gains=None, bay_pattern="GRBG", thresh=.96):
 
         # skip process if gains not set
-        if gains is not None:
+        if gains is not None and bay_pattern is "GRBG":
             b, r, g1, g2 = gains
         else:
            return img_arr
 
-        orig = (img_arr/np.array([r, g1, b]))
+        orig = np.zeros(img_arr.shape)
+        if len(img_arr.shape) == 3 and img_arr.shape[-1] == 3:
+            orig = (img_arr/np.array([r, g1, b]))
+
+        elif len(img_arr.shape) == 3 and img_arr.shape[-1] == 4:
+            #orig = (img_arr / np.array([r, g1, g2, b]))
+            orig = (img_arr / np.array([g1, r, b, g2]))
+
         beta = orig / np.amax(orig, axis=2)[..., np.newaxis]
-        weights = beta * np.array([r, g1, b])
+        weights = beta * np.array([r, g1, b]) if img_arr.shape[-1] == 3 else beta * np.array([g1, r, b, g2])#r, g1, g2, b])
         weights[weights < 1] = 1
 
-        mask = np.zeros(img_arr.shape[:2])
-        mask[np.amax(orig, axis=2) >= orig.max()*thresh] = 1
+        mask = np.zeros(orig.shape[:2])
+        mask[np.amax(orig, axis=2) >= orig.max() * thresh] = 1
 
         img_arr[mask > 0] /= weights[mask > 0]
 
