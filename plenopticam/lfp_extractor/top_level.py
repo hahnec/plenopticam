@@ -83,12 +83,14 @@ class LfpExtractor(object):
             del obj
 
         if not self.sta.interrupt:
-            obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.002, p_hi=0.998)
+            obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.005, p_hi=0.999)
             # automatic white balance
             if self.cfg.params[self.cfg.opt_awb_]:
                 obj.auto_wht_bal()
-                obj.p_lo = 0
-                obj.p_hi = 1
+            else:
+                obj.channel_bal()
+            obj.p_lo = 0
+            obj.p_hi = 1
 
             # automatic saturation
             if self.cfg.params[self.cfg.opt_sat_]:

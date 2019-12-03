@@ -34,6 +34,8 @@ class LfpContrast(LfpViewpoints):
         self.p_lo = p_lo if p_lo is not None else 0.0
         self.p_hi = p_hi if p_hi is not None else 1.0
 
+        self.ref_img = kwargs['ref_img'] if 'ref_img' in kwargs else self.central_view
+
         # internal variables
         self._contrast, self._brightness = (1., 1.)
 
@@ -54,19 +56,25 @@ class LfpContrast(LfpViewpoints):
 
     def post_lum(self):
 
-        self.proc_vp_arr(self.stretch_lum_vp, ch=0, msg='contrast eq')
+        self.proc_vp_arr(self.lum_norm, ch=0, msg='contrast eq')
 
-    def stretch_lum_vp(self, img, ch=None):
+    def lum_norm(self, img, ch=None, dtype=None):
 
+        # set default channel
         ch = ch if ch is not None else 0
 
+        # set default data type
+        dtype = img.dtype if dtype is None else dtype
+
+        # RGB to YUV conversion
         img = misc.clr_spc_conv.yuv_conv(img)
-        #img = misc.hsv_conv(img)
-        obj = misc.HistogramEqualizer(img=img, ch=ch)
-        obj.cdf_from_img()
-        obj.correct_histeq()
-        img = obj._ref_img
-        del obj
+
+        # normalization of Y (luminance channel) for given data type
+        img[..., ch] = misc.Normalizer(img=img[..., ch],
+                                       min=np.percentile(img[..., ch], self.p_lo*100),
+                                       max=np.percentile(img[..., ch], self.p_hi*100), dtype=dtype).type_norm()
+
+        # YUV to RGB conversion
         img = misc.clr_spc_conv.yuv_conv(img, inverse=True)
 
         return img
@@ -77,16 +85,53 @@ class LfpContrast(LfpViewpoints):
         self.sta.status_msg(msg='Auto white balance', opt=self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, opt=self.cfg.params[self.cfg.opt_prnt])
 
-        ch_num = self.vp_img_arr.shape[-1] if len(self.vp_img_arr.shape) > 4 else 1
+        ch_num = self.vp_img_arr.shape[-1] if len(self.vp_img_arr.shape) > 4 else 3
         for i in range(ch_num):
             if method is None:
-                ref_ch = self.central_view[..., i]
+
+                # channel selection
+                ref_ch = self.ref_img[..., i]
                 img_ch = self.vp_img_arr[..., i]
+
+                # normalization of color channel
                 self.vp_img_arr[..., i] = misc.Normalizer(img=img_ch,
                                                           min=np.percentile(ref_ch, self.p_lo*100),
                                                           max=np.percentile(ref_ch, self.p_hi*100)).uint16_norm()
             else:
-                self.set_stretch(ref_ch=self.central_view[..., i])
+                # brightness and contrast method
+                self.set_stretch(ref_ch=self.ref_img[..., i])
+                self.apply_stretch(ch=i)
+
+            # status update
+            self.sta.progress((i+1)/ch_num*100, opt=self.cfg.params[self.cfg.opt_prnt])
+
+        return True
+
+    def channel_bal(self, method=None):
+
+        # status update
+        self.sta.status_msg(msg='Auto white balance', opt=self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(None, opt=self.cfg.params[self.cfg.opt_prnt])
+
+        ch_num = self.vp_img_arr.shape[-1] if len(self.vp_img_arr.shape) > 4 else 3
+
+        min = float('Inf')
+        max = 0.
+        for i in range(ch_num):
+            min = np.min([min, np.percentile(self.ref_img[..., i], self.p_lo * 100)])
+            max = np.max([max, np.percentile(self.ref_img[..., i], self.p_hi * 100)])
+
+        for i in range(ch_num):
+            if method is None:
+
+                # channel selection
+                img_ch = self.vp_img_arr[..., i]
+
+                # normalization of color channel
+                self.vp_img_arr[..., i] = misc.Normalizer(img=img_ch, min=min, max=max).uint16_norm()
+            else:
+                # brightness and contrast method
+                self.set_stretch(ref_ch=self.ref_img[..., i])
                 self.apply_stretch(ch=i)
 
             # status update
@@ -144,7 +189,7 @@ class LfpContrast(LfpViewpoints):
         # convert to float
         f = img[..., ch].astype(np.float32)
 
-        # perform auto contrast (by default: "value" channel only)
+        # perform auto contrast (by default: "lum" channel only)
         img[..., ch] = self._contrast * f + self._brightness
 
         # clip to input extrema to remove contrast outliers
@@ -155,7 +200,7 @@ class LfpContrast(LfpViewpoints):
 
     def set_stretch_lum(self, img=None):
 
-        img = img if img is not None else self.central_view
+        img = img if img is not None else self.ref_img
 
         # use luminance channel for parameter analysis
         ref_img = misc.clr_spc_conv.yuv_conv(img)
@@ -180,11 +225,11 @@ class LfpContrast(LfpViewpoints):
     def set_stretch_hsv(self):
 
         # use luminance channel for parameter analysis
-        ref_img = misc.clr_spc_conv.hsv_conv(self.central_view)
+        ref_img = misc.clr_spc_conv.hsv_conv(self.ref_img)
         self.set_stretch(ref_ch=ref_img[..., 1]*(2**16-1))
 
     def apply_stretch_hsv(self, img):
-        ''' contrast and brightness rectification to luminance channel of provided RGB image '''
+        ''' saturation '''
 
         # color model conversion
         hsv = misc.clr_spc_conv.hsv_conv(img)
