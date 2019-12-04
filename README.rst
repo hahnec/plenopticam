@@ -24,7 +24,7 @@ Installation
 |
 
 * via pip:
-    1. install with ``$ pip install plenopticam``
+    1. install with ``$ pip3 install plenopticam``
     2. type ``$ plenopticam -g`` to the command line once installation finished
 
 |
