@@ -30,6 +30,7 @@ import os
 from plenopticam.lfp_calibrator import LfpCalibrator
 from plenopticam.lfp_aligner import LfpAligner
 from plenopticam.lfp_extractor import LfpExtractor
+from plenopticam.lfp_refocuser import LfpRefocuser
 from plenopticam.cfg.cfg import PlenopticamConfig
 from plenopticam.misc import PlenopticamStatus, mkdir_p, load_img_file
 
@@ -136,7 +137,12 @@ class PlenoptiCamTester(unittest.TestCase):
 
             # test light field extraction
             lfp_obj = LfpExtractor(lfp_img_align=lfp_img, cfg=cfg, sta=sta)
-            ret_val = lfp_obj.main()
+            lfp_obj.main()
+            vp_img_arr = lfp_obj.vp_img_arr
+            del lfp_obj
+
+            lfp_obj = LfpRefocuser(vp_img_arr=vp_img_arr, cfg=cfg, sta=sta)
+            lfp_obj.main()
             del lfp_obj
 
             # assertion
