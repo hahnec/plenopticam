@@ -1,6 +1,7 @@
 import numpy as np
 from plenopticam import misc
 
+
 class Normalizer(object):
 
     def __init__(self, img=None, min=None, max=None, dtype=None, sta=None):
