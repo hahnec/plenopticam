@@ -67,6 +67,10 @@ class CfaProcessor(object):
             self._bay_img = self.desaturate_clipped(self._bay_img, gains=self.cfg.lfpimg['awb'])
             self._reshape_bayer()
 
+        from plenopticam.lfp_extractor.lfp_hotpixels import LfpHotPixels
+        obj = LfpHotPixels(cfg=self.cfg, sta=self.sta)
+        self._bay_img = obj.hotpixel_candidates_bayer(bay_img=self._bay_img.copy(), n=9, sig_lev=3.5)
+
         # debayer to rgb image
         if 'bay' in self.cfg.lfpimg.keys() and len(self._bay_img.shape) == 2:
             self.bay2rgb()
@@ -153,6 +157,7 @@ class CfaProcessor(object):
         # clip intensities above and below previous limits (removing dead and hot outliers yields much better contrast)
         self._rgb_img[self._rgb_img < self._bay_img.min()] = self._bay_img.min()
         self._rgb_img[self._rgb_img > self._bay_img.max()] = self._bay_img.max()
+        #self._rgb_img = misc.Normalizer(img=self._rgb_img).uint16_norm()
 
         # print "Progress: Done!"
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
@@ -233,11 +238,10 @@ class CfaProcessor(object):
             orig = (img_arr/np.array([r, g1, b]))
 
         elif len(img_arr.shape) == 3 and img_arr.shape[-1] == 4:
-            #orig = (img_arr / np.array([r, g1, g2, b]))
             orig = (img_arr / np.array([g1, r, b, g2]))
 
         beta = orig / np.amax(orig, axis=2)[..., np.newaxis]
-        weights = beta * np.array([r, g1, b]) if img_arr.shape[-1] == 3 else beta * np.array([g1, r, b, g2])#r, g1, g2, b])
+        weights = beta * np.array([r, g1, b]) if img_arr.shape[-1] == 3 else beta * np.array([g1, r, b, g2])
         weights[weights < 1] = 1
 
         mask = np.zeros(orig.shape[:2])
