@@ -23,6 +23,7 @@ __license__ = """
 from plenopticam import misc
 from plenopticam.lfp_extractor import LfpViewpoints
 
+import os
 from scipy.ndimage import median_filter
 from scipy.signal import medfilt
 import numpy as np
@@ -123,13 +124,12 @@ class LfpHotPixels(LfpViewpoints):
         # status message
         self.sta.status_msg('Hot pixel removal', self.cfg.params[self.cfg.opt_prnt])
 
-        gray_img = np.zeros(bay_img[::2, ::2].shape)
-        for i in range(2):
-            for j in range(2):
-                ch = bay_img[i::2, j::2].copy()/bay_img[i::2, j::2].max()
-                gray_img += ch/4
+        #gray_img = np.zeros(bay_img[::2, ::2].shape)
+        #for i in range(2):
+        #    for j in range(2):
+        #        ch = bay_img[i::2, j::2].copy()/bay_img[i::2, j::2].max()
+        #        gray_img += ch/4
 
-        import os
         #misc.save_img_file(gray_img, file_path=os.path.join(self.cfg.exp_path, 'gray_img.png'))
 
         for i in range(2):
@@ -142,11 +142,12 @@ class LfpHotPixels(LfpViewpoints):
                 misc.save_img_file(bay_img[i::2, j::2], file_path=os.path.join(self.cfg.exp_path, str(i)+str(j)+'.png'))
 
                 # deduct gray image
+                gray_img = medfilt(bay_img[i::2, j::2].copy(), kernel_size=(3, 3))
                 m_img = bay_img[i::2, j::2].copy()/bay_img[i::2, j::2].max() - gray_img.copy()/gray_img.max()
 
                 misc.save_img_file(m_img, file_path=os.path.join(self.cfg.exp_path, str(i) + str(j) + 'm_img.png'))
 
-                new_img = self.hotpixel_candidates(channel=bay_img[i::2, j::2].copy(), ref_img=m_img, n=n, sig_lev=sig_lev+1)
+                new_img = self.hotpixel_candidates(channel=bay_img[i::2, j::2].copy(), ref_img=m_img, n=n, sig_lev=sig_lev+2)
 
                 # misc.save_img_file(new_img, file_path=os.path.join(self.cfg.exp_path, str(i) + str(j) + '_post.png'))
                 diff_img = bay_img[i::2, j::2].copy() - new_img
@@ -162,7 +163,7 @@ class LfpHotPixels(LfpViewpoints):
 
         return bay_img
 
-    def hotpixel_candidates(self, channel, ref_img=None, n=2, sig_lev=4, perc=0):
+    def hotpixel_candidates(self, channel, ref_img=None, n=2, sig_lev=4):
 
         ref_img = channel if ref_img is None else ref_img
 
@@ -174,22 +175,23 @@ class LfpHotPixels(LfpViewpoints):
 
         k = np.zeros(ref_img.shape)
         k[(ref_img < m_val - s_val * sig_lev) | (ref_img > m_val + s_val * sig_lev)] = 1
-        misc.save_img_file(k, file_path=self.cfg.exp_path+'candidates.png')
+        misc.save_img_file(k, file_path=os.path.join(self.cfg.exp_path+'candidates.png'))
 
         for num, idx in enumerate(candidates):
 
             j, i = idx
             win = channel[j-n:j+n+1, i-n:i+n+1]
 
-           # num_hi = len(win[win > channel[j, i]*(1-perc)]) if j > n and i > n else float('inf')
-           # num_lo = len(win[win < channel[j, i]*(1+perc)]) if j > n and i > n else float('inf')
-           # if num_hi < n//2 or num_lo < n//2:
+            if win.size > 0:
+                m_val = np.mean(win)
+                s_val = np.std(win)
+                if channel[j, i] < m_val - s_val * sig_lev or channel[j, i] > m_val + s_val * sig_lev:
 
-            m_val = np.mean(win) if win.size > 0 else 0
-            s_val = np.std(win) if win.size > 0 else 0
-            if channel[j, i] < m_val - s_val * sig_lev or channel[j, i] > m_val + s_val * sig_lev:
+                    #num_hi = len(win[win > m_val + s_val * (sig_lev-2)])
+                    #num_lo = len(win[win < m_val - s_val * (sig_lev-2)])
+                    #if num_hi < n//2 or num_lo < n//2:
 
-                # replace outlier by average of all directly adjacent pixels
-                channel[j, i] = (sum(sum(channel[j-1:j+2, i-1:i+2])) - channel[j, i]) / 8.
+                    # replace outlier by average of all directly adjacent pixels
+                    channel[j, i] = (sum(sum(channel[j-1:j+2, i-1:i+2])) - channel[j, i]) / 8.
 
         return channel
