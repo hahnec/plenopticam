@@ -9,12 +9,13 @@ import os
 import pickle
 from scipy.interpolate import interp2d, RectBivariateSpline, griddata
 
+
 class LfpResampler(LfpMicroLenses):
 
     def __init__(self, *args, **kwargs):
         super(LfpResampler, self).__init__(*args, **kwargs)
 
-        self._METHOD = kwargs['method'] if 'method' in kwargs else 'cubic'
+        self._METHOD = kwargs['method'] if 'method' in kwargs else None
 
         # output variable
         if self._lfp_img is not None:
@@ -55,7 +56,7 @@ class LfpResampler(LfpMicroLenses):
             misc.save_img_file(self._lfp_out, os.path.join(self.cfg.exp_path, 'lfp_img_align.tiff'))
 
     @staticmethod
-    def _patch_align(window, mic, method='linear'):
+    def _patch_align(window, mic, method=None):
 
         # initialize patch
         patch = np.zeros(window.shape)
@@ -63,8 +64,11 @@ class LfpResampler(LfpMicroLenses):
         for p in range(window.shape[2]):
 
             # careful: interp2d() takes x first and y second
-            fun = interp2d(range(window.shape[1]), range(window.shape[0]), window[:, :, p], kind=method, copy=False)
-            #fun = RectBivariateSpline(range(window.shape[1]), range(window.shape[0]), window[:, :, p])
+            if method is None:
+                fun = RectBivariateSpline(range(window.shape[1]), range(window.shape[0]), window[:, :, p])
+            else:
+                fun = interp2d(range(window.shape[1]), range(window.shape[0]), window[:, :, p], kind=method, copy=False)
+
             patch[:, :, p] = fun(np.arange(window.shape[1])+mic[1]-rint(mic[1]),
                                  np.arange(window.shape[0])+mic[0]-rint(mic[0]))
 
