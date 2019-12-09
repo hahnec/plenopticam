@@ -108,6 +108,8 @@ class LfpReader(object):
                 # read and decode generic image file type
                 self._lfp_img = misc.load_img_file(self._lfp_path)
             except TypeError as e:
+                self.sta.status_msg('File type not recognized')
+                self.sta.interrupt = True
                 raise LfpTypeError(e)
 
             try:
