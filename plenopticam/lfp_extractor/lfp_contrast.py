@@ -107,10 +107,10 @@ class LfpContrast(LfpViewpoints):
 
         return True
 
-    def channel_bal(self, method=None):
+    def channel_bal(self):
 
         # status update
-        self.sta.status_msg(msg='Auto white balance', opt=self.cfg.params[self.cfg.opt_prnt])
+        self.sta.status_msg(msg='Contrast balance', opt=self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, opt=self.cfg.params[self.cfg.opt_prnt])
 
         ch_num = self.vp_img_arr.shape[-1] if len(self.vp_img_arr.shape) > 4 else 3
@@ -121,21 +121,11 @@ class LfpContrast(LfpViewpoints):
             min = np.min([min, np.percentile(self.ref_img[..., i], self.p_lo * 100)])
             max = np.max([max, np.percentile(self.ref_img[..., i], self.p_hi * 100)])
 
-        for i in range(ch_num):
-            if method is None:
+        # normalization of color channel
+        self.vp_img_arr = misc.Normalizer(img=self.vp_img_arr, min=min, max=max).uint16_norm()
 
-                # channel selection
-                img_ch = self.vp_img_arr[..., i]
-
-                # normalization of color channel
-                self.vp_img_arr[..., i] = misc.Normalizer(img=img_ch, min=min, max=max).uint16_norm()
-            else:
-                # brightness and contrast method
-                self.set_stretch(ref_ch=self.ref_img[..., i])
-                self.apply_stretch(ch=i)
-
-            # status update
-            self.sta.progress((i+1)/ch_num*100, opt=self.cfg.params[self.cfg.opt_prnt])
+        # status update
+        self.sta.progress((i+1)/ch_num*100, opt=self.cfg.params[self.cfg.opt_prnt])
 
         return True
 
