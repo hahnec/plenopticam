@@ -163,8 +163,7 @@ class CfaProcessor(object):
                                         min=np.percentile(self._rgb_img, .1), max=np.percentile(self._rgb_img, 99.9)
                                         ).type_norm(lim_min=self._bay_img.min(), lim_max=self._bay_img.max())
 
-
-        # print "Progress: Done!"
+        # update status message
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
 
         return True
@@ -245,13 +244,14 @@ class CfaProcessor(object):
         elif len(img_arr.shape) == 3 and img_arr.shape[-1] == 4:
             orig = (img_arr / np.array([g1, r, b, g2]))
 
+        # identify clipped pixels
         beta = orig / np.amax(orig, axis=2)[..., np.newaxis]
         weights = beta * np.array([r, g1, b]) if img_arr.shape[-1] == 3 else beta * np.array([g1, r, b, g2])
         weights[weights < 1] = 1
-
         mask = np.zeros(orig.shape[:2])
         mask[np.amax(orig, axis=2) >= orig.max()] = 1
 
+        # de-saturate clipped values
         img_arr[mask > 0] /= weights[mask > 0]
 
         return img_arr
