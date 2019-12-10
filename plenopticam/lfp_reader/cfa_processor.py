@@ -22,6 +22,7 @@ __license__ = """
 
 
 from plenopticam import misc
+from plenopticam.lfp_reader.cfa_hot_pixels import CfaHotPixels
 
 # external libs
 import numpy as np
@@ -67,9 +68,9 @@ class CfaProcessor(object):
             self._bay_img = self.desaturate_clipped(self._bay_img, gains=self.cfg.lfpimg['awb'])
             self._reshape_bayer()
 
-        from plenopticam.lfp_extractor.lfp_hotpixels import LfpHotPixels
-        obj = LfpHotPixels(cfg=self.cfg, sta=self.sta)
-        self._bay_img = obj.hotpixel_candidates_bayer(bay_img=self._bay_img.copy(), n=9, sig_lev=3.5)
+        # hot pixel correction
+        obj = CfaHotPixels(cfg=self.cfg, sta=self.sta)
+        self._bay_img = obj.rectify_candidates_bayer(bay_img=self._bay_img.copy(), n=9, sig_lev=3.5)
 
         # debayer to rgb image
         if 'bay' in self.cfg.lfpimg.keys() and len(self._bay_img.shape) == 2:

@@ -29,7 +29,7 @@ from plenopticam import misc
 from plenopticam.lfp_extractor import LfpExporter
 from plenopticam.lfp_extractor.lfp_contrast import LfpContrast
 from plenopticam.misc.hist_eq import HistogramEqualizer
-from plenopticam.lfp_extractor.lfp_hotpixels import LfpHotPixels
+from plenopticam.lfp_extractor.lfp_outliers import LfpOutliers
 from plenopticam.lfp_extractor.lfp_color_eq import LfpColorEqualizer
 
 
@@ -70,7 +70,7 @@ class LfpExtractor(object):
 
         # remove hot pixels if option is set
         if self.cfg.params[self.cfg.opt_hotp] and not self.sta.interrupt:
-            obj = LfpHotPixels(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
+            obj = LfpOutliers(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
             obj.main()
             self.vp_img_arr = obj.vp_img_arr
             del obj
