@@ -8,6 +8,7 @@ def isfloat(x):
     else:
         return True
 
+
 def isint(x):
     try:
         a = float(x)
@@ -17,11 +18,14 @@ def isint(x):
     else:
         return a == b
 
+
 def islist(x):
     return True if x.count(',') > 0 else False
 
+
 def isbool(x):
     return x.lower() in ("true", "false")
+
 
 def str2type(x):
     try:
@@ -36,6 +40,7 @@ def str2type(x):
     except:
         return x
 
+
 def str2list(x):
     # remove list brackets from string
     if x.startswith('[') and x.endswith(']'):
@@ -47,6 +52,7 @@ def str2list(x):
         return False
 
     return x
+
 
 def rint(val):
     return int(round(val))

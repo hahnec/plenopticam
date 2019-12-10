@@ -30,6 +30,7 @@ import json
 from os.path import join, abspath, dirname, basename, splitext, isdir, isfile, exists
 from os import remove
 
+
 class PlenopticamConfig(object):
 
     # static class variables for key parameters
@@ -158,7 +159,7 @@ class PlenopticamConfig(object):
 
         sta = sta if sta is not None else PlenopticamStatus()
 
-        # filename and filepath handling
+        # file name and file path handling
         if fp is not None and splitext(fp)[-1] != '.json':
             fn = splitext(basename(fp))[0]+'.json'
             fp = join(splitext(fp)[0], fn)
