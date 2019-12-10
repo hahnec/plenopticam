@@ -205,7 +205,7 @@ class CfaProcessor(object):
 
         # skip process if gains not set
         if gains is None:
-           return img_arr
+            return img_arr
 
         if len(img_arr.shape) == 3:
 
@@ -236,7 +236,7 @@ class CfaProcessor(object):
         if gains is not None and bay_pattern is "GRBG":
             b, r, g1, g2 = gains
         else:
-           return img_arr
+            return img_arr
 
         orig = np.zeros(img_arr.shape)
         if len(img_arr.shape) == 3 and img_arr.shape[-1] == 3:
