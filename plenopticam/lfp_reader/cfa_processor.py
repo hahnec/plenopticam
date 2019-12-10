@@ -230,7 +230,7 @@ class CfaProcessor(object):
         return img_arr
 
     @staticmethod
-    def desaturate_clipped(img_arr, gains=None, bay_pattern="GRBG", thresh=.96):
+    def desaturate_clipped(img_arr, gains=None, bay_pattern="GRBG"):
 
         # skip process if gains not set
         if gains is not None and bay_pattern is "GRBG":
@@ -250,7 +250,7 @@ class CfaProcessor(object):
         weights[weights < 1] = 1
 
         mask = np.zeros(orig.shape[:2])
-        mask[np.amax(orig, axis=2) >= orig.max() * thresh] = 1
+        mask[np.amax(orig, axis=2) >= orig.max()] = 1
 
         img_arr[mask > 0] /= weights[mask > 0]
 
