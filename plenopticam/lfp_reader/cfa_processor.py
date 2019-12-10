@@ -154,14 +154,10 @@ class CfaProcessor(object):
         else:
             self._rgb_img = demosaicing_CFA_Bayer_Menon2007(self._bay_img.astype(np.float32), self.cfg.lfpimg['bay'])
 
-        # clip intensities above and below previous limits (removing dead and hot outliers yields much better contrast)
-        #self._rgb_img[self._rgb_img < self._bay_img.min()] = self._bay_img.min()
-        #self._rgb_img[self._rgb_img > self._bay_img.max()] = self._bay_img.max()
-
         # normalize image to previous intensity limits
-        self._rgb_img = misc.Normalizer(img=self._rgb_img,
-                                        min=np.percentile(self._rgb_img, .1), max=np.percentile(self._rgb_img, 99.9)
-                                        ).type_norm(lim_min=self._bay_img.min(), lim_max=self._bay_img.max())
+        obj = misc.Normalizer(img=self._rgb_img,
+                              min=np.percentile(self._rgb_img, .05), max=np.percentile(self._rgb_img, 99.95))
+        self._rgb_img = obj.type_norm(lim_min=self._bay_img.min(), lim_max=self._bay_img.max())
 
         # update status message
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
@@ -263,12 +259,8 @@ class CfaProcessor(object):
         # perform color correction
         img_ccm = np.dot(np.vstack(img), ccm_mat).reshape(img.shape)
 
-        # clip intensities above and below previous limits (removing dead and hot outliers yields much better contrast)
-        #img_ccm[img_ccm < img.min()] = img.min()
-        #img_ccm[img_ccm > img.max()] = img.max()
-
         # normalize image to previous intensity limits
-        img_ccm = misc.Normalizer(img=img_ccm, min=np.percentile(img_ccm, .1), max=np.percentile(img_ccm, 99.9)
-                                  ).type_norm(lim_min=img.min(), lim_max=img.max())
+        obj = misc.Normalizer(img=img_ccm, min=np.percentile(img_ccm, .05), max=np.percentile(img_ccm, 99.95))
+        img_ccm = obj.type_norm(lim_min=img.min(), lim_max=img.max())
 
         return img_ccm
