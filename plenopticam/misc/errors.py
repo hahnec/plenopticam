@@ -23,6 +23,7 @@ __license__ = """
 import os, time, datetime
 from plenopticam.misc.status import PlenopticamStatus
 
+
 class PlenopticamError(Exception):
 
     URL_ISSUE = 'https://github.com/hahnec/plenopticam/issues/new'
@@ -126,9 +127,11 @@ class PlenopticamError(Exception):
 #        # close session
 #        self.s.close()
 
+
 class LfpTypeError(PlenopticamError):
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args, **kwargs)
+
 
 class LfpAttributeError(PlenopticamError):
     def __init__(self, *args, **kwargs):

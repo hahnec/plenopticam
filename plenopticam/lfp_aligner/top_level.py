@@ -34,8 +34,8 @@ class LfpAligner(object):
         # input variables
         self.cfg = cfg
         self.sta = sta if sta is not None else misc.PlenopticamStatus()
-        self._lfp_img = lfp_img
-        self._wht_img = wht_img
+        self._lfp_img = lfp_img.astype('float')
+        self._wht_img = wht_img.astype('float')
 
     def main(self):
 
@@ -46,6 +46,21 @@ class LfpAligner(object):
             self._lfp_img = obj.lfp_img
             del obj
 
+        from plenopticam.lfp_reader.cfa_hotpixels import CfaHotPixels
+        from plenopticam.lfp_reader.cfa_processor import CfaProcessor
+
+        if self.cfg.lfpimg:
+            # hot pixel correction
+            obj = CfaHotPixels(cfg=self.cfg, sta=self.sta)
+            self._bay_img = obj.rectify_candidates_bayer(bay_img=self._lfp_img.copy(), n=9, sig_lev=3.5)
+##
+            if not self.sta.interrupt:
+                # perform color filter array management and obtain rgb image
+                cfa_obj = CfaProcessor(bay_img=self._bay_img, cfg=self.cfg, sta=self.sta)
+                cfa_obj.main()
+                self._lfp_img = cfa_obj.rgb_img
+                del cfa_obj
+#
         if self.cfg.params[self.cfg.opt_rota] and self._lfp_img is not None:
             # de-rotate centroids
             obj = LfpRotator(self._lfp_img, self.cfg.calibs[self.cfg.mic_list], rad=None, cfg=self.cfg, sta=self.sta)

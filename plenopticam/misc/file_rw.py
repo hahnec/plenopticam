@@ -104,7 +104,7 @@ def save_gif(img_set, duration=.1, fp='', fn='default'):
         pil_arr = [Image.fromarray(place_dnp(img)) for img in img_set]
         pil_arr[0].save(os.path.join(fp, fn), save_all=True, append_images=pil_arr[1:], duration=duration, loop=0)
     except PermissionError as e:
-        raise PlenopticamError(e)
+        pass#raise PlenopticamError(e)
 
     return True
 

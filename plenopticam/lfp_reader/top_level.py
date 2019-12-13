@@ -25,10 +25,11 @@ __license__ = """
 from plenopticam import misc
 from plenopticam.misc.errors import LfpTypeError, PlenopticamError
 from plenopticam.lfp_reader.lfp_decoder import LfpDecoder
+#from plenopticam.lfp_reader.cfa_hotpixels import CfaHotPixels
+#from plenopticam.lfp_reader.cfa_processor import CfaProcessor
+from plenopticam.lfp_reader.constants import SUPP_FILE_EXT
 
 import os
-
-SUPP_FILE_EXT = ('.raw', '.lfp', '.lfr') + tuple('.c.' + str(num) for num in (0, 1, 2, 3))
 
 
 class LfpReader(object):
@@ -43,22 +44,25 @@ class LfpReader(object):
         self._lfp_path = lfp_path if lfp_path is not None else cfg.params[cfg.lfp_path]
 
         # output variables
+        self._bay_img = None
         self._lfp_img = None
-        self._wht_img = None
+        self._json_dict = None
+
+        # filename and file path from previously decoded data
+        self.dp = os.path.splitext(self._lfp_path)[0]
+        self.fn = os.path.basename(self.dp) + '.tiff'
+        self.fp = os.path.join(self.dp, self.fn)
 
     def main(self):
 
         if self._lfp_path.lower().endswith(SUPP_FILE_EXT):
 
-            # filename and file path from previously decoded data
-            dp = os.path.splitext(self._lfp_path)[0]
-            fn = os.path.basename(dp)+'.tiff'
-            fp = os.path.join(dp, fn)
-
             # load previously generated tiff if present
-            if os.path.exists(fp):
+            if os.path.exists(self.fp):
                 try:
-                    self._lfp_img = misc.load_img_file(fp)
+                    self._lfp_img = misc.load_img_file(self.fp)
+                    json_dict = self.cfg.load_json(os.path.dirname(self.fp))
+                    self.cfg.lfpimg = LfpDecoder.filter_json(json_dict)
                 except FileNotFoundError:
                     # print status
                     self.sta.status_msg('{0} not found'.format(os.path.basename(self._lfp_path)), self.cfg.params[self.cfg.opt_prnt])
@@ -71,27 +75,7 @@ class LfpReader(object):
 
             else:
                 try:
-                    # Lytro type decoding
-                    with open(self._lfp_path, mode='rb') as file:
-
-                        # LFC and raw type decoding
-                        obj = LfpDecoder(file, self.cfg, self.sta)
-                        if self._lfp_path.lower().endswith(SUPP_FILE_EXT[1:]):
-                            # LFC type decoding
-                            obj.decode_lfc()
-                            self.cfg.save_json(os.path.join(dp, os.path.basename(dp)+'.json'), json_dict=obj.json_dict)
-                        elif self._lfp_path.lower().endswith(SUPP_FILE_EXT[0]):
-                            # raw type decoding
-                            obj.decode_raw()
-                        self._lfp_img = obj.rgb_img
-                        del obj
-
-                        # save bayer image as file
-                        self.sta.status_msg(msg='Save raw image', opt=self.cfg.params[self.cfg.opt_prnt])
-                        self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
-                        misc.save_img_file(misc.Normalizer(self._lfp_img).uint16_norm(), fp, file_type='tiff')
-                        self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
-
+                    self.decode_lytro_file()
                 except FileNotFoundError:
                     # print status
                     self.sta.status_msg('{0} not found'.format(os.path.basename(self._lfp_path)), self.cfg.params[self.cfg.opt_prnt])
@@ -99,7 +83,7 @@ class LfpReader(object):
                     self.sta.error = True
                 except Exception as e:
                     # unrecognized LFP file type
-                    if not obj.json_dict:
+                    if not self._json_dict:
                         raise LfpTypeError(e)
                     else:
                         raise PlenopticamError(e)
@@ -119,8 +103,44 @@ class LfpReader(object):
             except:
                 pass
 
+        #from plenopticam.lfp_reader.cfa_hotpixels import CfaHotPixels
+        #from plenopticam.lfp_reader.cfa_processor import CfaProcessor
+#
+        #if self.cfg.lfpimg:
+        #    # hot pixel correction
+        #    obj = CfaHotPixels(cfg=self.cfg, sta=self.sta)
+        #    self._lfp_img = obj.rectify_candidates_bayer(bay_img=self._lfp_img.copy(), n=9, sig_lev=3.5)
+#
+        #    if not self.sta.interrupt:
+        #        # perform color filter array management and obtain rgb image
+        #        cfa_obj = CfaProcessor(bay_img=self._lfp_img, cfg=self.cfg, sta=self.sta)
+        #        cfa_obj.main()
+        #        self._lfp_img = cfa_obj.rgb_img
+        #        del cfa_obj
+
         # write json file
         self.cfg.save_params()
+
+        return True
+
+    def decode_lytro_file(self):
+
+        # Lytro type decoding
+        with open(self._lfp_path, mode='rb') as file:
+
+            # LFC and raw type decoding
+            obj = LfpDecoder(file, self.cfg, self.sta, lfp_path=self._lfp_path)
+            obj.main()
+            self._lfp_img = obj.bay_img
+            self._json_dict = obj.json_dict
+            del obj
+
+            if not self.sta.interrupt:
+                # save bayer image as file
+                self.sta.status_msg(msg='Save raw image', opt=self.cfg.params[self.cfg.opt_prnt])
+                self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
+                misc.save_img_file(misc.Normalizer(self._lfp_img).uint16_norm(), self.fp, file_type='tiff')
+                self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
 
         return True
 

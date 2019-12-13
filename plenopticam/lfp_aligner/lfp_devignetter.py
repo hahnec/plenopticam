@@ -28,6 +28,7 @@ from plenopticam.misc.type_checks import rint
 import numpy as np
 from scipy.signal import convolve2d
 
+
 class LfpDevignetter(LfpMicroLenses):
 
     def __init__(self, *args, **kwargs):
@@ -38,7 +39,7 @@ class LfpDevignetter(LfpMicroLenses):
         self._th = kwargs['th'] if 'th' in kwargs else default_thresh
 
         # noise level for decision making whether division by raw image or fit values
-        self._noise_lev = kwargs['noise_lev'] if 'noise_lev' in kwargs else self._estimate_noise_level()
+        self._noise_lev = kwargs['noise_lev'] if 'noise_lev' in kwargs else None
         self._noise_th = 0.1
 
         self._patch_mode = False
@@ -46,6 +47,9 @@ class LfpDevignetter(LfpMicroLenses):
         self._lfp_div = np.zeros(self._lfp_img.shape)
 
     def main(self):
+
+        # analyse noise in white image
+        self._noise_lev = self._estimate_noise_level() if self._noise_lev is None else self._noise_lev
 
         # print status
         self.sta.status_msg('De-vignetting', self.cfg.params[self.cfg.opt_prnt])
@@ -60,19 +64,22 @@ class LfpDevignetter(LfpMicroLenses):
             self.wht_img_divide()
 
         # identify pixels requiring treatment from significantly large intensity variations
-        self._lfp_div[self._lfp_div > self._lfp_img.max()] = self._lfp_img.max()
-        lfp_vgn = self._lfp_div - self._lfp_img
-        lfp_vgn[lfp_vgn < 0] = 0
+        #self._lfp_div[self._lfp_div > self._lfp_img.max()] = self._lfp_img.max()
+        #lfp_vgn = self._lfp_div - self._lfp_img
+        #lfp_vgn[lfp_vgn < 0] = 0
+        #lfp_vgn = self._lfp_div
 
         #import os
         #misc.save_img_file(self._lfp_img, file_path=os.path.join(os.getcwd(), 'lfp_img.bmp'))
         #misc.save_img_file(lfp_vgn, file_path=os.path.join(os.getcwd(), 'lfp_vgn.bmp'))
 
-        thresh = np.mean(lfp_vgn) - np.std(lfp_vgn)
-        lfp_vgn[lfp_vgn < thresh] = 0
+        #thresh = np.mean(lfp_vgn) - np.std(lfp_vgn)
+        #lfp_vgn[lfp_vgn < thresh] = 0
 
         # add selected pixels to light-field image
-        self._lfp_img += lfp_vgn*.5
+        #self._lfp_img += lfp_vgn*.5
+
+        self._lfp_img = self._lfp_div
 
         #misc.save_img_file(lfp_vgn, file_path=os.path.join(os.getcwd(), 'lfp_vgn_thresh.bmp'))
         #misc.save_img_file(self._lfp_img, file_path=os.path.join(os.getcwd(), 'lfp_out.bmp'))
@@ -82,12 +89,14 @@ class LfpDevignetter(LfpMicroLenses):
         self._th = th if th is not None else self._th
 
         # equalize channel balance for white image channels
-        self._wht_img = misc.eq_channels(self._wht_img)
+        self._wht_img = misc.eq_channels(self._wht_img) if len(self._wht_img) == 3 else self._wht_img
 
         # normalize white image
-        self._wht_img /= self._wht_img.max()
+        self._wht_img /= np.percentile(self._wht_img, q=99.9)
+        self._wht_img[self._wht_img > 1] = 1
 
         # threshold dark areas to prevent large number after division
+        self._th = .15
         self._wht_img[self._wht_img < self._th] = self._th
 
         # divide light-field image
@@ -189,7 +198,7 @@ class LfpDevignetter(LfpMicroLenses):
 
         M = np.mean(self.cfg.calibs[self.cfg.ptc_mean])
         lp_kernel = misc.create_gauss_kernel(l=M)
-        bw_img = np.mean(self._wht_img, axis=2)
+        bw_img = misc.rgb2gray(self._wht_img) if len(self._wht_img.shape) == 3 else self._wht_img
         flt_img = convolve2d(bw_img, lp_kernel, 'same')
 
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])

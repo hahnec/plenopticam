@@ -64,6 +64,10 @@ class CfaHotPixels(object):
 
                 bay_img[i::2, j::2] = new_img
 
+                # check interrupt status
+                if self.sta.interrupt:
+                    return False
+
         #hotp_num = len(cum_img[cum_img != 0])
         #misc.save_img_file(cum_img, file_path=os.path.splitext(os.path.basename(self.cfg.params[self.cfg.lfp_path]))[0] +'_'+ str(hotp_num)+'_cum.png')
 
@@ -102,5 +106,9 @@ class CfaHotPixels(object):
 
                     # replace outlier by average of all directly adjacent pixels
                     channel[j, i] = (sum(sum(channel[j-1:j+2, i-1:i+2])) - channel[j, i]) / 8.
+
+            # check interrupt status
+            if self.sta.interrupt:
+                return False
 
         return channel

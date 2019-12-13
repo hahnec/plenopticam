@@ -158,6 +158,7 @@ class PlenopticamConfig(object):
     def load_json(fp=None, sta=None):
 
         sta = sta if sta is not None else PlenopticamStatus()
+        json_dict = {}
 
         # file name and file path handling
         if fp is not None and splitext(fp)[-1] != '.json':
