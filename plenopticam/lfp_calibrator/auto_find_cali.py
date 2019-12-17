@@ -23,6 +23,7 @@ __license__ = """
 # local imports
 from plenopticam.misc import safe_get
 from plenopticam.misc.status import PlenopticamStatus
+from plenopticam.cfg import PlenopticamConfig
 
 # external libs
 import json
@@ -30,12 +31,13 @@ from os.path import join, exists, isdir, dirname
 from os import listdir
 import tarfile
 
+
 class CaliFinder(object):
 
-    def __init__(self, cfg, sta=None):
+    def __init__(self, cfg=None, sta=None):
 
         # input variables
-        self.cfg = cfg
+        self.cfg = cfg if sta is not None else PlenopticamConfig()
         self.sta = sta if sta is not None else PlenopticamStatus()
 
         # internal variables
@@ -49,7 +51,7 @@ class CaliFinder(object):
         self._path = self.cfg.params[self.cfg.cal_path]
 
         # output variables
-        self._wht_img = None
+        self._wht_bay = None
 
     def main(self):
 
@@ -112,7 +114,7 @@ class CaliFinder(object):
             # decode raw data
             obj = LfpDecoder(self._raw_data, self.cfg, self.sta)
             obj.decode_raw()
-            self._wht_img = obj.rgb_img
+            self._wht_bay = obj.bay_img
             del obj
 
         return True
@@ -207,4 +209,4 @@ class CaliFinder(object):
     @property
     def wht_img(self):
 
-        return self._wht_img
+        return self._wht_bay

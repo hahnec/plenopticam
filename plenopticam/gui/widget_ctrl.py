@@ -263,8 +263,14 @@ class CtrlWidget(tk.Frame):
             # find calibration file automatically
             obj = lfp_calibrator.CaliFinder(self.cfg, self.sta)
             obj.main()
-            self.wht_img = obj._wht_img
+            self.wht_img = obj._wht_bay
             del obj
+
+            from plenopticam.lfp_reader.cfa_processor import CfaProcessor
+            cfa_obj = CfaProcessor(bay_img=self.wht_img, cfg=self.cfg, sta=self.sta)
+            cfa_obj.main()
+            self.wht_img = cfa_obj.rgb_img
+            del cfa_obj
 
     def load_lfp(self, lfp_path=None, wht_opt=False):
 

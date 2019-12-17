@@ -150,7 +150,7 @@ def main():
 
         try:
             # decode light field image
-            lfp_obj = lfp_reader.LfpReader(cfg, sta, cfg.params[cfg.lfp_path])
+            lfp_obj = lfp_reader.LfpReader(cfg, sta)
             lfp_obj.main()
             lfp_img = lfp_obj.lfp_img
             del lfp_obj
