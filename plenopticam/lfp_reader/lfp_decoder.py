@@ -22,6 +22,7 @@ __license__ = """
 
 
 # local imports
+from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc import safe_get, PlenopticamStatus
 from plenopticam.misc.errors import LfpTypeError, LfpAttributeError
 from plenopticam.lfp_reader.constants import SUPP_FILE_EXT
@@ -46,12 +47,10 @@ class LfpDecoder(object):
     def __init__(self, file=None, cfg=None, sta=None, **kwargs):
 
         # input variables
-        self.cfg = cfg
+        self.cfg = cfg if cfg is not None else PlenopticamConfig()
         self.sta = sta if sta is not None else PlenopticamStatus()
         self.file = file
         self._lfp_path = kwargs['lfp_path'] if 'lfp_path' in kwargs else self.cfg.params[self.cfg.lfp_path]
-        if not self.file:
-            raise LfpAttributeError('File not passed to LfcDecoder class')
 
         # internal variables
         self._json_dict = kwargs['json_dict'] if 'json_dict' in kwargs else {}
@@ -177,7 +176,7 @@ class LfpDecoder(object):
             header_length = int(f.read(4).hex(), 16)
             if not header_length == 0:
                 raise AssertionError('Unexpected header length')
-            while (f.read(1) != b''):
+            while f.read(1) != b'':
                 f.seek(-1, 1)   # move back one byte
                 sections.append(self.read_section(f))
             f.close()

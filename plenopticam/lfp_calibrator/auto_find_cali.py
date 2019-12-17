@@ -207,6 +207,6 @@ class CaliFinder(object):
         return self._raw_data
 
     @property
-    def wht_img(self):
+    def wht_bay(self):
 
         return self._wht_bay

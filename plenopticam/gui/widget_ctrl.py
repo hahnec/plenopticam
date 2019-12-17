@@ -27,7 +27,7 @@ except ImportError:
 
 import sys
 import pickle
-from os.path import join, dirname
+from os.path import join, dirname, splitext, basename
 import threading
 import queue
 import types
@@ -241,6 +241,12 @@ class CtrlWidget(tk.Frame):
         except EOFError:
             os.remove(fp)
 
+        # load LFP metadata settings
+        fp = join(self.cfg.exp_path, splitext(basename(self.cfg.params[self.cfg.lfp_path]))[0]+'.json')
+        json_dict = self.cfg.load_json(fp=fp, sta=None)
+        from plenopticam.lfp_reader.lfp_decoder import LfpDecoder
+        self.cfg.lfpimg = LfpDecoder().filter_json(json_dict)
+
     def lfp_extract(self):
 
         # export light field data
@@ -266,6 +272,27 @@ class CtrlWidget(tk.Frame):
             self.wht_img = obj._wht_bay
             del obj
 
+            #from plenopticam.lfp_reader.cfa_processor import CfaProcessor
+            #import numpy as np
+            #mean_vals = [np.mean(self.wht_img[x//2::2, x%2::2]) for x in range(4)]
+            #gains = [max(mean_vals)/np.mean(self.wht_img[x // 2::2, x % 2::2]) for x in range(4)]
+            #gains = [gains[2], gains[1], gains[0], gains[3]]
+            ##gains = self.cfg.lfpimg['awb']
+            #self.wht_img = CfaProcessor(bay_img=self.wht_img, cfg=self.cfg, sta=self.sta).correct_awb(self.wht_img, self.cfg.lfpimg['bay'], gains=gains)
+#
+            #if self.wht_img is not None and len(self.lfp_img.shape) == 3:
+#
+            #    cfa_obj = CfaProcessor(bay_img=self.wht_img, cfg=self.cfg, sta=self.sta)
+            #    cfa_obj.main()
+            #    mean_vals = [np.mean(self.wht_img[x//2::2, x%2::2]) for x in range(4)]
+            #    gains = [max(mean_vals)/np.mean(self.wht_img[x // 2::2, x % 2::2]) for x in range(4)]
+            #    cfa_obj = CfaProcessor(bay_img=self.wht_img, cfg=self.cfg, sta=self.sta)
+            #    cfa_obj._bay_img = cfa_obj.correct_awb(self.wht_img, self.cfg.lfpimg['bay'], gains=gains)
+            #    cfa_obj.bay2rgb()
+            #    self.wht_img = cfa_obj.rgb_img
+            #    del cfa_obj
+
+        if self.wht_img is not None:
             from plenopticam.lfp_reader.cfa_processor import CfaProcessor
             cfa_obj = CfaProcessor(bay_img=self.wht_img, cfg=self.cfg, sta=self.sta)
             cfa_obj.main()

@@ -59,20 +59,23 @@ class LfpDevignetter(LfpMicroLenses):
             # perform raw white image division (low noise)
             self.wht_img_divide()
 
-        # identify pixels requiring treatment from significantly large intensity variations
-        self._lfp_div[self._lfp_div > self._lfp_img.max()] = self._lfp_img.max()
-        lfp_vgn = self._lfp_div - self._lfp_img
-        lfp_vgn[lfp_vgn < 0] = 0
+        ## identify pixels requiring treatment from significantly large intensity variations
+        #self._lfp_div[self._lfp_div > self._lfp_img.max()] = self._lfp_img.max()
+        #lfp_vgn = self._lfp_div - self._lfp_img
+        #lfp_vgn[lfp_vgn < 0] = 0
+        ##lfp_vgn = self._lfp_div
+##
+        ##import os
+        ##misc.save_img_file(self._lfp_img, file_path=os.path.join(os.getcwd(), 'lfp_img.bmp'))
+        ##misc.save_img_file(lfp_vgn, file_path=os.path.join(os.getcwd(), 'lfp_vgn.bmp'))
+##
+        #thresh = np.mean(lfp_vgn) - np.std(lfp_vgn)
+        #lfp_vgn[lfp_vgn < thresh] = 0
+##
+        ## add selected pixels to light-field image
+        #self._lfp_img += lfp_vgn*.5
 
-        #import os
-        #misc.save_img_file(self._lfp_img, file_path=os.path.join(os.getcwd(), 'lfp_img.bmp'))
-        #misc.save_img_file(lfp_vgn, file_path=os.path.join(os.getcwd(), 'lfp_vgn.bmp'))
-
-        thresh = np.mean(lfp_vgn) - np.std(lfp_vgn)
-        lfp_vgn[lfp_vgn < thresh] = 0
-
-        # add selected pixels to light-field image
-        self._lfp_img += lfp_vgn*.5
+        self._lfp_img = self._lfp_div#misc.Normalizer(self._lfp_div).uint16_norm()
 
         #misc.save_img_file(lfp_vgn, file_path=os.path.join(os.getcwd(), 'lfp_vgn_thresh.bmp'))
         #misc.save_img_file(self._lfp_img, file_path=os.path.join(os.getcwd(), 'lfp_out.bmp'))
@@ -82,10 +85,11 @@ class LfpDevignetter(LfpMicroLenses):
         self._th = th if th is not None else self._th
 
         # equalize channel balance for white image channels
-        self._wht_img = misc.eq_channels(self._wht_img)
+        self._wht_img = misc.rgb2gray(self._wht_img)[..., np.newaxis] if len(self._wht_img.shape) == 3 else self._wht_img
 
         # normalize white image
-        self._wht_img /= self._wht_img.max()
+        self._wht_img /= np.percentile(self._wht_img, q=99.9)
+        self._wht_img[self._wht_img > 1] = 1
 
         # threshold dark areas to prevent large number after division
         self._wht_img[self._wht_img < self._th] = self._th

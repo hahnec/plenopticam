@@ -11,7 +11,7 @@ PARAMS_KEYS = (
     # booleans
     'opt_cali',
     'opt_vign',
-    'opt_hotp',
+    'opt_lier',
     'opt_cont',
     'opt_colo',
     'opt_awb_',
@@ -39,7 +39,7 @@ PARAMS_VALS = (
     # booleans
     False,
     False,
-    True,
+    False,
     False,
     True,
     False,
@@ -93,7 +93,7 @@ PARAMS_NAME = (
     # booleans
     'Force re-calibration',
     'De-Vignetting',
-    'Hot pixel correction',
+    'Pixel outlier removal',
     'Contrast automation',
     'Color equalization',
     'Automatic white balance',

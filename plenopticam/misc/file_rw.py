@@ -46,7 +46,10 @@ def try_tiff_import(type):
     return imageio, type
 
 
-def save_img_file(img, file_path=None, file_type=None):
+def save_img_file(img, file_path=None, file_type=None, gamma=None):
+
+    # do gamma correction
+    img = img**gamma if gamma is not None else img
 
     file_path = os.getcwd() if file_path is None else file_path
     ext = os.path.splitext(file_path)[-1][1:]
@@ -64,12 +67,24 @@ def save_img_file(img, file_path=None, file_type=None):
     file_path += '.' + file_type
 
     if file_type == 'tiff':
+        suppress_user_warning(True)
         imageio.imwrite(uri=file_path, im=Normalizer(img).uint16_norm())
+        suppress_user_warning(False)
 
     elif file_type == 'png' or file_type == 'bmp':
         Image.fromarray(Normalizer(img).uint8_norm()).save(file_path, file_type, optimize=True)
 
     return True
+
+
+def suppress_user_warning(switch=None):
+
+    import warnings
+    switch = switch if switch is None else True
+    if switch:
+        warnings.filterwarnings("ignore", category=UserWarning)
+    else:
+        warnings.filterwarnings("default", category=UserWarning)
 
 
 def load_img_file(file_path):
@@ -104,7 +119,7 @@ def save_gif(img_set, duration=.1, fp='', fn='default'):
         pil_arr = [Image.fromarray(place_dnp(img)) for img in img_set]
         pil_arr[0].save(os.path.join(fp, fn), save_all=True, append_images=pil_arr[1:], duration=duration, loop=0)
     except PermissionError as e:
-        raise PlenopticamError(e)
+        pass#raise PlenopticamError(e)
 
     return True
 

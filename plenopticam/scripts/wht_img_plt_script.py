@@ -73,7 +73,7 @@ if cal_opt:
 # automatic calibration data selection
 obj = lfp_calibrator.CaliFinder(cfg)
 obj.main()
-wht_img = obj.wht_img
+wht_img = obj.wht_bay
 del obj
 
 if cal_opt:

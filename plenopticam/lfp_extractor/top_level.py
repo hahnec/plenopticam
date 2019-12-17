@@ -21,15 +21,14 @@ __license__ = """
 """
 
 # local imports
-from plenopticam.lfp_extractor.lfp_cropper import LfpCropper
-from plenopticam.lfp_extractor.lfp_rearranger import LfpRearranger
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam import misc
-
-from plenopticam.lfp_extractor import LfpExporter
+from plenopticam.lfp_extractor.lfp_cropper import LfpCropper
+from plenopticam.lfp_extractor.lfp_rearranger import LfpRearranger
+from plenopticam.lfp_extractor.lfp_exporter import LfpExporter
 from plenopticam.lfp_extractor.lfp_contrast import LfpContrast
 from plenopticam.misc.hist_eq import HistogramEqualizer
-from plenopticam.lfp_extractor.lfp_hotpixels import LfpHotPixels
+from plenopticam.lfp_extractor.lfp_outliers import LfpOutliers
 from plenopticam.lfp_extractor.lfp_color_eq import LfpColorEqualizer
 
 
@@ -68,9 +67,9 @@ class LfpExtractor(object):
             #self.vp_img_arr = obj.awb_eq()
             del obj
 
-        # remove hot pixels if option is set
-        if self.cfg.params[self.cfg.opt_hotp] and not self.sta.interrupt:
-            obj = LfpHotPixels(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
+        # remove outliers if option is set
+        if self.cfg.params[self.cfg.opt_lier] and not self.sta.interrupt:
+            obj = LfpOutliers(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
             obj.main()
             self.vp_img_arr = obj.vp_img_arr
             del obj
@@ -83,7 +82,7 @@ class LfpExtractor(object):
             del obj
 
         if not self.sta.interrupt:
-            obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.001, p_hi=0.999)
+            obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.01, p_hi=0.9999)
             # automatic white balance
             if self.cfg.params[self.cfg.opt_awb_]:
                 obj.auto_wht_bal()

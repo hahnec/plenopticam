@@ -165,7 +165,7 @@ def main():
             # automatic calibration data selection
             obj = lfp_calibrator.CaliFinder(cfg, sta)
             obj.main()
-            wht_img = obj.wht_img
+            wht_img = obj.wht_bay
             del obj
 
         else:

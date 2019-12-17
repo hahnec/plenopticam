@@ -52,7 +52,7 @@ class CnfgWidget(object):
         PROPERTIES = dict(zip(c.PARAMS_KEYS, (pair for pair in zip(c.PARAMS_NAME, c.PARAMS_TYPE))))
 
         # hide some config keys in user interface which are given as tuple
-        EXCLUDED = ('opt_view', 'opt_refo', 'opt_prnt', 'opt_rota', 'opt_dbug', 'opt_colo')
+        EXCLUDED = ('opt_view', 'opt_refo', 'opt_prnt', 'opt_rota', 'opt_dbug', 'opt_colo', 'opt_lier')
         self.gui_keys = [key for key in PROPERTIES.keys() if key not in EXCLUDED]
 
         # place properties in tk frame

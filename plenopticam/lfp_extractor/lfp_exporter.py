@@ -22,8 +22,10 @@ __license__ = """
 
 # local imports
 from plenopticam import misc
-from plenopticam.misc import Normalizer
+from plenopticam.lfp_reader.cfa_processor import CfaProcessor
 from plenopticam.lfp_extractor.lfp_viewpoints import LfpViewpoints
+from plenopticam.lfp_extractor.lfp_contrast import LfpContrast
+
 
 # external libs
 import os
@@ -35,7 +37,14 @@ class LfpExporter(LfpViewpoints):
     def __init__(self, refo_stack=None, *args, **kwargs):
         super(LfpExporter, self).__init__(*args, **kwargs)
 
-        self._refo_stack = refo_stack
+        self.refo_stack = np.asarray(refo_stack) if refo_stack else None
+
+        # gamma correction
+        if hasattr(self, 'cfg'):
+            self.cfg.lfpimg['gam'] = 1./2.2
+            gamma = self.cfg.lfpimg['gam'] if self.cfg.lfpimg and 'gam' in self.cfg.lfpimg.keys() else 1/2.2
+            self.vp_img_arr = CfaProcessor().correct_gamma(img=self.vp_img_arr, gamma=gamma)
+            self.refo_stack = CfaProcessor().correct_gamma(img=self.refo_stack, gamma=gamma)
 
     def write_viewpoint_data(self):
 
@@ -74,7 +83,7 @@ class LfpExporter(LfpViewpoints):
         misc.mkdir_p(folderpath)
 
         # normalize image array to 16-bit unsigned integer
-        vp_img_arr = Normalizer(self.vp_img_arr).uint16_norm()
+        vp_img_arr = misc.Normalizer(self.vp_img_arr).uint16_norm()
 
         # export viewpoint images as image files
         for j in range(ptc_leng):
@@ -109,7 +118,7 @@ class LfpExporter(LfpViewpoints):
         self.sta.status_msg('Write refocused images', self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
-        refo_stack = Normalizer(np.asarray(self._refo_stack)).uint16_norm()
+        refo_stack = misc.Normalizer(np.asarray(self.refo_stack)).uint16_norm()
         if self.cfg.params[self.cfg.opt_refi]:
             a_list = np.arange(*np.array(self.cfg.params[self.cfg.ran_refo]) * self.cfg.params[self.cfg.ptc_leng])
             a_list = a_list / self.cfg.params[self.cfg.ptc_leng]
@@ -145,6 +154,10 @@ class LfpExporter(LfpViewpoints):
         # account for sub-pixel precise depth value
         a = round(float(a) / self._M, 2) if self.cfg.params[self.cfg.opt_refi] else a
 
+        # gamma correction
+        gamma = self.cfg.lfpimg['gam'] if self.cfg.lfpimg and 'gam' in self.cfg.lfpimg.keys() else 1.
+        refo_img **= gamma
+
         # write image file
         misc.save_img_file(refo_img, os.path.join(folder_path, str(a)), file_type=file_type)
 
@@ -155,7 +168,7 @@ class LfpExporter(LfpViewpoints):
         lf_radius = min(int((max(self.cfg.calibs[self.cfg.ptc_mean])+1)//4), self._C)
         fn = 'view_animation_' + str(lf_radius*2+1) + 'px'
         img_set = self.reorder_vp_arr(pattern=pattern, lf_radius=lf_radius)
-        img_set = Normalizer(img_set, dtype=self.vp_img_arr.dtype).uint8_norm()
+        img_set = misc.Normalizer(img_set, dtype=self.vp_img_arr.dtype).uint8_norm()
         misc.save_gif(img_set, duration=duration, fp=self.cfg.exp_path, fn=fn)
 
         return True
@@ -164,7 +177,7 @@ class LfpExporter(LfpViewpoints):
 
         # export gif animation
         fn = 'refocus_animation_' + str(self.cfg.params[self.cfg.ptc_leng]) + 'px'
-        refo_stack = misc.Normalizer(np.asarray(self._refo_stack)).uint8_norm()
+        refo_stack = misc.Normalizer(np.asarray(self.refo_stack)).uint8_norm()
         refo_stack = np.concatenate((refo_stack, refo_stack[::-1]), axis=0)      # play forward and backwards
         misc.save_gif(refo_stack, duration=.5, fp=self.cfg.exp_path, fn=fn)
 

@@ -37,7 +37,7 @@ class PlenopticamConfig(object):
     lfp_path, cal_path, cal_meta, \
     ptc_leng, \
     ran_refo, \
-    opt_cali, opt_vign, opt_hotp, opt_cont, opt_colo, opt_awb_, opt_sat_, opt_view, opt_refo, opt_refi, opt_pflu, \
+    opt_cali, opt_vign, opt_lier, opt_cont, opt_colo, opt_awb_, opt_sat_, opt_view, opt_refo, opt_refi, opt_pflu, \
     opt_rota, opt_dbug, opt_prnt, dir_remo, \
     = PARAMS_KEYS
 
@@ -121,7 +121,7 @@ class PlenopticamConfig(object):
         self.params[self.opt_awb_] = True
         self.params[self.opt_sat_] = False
         self.params[self.opt_cont] = False
-        self.params[self.opt_hotp] = False
+        self.params[self.opt_lier] = False
 
     def load_cal_data(self):
 

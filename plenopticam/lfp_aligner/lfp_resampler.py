@@ -7,7 +7,8 @@ from plenopticam.lfp_aligner.lfp_microlenses import LfpMicroLenses
 import numpy as np
 import os
 import pickle
-from scipy.interpolate import interp2d, RectBivariateSpline, griddata
+import functools
+from scipy.interpolate import interp2d, RectBivariateSpline
 
 
 class LfpResampler(LfpMicroLenses):
@@ -15,7 +16,11 @@ class LfpResampler(LfpMicroLenses):
     def __init__(self, *args, **kwargs):
         super(LfpResampler, self).__init__(*args, **kwargs)
 
-        self._METHOD = kwargs['method'] if 'method' in kwargs else None
+        # interpolation method initialization
+        method = kwargs['method'] if 'method' in kwargs else None
+        method = method if method in ['linear', 'cubic', 'quintic'] else None
+        interp2d_method = functools.partial(interp2d, kind=method) if method is not None else interp2d
+        self._interpol_method = RectBivariateSpline if method is None else interp2d_method
 
         # output variable
         if self._lfp_img is not None:
@@ -55,19 +60,14 @@ class LfpResampler(LfpMicroLenses):
         if self.cfg.params[self.cfg.opt_dbug]:
             misc.save_img_file(self._lfp_out, os.path.join(self.cfg.exp_path, 'lfp_img_align.tiff'))
 
-    @staticmethod
-    def _patch_align(window, mic, method=None):
+    def _patch_align(self, window, mic):
 
         # initialize patch
         patch = np.zeros(window.shape)
 
         for p in range(window.shape[2]):
 
-            # careful: interp2d() takes x first and y second
-            if method is None:
-                fun = RectBivariateSpline(range(window.shape[1]), range(window.shape[0]), window[:, :, p])
-            else:
-                fun = interp2d(range(window.shape[1]), range(window.shape[0]), window[:, :, p], kind=method, copy=False)
+            fun = self._interpol_method(range(window.shape[1]), range(window.shape[0]), window[:, :, p])
 
             patch[:, :, p] = fun(np.arange(window.shape[1])+mic[1]-rint(mic[1]),
                                  np.arange(window.shape[0])+mic[0]-rint(mic[0]))
@@ -115,7 +115,7 @@ class LfpResampler(LfpMicroLenses):
                 # interpolate each micro image with its MIC as the center with consistent micro image size
                 window = self._lfp_img[rint(mic[0]) - self._C - 1:rint(mic[0]) + self._C + 2, rint(mic[1]) - self._C - 1:rint(mic[1]) + self._C + 2]
                 self._lfp_out[ly * self._M:(ly + 1) * self._M, lx * self._M:(lx + 1) * self._M] = \
-                    self._patch_align(window, mic, method=self._METHOD)[1:-1, 1:-1]
+                    self._patch_align(window, mic)[1:-1, 1:-1]
 
             # check interrupt status
             if self.sta.interrupt:
@@ -145,8 +145,8 @@ class LfpResampler(LfpMicroLenses):
                 mic = self.get_coords_by_idx(ly=ly, lx=lx)
 
                 # interpolate each micro image with its MIC as the center and consistent micro image size
-                window = self._lfp_img[rint(mic[0]) - self._C - 1:rint(mic[0]) + self._C + 2, rint(mic[1]) - self._C - 1: rint(mic[1]) + self._C + 2]
-                patch_stack[lx, :, :] = self._patch_align(window, mic, method=self._METHOD)[1:-1, 1:-1]
+                window = self._lfp_img[rint(mic[0])-self._C-1:rint(mic[0])+self._C+2, rint(mic[1])-self._C-1:rint(mic[1])+self._C+2]
+                patch_stack[lx, :, :] = self._patch_align(window, mic)[1:-1, 1:-1]
 
                 # do interpolation of two adjacent micro images
                 if np.mod(ly + hex_odd, 2) and lx > 0:
@@ -195,11 +195,11 @@ class LfpResampler(LfpMicroLenses):
                 r_mic = self._CENTROIDS[(self._CENTROIDS[:, 3] == lx) & (self._CENTROIDS[:, 2] == ly), [0, 1]]
                 r_win = self._lfp_img[int(r_mic[0]) - self._C - 1:int(r_mic[0]) + self._C + 2,
                         int(r_mic[1])-self._C-1:int(r_mic[1])+self._C+2, :]
-                r = self._patch_align(r_win, r_mic, method=self._METHOD)[1:-1, 1:-1, :]
+                r = self._patch_align(r_win, r_mic)[1:-1, 1:-1, :]
 
                 patch_stack[2 * lx, :, :, :] = r
 
-                # do bilinear interpolation of adjacent micro images (do linear if at borders)
+                # do interpolation of adjacent micro images (do linear if at borders)
                 if lx > 0:
 
                     l = patch_stack[2 * lx - 2, :, :, :]
@@ -209,13 +209,13 @@ class LfpResampler(LfpMicroLenses):
                             (self._CENTROIDS[:, 3] == lx - np.mod(ly + hex_odd, 2)) & (self._CENTROIDS[:, 2] == ly - 1), [0, 1]]
                         t_win = self._lfp_img[int(t_mic[0]) - self._C - 1:int(t_mic[0]) + self._C + 2,
                                 int(t_mic[1])-self._C-1:int(t_mic[1])+self._C+2, :]
-                        t = self._patch_align(t_win, t_mic, method=self._METHOD)[1:-1, 1:-1, :]
+                        t = self._patch_align(t_win, t_mic)[1:-1, 1:-1, :]
 
                         b_mic = self._CENTROIDS[
                             (self._CENTROIDS[:, 3] == lx - np.mod(ly + hex_odd, 2)) & (self._CENTROIDS[:, 2] == ly + 1), [0, 1]]
                         b_win = self._lfp_img[int(b_mic[0]) - self._C - 1:int(b_mic[0]) + self._C + 2,
                                 int(b_mic[1])-self._C-1:int(b_mic[1])+self._C+2, :]
-                        b = self._patch_align(b_win, b_mic, method=self._METHOD)[1:-1, 1:-1, :]
+                        b = self._patch_align(b_win, b_mic)[1:-1, 1:-1, :]
 
                         patch_stack[2 * lx - 1, :, :, :] = t * tb_weight + b * tb_weight + l * lr_weight + r * lr_weight
                     else:
