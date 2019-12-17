@@ -98,7 +98,7 @@ def parse_options(argv, cfg):
             if opt == "--con":
                 cfg.params[cfg.opt_cont] = True
             if opt == "--hot":
-                cfg.params[cfg.opt_hotp] = True
+                cfg.params[cfg.opt_lier] = True
             if opt == "--sat":
                 cfg.params[cfg.opt_sat_] = True
             if opt == "--rm":

@@ -155,7 +155,8 @@ class LfpExporter(LfpViewpoints):
         a = round(float(a) / self._M, 2) if self.cfg.params[self.cfg.opt_refi] else a
 
         # gamma correction
-        gamma = self.cfg.lfpimg['gam'] if self.cfg.lfpimg and 'gam' in self.cfg.lfpimg.keys() else 1.
+        gamma = 1./2.2   #self.cfg.lfpimg['gam'] if self.cfg.lfpimg and 'gam' in self.cfg.lfpimg.keys() else 1.
+        refo_img = refo_img.astype('float')
         refo_img **= gamma
 
         # write image file

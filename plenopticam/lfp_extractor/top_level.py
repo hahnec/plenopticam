@@ -82,11 +82,12 @@ class LfpExtractor(object):
             del obj
 
         if not self.sta.interrupt:
-            obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.01, p_hi=0.9999)
+            obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.01, p_hi=0.99999)
             # automatic white balance
             if self.cfg.params[self.cfg.opt_awb_]:
                 obj.auto_wht_bal()
             else:
+                # tbd: automatic "black" balance
                 obj.channel_bal()
             obj.p_lo = 0
             obj.p_hi = 1

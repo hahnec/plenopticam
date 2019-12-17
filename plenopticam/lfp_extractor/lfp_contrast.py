@@ -83,7 +83,7 @@ class LfpContrast(LfpViewpoints):
 
         # status update
         self.sta.status_msg(msg='Auto white balance', opt=self.cfg.params[self.cfg.opt_prnt])
-        self.sta.progress(None, opt=self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(0, opt=self.cfg.params[self.cfg.opt_prnt])
 
         ch_num = self.vp_img_arr.shape[-1] if len(self.vp_img_arr.shape) > 4 else 3
         for i in range(ch_num):
