@@ -9,7 +9,7 @@ import os
 import pickle
 import functools
 from scipy.interpolate import interp2d, RectBivariateSpline
-
+from scipy.ndimage import shift
 
 class LfpResampler(LfpMicroLenses):
 
@@ -66,11 +66,14 @@ class LfpResampler(LfpMicroLenses):
         patch = np.zeros(window.shape)
 
         for p in range(window.shape[2]):
-
+#
             fun = self._interpol_method(range(window.shape[1]), range(window.shape[0]), window[:, :, p])
-
+#
             patch[:, :, p] = fun(np.arange(window.shape[1])+mic[1]-rint(mic[1]),
                                  np.arange(window.shape[0])+mic[0]-rint(mic[0]))
+
+        #shift_coords = (mic[1]-rint(mic[1]), mic[0]-rint(mic[0]), 0)
+        #patch = shift(window, shift=shift_coords) #tbt
 
         return patch
 

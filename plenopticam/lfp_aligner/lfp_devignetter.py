@@ -89,7 +89,19 @@ class LfpDevignetter(LfpMicroLenses):
         self._th = th if th is not None else self._th
 
         # equalize channel balance for white image channels
-        self._wht_img = misc.rgb2gray(self._wht_img)[..., np.newaxis] if len(self._wht_img.shape) == 3 else self._wht_img
+        if len(self._wht_img.shape) == 3:
+            self._wht_img = misc.eq_channels(self._wht_img)
+            #self._wht_img = misc.rgb2gray(self._wht_img)[..., np.newaxis]
+
+        elif len(self._wht_img.shape) == 2:
+
+            from plenopticam.lfp_reader.cfa_processor import CfaProcessor
+            gains = [1./0.74476742744445801, 1./0.76306647062301636, 1, 1]    # r, gr, gb, b    #self.cfg.lfpimg['awb']
+            self._wht_img = CfaProcessor.correct_awb(img_arr=self._wht_img, bay_pattern=self.cfg.lfpimg['bay'], gains=gains)
+            #for x in range(4):
+            #    max_lim = np.percentile(self._wht_img[x // 2::2, x % 2::2], q=99.9)
+            #    self._wht_img[x//2::2, x%2::2] /= max_lim
+            #self._wht_img[self._wht_img > 1] = 1
 
         # normalize white image
         self._wht_img /= np.percentile(self._wht_img, q=99.9)

@@ -25,6 +25,7 @@ from plenopticam import misc
 from plenopticam.lfp_aligner.lfp_resampler import LfpResampler
 from plenopticam.lfp_aligner.lfp_rotator import LfpRotator
 from plenopticam.lfp_aligner.lfp_devignetter import LfpDevignetter
+from plenopticam.lfp_reader.cfa_processor import CfaProcessor
 
 
 class LfpAligner(object):
@@ -39,15 +40,8 @@ class LfpAligner(object):
 
     def main(self):
 
-        from plenopticam.lfp_reader.cfa_hotpixels import CfaHotPixels
-        from plenopticam.lfp_reader.cfa_processor import CfaProcessor
-
-        if self.cfg.lfpimg and len(self.lfp_img.shape) == 2:
-            # hot pixel correction
-            obj = CfaHotPixels(cfg=self.cfg, sta=self.sta)
-            self._lfp_img = obj.rectify_candidates_bayer(bay_img=self._lfp_img.copy(), n=9, sig_lev=3)
-
         if self.cfg.params[self.cfg.opt_vign] and self._wht_img is not None:
+
             # apply de-vignetting
             obj = LfpDevignetter(lfp_img=self._lfp_img, wht_img=self._wht_img, cfg=self.cfg, sta=self.sta, noise_lev=0)
             obj.main()
@@ -61,9 +55,6 @@ class LfpAligner(object):
             cfa_obj.main()
             self._lfp_img = cfa_obj.rgb_img
             del cfa_obj
-
-        import os
-        misc.save_img_file(self._lfp_img, file_path=os.path.join(self.cfg.exp_path, 'lfp_div.png'))
 
         if self.cfg.params[self.cfg.opt_rota] and self._lfp_img is not None:
             # de-rotate centroids

@@ -56,14 +56,6 @@ class CfaProcessor(object):
 
     def main(self):
 
-        # auto white balance
-        if 'awb' in self.cfg.lfpimg.keys():
-            gains = np.asarray(self.cfg.lfpimg['awb'], dtype='float64')
-            self._bay_img = self.correct_awb(self._bay_img, self.cfg.lfpimg['bay'], gains=gains)
-            self._reshape_bayer()
-            self._bay_img = self.desaturate_clipped(self._bay_img, gains=gains)
-            self._reshape_bayer()
-
         # debayer to rgb image
         if 'bay' in self.cfg.lfpimg.keys() and len(self._bay_img.shape) == 2:
             self.bay2rgb()
@@ -71,11 +63,6 @@ class CfaProcessor(object):
         # color matrix correction
         if 'ccm' in self.cfg.lfpimg.keys():
             self._rgb_img = self.correct_color(self._rgb_img, ccm_mat=np.reshape(self.cfg.lfpimg['ccm'], (3, 3)).T)
-
-        # perform gamma correction
-        #if 'gam' in self.cfg.lfpimg.keys():
-        #    self.cfg.lfpimg['gam'] = 1./2.2
-        #    self._rgb_img = self.correct_gamma(self._rgb_img, gamma=self.cfg.lfpimg['gam'])
 
         # convert to uint16
         self._rgb_img = misc.Normalizer(self._rgb_img).uint16_norm()
@@ -206,3 +193,11 @@ class CfaProcessor(object):
         img_ccm = obj.type_norm(lim_min=img.min(), lim_max=img.max())
 
         return img_ccm
+
+    def safe_bayer_awb(self):
+
+        gains = np.asarray(self.cfg.lfpimg['awb'], dtype='float64')
+        self._bay_img = self.correct_awb(self._bay_img, self.cfg.lfpimg['bay'], gains=gains)
+        self._reshape_bayer()
+        self._bay_img = self.desaturate_clipped(self._bay_img, gains=gains)
+        self._reshape_bayer()

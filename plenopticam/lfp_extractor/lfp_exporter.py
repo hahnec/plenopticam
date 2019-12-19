@@ -24,7 +24,6 @@ __license__ = """
 from plenopticam import misc
 from plenopticam.lfp_reader.cfa_processor import CfaProcessor
 from plenopticam.lfp_extractor.lfp_viewpoints import LfpViewpoints
-from plenopticam.lfp_extractor.lfp_contrast import LfpContrast
 
 
 # external libs
@@ -39,13 +38,6 @@ class LfpExporter(LfpViewpoints):
 
         self.refo_stack = np.asarray(refo_stack) if refo_stack else None
 
-        # gamma correction
-        if hasattr(self, 'cfg'):
-            self.cfg.lfpimg['gam'] = 1./2.2
-            gamma = self.cfg.lfpimg['gam'] if self.cfg.lfpimg and 'gam' in self.cfg.lfpimg.keys() else 1/2.2
-            self.vp_img_arr = CfaProcessor().correct_gamma(img=self.vp_img_arr, gamma=gamma)
-            self.refo_stack = CfaProcessor().correct_gamma(img=self.refo_stack, gamma=gamma)
-
     def write_viewpoint_data(self):
 
         # write central view as thumbnail image
@@ -55,18 +47,28 @@ class LfpExporter(LfpViewpoints):
         self.export_viewpoints(type='png')
 
         # write viewpoints as single image
-        self.export_vp_stack(type='png')
+        if self.cfg.params[self.cfg.opt_dbug]:
+            self.export_vp_stack(type='png')
 
         # write viewpoint gif animation
         self.gif_vp_img(duration=.1)
 
         return True
 
+    def apply_gamma(self, img):
+
+        # gamma correction
+        gamma = self.cfg.lfpimg['gam'] if self.cfg.lfpimg and 'gam' in self.cfg.lfpimg.keys() else 1 / 2.2
+        return CfaProcessor().correct_gamma(img=img, gamma=gamma)
+
     def export_thumbnail(self, type='tiff'):
+
+        # gamma correction
+        thumb = self.apply_gamma(self.central_view.copy())
 
         # export central viewpoint as thumbnail image
         fp = os.path.join(self.cfg.exp_path, 'thumbnail')
-        misc.save_img_file(self.central_view, file_path=fp, file_type=type)
+        misc.save_img_file(thumb, file_path=fp, file_type=type)
 
         return True
 
@@ -82,8 +84,11 @@ class LfpExporter(LfpViewpoints):
         folderpath = os.path.join(self.cfg.exp_path, 'viewpoints_'+str(ptc_leng)+'px')
         misc.mkdir_p(folderpath)
 
+        # gamma correction
+        vp_img_arr = self.apply_gamma(self.vp_img_arr.copy())
+
         # normalize image array to 16-bit unsigned integer
-        vp_img_arr = misc.Normalizer(self.vp_img_arr).uint16_norm()
+        vp_img_arr = misc.Normalizer(vp_img_arr).uint16_norm()
 
         # export viewpoint images as image files
         for j in range(ptc_leng):
@@ -95,18 +100,28 @@ class LfpExporter(LfpViewpoints):
                 percentage = (((j*self._M+i+1)/self._M**2)*100)
                 self.sta.progress(percentage, self.cfg.params[self.cfg.opt_prnt])
 
+                if self.sta.interrupt:
+                    return False
+
         return True
 
-    def export_vp_stack(self, type='tiff'):
+    def export_vp_stack(self, type='tiff', downscale=None):
 
         # print status
         self.sta.status_msg('Write viewpoint image stack', self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
+        # downscale image
+        downscale = True if downscale is None else downscale
+        views_stacked_img = misc.img_resize(self.views_stacked_img.copy(), 1 / self._M) \
+            if downscale else self.views_stacked_img.copy()
+
+        # gamma correction
+        views_stacked_img = self.apply_gamma(views_stacked_img)
+
         # export all viewpoints in single image
-        views_stacked_path = os.path.join(self.cfg.exp_path, 'views_stacked_img_'+str(self._M)+'px')
-        misc.save_img_file(misc.img_resize(self.views_stacked_img, 1/self._M),
-                           file_path=views_stacked_path, file_type=type)
+        views_stacked_path = os.path.join(self.cfg.exp_path, 'views_stacked_img_' + str(self._M) + 'px')
+        misc.save_img_file(views_stacked_img, file_path=views_stacked_path, file_type=type)
 
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
 
@@ -118,7 +133,7 @@ class LfpExporter(LfpViewpoints):
         self.sta.status_msg('Write refocused images', self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
-        refo_stack = misc.Normalizer(np.asarray(self.refo_stack)).uint16_norm()
+        refo_stack = misc.Normalizer(self.refo_stack).uint16_norm()
         if self.cfg.params[self.cfg.opt_refi]:
             a_list = np.arange(*np.array(self.cfg.params[self.cfg.ran_refo]) * self.cfg.params[self.cfg.ptc_leng])
             a_list = a_list / self.cfg.params[self.cfg.ptc_leng]
@@ -155,9 +170,7 @@ class LfpExporter(LfpViewpoints):
         a = round(float(a) / self._M, 2) if self.cfg.params[self.cfg.opt_refi] else a
 
         # gamma correction
-        gamma = 1./2.2   #self.cfg.lfpimg['gam'] if self.cfg.lfpimg and 'gam' in self.cfg.lfpimg.keys() else 1.
-        refo_img = refo_img.astype('float')
-        refo_img **= gamma
+        refo_img = self.apply_gamma(refo_img.astype('float'))
 
         # write image file
         misc.save_img_file(refo_img, os.path.join(folder_path, str(a)), file_type=file_type)
@@ -166,20 +179,31 @@ class LfpExporter(LfpViewpoints):
 
     def gif_vp_img(self, duration, pattern='circle'):
 
+        # filter images forming a pattern
         lf_radius = min(int((max(self.cfg.calibs[self.cfg.ptc_mean])+1)//4), self._C)
-        fn = 'view_animation_' + str(lf_radius*2+1) + 'px'
         img_set = self.reorder_vp_arr(pattern=pattern, lf_radius=lf_radius)
+
+        # gamma and image normalization
+        img_set = self.apply_gamma(img_set)
         img_set = misc.Normalizer(img_set, dtype=self.vp_img_arr.dtype).uint8_norm()
+
+        # export gif animation
+        fn = 'view_animation_' + str(lf_radius * 2 + 1) + 'px'
         misc.save_gif(img_set, duration=duration, fp=self.cfg.exp_path, fn=fn)
 
         return True
 
     def gif_refo(self):
 
+        # gamma and image normalization
+        refo_stack = self.apply_gamma(self.refo_stack)
+        refo_stack = misc.Normalizer(refo_stack).uint8_norm()
+
+        # append reversed array copy to play forward and backwards
+        refo_stack = np.concatenate((refo_stack, refo_stack[::-1]), axis=0)
+
         # export gif animation
         fn = 'refocus_animation_' + str(self.cfg.params[self.cfg.ptc_leng]) + 'px'
-        refo_stack = misc.Normalizer(np.asarray(self.refo_stack)).uint8_norm()
-        refo_stack = np.concatenate((refo_stack, refo_stack[::-1]), axis=0)      # play forward and backwards
         misc.save_gif(refo_stack, duration=.5, fp=self.cfg.exp_path, fn=fn)
 
         return True
