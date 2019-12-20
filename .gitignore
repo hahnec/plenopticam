@@ -36,3 +36,7 @@
 # LaTeX files
 *.tex
 *.eps
+
+# Advanced Installer
+/pcam_installer_build-cache/
+/pcam_installer_build-SetupFiles/
