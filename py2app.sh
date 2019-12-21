@@ -17,3 +17,7 @@ sudo cp -r ./docs ./dist/plenopticam.app/Contents/Resources/
 
 # rename tifflib as version 5 causes error
 #mv ./dist/plenopticam.app/Contents/Frameworks/libtiff.5.dylib ./dist/plenopticam.app/Contents/Frameworks/libtiff.4.dylib
+
+# create dmg (requires npm and create-dmg)
+sudo xcode-select -switch "/Applications/Xcode.app/Contents/Developer/"
+sudo create-dmg ./dist/plenopticam.app ./dist
