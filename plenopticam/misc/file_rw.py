@@ -99,7 +99,14 @@ def load_img_file(file_path):
         img = imageio.imread(uri=file_path)
 
     elif any(file_type in ext for ext in ('bmp', 'png', 'jpeg', 'jpg')):
-        img = np.asarray(Image.open(file_path))
+        try:
+            img = np.asarray(Image.open(file_path))
+        except OSError:
+            # support load of truncated images
+            from PIL import ImageFile
+            ImageFile.LOAD_TRUNCATED_IMAGES = True
+            img = np.asarray(Image.open(file_path))
+
 
     elif not any(file_type in ext for ext in ('bmp', 'png', 'tiff', 'jpeg', 'jpg')):
         raise TypeError('Filetype %s not recognized' % file_type)
