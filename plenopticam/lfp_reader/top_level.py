@@ -111,6 +111,7 @@ class LfpReader(object):
             # perform color filter array management and obtain rgb image
             cfa_obj = CfaProcessor(bay_img=self._lfp_img, cfg=self.cfg, sta=self.sta)
             cfa_obj.safe_bayer_awb()
+            #cfa_obj.main()
             self._lfp_img = cfa_obj._bay_img
             del cfa_obj
 
