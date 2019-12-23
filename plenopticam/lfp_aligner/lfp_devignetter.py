@@ -139,7 +139,7 @@ class LfpDevignetter(LfpMicroLenses):
 
         X = X.flatten()
         Y = Y.flatten()
-        b = plenopticam.misc.clr_spc_conv.yuv_conv(patch)[..., 0].flatten()
+        b = plenopticam.misc.clr_spc_conv.yuv_conv(patch)[..., 0].flatten() if len(patch.shape) == 3 else patch.flatten()
 
         A = self.compose_vandermonde(X, Y, deg=3)
 
@@ -192,7 +192,8 @@ class LfpDevignetter(LfpMicroLenses):
         weight_win[weight_win < th] = th
 
         # apply vignetting correction
-        div_win += lfp_win / weight_win[margin:-margin, margin:-margin, ...]
+        weight_win = weight_win if len(weight_win.shape) == 3 and weight_win.shape[2] == 3 else weight_win[..., 0]
+        div_win += lfp_win / weight_win[margin:-margin, margin:-margin]
 
         return True
 
