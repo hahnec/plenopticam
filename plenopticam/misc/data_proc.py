@@ -128,3 +128,13 @@ def robust_awb(img, t=0.3, max_iter=1000):
     gains = img[0, 0, :] / ref_pixel if i != max_iter - 1 else (1, 1, 1)
 
     return img, gains
+
+
+def suppress_user_warning(switch=None, category=None):
+
+    import warnings
+    switch = switch if switch is None else True
+    if switch:
+        warnings.filterwarnings("ignore", category=category)
+    else:
+        warnings.filterwarnings("default", category=category)

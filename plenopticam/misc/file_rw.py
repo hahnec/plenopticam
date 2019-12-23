@@ -29,7 +29,7 @@ except ImportError:
     raise ImportError('Please install pillow.')
 
 from plenopticam.misc.normalizer import Normalizer
-from plenopticam.misc.errors import PlenopticamError
+from plenopticam.misc import suppress_user_warning
 
 PORTISHEAD = b"x\x9cm\x8f\xe1\n\xc0 \x08\x84\xdf\xffEu\x8c\x84`kBM\x9d\x95\xc4`\xbb?\xde\xa7R\x9e\x99K\xa55Q\x0b)" + \
              b"\x13\x02 \xf1\xecH\x86P\x96>]\xe8\r\xdf\xe0nRJ[\xaflJ^P\xb8\xdc\xc9\r\xa9\xe0\xe0\x1d\xcek\x98\x06" + \
@@ -67,24 +67,14 @@ def save_img_file(img, file_path=None, file_type=None, gamma=None):
     file_path += '.' + file_type
 
     if file_type == 'tiff':
-        suppress_user_warning(True)
+        suppress_user_warning(True, category=UserWarning)
         imageio.imwrite(uri=file_path, im=Normalizer(img).uint16_norm())
-        suppress_user_warning(False)
+        suppress_user_warning(False, category=UserWarning)
 
     elif file_type == 'png' or file_type == 'bmp':
         Image.fromarray(Normalizer(img).uint8_norm()).save(file_path, file_type, optimize=True)
 
     return True
-
-
-def suppress_user_warning(switch=None):
-
-    import warnings
-    switch = switch if switch is None else True
-    if switch:
-        warnings.filterwarnings("ignore", category=UserWarning)
-    else:
-        warnings.filterwarnings("default", category=UserWarning)
 
 
 def load_img_file(file_path):
@@ -96,7 +86,9 @@ def load_img_file(file_path):
     imageio, file_type = try_tiff_import(file_type)
 
     if file_type == 'tiff':
+        suppress_user_warning(True, category=UserWarning)
         img = imageio.imread(uri=file_path)
+        suppress_user_warning(False, category=UserWarning)
 
     elif any(file_type in ext for ext in ('bmp', 'png', 'jpeg', 'jpg')):
         try:
