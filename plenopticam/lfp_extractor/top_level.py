@@ -83,20 +83,13 @@ class LfpExtractor(object):
 
         if not self.sta.interrupt:
             obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.01, p_hi=1.0)
-            # automatic white balance
-            if self.cfg.params[self.cfg.opt_awb_]:
-                obj.p_hi = 0.996
-                obj.p_lo = 0.008
-            else:
-                # tbd: automatic "black" balance
-                obj.p_hi = 1.0
-                obj.p_lo = 0.005
+            # automatic white balance (otherwise default balance only)
+            obj.p_hi, obj.p_lo = (0.995, 0.01) if self.cfg.params[self.cfg.opt_awb_] else (obj.p_hi, obj.p_lo)
             obj.auto_wht_bal()
-            obj.p_lo = 0
-            obj.p_hi = 1
 
             # automatic saturation
             if self.cfg.params[self.cfg.opt_sat_]:
+                obj.p_hi, obj.p_lo = (1, 0)
                 obj.sat_bal()
 
             self.vp_img_arr = obj.vp_img_arr

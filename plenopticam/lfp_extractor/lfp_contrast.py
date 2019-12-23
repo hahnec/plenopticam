@@ -82,21 +82,29 @@ class LfpContrast(LfpViewpoints):
     def auto_wht_bal(self, method=None):
 
         # status update
-        self.sta.status_msg(msg='Auto white balance', opt=self.cfg.params[self.cfg.opt_prnt])
+        msg = 'Auto white balance' if self.p_hi != 1 else 'Color adjustment'
+        self.sta.status_msg(msg=msg, opt=self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(0, opt=self.cfg.params[self.cfg.opt_prnt])
 
         ch_num = self.vp_img_arr.shape[-1] if len(self.vp_img_arr.shape) > 4 else 3
         for i in range(ch_num):
+            self.p_lo *= 2 if i == 2 else 1
             if method is None:
 
                 # channel selection
                 ref_ch = self.ref_img[..., i]
                 img_ch = self.vp_img_arr[..., i]
 
+                print(self.p_lo)
+                print(self.p_hi)
+
+                # define level limits
+                min = np.percentile(ref_ch, self.p_lo*100)
+                max = np.percentile(ref_ch, self.p_hi*100)
+
                 # normalization of color channel
-                self.vp_img_arr[..., i] = misc.Normalizer(img=img_ch,
-                                                          min=np.percentile(ref_ch, self.p_lo*100),
-                                                          max=np.percentile(ref_ch, self.p_hi*100)).uint16_norm()
+                self.vp_img_arr[..., i] = misc.Normalizer(img=img_ch, min=min, max=max).uint16_norm()
+
             else:
                 # brightness and contrast method
                 self.set_stretch(ref_ch=self.ref_img[..., i])
