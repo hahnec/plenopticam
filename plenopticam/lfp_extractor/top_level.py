@@ -60,13 +60,6 @@ class LfpExtractor(object):
             self.vp_img_arr = lfp_obj.vp_img_arr
             del lfp_obj
 
-        # histogram equalization
-        if self.cfg.params[self.cfg.opt_cont] and not self.sta.interrupt:
-            obj = HistogramEqualizer(img=self.vp_img_arr)
-            self.vp_img_arr = obj.lum_eq()
-            #self.vp_img_arr = obj.awb_eq()
-            del obj
-
         # remove outliers if option is set
         if self.cfg.params[self.cfg.opt_lier] and not self.sta.interrupt:
             obj = LfpOutliers(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
@@ -79,6 +72,13 @@ class LfpExtractor(object):
             obj = LfpColorEqualizer(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
             obj.main()
             self.vp_img_arr = obj._vp_img_arr
+            del obj
+
+        # histogram equalization
+        if self.cfg.params[self.cfg.opt_cont] and not self.sta.interrupt:
+            obj = HistogramEqualizer(img=self.vp_img_arr)
+            self.vp_img_arr = obj.lum_eq()
+            #self.vp_img_arr = obj.awb_eq()
             del obj
 
         if not self.sta.interrupt:
