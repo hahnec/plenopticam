@@ -49,7 +49,7 @@ class CfaProcessor(object):
 
         # internal variables
         self._bit_pac = self.cfg.lfpimg['bit'] if hasattr(self.cfg.lfpimg, 'bit') else 10
-        self._bay_img = bay_img.astype('float') if bay_img is not None else None
+        self._bay_img = bay_img.astype('float') if type(bay_img) is np.ndarray else None
 
         # output variables
         self._rgb_img = np.array([])
