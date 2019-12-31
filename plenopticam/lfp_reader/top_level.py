@@ -108,12 +108,13 @@ class LfpReader(object):
             obj = CfaHotPixels(cfg=self.cfg, sta=self.sta)
             self._lfp_img = obj.rectify_candidates_bayer(bay_img=self._lfp_img.copy(), n=9, sig_lev=3.5)
 
-            # perform color filter array management and obtain rgb image
-            cfa_obj = CfaProcessor(bay_img=self._lfp_img, cfg=self.cfg, sta=self.sta)
-            cfa_obj.safe_bayer_awb()
-            #cfa_obj.main()
-            self._lfp_img = cfa_obj._bay_img
-            del cfa_obj
+            if not self.sta.interrupt:
+                # perform color filter array management and obtain rgb image
+                cfa_obj = CfaProcessor(bay_img=self._lfp_img, cfg=self.cfg, sta=self.sta)
+                cfa_obj.safe_bayer_awb()
+                #cfa_obj.main()
+                self._lfp_img = cfa_obj._bay_img
+                del cfa_obj
 
         # write json file
         self.cfg.save_params()
