@@ -25,6 +25,7 @@ from plenopticam.misc import PlenopticamStatus
 
 import numpy as np
 
+
 class LfpViewpoints(object):
 
     def __init__(self, *args, **kwargs):

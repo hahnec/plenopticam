@@ -11,6 +11,7 @@ import functools
 from scipy.interpolate import interp2d, RectBivariateSpline
 from scipy.ndimage import shift
 
+
 class LfpResampler(LfpMicroLenses):
 
     def __init__(self, *args, **kwargs):
