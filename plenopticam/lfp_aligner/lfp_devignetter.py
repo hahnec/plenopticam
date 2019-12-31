@@ -46,6 +46,24 @@ class LfpDevignetter(LfpMicroLenses):
 
         self._lfp_div = np.zeros(self._lfp_img.shape)
 
+        # white balance
+        if len(self._wht_img.shape) == 3:
+            # balance RGB channels in white image
+            #self._wht_img = misc.eq_channels(self._wht_img)
+            self._wht_img = misc.rgb2gray(self._wht_img)[..., np.newaxis]
+        elif len(self._wht_img.shape) == 2:
+            # balance Bayer channels in white image
+            from plenopticam.lfp_reader.cfa_processor import CfaProcessor
+            gains = [1./0.74476742744445801, 1./0.76306647062301636, 1, 1]    # r, gr, gb, b    #self.cfg.lfpimg['awb']
+            self._wht_img = CfaProcessor.correct_awb(img_arr=self._wht_img, bay_pattern=self.cfg.lfpimg['bay'], gains=gains)
+            #for x in range(4):
+            #    max_lim = np.percentile(self._wht_img[x // 2::2, x % 2::2], q=99.9)
+            #    self._wht_img[x//2::2, x%2::2] /= max_lim
+            #self._wht_img[self._wht_img > 1] = 1
+
+        # check for same dimensionality
+        self._wht_img = self._wht_img if len(self._wht_img.shape) == len(self._lfp_img.shape) else misc.rgb2gray(self._wht_img)
+
     def main(self):
 
         # analyse noise in white image
@@ -87,21 +105,6 @@ class LfpDevignetter(LfpMicroLenses):
     def wht_img_divide(self, th=None):
 
         self._th = th if th is not None else self._th
-
-        # equalize channel balance for white image channels
-        if len(self._wht_img.shape) == 3:
-            self._wht_img = misc.eq_channels(self._wht_img)
-            #self._wht_img = misc.rgb2gray(self._wht_img)[..., np.newaxis]
-
-        elif len(self._wht_img.shape) == 2:
-
-            from plenopticam.lfp_reader.cfa_processor import CfaProcessor
-            gains = [1./0.74476742744445801, 1./0.76306647062301636, 1, 1]    # r, gr, gb, b    #self.cfg.lfpimg['awb']
-            self._wht_img = CfaProcessor.correct_awb(img_arr=self._wht_img, bay_pattern=self.cfg.lfpimg['bay'], gains=gains)
-            #for x in range(4):
-            #    max_lim = np.percentile(self._wht_img[x // 2::2, x % 2::2], q=99.9)
-            #    self._wht_img[x//2::2, x%2::2] /= max_lim
-            #self._wht_img[self._wht_img > 1] = 1
 
         # normalize white image
         self._wht_img /= np.percentile(self._wht_img, q=99.9)
@@ -188,11 +191,10 @@ class LfpDevignetter(LfpMicroLenses):
             weight_win = wht_win/wht_win.max()
 
         # thresholding (to prevent too large numbers in corrected image)
-        th = .2
+        th = .15
         weight_win[weight_win < th] = th
 
         # apply vignetting correction
-        weight_win = weight_win if len(weight_win.shape) == 3 and weight_win.shape[2] == 3 else weight_win[..., 0]
         div_win += lfp_win / weight_win[margin:-margin, margin:-margin]
 
         return True
