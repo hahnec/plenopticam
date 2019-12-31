@@ -15,22 +15,24 @@ sudo sed -i -e '71,85 s/^/#/' ./dist/plenopticam.app/Contents/Resources/lib/pyth
 # copy docs folder to app bundle
 sudo cp -r ./docs ./dist/plenopticam.app/Contents/Resources/
 
-# rename tifflib as version 5 causes error
+# rename tifflib as version 5 causes an error
 #mv ./dist/plenopticam.app/Contents/Frameworks/libtiff.5.dylib ./dist/plenopticam.app/Contents/Frameworks/libtiff.4.dylib
 
 # remove compiled color management file in PIL as it causes an error
-#sudo cp liblcms2.2.dylib ~/
+#sudo cp ../site-packages/PIL/liblcms2.2.dylib ~/
 #sudo rm -rf liblcms2.2.dylib
+
+# move dylibs (prevents error in codesign)
+sudo python3 ./plenopticam/scripts/move_dylibs.py ./dist/plenopticam.app ||
+sudo python ./plenopticam/scripts/move_dylibs.py ./dist/plenopticam.app
+
+# certificate signature
+sudo codesign --deep --signature-size 9400 -f -s "hahnec" ./dist/plenopticam.app
 
 # command -v nvm >/dev/null 2>&1
 #sudo brew install npm
 #sudo npm install -g create-dmg
 #sudo npm install -g create-dmg --unsafe-perm=true --allow-root
-
-# certificate signature
-#sudo mv ./dist/plenopticam.app/Contents/Frameworks/libjpeg.9.dylib ./dist/plenopticam.app/Contents/Frameworks/libjpeg.9.longext
-#sudo codesign --deep --signature-size 9400 -f -s "hahnec" ./dist/plenopticam.app
-#sudo mv ./dist/plenopticam.app/Contents/Frameworks/libjpeg.9.longext ./dist/plenopticam.app/Contents/Frameworks/libjpeg.9.dylib
 
 # create dmg (requires npm and create-dmg)
 sudo xcode-select -switch "/Applications/Xcode.app/Contents/Developer/"
