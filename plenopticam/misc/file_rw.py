@@ -69,7 +69,7 @@ def save_img_file(img, file_path=None, file_type=None, gamma=None, tag=None):
     file_type = 'png' if file_type is None else file_type
     file_path += '.' + file_type
 
-    if file_type == 'tiff':
+    if file_type.__contains__('tif'):
         suppress_user_warning(True, category=UserWarning)
         imageio.imwrite(uri=file_path, im=Normalizer(img).uint16_norm())
         suppress_user_warning(False, category=UserWarning)
@@ -88,7 +88,7 @@ def load_img_file(file_path):
     # try libtiff import or use png instead if import fails
     imageio, file_type = try_tiff_import(file_type)
 
-    if file_type == 'tiff':
+    if file_type.__contains__('tif'):
         suppress_user_warning(True, category=UserWarning)
         img = imageio.imread(uri=file_path)
         suppress_user_warning(False, category=UserWarning)
