@@ -76,6 +76,7 @@ def save_img_file(img, file_path=None, file_type=None, gamma=None, tag=None):
 
     elif file_type == 'png' or file_type == 'bmp':
         Image.fromarray(Normalizer(img).uint8_norm()).save(file_path, file_type, optimize=True)
+        #imageio.imwrite(uri=file_path, im=Normalizer(img).uint8_norm())
 
     return True
 
@@ -95,16 +96,20 @@ def load_img_file(file_path):
 
     elif any(file_type in ext for ext in ('bmp', 'png', 'jpeg', 'jpg')):
         try:
-            img = np.asarray(Image.open(file_path))
+            img = Image.open(file_path)
+            #imageio.imread(uri=file_path, format=file_type)
         except OSError:
             # support load of truncated images
             from PIL import ImageFile
             ImageFile.LOAD_TRUNCATED_IMAGES = True
-            img = np.asarray(Image.open(file_path))
+            img = Image.open(file_path)
 
 
     elif not any(file_type in ext for ext in ('bmp', 'png', 'tiff', 'jpeg', 'jpg')):
         raise TypeError('Filetype %s not recognized' % file_type)
+
+    # convert to numpy.ndarray
+    img = np.asarray(img)
 
     return img
 
@@ -120,7 +125,7 @@ def save_gif(img_set, duration=.1, fp='', fn='default'):
         # only use pillow for gif animation if necessary as it yields poorer image quality
         pil_arr = [Image.fromarray(place_dnp(img)) for img in img_set]
         pil_arr[0].save(os.path.join(fp, fn), save_all=True, append_images=pil_arr[1:], duration=duration, loop=0)
-    except PermissionError as e:
+    except PermissionError:
         pass#raise PlenopticamError(e)
 
     return True
