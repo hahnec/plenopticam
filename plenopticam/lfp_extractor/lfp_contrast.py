@@ -24,6 +24,7 @@ import numpy as np
 
 from plenopticam import misc
 from plenopticam.lfp_extractor import LfpViewpoints
+from plenopticam.lfp_refocuser import ClsRefoSlices
 
 
 class LfpContrast(LfpViewpoints):
@@ -79,12 +80,13 @@ class LfpContrast(LfpViewpoints):
 
         return img
 
-    def auto_wht_bal(self, method=None):
+    def auto_wht_bal(self, method=None, msg_opt=True):
 
         # status update
-        msg = 'Auto white balance' if self.p_hi != 1 else 'Color adjustment'
-        self.sta.status_msg(msg=msg, opt=self.cfg.params[self.cfg.opt_prnt])
-        self.sta.progress(0, opt=self.cfg.params[self.cfg.opt_prnt])
+        if msg_opt:
+            msg = 'Auto white balance' if self.p_hi != 1 else 'Color adjustment'
+            self.sta.status_msg(msg=msg, opt=self.cfg.params[self.cfg.opt_prnt])
+            self.sta.progress(0, opt=self.cfg.params[self.cfg.opt_prnt])
 
         ch_num = self.vp_img_arr.shape[-1] if len(self.vp_img_arr.shape) > 4 else 3
         for i in range(ch_num):
@@ -94,9 +96,6 @@ class LfpContrast(LfpViewpoints):
                 # channel selection
                 ref_ch = self.ref_img[..., i]
                 img_ch = self.vp_img_arr[..., i]
-
-                print(self.p_lo)
-                print(self.p_hi)
 
                 # define level limits
                 min = np.percentile(ref_ch, self.p_lo*100)
@@ -111,7 +110,8 @@ class LfpContrast(LfpViewpoints):
                 self.apply_stretch(ch=i)
 
             # status update
-            self.sta.progress((i+1)/ch_num*100, opt=self.cfg.params[self.cfg.opt_prnt])
+            if msg_opt:
+                self.sta.progress((i+1)/ch_num*100, opt=self.cfg.params[self.cfg.opt_prnt])
 
         return True
 
@@ -133,7 +133,7 @@ class LfpContrast(LfpViewpoints):
         self.vp_img_arr = misc.Normalizer(img=self.vp_img_arr, min=min, max=max).uint16_norm()
 
         # status update
-        self.sta.progress((i+1)/ch_num*100, opt=self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt])
 
         return True
 
