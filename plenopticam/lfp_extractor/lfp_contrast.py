@@ -56,23 +56,27 @@ class LfpContrast(LfpViewpoints):
 
     def post_lum(self):
 
-        self.proc_vp_arr(self.lum_norm, ch=0, msg='contrast eq')
+        self.vp_img_arr = misc.Normalizer(self.vp_img_arr).uint16_norm()
 
-    def lum_norm(self, img, ch=None, dtype=None):
+        self.proc_vp_arr(self.lum_norm, msg='Luminance normalization')
+
+    def lum_norm(self, img, ch=None):
 
         # set default channel
         ch = ch if ch is not None else 0
 
-        # set default data type
-        dtype = img.dtype if dtype is None else dtype
-
         # RGB to YUV conversion
         img = misc.clr_spc_conv.yuv_conv(img)
 
-        # normalization of Y (luminance channel) for given data type
-        img[..., ch] = misc.Normalizer(img=img[..., ch],
-                                       min=np.percentile(img[..., ch], self.p_lo*100),
-                                       max=np.percentile(img[..., ch], self.p_hi*100), dtype=dtype).type_norm()
+        # channel selection
+        ref_ch = misc.clr_spc_conv.yuv_conv(self.ref_img)[..., ch]
+
+        # define level limits
+        min = np.percentile(ref_ch, self.p_lo*100)
+        max = np.percentile(ref_ch, self.p_hi*100)
+
+        # normalization of Y (luminance channel)
+        img[..., ch] = misc.Normalizer(img=img[..., ch], min=min, max=max).uint16_norm()
 
         # YUV to RGB conversion
         img = misc.clr_spc_conv.yuv_conv(img, inverse=True)
@@ -205,8 +209,6 @@ class LfpContrast(LfpViewpoints):
 
     def apply_stretch_lum(self, img=None):
         ''' contrast and brightness rectification to luminance channel of provided RGB image '''
-
-        img = img if img is not None else self.vp_img_arr
 
         # color model conversion
         img = misc.clr_spc_conv.yuv_conv(img) if img is not None else misc.clr_spc_conv.yuv_conv(self.vp_img_arr)
