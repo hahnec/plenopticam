@@ -24,7 +24,6 @@ import numpy as np
 
 from plenopticam import misc
 from plenopticam.lfp_extractor import LfpViewpoints
-from plenopticam.lfp_refocuser import ClsRefoSlices
 
 
 class LfpContrast(LfpViewpoints):
