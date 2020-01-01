@@ -58,8 +58,8 @@ class LfpExporter(LfpViewpoints):
     def apply_gamma(self, img):
 
         # gamma correction
-        gamma = self.cfg.lfpimg['gam'] if self.cfg.lfpimg and 'gam' in self.cfg.lfpimg.keys() else 1 / 2.2
-        return CfaProcessor().correct_gamma(img=img, gamma=gamma)
+        #gamma = self.cfg.lfpimg['gam'] if self.cfg.lfpimg and 'gam' in self.cfg.lfpimg.keys() else 1 / 2.2
+        return CfaProcessor().correct_gamma(img=img, gamma=1/2.2)
 
     def export_thumbnail(self, type='tiff'):
 
