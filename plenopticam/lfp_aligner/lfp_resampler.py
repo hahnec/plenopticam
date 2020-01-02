@@ -19,9 +19,15 @@ class LfpResampler(LfpMicroLenses):
 
         # interpolation method initialization
         method = kwargs['method'] if 'method' in kwargs else None
-        method = method if method in ['linear', 'cubic', 'quintic'] else None
+        method = method if method in ['nearest', 'linear', 'cubic', 'quintic'] else None
         interp2d_method = functools.partial(interp2d, kind=method) if method is not None else interp2d
-        self._interpol_method = RectBivariateSpline if method is None else interp2d_method
+
+        if method is None:
+            self._interpol_method = RectBivariateSpline
+        elif method == 'nearest':
+            self._interpol_method = self._nearest
+        else:
+            self._interpol_method = interp2d_method
 
         # output variable
         if self._lfp_img is not None:
@@ -67,9 +73,9 @@ class LfpResampler(LfpMicroLenses):
         patch = np.zeros(window.shape)
 
         for p in range(window.shape[2]):
-#
+
             fun = self._interpol_method(range(window.shape[1]), range(window.shape[0]), window[:, :, p])
-#
+
             patch[:, :, p] = fun(np.arange(window.shape[1])+mic[1]-rint(mic[1]),
                                  np.arange(window.shape[0])+mic[0]-rint(mic[0]))
 
@@ -77,6 +83,15 @@ class LfpResampler(LfpMicroLenses):
         #patch = shift(window, shift=shift_coords) #tbt
 
         return patch
+
+    def _nearest(self, range0, range1, window):
+
+        def shift_win(shifted_range0, shifted_range1):
+            range0 = np.round(shifted_range0).astype('int')
+            range1 = np.round(shifted_range1).astype('int')
+            return window[range0[0]:range0[-1]+1, range1[0]:range0[-1]+1]
+
+        return shift_win
 
     @staticmethod
     def _get_hex_direction(centroids):
