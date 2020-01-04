@@ -115,6 +115,20 @@ class CaliFinder(object):
             obj = LfpDecoder(self._raw_data, self.cfg, self.sta)
             obj.decode_raw()
             self._wht_bay = obj.bay_img
+
+            # balance Bayer channels in white image
+            try:
+                wht_json = json.loads(self._wht_json.read())
+                data = safe_get(
+                    safe_get(wht_json, 'master', 'picture', 'frameArray')[0],
+                    'frame', 'metadata', 'devices', 'sensor', 'normalizedResponses')[0]
+                gains = [1./data['b'], 1./data['r'], 1./data['gr'], 1./data['gb']]
+            except ValueError:
+                gains = [1. / 0.74476742744445801, 1. / 0.76306647062301636, 1, 1]  # r, gr, gb, b
+
+            from plenopticam.lfp_reader.cfa_processor import CfaProcessor
+            self._wht_bay = CfaProcessor.correct_awb(img_arr=self._wht_bay, bay_pattern=self.cfg.lfpimg['bay'], gains=gains)
+
             del obj
 
         return True
@@ -193,6 +207,7 @@ class CaliFinder(object):
 
                 # load raw data
                 self._raw_data = tar_obj.extractfile('unitdata/' + self._cal_fn)
+                self._wht_json = tar_obj.extractfile('unitdata/' + self._cal_fn.upper().replace('.RAW', '.TXT'))
 
         except FileNotFoundError:
             self.sta.status_msg('Did not find calibration file.', opt=True)
