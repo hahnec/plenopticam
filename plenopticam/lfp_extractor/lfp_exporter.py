@@ -68,7 +68,7 @@ class LfpExporter(LfpViewpoints):
 
         # export central viewpoint as thumbnail image
         fp = os.path.join(self.cfg.exp_path, 'thumbnail')
-        misc.save_img_file(thumb, file_path=fp, file_type=type)
+        misc.save_img_file(thumb, file_path=fp, file_type=type, tag=self.cfg.params[self.cfg.opt_dbug])
 
         return True
 
@@ -94,7 +94,8 @@ class LfpExporter(LfpViewpoints):
         for j in range(ptc_leng):
             for i in range(ptc_leng):
 
-                misc.save_img_file(vp_img_arr[j, i], os.path.join(folderpath, str(j) + '_' + str(i)), file_type=type)
+                misc.save_img_file(vp_img_arr[j, i], os.path.join(folderpath, str(j) + '_' + str(i)),
+                                   file_type=type, tag=self.cfg.params[self.cfg.opt_dbug])
 
                 # print status
                 percentage = (((j*self._M+i+1)/self._M**2)*100)

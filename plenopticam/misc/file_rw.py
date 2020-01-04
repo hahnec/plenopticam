@@ -54,7 +54,7 @@ def save_img_file(img, file_path=None, file_type=None, gamma=None, tag=None):
     file_path = os.getcwd() if file_path is None else file_path
     ext = os.path.splitext(file_path)[-1][1:]
     try:
-        img = place_dnp(img) if tag is None else img
+        img = place_dnp(img) if not tag else img
     except ValueError:
         pass
 
