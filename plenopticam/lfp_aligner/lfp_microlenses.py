@@ -40,15 +40,16 @@ class LfpMicroLenses(object):
         self._lfp_img = self._lfp_img.astype('float64') if self._lfp_img is not None else None
         self._wht_img = self._wht_img.astype('float64') if self._wht_img is not None else None
 
-        # micro lens array variables
-        self._CENTROIDS = np.asarray(self.cfg.calibs[self.cfg.mic_list])
-        self._LENS_Y_MAX = int(max(self._CENTROIDS[:, 2])+1)    # +1 to account for index 0
-        self._LENS_X_MAX = int(max(self._CENTROIDS[:, 3])+1)    # +1 to account for index 0
+        if self.cfg.calibs:
+            # micro lens array variables
+            self._CENTROIDS = np.asarray(self.cfg.calibs[self.cfg.mic_list])
+            self._LENS_Y_MAX = int(max(self._CENTROIDS[:, 2])+1)    # +1 to account for index 0
+            self._LENS_X_MAX = int(max(self._CENTROIDS[:, 3])+1)    # +1 to account for index 0
 
-        # micro image size evaluation
-        self._M = self.pitch_max(self.cfg.calibs[self.cfg.mic_list])
-        self._M = self.pitch_eval(self._M, self.cfg.params[self.cfg.ptc_leng], self.sta)
-        self._C = self._M//2
+            # micro image size evaluation
+            self._M = self.pitch_max(self.cfg.calibs[self.cfg.mic_list])
+            self._M = self.pitch_eval(self._M, self.cfg.params[self.cfg.ptc_leng], self.sta)
+            self._C = self._M//2
 
         if self._lfp_img is not None:
 
