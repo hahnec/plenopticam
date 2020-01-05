@@ -150,7 +150,7 @@ class LfpResampler(LfpMicroLenses):
         # initialize variables required for micro image resampling process
         patch_stack = np.zeros([self._LENS_X_MAX, self._M, self._M, self._DIMS[2]])
         hex_stretch = int(np.round(2 * self._LENS_X_MAX / np.sqrt(3)))
-        interpol_stack = np.zeros([hex_stretch, self._M, self._M, self._DIMS[2]])
+        interp_stack = np.zeros([hex_stretch, self._M, self._M, self._DIMS[2]])
         self._lfp_out = np.zeros([self._LENS_Y_MAX * self._M, hex_stretch * self._M, self._DIMS[2]])
 
         # check if lower neighbor of upper left MIC is shifted to left or right
@@ -167,20 +167,16 @@ class LfpResampler(LfpMicroLenses):
                 window = self._lfp_img[rint(mic[0])-self._C-1:rint(mic[0])+self._C+2, rint(mic[1])-self._C-1:rint(mic[1])+self._C+2]
                 patch_stack[lx, :, :] = self._patch_align(window, mic)[1:-1, 1:-1]
 
-                # do interpolation of two adjacent micro images
-                if np.mod(ly + hex_odd, 2) and lx > 0:
-                    patch_stack[lx - 1, :, :, :] = (patch_stack[lx - 1, :, :, :] + patch_stack[lx, :, :, :]) / 2.
-
             # image stretch interpolation in x-direction to compensate for hex-alignment
             for y in range(self._M):
                 for x in range(self._M):
                     for p in range(self._DIMS[2]):
                         # stack of micro images elongated in x-direction
-                        interpol_vals = np.arange(hex_stretch) / hex_stretch * self._LENS_X_MAX
-                        interpol_stack[:, y, x, p] = np.interp(interpol_vals, range(self._LENS_X_MAX), patch_stack[:, y, x, p])
+                        interp_coords = np.linspace(0, self._LENS_X_MAX, self._LENS_X_MAX*2/np.sqrt(3))+.5*np.mod(ly+hex_odd, 2)
+                        interp_stack[:, y, x, p] = np.interp(interp_coords, range(self._LENS_X_MAX), patch_stack[:, y, x, p])
 
             self._lfp_out[ly*self._M:ly*self._M+self._M, :] = \
-                np.concatenate(interpol_stack, axis=1).reshape((self._M, hex_stretch * self._M, self._DIMS[2]))
+                np.concatenate(interp_stack, axis=1).reshape((self._M, hex_stretch * self._M, self._DIMS[2]))
 
             # check interrupt status
             if self.sta.interrupt:
