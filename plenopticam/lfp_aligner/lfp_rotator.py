@@ -27,6 +27,7 @@ from plenopticam.lfp_calibrator.centroid_drawer import CentroidDrawer
 from plenopticam.misc import PlenopticamStatus
 from plenopticam.cfg import PlenopticamConfig
 
+
 class LfpRotator(object):
 
     def __init__(self, lfp_img, mic_list, rad=None, cfg=None, sta=None):
@@ -52,7 +53,10 @@ class LfpRotator(object):
         self._rotate_centroids()
 
         # write plot img to hard drive (debug only)
+        self.sta.status_msg('Save rotated image with centroids', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
         CentroidDrawer(self._lfp_img, self._centroids, self.cfg).write_centroids_img(fn='lfp_rotated.png')
+        self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
 
         return True
 
@@ -92,7 +96,7 @@ class LfpRotator(object):
 
     @staticmethod
     def _regress_method(mid_row, mid_col):
-        ''' get slopes via ordinary least-squares linear regression (thesis approach) '''
+        ''' get slopes via ordinary least-squares linear regression '''
 
         # horizontal slope
         A = np.vstack([np.ones(len(mid_row[:, 1])), mid_row[:, 1]]).T
@@ -116,7 +120,6 @@ class LfpRotator(object):
         slope_col = np.mean(np.diff(mid_col[:, 1])/np.diff(mid_col[:, 0]))
 
         return slope_row, slope_col
-
 
     def _rotate_img(self):
 
