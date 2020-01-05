@@ -32,6 +32,7 @@ import scipy
 
 DR = 1  # down-sample rate
 
+
 class CentroidExtractor(object):
 
     def __init__(self, img, cfg, sta=None, M=None, method=None):
@@ -71,12 +72,12 @@ class CentroidExtractor(object):
         self._sta.status_msg('Compute LoG', self._cfg.params[self._cfg.opt_prnt])
 
         # Gaussian sigma
-        sig = int(self._M/4)/1.18#int(self._M/2)/np.sqrt(2)
+        sig = int(self._M/4)/1.18
 
         # convolutions
         laplace_kernel = np.array([[0, 1, 0], [1, -4, 1], [0, 1, 0]])
         gauss_kernel = create_gauss_kernel(int(sig*6), sig)
-        mexican_hat = -scipy.signal.convolve2d(gauss_kernel, laplace_kernel)[2:-2, 2:-2] #sig**2 *
+        mexican_hat = -scipy.signal.convolve2d(gauss_kernel, laplace_kernel)[2:-2, 2:-2]
         self._peak_img = scipy.signal.convolve2d(self._img, mexican_hat, 'same')
 
         # print progress
