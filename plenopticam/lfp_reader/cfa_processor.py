@@ -154,24 +154,30 @@ class CfaProcessor(object):
         return img_arr
 
     @staticmethod
-    def desaturate_clipped(img_arr, gains=None, bay_pattern="GRBG"):
+    def desaturate_clipped(img_arr, bay_pattern=None, gains=None):
 
         # skip process if gains not set
-        if gains is not None and bay_pattern is "GRBG":
-            b, r, g1, g2 = gains
+        if gains is not None:
+            if len(img_arr.shape) == 3 and img_arr.shape[-1] == 4:
+                if bay_pattern is "GRBG":
+                    gains = np.array([gains[2], gains[1], gains[0], gains[3]])
+                elif bay_pattern is "BGGR":
+                    gains = np.array([gains[0], gains[2], gains[3], gains[1]])
+                else:
+                    return img_arr
+            elif len(img_arr.shape) == 3 and img_arr.shape[-1] == 3:
+                gains = np.array([gains[1], (gains[2]+gains[3])/2, gains[0]])
+            else:
+                return img_arr
         else:
             return img_arr
 
-        orig = np.zeros(img_arr.shape)
-        if len(img_arr.shape) == 3 and img_arr.shape[-1] == 3:
-            orig = (img_arr/np.array([r, g1, b]))
-
-        elif len(img_arr.shape) == 3 and img_arr.shape[-1] == 4:
-            orig = (img_arr / np.array([g1, r, b, g2]))
+        # original channel intensities
+        orig = img_arr / gains
 
         # identify clipped pixels
         beta = orig / np.amax(orig, axis=2)[..., np.newaxis]
-        weights = beta * np.array([r, g1, b]) if img_arr.shape[-1] == 3 else beta * np.array([g1, r, b, g2])
+        weights = beta * gains
         weights[weights < 1] = 1
         mask = np.zeros(orig.shape[:2])
         mask[np.amax(orig, axis=2) >= orig.max()] = 1
