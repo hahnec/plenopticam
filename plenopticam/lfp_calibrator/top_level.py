@@ -89,7 +89,7 @@ class LfpCalibrator(object):
         try:
             self.cfg.save_cal_data(mic_list=mic_list, pat_type=pattern, ptc_mean=pitch)
             self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt])
-        except:
+        except PermissionError:
             self.sta.status_msg('Could not save calibration data', opt=self.cfg.params[self.cfg.opt_prnt])
 
         # write image to hard drive (only if debug option is set)
