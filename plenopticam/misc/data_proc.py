@@ -54,16 +54,25 @@ def safe_get(dict, *keys):
     return dict
 
 
-def img_resize(img, x_scale=1, y_scale=None):
+def img_resize(img, x_scale=1, y_scale=None, method=None):
     ''' perform image interpolation based on scipy lib '''
 
     if not y_scale:
         y_scale = x_scale
 
-    n, m, P = img.shape
+    method = 'cubic' if method is None else method
+
+    if len(img.shape) == 3:
+        n, m, P = img.shape
+    elif len(img.shape) == 2:
+        n, m, P = img.shape + (1,)
+        img = img[..., np.newaxis]
+    else:
+        raise NotImplementedError
+
     new_img = np.zeros([int(n*y_scale), int(m*x_scale), P])
     for p in range(P):
-        f = interp2d(range(m), range(n), img[:, :, p])
+        f = interp2d(range(m), range(n), img[:, :, p], kind=method)
         new_img[:, :, p] = f(np.linspace(0, m - 1, m * x_scale), np.linspace(0, n - 1, n * y_scale))
 
     return new_img
