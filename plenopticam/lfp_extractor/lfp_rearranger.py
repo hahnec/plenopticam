@@ -49,6 +49,9 @@ class LfpRearranger(LfpViewpoints):
         # rearrange light-field to viewpoint representation
         self.viewpoint_extraction()
 
+        if self.cfg.calibs[self.cfg.pat_type] == 'hex' and not self.sta.interrupt:
+            self.hex_align()
+
     def viewpoint_extraction(self):
 
         # print status
