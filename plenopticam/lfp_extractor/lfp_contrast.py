@@ -93,7 +93,6 @@ class LfpContrast(LfpViewpoints):
 
         ch_num = self.vp_img_arr.shape[-1] if len(self.vp_img_arr.shape) > 4 else 3
         for i in range(ch_num):
-            self.p_lo *= 2 if i == 2 else 1
             if method is None:
 
                 # channel selection
