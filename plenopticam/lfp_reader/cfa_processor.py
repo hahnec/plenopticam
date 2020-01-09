@@ -62,7 +62,14 @@ class CfaProcessor(object):
 
         # color matrix correction
         if 'ccm' in self.cfg.lfpimg.keys():
-            self._rgb_img = self.correct_color(self._rgb_img, ccm_mat=np.reshape(self.cfg.lfpimg['ccm'], (3, 3)).T)
+            # transpose and flip ccm_mat for RGB order
+            ccm_mat = np.reshape(self.cfg.lfpimg['ccm'], (3, 3))#[::-1, ::-1].T
+            self._rgb_img = self.correct_color(self._rgb_img, ccm_mat=ccm_mat)
+
+            #self.sta.status_msg('Save CCM Image')
+            #self.sta.status_msg(0)
+            #misc.save_img_file(self._rgb_img, 'img_ccm')
+            #self.sta.progress(100)
 
         # convert to uint16
         self._rgb_img = misc.Normalizer(self._rgb_img).uint16_norm()
@@ -191,19 +198,24 @@ class CfaProcessor(object):
     def correct_color(img, ccm_mat=np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])):
         ''' color correction according to http://www.imatest.com/docs/colormatrix/ using Case 1 '''
 
+        new = np.zeros_like(img)
+        new[..., 2] = img[..., 0]
+        new[..., 1] = img[..., 1]
+        new[..., 0] = img[..., 2]
+
         # perform color correction
-        img_ccm = np.dot(np.vstack(img), ccm_mat).reshape(img.shape)
+        img_ccm = np.dot(ccm_mat, np.vstack(new).T).T.reshape(img.shape)
 
-        # normalize image to previous intensity limits
-        obj = misc.Normalizer(img=img_ccm, min=np.percentile(img_ccm, .05), max=np.percentile(img_ccm, 99.95))
-        img_ccm = obj.type_norm(lim_min=img.min(), lim_max=img.max())
+        img[..., 2] = img_ccm[..., 0]
+        img[..., 1] = img_ccm[..., 1]
+        img[..., 0] = img_ccm[..., 2]
 
-        return img_ccm
+        return img
 
     def safe_bayer_awb(self):
 
         gains = np.asarray(self.cfg.lfpimg['awb'], dtype='float64')
         self._bay_img = self.correct_awb(self._bay_img, self.cfg.lfpimg['bay'], gains=gains)
         self._reshape_bayer()
-        self._bay_img = self.desaturate_clipped(self._bay_img, gains=gains)
+        self._bay_img = self.desaturate_clipped(self._bay_img, self.cfg.lfpimg['bay'], gains=gains)
         self._reshape_bayer()
