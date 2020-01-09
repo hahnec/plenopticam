@@ -24,6 +24,7 @@ __license__ = """
 from plenopticam.misc import safe_get
 from plenopticam.misc.status import PlenopticamStatus
 from plenopticam.cfg import PlenopticamConfig
+from plenopticam.lfp_reader.cfa_processor import CfaProcessor
 
 # external libs
 import json
@@ -115,6 +116,7 @@ class CaliFinder(object):
             obj = LfpDecoder(self._raw_data, self.cfg, self.sta)
             obj.decode_raw()
             self._wht_bay = obj.bay_img
+            del obj
 
             # balance Bayer channels in white image
             try:
@@ -124,12 +126,11 @@ class CaliFinder(object):
                     'frame', 'metadata', 'devices', 'sensor', 'normalizedResponses')[0]
                 gains = [1./data['b'], 1./data['r'], 1./data['gr'], 1./data['gb']]
             except ValueError:
-                gains = [1. / 0.74476742744445801, 1. / 0.76306647062301636, 1, 1]  # r, gr, gb, b
+                gains = [1/0.74476742744445801, 1/0.76306647062301636, 1, 1]
 
-            from plenopticam.lfp_reader.cfa_processor import CfaProcessor
-            self._wht_bay = CfaProcessor.correct_awb(img_arr=self._wht_bay, bay_pattern=self.cfg.lfpimg['bay'], gains=gains)
-
-            del obj
+            # apply white balance gains to calibration file
+            cfa_obj = CfaProcessor()
+            self._wht_bay = cfa_obj.correct_awb(img_arr=self._wht_bay, bay_pattern=self.cfg.lfpimg['bay'], gains=gains)
 
         return True
 
