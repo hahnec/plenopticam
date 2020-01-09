@@ -21,13 +21,14 @@ __license__ = """
 """
 
 # local imports
-from plenopticam.misc.clr_spc_conv import rgb2gray
 from plenopticam.lfp_calibrator.pitch_estimator import PitchEstimator
 from plenopticam.lfp_calibrator.centroid_extractor import CentroidExtractor
 from plenopticam.lfp_calibrator.centroid_sorter import CentroidSorter
 from plenopticam.lfp_calibrator.centroid_drawer import CentroidDrawer
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc.status import PlenopticamStatus
+from plenopticam.lfp_reader.cfa_processor import CfaProcessor
+from plenopticam.misc import rgb2gray
 
 
 class LfpCalibrator(object):
@@ -45,6 +46,17 @@ class LfpCalibrator(object):
         if self._wht_img is None:
             self.sta.status_msg(msg='White image file not present', opt=self.cfg.params[self.cfg.opt_prnt])
             self.sta.error = True
+
+        # convert Bayer to RGB representation
+        if len(self._wht_img.shape) == 2:
+            # perform color filter array management and obtain rgb image
+            cfa_obj = CfaProcessor(bay_img=self._wht_img, cfg=self.cfg, sta=self.sta)
+            cfa_obj.main()
+            self._wht_img = cfa_obj.rgb_img
+            del cfa_obj
+        from plenopticam import misc
+        import os
+        misc.save_img_file(self._wht_img, os.path.join(self.cfg.exp_path, 'wht_img.png'))
 
         # ensure white image is monochromatic
         self._wht_img = rgb2gray(self._wht_img) if len(self._wht_img.shape) is 3 else self._wht_img
