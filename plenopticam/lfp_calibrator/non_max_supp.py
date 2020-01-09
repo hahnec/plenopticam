@@ -23,6 +23,7 @@ __license__ = """
 # external libs
 import numpy as np
 
+
 class NonMaxSuppression(object):
 
     def __init__(self, img, cfg, sta):
@@ -69,17 +70,17 @@ class NonMaxSuppression(object):
                     r += 1
                     continue
                 # compare to pixel on the left
-                if(self._img[r, c] <= self._img[r+1, c]):
+                if self._img[r, c] <= self._img[r+1, c]:
                     r += 1
                     # rising
-                    while (r < h-1 and self._img[r, c] <= self._img[r+1, c]):
+                    while r < h-1 and self._img[r, c] <= self._img[r+1, c]:
                         r += 1
-                    if(r == h-1):
+                    if r == h-1:
                         # reach scanline's local maximum
                         break
                 else:
                     # compare to pixel on the right
-                    if(self._img[r, c] <= self._img[r - 1, c]):
+                    if self._img[r, c] <= self._img[r-1, c]:
                         r += 1
                         continue
                 skip[r+1, cur] = 1
