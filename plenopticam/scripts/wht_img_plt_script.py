@@ -14,6 +14,7 @@ except ImportError:
 
 import numpy as np
 
+
 def plot_centroids(img, centroids, fn):
 
     centroids = np.asarray(centroids)
@@ -52,45 +53,48 @@ def plot_centroids(img, centroids, fn):
 
     return True
 
-# create config object
-cfg = PlenopticamConfig()
-#cfg.default_values()
-#cfg.reset_values()
+
+if __name__ == "__main__":
+
+    # create config object
+    cfg = PlenopticamConfig()
+    #cfg.default_values()
+    #cfg.reset_values()
 
 cfg.params[cfg.cal_path] = "/Users/Admin/Pictures/Plenoptic/CalibFolder/caldata-B5144000580.tar"
 cfg.params[cfg.lfp_path] = "/Users/Admin/Pictures/Plenoptic/INRIA_SIROCCO/Mini.LFR"
 cfg.params[cfg.opt_cali] = True
 
-cal_opt = False
+    cal_opt = False
 
-if cal_opt:
-    # decode light field image
-    lfp_obj = lfp_reader.LfpReader(cfg)
-    lfp_obj.main()
-    lfp_img = lfp_obj.lfp_img
-    del lfp_obj
+    if cal_opt:
+        # decode light field image
+        lfp_obj = lfp_reader.LfpReader(cfg)
+        lfp_obj.main()
+        lfp_img = lfp_obj.lfp_img
+        del lfp_obj
 
-# automatic calibration data selection
-obj = lfp_calibrator.CaliFinder(cfg)
-obj.main()
-wht_img = obj.wht_bay
-del obj
+    # automatic calibration data selection
+    obj = lfp_calibrator.CaliFinder(cfg)
+    obj.main()
+    wht_img = obj.wht_bay
+    del obj
 
-if cal_opt:
-    # perform centroid calibration
-    cal_obj = lfp_calibrator.LfpCalibrator(wht_img, cfg)
-    cal_obj.main()
-    cfg = cal_obj.cfg
-    del cal_obj
+    if cal_opt:
+        # perform centroid calibration
+        cal_obj = lfp_calibrator.LfpCalibrator(wht_img, cfg)
+        cal_obj.main()
+        cfg = cal_obj.cfg
+        del cal_obj
 
-# load calibration data
-cfg.load_cal_data()
+    # load calibration data
+    cfg.load_cal_data()
 
-# de-rotate centroids
-obj = LfpRotator(wht_img, cfg.calibs[cfg.mic_list], rad=None, cfg=cfg)
-obj.main()
-wht_rot, centroids_rot = obj.lfp_img, obj.centroids
-del obj
+    # de-rotate centroids
+    obj = LfpRotator(wht_img, cfg.calibs[cfg.mic_list], rad=None, cfg=cfg)
+    obj.main()
+    wht_rot, centroids_rot = obj.lfp_img, obj.centroids
+    del obj
 
-plot_centroids(wht_img, centroids=cfg.calibs[cfg.mic_list], fn='_')
-plot_centroids(wht_rot, centroids=centroids_rot, fn='_rota')
+    plot_centroids(wht_img, centroids=cfg.calibs[cfg.mic_list], fn='_')
+    plot_centroids(wht_rot, centroids=centroids_rot, fn='_rota')
