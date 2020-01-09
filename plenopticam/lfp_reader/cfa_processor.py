@@ -91,9 +91,9 @@ class CfaProcessor(object):
             self._rgb_img = demosaicing_CFA_Bayer_Menon2007(self._bay_img.astype(np.float32), self.cfg.lfpimg['bay'])
 
         # normalize image to previous intensity limits
-        obj = misc.Normalizer(img=self._rgb_img,
-                              min=np.percentile(self._rgb_img, .05), max=np.percentile(self._rgb_img, 99.95))
-        self._rgb_img = obj.type_norm(lim_min=self._bay_img.min(), lim_max=self._bay_img.max())
+        #obj = misc.Normalizer(img=self._rgb_img,
+        #                      min=np.percentile(self._rgb_img, .05), max=np.percentile(self._rgb_img, 99.95))
+        #self._rgb_img = obj.type_norm(lim_min=self._bay_img.min(), lim_max=self._bay_img.max())
 
         # update status message
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
