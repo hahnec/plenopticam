@@ -68,7 +68,7 @@ class LfpCalibrator(object):
         del obj
 
         # compute all centroids of micro images
-        obj = CentroidExtractor(self._wht_img, self.cfg, self.sta, self._M)
+        obj = CentroidExtractor(self._wht_img, self.cfg, self.sta, self._M, method='area')
         obj.main()
         centroids = obj.centroids
         del obj
