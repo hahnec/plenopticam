@@ -218,7 +218,7 @@ class LfpResampler(LfpMicroLenses):
                 if lx > 0:
 
                     l = patch_stack[2 * lx - 2, :, :, :]
-                    if ly > 0 and self._LENS_Y_MAX - ly > 0:
+                    if ly > 0 and self._LENS_Y_MAX - ly > 1:
                         # interpolate upper adjacent patch while considering hex shift alignment (take same column if row "left-handed", next otherwise)
                         t_mic = self._CENTROIDS[
                             (self._CENTROIDS[:, 3] == lx - np.mod(ly + hex_odd, 2)) & (self._CENTROIDS[:, 2] == ly - 1), [0, 1]]
@@ -231,9 +231,10 @@ class LfpResampler(LfpMicroLenses):
                         b_win = self._lfp_img[int(b_mic[0]) - self._C - 1:int(b_mic[0]) + self._C + 2,
                                 int(b_mic[1])-self._C-1:int(b_mic[1])+self._C+2, :]
                         b = self._patch_align(b_win, b_mic)[1:-1, 1:-1, :]
-
-                        patch_stack[2 * lx - 1, :, :, :] = t * tb_weight + b * tb_weight + l * lr_weight + r * lr_weight
+                        # interpolate patch with weights from hexagonal geometry
+                        patch_stack[2 * lx - 1, :, :, :] = (t+b)*tb_weight + (l+r)*lr_weight
                     else:
+                        # linear interpolation at border
                         patch_stack[2 * lx - 1, :, :, :] = (l + r) / 2.
 
             # shift patch_stack by adding one patch to the front to compensate for hexagonal structure
