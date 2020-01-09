@@ -82,7 +82,7 @@ class LfpExtractor(object):
             del obj
 
         if not self.sta.interrupt:
-            obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.01, p_hi=1.0)
+            obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.0001, p_hi=0.9999)
             # automatic white balance (otherwise default balance only)
             obj.p_hi, obj.p_lo = (0.995, 0.01) if self.cfg.params[self.cfg.opt_awb_] else (obj.p_hi, obj.p_lo)
             obj.auto_wht_bal()
@@ -92,7 +92,7 @@ class LfpExtractor(object):
                 obj.p_hi, obj.p_lo = (1, 0)
                 obj.sat_bal()
 
-            self.vp_img_arr = obj.vp_img_arr
+            self.vp_img_arr = misc.Normalizer(obj.vp_img_arr).uint16_norm()
             del obj
 
         # write viewpoint data to hard drive
