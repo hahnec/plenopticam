@@ -42,19 +42,17 @@ class CentroidDrawer(object):
 
     def write_centroids_img(self, fn='centroids_img.png'):
 
+        # status message handling
+        self.sta.status_msg(msg='Save centroids image', opt=self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
+
         # draw MICs in binary image and save image file for debug purposes
-        if self.cfg.params[self.cfg.opt_dbug] and not self.sta.interrupt:
+        plot_img = self.draw_centroids_img()
+        save_img_file(plot_img, os.path.join(os.path.splitext(self.cfg.params[self.cfg.lfp_path])[0], fn))
+        # self.plot_centroids()
 
-            # status message handling
-            self.sta.status_msg(msg='Save centroids image', opt=self.cfg.params[self.cfg.opt_prnt])
-            self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
-
-            plot_img = self.draw_centroids_img()
-            save_img_file(plot_img, os.path.join(os.path.splitext(self.cfg.params[self.cfg.lfp_path])[0], fn))
-            # self.plot_centroids()
-
-            # status message handling
-            self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
+        # status message handling
+        self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
 
         return True
 
