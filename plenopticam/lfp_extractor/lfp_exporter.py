@@ -22,7 +22,6 @@ __license__ = """
 
 # local imports
 from plenopticam import misc
-from plenopticam.lfp_reader.cfa_processor import CfaProcessor
 from plenopticam.lfp_extractor.lfp_viewpoints import LfpViewpoints
 
 
@@ -55,16 +54,9 @@ class LfpExporter(LfpViewpoints):
 
         return True
 
-    def apply_gamma(self, img):
-
-        # gamma correction
-        #gamma = self.cfg.lfpimg['gam'] if self.cfg.lfpimg and 'gam' in self.cfg.lfpimg.keys() else 1 / 2.2
-        return CfaProcessor().correct_gamma(img=img, gamma=1/2.2)
-
     def export_thumbnail(self, type='tiff'):
 
-        # gamma correction
-        thumb = self.apply_gamma(self.central_view.copy())
+        thumb = misc.Normalizer(self.central_view.copy()).type_norm()
 
         # export central viewpoint as thumbnail image
         fp = os.path.join(self.cfg.exp_path, 'thumbnail')
@@ -84,11 +76,8 @@ class LfpExporter(LfpViewpoints):
         folderpath = os.path.join(self.cfg.exp_path, 'viewpoints_'+str(ptc_leng)+'px')
         misc.mkdir_p(folderpath)
 
-        # gamma correction
-        vp_img_arr = self.apply_gamma(self.vp_img_arr.copy())
-
         # normalize image array to 16-bit unsigned integer
-        vp_img_arr = misc.Normalizer(vp_img_arr).uint16_norm()
+        vp_img_arr = misc.Normalizer(self.vp_img_arr).uint16_norm()
 
         # export viewpoint images as image files
         for j in range(ptc_leng):
@@ -106,7 +95,7 @@ class LfpExporter(LfpViewpoints):
 
         return True
 
-    def export_vp_stack(self, type='tiff', downscale=None):
+    def export_vp_stack(self, type='png', downscale=None):
 
         # print status
         self.sta.status_msg('Write viewpoint image stack', self.cfg.params[self.cfg.opt_prnt])
@@ -117,8 +106,10 @@ class LfpExporter(LfpViewpoints):
         views_stacked_img = misc.img_resize(self.views_stacked_img.copy(), 1 / self._M) \
             if downscale else self.views_stacked_img.copy()
 
-        # gamma correction
-        views_stacked_img = self.apply_gamma(views_stacked_img)
+        # normalization
+        p_lo = np.percentile(views_stacked_img, 1)
+        p_hi = np.percentile(views_stacked_img, 99)
+        views_stacked_img = misc.Normalizer(views_stacked_img, min=p_lo, max=p_hi).uint8_norm()
 
         # export all viewpoints in single image
         views_stacked_path = os.path.join(self.cfg.exp_path, 'views_stacked_img_' + str(self._M) + 'px')
@@ -170,9 +161,6 @@ class LfpExporter(LfpViewpoints):
         # account for sub-pixel precise depth value
         a = round(float(a) / self._M, 2) if self.cfg.params[self.cfg.opt_refi] else a
 
-        # gamma correction
-        refo_img = self.apply_gamma(refo_img.astype('float'))
-
         # write image file
         misc.save_img_file(refo_img, os.path.join(folder_path, str(a)), file_type=file_type)
 
@@ -184,9 +172,8 @@ class LfpExporter(LfpViewpoints):
         lf_radius = min(int((max(self.cfg.calibs[self.cfg.ptc_mean])+1)//4), self._C)
         img_set = self.reorder_vp_arr(pattern=pattern, lf_radius=lf_radius)
 
-        # gamma and image normalization
-        img_set = self.apply_gamma(img_set)
-        img_set = misc.Normalizer(img_set, dtype=self.vp_img_arr.dtype).uint8_norm()
+        # image normalization
+        img_set = misc.Normalizer(img_set).uint8_norm()
 
         # export gif animation
         fn = 'view_animation_' + str(lf_radius * 2 + 1) + 'px'
@@ -196,9 +183,8 @@ class LfpExporter(LfpViewpoints):
 
     def gif_refo(self):
 
-        # gamma and image normalization
-        refo_stack = self.apply_gamma(self.refo_stack)
-        refo_stack = misc.Normalizer(refo_stack).uint8_norm()
+        # image normalization
+        refo_stack = misc.Normalizer(self.refo_stack).uint8_norm()
 
         # append reversed array copy to play forward and backwards
         refo_stack = np.concatenate((refo_stack, refo_stack[::-1]), axis=0)

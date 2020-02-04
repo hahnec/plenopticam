@@ -53,22 +53,22 @@ OPTIONS = {
 }
 
 if platform == 'darwin':
- extra_options = dict(
-     setup_requires=['py2app'],
-     app=APP,
-     data_files=MAC_FILES,
-     options=dict(py2app=OPTIONS),
- )
+    extra_options = dict(
+        setup_requires=['py2app'],
+        app=APP,
+        data_files=MAC_FILES,
+        options=dict(py2app=OPTIONS),
+    )
 elif platform == 'win32':
- extra_options = dict(
-     setup_requires=[],
-     app=APP,
-     data_files=WIN_FILES,
- )
+    extra_options = dict(
+        setup_requires=[],
+        #app=APP,
+        data_files=WIN_FILES,
+    )
 else:
- extra_options = dict(
-     setup_requires=[],
-     data_files=UNIX_FILES,
+    extra_options = dict(
+        setup_requires=[],
+        data_files=UNIX_FILES,
  )
 
 # parse description section text

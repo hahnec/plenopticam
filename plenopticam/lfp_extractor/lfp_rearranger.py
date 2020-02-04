@@ -31,7 +31,8 @@ class LfpRearranger(LfpViewpoints):
     def __init__(self, lfp_img_align=None, *args, **kwargs):
         super(LfpRearranger, self).__init__(*args, **kwargs)
 
-        self._lfp_img_align = Normalizer(lfp_img_align).uint16_norm() if lfp_img_align is not None else None
+        #self._lfp_img_align = Normalizer(lfp_img_align).type_norm() if lfp_img_align is not None else None
+        self._lfp_img_align = lfp_img_align if lfp_img_align is not None else None
         self._dtype = self._lfp_img_align.dtype
 
     def var_init(self):

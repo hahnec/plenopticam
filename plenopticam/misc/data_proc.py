@@ -54,16 +54,25 @@ def safe_get(dict, *keys):
     return dict
 
 
-def img_resize(img, x_scale=1, y_scale=None):
+def img_resize(img, x_scale=1, y_scale=None, method=None):
     ''' perform image interpolation based on scipy lib '''
 
     if not y_scale:
         y_scale = x_scale
 
-    n, m, P = img.shape
+    method = 'cubic' if method is None else method
+
+    if len(img.shape) == 3:
+        n, m, P = img.shape
+    elif len(img.shape) == 2:
+        n, m, P = img.shape + (1,)
+        img = img[..., np.newaxis]
+    else:
+        raise NotImplementedError
+
     new_img = np.zeros([int(n*y_scale), int(m*x_scale), P])
     for p in range(P):
-        f = interp2d(range(m), range(n), img[:, :, p])
+        f = interp2d(range(m), range(n), img[:, :, p], kind=method)
         new_img[:, :, p] = f(np.linspace(0, m - 1, m * x_scale), np.linspace(0, n - 1, n * y_scale))
 
     return new_img
@@ -84,7 +93,7 @@ def eq_channels(img):
 def robust_awb(img, t=0.3, max_iter=1000):
     ''' inspired by Jun-yan Huo et al. and http://web.stanford.edu/~sujason/ColorBalancing/Code/robustAWB.m '''
 
-    img = misc.Normalizer(img).type_norm(lim_min=0, lim_max=1.0)
+    img = misc.Normalizer(img).type_norm(new_min=0, new_max=1.0)
     ref_pixel = img[0, 0, :].copy()
 
     u = .01  # gain step size

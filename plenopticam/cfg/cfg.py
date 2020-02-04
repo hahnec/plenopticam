@@ -209,7 +209,7 @@ class PlenopticamConfig(object):
         return splitext(self.params[self.lfp_path])[0]
 
     def cond_load_limg(self, img=None):
-        return img is None and self.cond_lfp_align() or self.cond_auto_find()
+        return exists(self.params[self.lfp_path]) and (img is None and self.cond_lfp_align() or self.cond_auto_find())
 
     def cond_auto_find(self):
         return isdir(self.params[self.cal_path]) or self.params[self.cal_path].lower().endswith('.tar')

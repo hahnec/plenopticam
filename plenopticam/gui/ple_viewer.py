@@ -64,7 +64,7 @@ def get_list(img_dir, vp=1):
             img = misc.load_img_file(img_path)
 
             # convert to uint8 if necessary
-            img = Normalizer(img=img).uint8_norm() if str(img.dtype) != 'uint8' else img
+            img = Normalizer(img).uint8_norm() if str(img.dtype) != 'uint8' else img
 
             # append to image list
             img_list.append((i, img))

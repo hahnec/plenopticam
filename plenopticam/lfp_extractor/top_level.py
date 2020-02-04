@@ -27,9 +27,9 @@ from plenopticam.lfp_extractor.lfp_cropper import LfpCropper
 from plenopticam.lfp_extractor.lfp_rearranger import LfpRearranger
 from plenopticam.lfp_extractor.lfp_exporter import LfpExporter
 from plenopticam.lfp_extractor.lfp_contrast import LfpContrast
-from plenopticam.misc.hist_eq import HistogramEqualizer
 from plenopticam.lfp_extractor.lfp_outliers import LfpOutliers
 from plenopticam.lfp_extractor.lfp_color_eq import LfpColorEqualizer
+from plenopticam.lfp_extractor.hex_corrector import HexCorrector
 
 
 class LfpExtractor(object):
@@ -53,7 +53,7 @@ class LfpExtractor(object):
         self._lfp_img_align = lfp_obj.lfp_img_align
         del lfp_obj
 
-        # viewpoint images
+        # rearrange light-field to sub-aperture images
         if self.cfg.params[self.cfg.opt_view] and not self.sta.interrupt:
             lfp_obj = LfpRearranger(self._lfp_img_align, cfg=self.cfg, sta=self.sta)
             lfp_obj.main()
@@ -74,24 +74,17 @@ class LfpExtractor(object):
             self.vp_img_arr = obj._vp_img_arr
             del obj
 
-        # histogram equalization
-        if self.cfg.params[self.cfg.opt_cont] and not self.sta.interrupt:
-            obj = HistogramEqualizer(img=self.vp_img_arr)
-            self.vp_img_arr = obj.lum_eq()
-            #self.vp_img_arr = obj.awb_eq()
+        # color management automation
+        if not self.sta.interrupt:
+            obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.01, p_hi=0.995)
+            obj.main()
+            self.vp_img_arr = obj.vp_img_arr
             del obj
 
-        if not self.sta.interrupt:
-            obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.01, p_hi=1.0)
-            # automatic white balance (otherwise default balance only)
-            obj.p_hi, obj.p_lo = (0.995, 0.01) if self.cfg.params[self.cfg.opt_awb_] else (obj.p_hi, obj.p_lo)
-            obj.auto_wht_bal()
-
-            # automatic saturation
-            if self.cfg.params[self.cfg.opt_sat_]:
-                obj.p_hi, obj.p_lo = (1, 0)
-                obj.sat_bal()
-
+        # reduction of hexagonal sampling artifacts
+        if self.cfg.calibs[self.cfg.pat_type] == 'hex' and not self.sta.interrupt:
+            obj = HexCorrector(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
+            obj.main()
             self.vp_img_arr = obj.vp_img_arr
             del obj
 

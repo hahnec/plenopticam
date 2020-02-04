@@ -245,7 +245,7 @@ class CtrlWidget(tk.Frame):
         fp = join(self.cfg.exp_path, splitext(basename(self.cfg.params[self.cfg.lfp_path]))[0]+'.json')
         json_dict = self.cfg.load_json(fp=fp, sta=None)
         from plenopticam.lfp_reader.lfp_decoder import LfpDecoder
-        self.cfg.lfpimg = LfpDecoder().filter_json(json_dict)
+        self.cfg.lfpimg = LfpDecoder().filter_lfp_json(json_dict, settings=self.cfg.lfpimg)
 
     def lfp_extract(self):
 
@@ -274,9 +274,9 @@ class CtrlWidget(tk.Frame):
 
         # white image demosaicing (when light field image is given as RGB)
         if self.wht_img is not None and len(self.lfp_img.shape) == 3:
-            from plenopticam.lfp_reader.cfa_processor import CfaProcessor
+            from plenopticam.lfp_aligner.cfa_processor import CfaProcessor
             cfa_obj = CfaProcessor(bay_img=self.wht_img, cfg=self.cfg, sta=self.sta)
-            cfa_obj.main()
+            cfa_obj.bay2rgb()
             self.wht_img = cfa_obj.rgb_img
             del cfa_obj
 

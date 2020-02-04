@@ -24,9 +24,9 @@ __license__ = """
 from plenopticam import misc
 from plenopticam.lfp_aligner.lfp_resampler import LfpResampler
 from plenopticam.lfp_aligner.lfp_rotator import LfpRotator
+from plenopticam.lfp_aligner.cfa_hotpixels import CfaHotPixels
+from plenopticam.lfp_aligner.cfa_processor import CfaProcessor
 from plenopticam.lfp_aligner.lfp_devignetter import LfpDevignetter
-from plenopticam.lfp_reader.cfa_processor import CfaProcessor
-
 
 class LfpAligner(object):
 
@@ -40,34 +40,41 @@ class LfpAligner(object):
 
     def main(self):
 
-        if self.cfg.params[self.cfg.opt_vign] and self._wht_img is not None:
+        if self.cfg.lfpimg:
+            # hot pixel correction
+            obj = CfaHotPixels(bay_img=self._lfp_img, cfg=self.cfg, sta=self.sta)
+            obj.rectify_candidates_bayer(n=9, sig_lev=3.5)
+            self._lfp_img = obj.bay_img
+            del obj
 
+        if self.cfg.params[self.cfg.opt_vign] and self._wht_img is not None:
             # apply de-vignetting
             obj = LfpDevignetter(lfp_img=self._lfp_img, wht_img=self._wht_img, cfg=self.cfg, sta=self.sta, noise_lev=0)
             obj.main()
-            self._lfp_img = obj._lfp_div
+            self._lfp_img = obj.lfp_img
+            self._wht_img = obj.wht_img
             del obj
 
-        if self.cfg.lfpimg and len(self.lfp_img.shape) == 2 and not self.sta.interrupt:
-
+        if self.cfg.lfpimg and len(self._lfp_img.shape) == 2 and not self.sta.interrupt:
             # perform color filter array management and obtain rgb image
-            cfa_obj = CfaProcessor(bay_img=self._lfp_img, cfg=self.cfg, sta=self.sta)
+            cfa_obj = CfaProcessor(bay_img=self._lfp_img, wht_img=self._wht_img, cfg=self.cfg, sta=self.sta)
             cfa_obj.main()
             self._lfp_img = cfa_obj.rgb_img
             del cfa_obj
 
-        if self.cfg.params[self.cfg.opt_rota] and self._lfp_img is not None:
+        if self.cfg.params[self.cfg.opt_rota] and self._lfp_img is not None and not self.sta.interrupt:
             # de-rotate centroids
             obj = LfpRotator(self._lfp_img, self.cfg.calibs[self.cfg.mic_list], rad=None, cfg=self.cfg, sta=self.sta)
             obj.main()
             self._lfp_img, self.cfg.calibs[self.cfg.mic_list] = obj.lfp_img, obj.centroids
             del obj
 
-        # interpolate each micro image with its MIC as the center with consistent micro image size
-        obj = LfpResampler(lfp_img=self._lfp_img, cfg=self.cfg, sta=self.sta, method='cubic')
-        obj.main()
-        self._lfp_img = obj.lfp_out
-        del obj
+        if not self.sta.interrupt:
+            # interpolate each micro image with its MIC as the center with consistent micro image size
+            obj = LfpResampler(lfp_img=self._lfp_img, cfg=self.cfg, sta=self.sta, method='cubic')
+            obj.main()
+            self._lfp_img = obj.lfp_out
+            del obj
 
         return True
 

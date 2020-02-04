@@ -88,7 +88,7 @@ class LfpDevignetter(LfpMicroLenses):
         ## add selected pixels to light-field image
         #self._lfp_img += lfp_vgn*.5
 
-        self._lfp_img = self._lfp_div#misc.Normalizer(self._lfp_div).uint16_norm()
+        #self._lfp_img = self._lfp_div#misc.Normalizer(self._lfp_div).uint16_norm()
 
         #misc.save_img_file(lfp_vgn, file_path=os.path.join(os.getcwd(), 'lfp_vgn_thresh.bmp'))
         #misc.save_img_file(self._lfp_img, file_path=os.path.join(os.getcwd(), 'lfp_out.bmp'))
@@ -97,19 +97,25 @@ class LfpDevignetter(LfpMicroLenses):
 
         self._th = th if th is not None else self._th
 
-        # normalize white image
-        self._wht_img /= np.percentile(self._wht_img, q=99.9)
-        self._wht_img[self._wht_img > 1] = 1
+        self._wht_img = np.ones(self._lfp_img.shape) if self._wht_img is None else self._wht_img
 
-        # threshold dark areas to prevent large number after division
-        self._th = .15
-        self._wht_img[self._wht_img < self._th] = self._th
+        # normalize white image to upper percentile
+        self._wht_img = self._wht_img / np.percentile(self._wht_img, q=99.9)
 
         # divide light-field image
-        self._lfp_div = self._lfp_img / self._wht_img
+        self._lfp_img = np.divide(self._lfp_img.copy(), self._wht_img,
+                                  out=np.ones_like(self._lfp_img)*float('Inf'), where=self._wht_img != 0)
+        self._lfp_img[~np.isfinite(self._lfp_img)] = 0
 
         # status
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
+
+        # adjust output histogram
+        #q = 0.001
+        #upper_lim = np.percentile(self._lfp_div, (1-q)*100)
+        #lower_lim = np.percentile(self._lfp_img, q*100)
+        #self._lfp_div[self._lfp_div > upper_lim] = upper_lim
+        #self._lfp_div[self._lfp_div < lower_lim] = lower_lim
 
         return True
 
@@ -210,3 +216,11 @@ class LfpDevignetter(LfpMicroLenses):
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
 
         return np.std(bw_img-flt_img)
+
+    @property
+    def lfp_img(self):
+        return self._lfp_img
+
+    @property
+    def wht_img(self):
+        return self._wht_img

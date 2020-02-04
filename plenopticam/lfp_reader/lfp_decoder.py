@@ -88,7 +88,7 @@ class LfpDecoder(object):
         self._shape = [safe_get(self._json_dict, 'image', 'width'), safe_get(self._json_dict, 'image', 'height')]
 
         # filter LFP metadata settings
-        self.cfg.lfpimg = self.filter_json(self._json_dict)
+        self.cfg.lfpimg = self.filter_lfp_json(self._json_dict)
 
         # compose bayer image from lfp file
         sec_idx = self.get_idx(sections, int(self._shape[0] * self._shape[1] * self.cfg.lfpimg['bit'] / 8))
@@ -119,11 +119,11 @@ class LfpDecoder(object):
         return True
 
     @staticmethod
-    def filter_json(json_dict):
+    def filter_lfp_json(json_dict, settings=None):
         ''' filter LFP metadata settings '''
 
         # variable init
-        settings = {}
+        settings = {} if settings is None else settings
         channels = ['b', 'r', 'gb', 'gr']
 
         # filter camera serial and model
@@ -157,6 +157,7 @@ class LfpDecoder(object):
             settings['ccm'] = safe_get(json_dict, 'image', 'color', 'ccm')
             settings['gam'] = safe_get(json_dict, 'master', 'picture', 'frameArray', 0, 'frame', 'metadata', 'image',
                                        'color', 'gamma')
+            settings['exp'] = safe_get(json_dict, "image", "modulationExposureBias")
 
         else:
             raise LfpTypeError('Camera type not recognized')
@@ -289,7 +290,7 @@ class LfpDecoder(object):
 
     @property
     def bay_img(self):
-        return self._bay_img.copy()
+        return (self._bay_img.copy()-65)/(1023-65)
 
     @property
     def json_dict(self):

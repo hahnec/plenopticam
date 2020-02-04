@@ -66,7 +66,7 @@ def parse_options(argv, cfg):
 
     try:
         opts, args = getopt.getopt(argv, "ghf:c:p:r:",
-                                        ["gui", "help", "file=", "cali=", "patch=", "refo=", "refi",
+                                        ["gui", "help", "file=", "cali=", "patch=", "refo=", "dbug", "refi",
                                          "vgn", "awb", "con", "hot", "sat", "rm"])
     except getopt.GetoptError as e:
         print(e)
@@ -89,6 +89,8 @@ def parse_options(argv, cfg):
             if opt in ("-r", "--refo"):
                 refo_range = misc.str2list(arg)
                 cfg.params[cfg.ran_refo] = refo_range if isinstance(refo_range, list) else [0, 2]
+            if opt == "--dbug":
+                cfg.params[cfg.opt_dbug] = True
             if opt == "--refi":
                 cfg.params[cfg.opt_refi] = True
             if opt == "--vgn":
@@ -110,7 +112,7 @@ def parse_options(argv, cfg):
 def main():
 
     # program info
-    print("\nPlenopticam " + __version__ + " by Christopher Hahne\n")
+    print("\nPlenopticam %s \n" % __version__)
 
     # create config object
     cfg = PlenopticamConfig()

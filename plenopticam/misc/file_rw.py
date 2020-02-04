@@ -75,8 +75,11 @@ def save_img_file(img, file_path=None, file_type=None, gamma=None, tag=None):
         suppress_user_warning(False, category=UserWarning)
 
     elif file_type == 'png' or file_type == 'bmp':
-        Image.fromarray(Normalizer(img).uint8_norm()).save(file_path, file_type, optimize=True)
-        #imageio.imwrite(uri=file_path, im=Normalizer(img).uint8_norm())
+        try:
+            Image.fromarray(Normalizer(img).uint8_norm()).save(file_path, file_type, optimize=True)
+            #imageio.imwrite(uri=file_path, im=Normalizer(img).uint8_norm())
+        except PermissionError as e:
+            raise Exception(e)
 
     return True
 
@@ -104,12 +107,11 @@ def load_img_file(file_path):
             ImageFile.LOAD_TRUNCATED_IMAGES = True
             img = Image.open(file_path)
 
-
     elif not any(file_type in ext for ext in ('bmp', 'png', 'tiff', 'jpeg', 'jpg')):
         raise TypeError('Filetype %s not recognized' % file_type)
 
-    # convert to numpy.ndarray
-    img = np.asarray(img)
+    # normalize (convert to numpy array)
+    img = Normalizer(np.asarray(img)).type_norm()
 
     return img
 

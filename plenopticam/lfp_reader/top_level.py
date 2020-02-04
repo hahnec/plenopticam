@@ -25,8 +25,6 @@ __license__ = """
 from plenopticam import misc
 from plenopticam.misc.errors import LfpTypeError, PlenopticamError
 from plenopticam.lfp_reader.lfp_decoder import LfpDecoder
-from plenopticam.lfp_reader.cfa_hotpixels import CfaHotPixels
-from plenopticam.lfp_reader.cfa_processor import CfaProcessor
 from plenopticam.lfp_reader.constants import SUPP_FILE_EXT
 
 import os
@@ -57,36 +55,19 @@ class LfpReader(object):
 
         if self._lfp_path.lower().endswith(SUPP_FILE_EXT):
 
-            # load previously generated tiff if present
-            if os.path.exists(self.fp):
-                try:
-                    self._lfp_img = misc.load_img_file(self.fp)
-                    json_dict = self.cfg.load_json(os.path.dirname(self.fp))
-                    self.cfg.lfpimg = LfpDecoder.filter_json(json_dict)
-                except FileNotFoundError:
-                    # print status
-                    self.sta.status_msg('{0} not found'.format(os.path.basename(self._lfp_path)), self.cfg.params[self.cfg.opt_prnt])
-                    self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
-                    self.sta.error = True
-                except TypeError as e:
-                    self.sta.status_msg(e, self.cfg.params[self.cfg.opt_prnt])
-                    self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
+            try:
+                self.decode_lytro_file()
+            except FileNotFoundError:
+                # print status
+                self.sta.status_msg('{0} not found'.format(os.path.basename(self._lfp_path)), self.cfg.params[self.cfg.opt_prnt])
+                self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
+                self.sta.error = True
+            except Exception as e:
+                # unrecognized LFP file type
+                if not self._json_dict:
                     raise LfpTypeError(e)
-
-            else:
-                try:
-                    self.decode_lytro_file()
-                except FileNotFoundError:
-                    # print status
-                    self.sta.status_msg('{0} not found'.format(os.path.basename(self._lfp_path)), self.cfg.params[self.cfg.opt_prnt])
-                    self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
-                    self.sta.error = True
-                except Exception as e:
-                    # unrecognized LFP file type
-                    if not self._json_dict:
-                        raise LfpTypeError(e)
-                    else:
-                        raise PlenopticamError(e)
+                else:
+                    raise PlenopticamError(e)
         else:
             try:
                 # read and decode generic image file type
@@ -99,22 +80,9 @@ class LfpReader(object):
             try:
                 # try to load json file (if present)
                 json_dict = self.cfg.load_json(self._lfp_path)
-                self.cfg.lfpimg = LfpDecoder.filter_json(json_dict)
+                self.cfg.lfpimg = LfpDecoder.filter_lfp_json(json_dict, self.cfg.lfp_img)
             except:
                 pass
-        
-        if self.cfg.lfpimg:
-            # hot pixel correction
-            obj = CfaHotPixels(cfg=self.cfg, sta=self.sta)
-            self._lfp_img = obj.rectify_candidates_bayer(bay_img=self._lfp_img.copy(), n=9, sig_lev=3.5)
-
-            if not self.sta.interrupt:
-                # perform color filter array management and obtain rgb image
-                cfa_obj = CfaProcessor(bay_img=self._lfp_img, cfg=self.cfg, sta=self.sta)
-                cfa_obj.safe_bayer_awb()
-                #cfa_obj.main()
-                self._lfp_img = cfa_obj._bay_img
-                del cfa_obj
 
         # write json file
         self.cfg.save_params()
@@ -133,7 +101,7 @@ class LfpReader(object):
             self._json_dict = obj.json_dict
             del obj
 
-            if not self.sta.interrupt:
+            if not os.path.exists(self.fp) and not self.sta.interrupt:
                 # save bayer image as file
                 self.sta.status_msg(msg='Save raw image', opt=self.cfg.params[self.cfg.opt_prnt])
                 self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])

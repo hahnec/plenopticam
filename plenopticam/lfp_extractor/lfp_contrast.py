@@ -24,6 +24,8 @@ import numpy as np
 
 from plenopticam import misc
 from plenopticam.lfp_extractor import LfpViewpoints
+from plenopticam.misc.hist_eq import HistogramEqualizer
+from plenopticam.lfp_aligner.cfa_processor import CfaProcessor
 
 
 class LfpContrast(LfpViewpoints):
@@ -38,6 +40,108 @@ class LfpContrast(LfpViewpoints):
 
         # internal variables
         self._contrast, self._brightness = (1., 1.)
+
+    def main(self):
+
+        # histogram equalization
+        if self.cfg.params[self.cfg.opt_cont] and not self.sta.interrupt:
+            obj = HistogramEqualizer(img=self._vp_img_arr)
+            self._vp_img_arr = obj.lum_eq()
+            #self.vp_img_arr = obj.awb_eq()
+            del obj
+
+        if self.cfg.params[self.cfg.opt_awb_] and not self.sta.interrupt:
+            self.contrast_bal()
+
+        # automatic saturation
+        if self.cfg.params[self.cfg.opt_sat_] and not self.sta.interrupt:
+            self.p_hi, self.p_lo = (1, 0)
+            self.sat_bal()
+
+        if self.vp_img_arr is not None:
+            self.apply_ccm()
+        #self._vp_img_arr = misc.data_proc.thresh_hist_stretch(self._vp_img_arr)
+        #self._vp_img_arr = misc.Normalizer(self._vp_img_arr).type_norm()
+
+        # clip to gray limits
+        gray_opt = False
+        if gray_opt:
+            ref_img = misc.rgb2gray(self.central_view)
+            p_lo, p_hi = (0.001, 99.999)
+        else:
+            ref_img = self.central_view
+            p_lo, p_hi = (0.5, 99.9)
+
+        min_perc = np.percentile(self.central_view, p_lo)
+        max_perc = np.percentile(self.central_view, p_hi)
+        self.vp_img_arr = misc.Normalizer(self.vp_img_arr, min=min_perc, max=max_perc).type_norm()
+
+        # gamma correction
+        gamma = 1#self.cfg.lfpimg['gam'] if self.cfg.lfpimg and 'gam' in self.cfg.lfpimg.keys() else 1 / 2.2
+        gam_obj = misc.GammaConverter(img=self._vp_img_arr, gamma=gamma, profile='sRGB')
+        #gam_obj.estimate_gamma(self.central_view)   # automatic gamma proved to yield better results
+        self._vp_img_arr = gam_obj.correct_gamma()
+
+        # cut-off lower end
+        #self.thresh_hist_stretch(th=5e-11)    #2e-10
+
+        # boost gamma
+        #self.vp_img_arr /= self.vp_img_arr.max()
+        #self.vp_img_arr **= .9
+
+        #min_perc = np.percentile(self.central_view, 0.035)
+        #max_perc = np.percentile(self.central_view, 99.95)
+        #self.vp_img_arr = misc.Normalizer(self.vp_img_arr, min=min_perc, max=max_perc).type_norm()
+
+        # boost gamma
+        #self.vp_img_arr /= self.vp_img_arr.max()
+        #self.vp_img_arr **= .7
+
+    def thresh_hist_stretch(self, th=2e-10, bins=2**16-1):
+
+        h = np.histogram(self.central_view, bins=bins)
+        hn = h[0] / h[0].sum()
+        x_vals = np.where(hn / len(hn) > th)[0] / bins
+
+        hs = np.diff(h[0][::128] / h[0][::128].sum())
+        s_vals = np.where(hs > 1.5e-4)[0] / (bins / 128)
+
+        #img = misc.Normalizer(self.central_view.copy(), min=x_vals[1], max=self.central_view.max()).type_norm()
+        self.proc_vp_arr(misc.Normalizer().type_norm, msg='Histogram crop', min=x_vals[1], max=1)
+
+        return True
+
+    def apply_ccm(self):
+
+        # color matrix correction
+        if 'ccm' in self.cfg.lfpimg.keys():
+
+            # ccm mat selection
+            if 'ccm_wht' in self.cfg.lfpimg:
+                ccm_arr = self.cfg.lfpimg['ccm_wht']
+            else:
+                ccm_arr = np.array([2.4827811717987061, -1.1018080711364746, -0.38097298145294189,
+                                    -0.36761483550071716, 1.6667767763137817, -0.29916191101074219,
+                                    -0.18722048401832581, -0.73317205905914307, 1.9203925132751465])
+                #ccm_arr = self.cfg.lfpimg['ccm']
+
+            # normalize
+            self.vp_img_arr /= self.vp_img_arr.max()
+
+            sat_lev = 2 ** (-self.cfg.lfpimg['exp'])
+            self.vp_img_arr *= sat_lev
+
+            # transpose and flip ccm_mat for RGB order
+            ccm_mat = np.reshape(ccm_arr, (3, 3)).T
+            self._vp_img_arr = CfaProcessor().correct_color(self._vp_img_arr.copy(), ccm_mat=ccm_mat)
+
+            # remove potential NaNs
+            self._vp_img_arr[self._vp_img_arr < 0] = 0
+            #self._vp_img_arr[self._vp_img_arr > sat_lev] = sat_lev
+            #self._vp_img_arr /= sat_lev
+            self._vp_img_arr /= self._vp_img_arr.max()
+
+        return True
 
     def contrast_bal(self):
 
@@ -54,9 +158,17 @@ class LfpContrast(LfpViewpoints):
         # status update
         self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt])
 
-    def post_lum(self):
+    def post_lum(self, ch=None):
 
         self.vp_img_arr = misc.Normalizer(self.vp_img_arr).uint16_norm()
+
+        # channel selection
+        ch = ch if ch is not None else 0
+        ref_ch = misc.clr_spc_conv.yuv_conv(self.central_view)[..., ch]
+
+        # define level limits
+        self._min = np.percentile(ref_ch, self.p_lo*100)
+        self._max = np.percentile(ref_ch, self.p_hi*100)
 
         self.proc_vp_arr(self.lum_norm, msg='Luminance normalization')
 
@@ -68,15 +180,8 @@ class LfpContrast(LfpViewpoints):
         # RGB to YUV conversion
         img = misc.clr_spc_conv.yuv_conv(img)
 
-        # channel selection
-        ref_ch = misc.clr_spc_conv.yuv_conv(self.ref_img)[..., ch]
-
-        # define level limits
-        min = np.percentile(ref_ch, self.p_lo*100)
-        max = np.percentile(ref_ch, self.p_hi*100)
-
         # normalization of Y (luminance channel)
-        img[..., ch] = misc.Normalizer(img=img[..., ch], min=min, max=max).uint16_norm()
+        img = misc.Normalizer(img, min=self._min, max=self._max).uint16_norm()
 
         # YUV to RGB conversion
         img = misc.clr_spc_conv.yuv_conv(img, inverse=True)
@@ -93,7 +198,6 @@ class LfpContrast(LfpViewpoints):
 
         ch_num = self.vp_img_arr.shape[-1] if len(self.vp_img_arr.shape) > 4 else 3
         for i in range(ch_num):
-            self.p_lo *= 2 if i == 2 else 1
             if method is None:
 
                 # channel selection
@@ -105,7 +209,7 @@ class LfpContrast(LfpViewpoints):
                 max = np.percentile(ref_ch, self.p_hi*100)
 
                 # normalization of color channel
-                self.vp_img_arr[..., i] = misc.Normalizer(img=img_ch, min=min, max=max).uint16_norm()
+                self.vp_img_arr[..., i] = misc.Normalizer(img_ch, min=min, max=max).uint16_norm()
 
             else:
                 # brightness and contrast method
@@ -133,7 +237,7 @@ class LfpContrast(LfpViewpoints):
             max = np.max([max, np.percentile(self.ref_img[..., i], self.p_hi * 100)])
 
         # normalization of color channel
-        self.vp_img_arr = misc.Normalizer(img=self.vp_img_arr, min=min, max=max).uint16_norm()
+        self.vp_img_arr = misc.Normalizer(self.vp_img_arr, min=min, max=max).uint16_norm()
 
         # status update
         self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt])
@@ -152,7 +256,7 @@ class LfpContrast(LfpViewpoints):
 
         # estimate contrast und brightness parameters (by default: first channel only)
         val_lim = 2**16-1 if not val_lim else val_lim
-        h = np.histogram(ref_ch, bins=np.arange(val_lim))[0]
+        h = np.histogram(ref_ch, bins=val_lim)[0]
         H = np.cumsum(h)/float(np.sum(h))
         try:
             px_lo = self.find_x_given_y(self.p_lo, np.arange(val_lim), H)
@@ -185,17 +289,17 @@ class LfpContrast(LfpViewpoints):
         ''' contrast and brightness rectification For provided RGB image '''
 
         img = img if img is not None else self.vp_img_arr
-        ch = ch if ch is not None else 0
+        #ch = ch if ch is not None else 0
 
         # convert to float
-        f = img[..., ch].astype(np.float32)
+        f = img.astype(np.float32)
 
         # perform auto contrast (by default: "lum" channel only)
-        img[..., ch] = self._contrast * f + self._brightness
+        img = self._contrast * f + self._brightness
 
         # clip to input extrema to remove contrast outliers
-        img[..., ch][img[..., ch] < f.min()] = f.min()
-        img[..., ch][img[..., ch] > f.max()] = f.max()
+        img[img < f.min()] = f.min()
+        img[img > f.max()] = f.max()
 
         return img
 

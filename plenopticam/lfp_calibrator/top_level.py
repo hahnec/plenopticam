@@ -21,13 +21,14 @@ __license__ = """
 """
 
 # local imports
-from plenopticam.misc.clr_spc_conv import rgb2gray
 from plenopticam.lfp_calibrator.pitch_estimator import PitchEstimator
 from plenopticam.lfp_calibrator.centroid_extractor import CentroidExtractor
 from plenopticam.lfp_calibrator.centroid_sorter import CentroidSorter
 from plenopticam.lfp_calibrator.centroid_drawer import CentroidDrawer
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc.status import PlenopticamStatus
+from plenopticam.lfp_aligner.cfa_processor import CfaProcessor
+from plenopticam.misc import rgb2gray
 
 
 class LfpCalibrator(object):
@@ -46,6 +47,14 @@ class LfpCalibrator(object):
             self.sta.status_msg(msg='White image file not present', opt=self.cfg.params[self.cfg.opt_prnt])
             self.sta.error = True
 
+        # convert Bayer to RGB representation
+        if len(self._wht_img.shape) == 2 and 'bay' in self.cfg.lfpimg:
+            # perform color filter array management and obtain rgb image
+            cfa_obj = CfaProcessor(bay_img=self._wht_img, cfg=self.cfg, sta=self.sta)
+            cfa_obj.bay2rgb()
+            self._wht_img = cfa_obj.rgb_img
+            del cfa_obj
+
         # ensure white image is monochromatic
         self._wht_img = rgb2gray(self._wht_img) if len(self._wht_img.shape) is 3 else self._wht_img
 
@@ -56,7 +65,7 @@ class LfpCalibrator(object):
         del obj
 
         # compute all centroids of micro images
-        obj = CentroidExtractor(self._wht_img, self.cfg, self.sta, self._M)
+        obj = CentroidExtractor(self._wht_img, self.cfg, self.sta, self._M, method='area')
         obj.main()
         centroids = obj.centroids
         del obj
@@ -77,7 +86,7 @@ class LfpCalibrator(object):
         try:
             self.cfg.save_cal_data(mic_list=mic_list, pat_type=pattern, ptc_mean=pitch)
             self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt])
-        except:
+        except PermissionError:
             self.sta.status_msg('Could not save calibration data', opt=self.cfg.params[self.cfg.opt_prnt])
 
         # write image to hard drive (only if debug option is set)
