@@ -28,6 +28,7 @@ from plenopticam.misc.status import PlenopticamStatus
 
 DR = 1
 
+
 class CentroidRefiner(object):
 
     def __init__(self, img, centroids, cfg, sta=None, M=None, method=None):
@@ -88,7 +89,7 @@ class CentroidRefiner(object):
 
         # window thresholding
         th_img = np.zeros_like(input_win, dtype=np.bool)
-        th_val = np.percentile(weight_win, 50)
+        th_val = np.percentile(weight_win, 75)
         th_img[weight_win > th_val] = 1
         if np.sum(th_img) == 0:
             raise Exception('Binary object not found')

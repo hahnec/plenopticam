@@ -24,7 +24,7 @@ __license__ = """
 from plenopticam.misc import safe_get
 from plenopticam.misc.status import PlenopticamStatus
 from plenopticam.cfg import PlenopticamConfig
-from plenopticam.lfp_reader.cfa_processor import CfaProcessor
+from plenopticam.lfp_aligner.cfa_processor import CfaProcessor
 
 # external libs
 import json
@@ -94,7 +94,7 @@ class CaliFinder(object):
                 self.sta.status_msg('White image file not found. Revise calibration path settings', self._opt_prnt)
                 self.sta.error = True
 
-            # load white image if found and options are set or meta data is missing
+            # load and keep white image if found and options are set or meta data is missing
             cond = self.cfg.params[self.cfg.opt_cali] or \
                    self.cfg.params[self.cfg.opt_vign] or \
                    not self.cfg.cond_meta_file()
@@ -121,16 +121,19 @@ class CaliFinder(object):
             # balance Bayer channels in white image
             try:
                 wht_json = json.loads(self._wht_json.read())
-                data = safe_get(
-                    safe_get(wht_json, 'master', 'picture', 'frameArray')[0],
-                    'frame', 'metadata', 'devices', 'sensor', 'normalizedResponses')[0]
-                gains = [1./data['b'], 1./data['r'], 1./data['gr'], 1./data['gb']]
+                frame_arr = safe_get(wht_json, 'master', 'picture', 'frameArray')[0]
+                self.cfg.lfpimg['ccm_wht'] = safe_get(frame_arr, 'frame', 'metadata', 'image', 'color', 'ccmRgbToSrgbArray')
+                awb = safe_get(frame_arr, 'frame', 'metadata', 'devices', 'sensor', 'normalizedResponses')[0]
+                gains = [1./awb['b'], 1./awb['r'], 1./awb['gr'], 1./awb['gb']]
+                self.cfg.lfpimg['awb_wht'] = gains
             except ValueError:
                 gains = [1/0.74476742744445801, 1/0.76306647062301636, 1, 1]
 
             # apply white balance gains to calibration file
-            cfa_obj = CfaProcessor()
-            self._wht_bay = cfa_obj.correct_awb(img_arr=self._wht_bay, bay_pattern=self.cfg.lfpimg['bay'], gains=gains)
+            cfa_obj = CfaProcessor(bay_img=self._wht_bay, cfg=self.cfg, sta=self.sta)
+            cfa_obj.set_gains(gains)
+            self._wht_bay = cfa_obj.apply_awb()
+            del cfa_obj
 
         return True
 

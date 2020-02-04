@@ -93,7 +93,7 @@ def eq_channels(img):
 def robust_awb(img, t=0.3, max_iter=1000):
     ''' inspired by Jun-yan Huo et al. and http://web.stanford.edu/~sujason/ColorBalancing/Code/robustAWB.m '''
 
-    img = misc.Normalizer(img).type_norm(lim_min=0, lim_max=1.0)
+    img = misc.Normalizer(img).type_norm(new_min=0, new_max=1.0)
     ref_pixel = img[0, 0, :].copy()
 
     u = .01  # gain step size

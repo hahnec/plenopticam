@@ -4,6 +4,8 @@ from plenopticam import lfp_calibrator
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam import lfp_reader
 from plenopticam.lfp_aligner import LfpRotator
+from plenopticam.lfp_aligner.cfa_processor import CfaProcessor
+from plenopticam import misc
 
 try:
     import matplotlib.pyplot as plt
@@ -26,7 +28,7 @@ def plot_centroids(img, centroids, fn):
     #plt.plot(centroids[:, 1], centroids[:, 0], 'rx')
 
     s = 3
-    h, w, c = img.shape
+    h, w, c = img.shape if len(img.shape) == 3 else img.shape + (1,)
     hp, wp = 150, 200
     fig, axs = plt.subplots(s, s, facecolor='w', edgecolor='k')#, figsize=(15, 6), )
 
@@ -36,7 +38,7 @@ def plot_centroids(img, centroids, fn):
             # plot cropped image part
             k = i * (h//s) + (h//s)//2 - hp//2
             l = j * (w//s) + (w//s)//2 - wp//2
-            axs[i, j].imshow(img[k:k+hp, l:l+wp, :])
+            axs[i, j].imshow(img[k:k+hp, l:l+wp, ...])
 
             # plot cropped centroids
             conditions = (centroids[:, 1] >= l) & (centroids[:, 1] <= l+wp-.5) & \
@@ -44,6 +46,7 @@ def plot_centroids(img, centroids, fn):
             x_centroids = centroids[:, 1][conditions]
             y_centroids = centroids[:, 0][conditions]
             axs[i, j].plot(x_centroids-l, y_centroids-k, 'rx')
+            axs[i, j].grid(False)
 
     plt.show()
     #plt.savefig('input+mics'+fn+'.eps', format='eps')
@@ -61,11 +64,13 @@ if __name__ == "__main__":
     #cfg.default_values()
     #cfg.reset_values()
 
-cfg.params[cfg.cal_path] = "/Users/Admin/Pictures/Plenoptic/CalibFolder/caldata-B5144000580.tar"
-cfg.params[cfg.lfp_path] = "/Users/Admin/Pictures/Plenoptic/INRIA_SIROCCO/Mini.LFR"
-cfg.params[cfg.opt_cali] = True
+    cfg.params[cfg.cal_path] = r"C:\Users\chahne\Pictures\Dataset_INRIA_SIROCCO\caldata-B5144000580.tar"
+    cfg.params[cfg.lfp_path] = r"C:\Users\chahne\Pictures\Dataset_INRIA_SIROCCO\Mini.LFR"
+    cfg.lfpimg['bay'] = "GRBG"
+    cfg.params[cfg.opt_cali] = True
+    cfg.params[cfg.opt_rota] = False
 
-    cal_opt = False
+    cal_opt = True
 
     if cal_opt:
         # decode light field image
@@ -86,15 +91,27 @@ cfg.params[cfg.opt_cali] = True
         cal_obj.main()
         cfg = cal_obj.cfg
         del cal_obj
+    else:
+        # convert Bayer to RGB representation
+        if len(wht_img.shape) == 2 and 'bay' in cfg.lfpimg:
+            # perform color filter array management and obtain rgb image
+            cfa_obj = CfaProcessor(bay_img=wht_img, cfg=cfg)
+            cfa_obj.bay2rgb()
+            wht_img = cfa_obj.rgb_img
+            del cfa_obj
+
+    # ensure white image is monochromatic
+    #wht_img = misc.rgb2gray(wht_img) if len(wht_img.shape) is 3 else wht_img
 
     # load calibration data
     cfg.load_cal_data()
 
-    # de-rotate centroids
-    obj = LfpRotator(wht_img, cfg.calibs[cfg.mic_list], rad=None, cfg=cfg)
-    obj.main()
-    wht_rot, centroids_rot = obj.lfp_img, obj.centroids
-    del obj
+    if cfg.params[cfg.opt_rota]:
+        # de-rotate centroids
+        obj = LfpRotator(wht_img, cfg.calibs[cfg.mic_list], rad=None, cfg=cfg)
+        obj.main()
+        wht_rot, centroids_rot = obj.lfp_img, obj.centroids
+        del obj
 
     plot_centroids(wht_img, centroids=cfg.calibs[cfg.mic_list], fn='_')
     plot_centroids(wht_rot, centroids=centroids_rot, fn='_rota')

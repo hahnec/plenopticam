@@ -157,3 +157,23 @@ class HistogramEqualizer(object):
             self.correct_histeq(ch=i)
 
         return self._ref_img
+
+
+def plot_hist(data, dtype=None):
+
+    data = misc.Normalizer(data).uint16_norm()
+
+    dtype = str(data.dtype) if dtype is None and type(dtype) is np.ndarray else str(dtype)
+    if dtype.startswith(('int', 'uint')):
+        bins = np.iinfo(np.dtype(dtype)).max
+    else:
+        bins = int(data.max() - data.min())
+
+    h = np.histogram(data, bins=bins)
+
+    import matplotlib.pyplot as plt
+    plt.figure()
+    plt.plot(h[1][:-1], h[0])
+    plt.show()
+
+    return True

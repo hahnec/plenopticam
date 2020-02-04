@@ -52,16 +52,8 @@ class LfpMicroLenses(object):
             self._C = self._M//2
 
         if self._lfp_img is not None:
-
             self._DIMS = self._lfp_img.shape if len(self._lfp_img.shape) == 3 else self._lfp_img.shape + (1,)
-#
-        #    # get light field dimensions
-        #    self._DIMS = self._lfp_img.shape
-#
-        #    # add 3rd axis for 2D image
-        #    self._lfp_img = self._lfp_img[..., np.newaxis] if len(self._lfp_img.shape) == 2 else self._lfp_img
-        #    self._wht_img = self._wht_img[..., np.newaxis] if len(self._wht_img.shape) == 2 else self._wht_img
-#
+
     @property
     def lfp_img(self):
         return self._lfp_img.copy() if self._lfp_img is not None else False

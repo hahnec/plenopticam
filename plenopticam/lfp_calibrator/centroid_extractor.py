@@ -30,7 +30,7 @@ from plenopticam.misc.status import PlenopticamStatus
 import numpy as np
 import scipy
 
-DR = 1  # down-sample rate
+DR = 2  # down-sample rate
 
 
 class CentroidExtractor(object):
@@ -50,18 +50,24 @@ class CentroidExtractor(object):
 
     def main(self):
 
-        # compute LoG to remove high frequency noise and carve out peaks
+        # compute LoG to remove high frequency noise and emphasize peaks
         self.compute_log()
 
         # find micro image centers
         self.compute_centroids()
 
+        from plenopticam.lfp_calibrator.centroid_drawer import CentroidDrawer
+        CentroidDrawer(self._peak_img, self._centroids, self._cfg).write_centroids_img(fn='wht_img+mics_nms.png')
+
         if self._method is not None:
             # refine centroids with sub-pixel precision using provided method
-            ref_obj = CentroidRefiner(self._img, self._centroids, self._cfg, self._sta, self._M, method=self._method)
+            ref_obj = CentroidRefiner(self._peak_img, self._centroids, self._cfg, self._sta, self._M, method=self._method)
             ref_obj.main()
             self._centroids = ref_obj.centroids_refined
             del ref_obj
+
+            from plenopticam.lfp_calibrator.centroid_drawer import CentroidDrawer
+            CentroidDrawer(self._img, self._centroids, self._cfg).write_centroids_img(fn='wht_img+mics_refi.png')
 
         return True
 
@@ -77,7 +83,7 @@ class CentroidExtractor(object):
         # convolutions
         laplace_kernel = np.array([[0, 1, 0], [1, -4, 1], [0, 1, 0]])
         gauss_kernel = create_gauss_kernel(int(sig*6), sig)
-        mexican_hat = -scipy.signal.convolve2d(gauss_kernel, laplace_kernel)[2:-2, 2:-2]
+        mexican_hat = -scipy.signal.convolve2d(gauss_kernel, laplace_kernel, 'same')
         self._peak_img = scipy.signal.convolve2d(self._img, mexican_hat, 'same')
 
         # print progress

@@ -17,8 +17,11 @@
 # PyCharm settings
 /.idea/
 
-# release files
+# plenopticam folders
 /releases/
+/tests/data/
+/scripts/
+/docs/build/doctrees/
 
 # Python egg metadata, regenerated from source files by setuptools
 /*.egg-info
@@ -26,12 +29,6 @@
 # image files
 *.psd
 /docs/img/fruits.gif
-
-# doctrees files
-/docs/build/doctrees/
-
-# test data
-/tests/data/
 
 # LaTeX files
 *.tex

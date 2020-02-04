@@ -6,4 +6,5 @@ from plenopticam.misc.file_rw import load_img_file, save_img_file, save_gif
 from plenopticam.misc.status import PlenopticamStatus
 from plenopticam.misc.type_checks import *
 from plenopticam.misc.errors import *
-from plenopticam.misc.hist_eq import HistogramEqualizer
+from plenopticam.misc.hist_eq import HistogramEqualizer, plot_hist
+from plenopticam.misc.gamma_converter import GammaConverter

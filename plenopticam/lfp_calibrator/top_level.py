@@ -27,7 +27,7 @@ from plenopticam.lfp_calibrator.centroid_sorter import CentroidSorter
 from plenopticam.lfp_calibrator.centroid_drawer import CentroidDrawer
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc.status import PlenopticamStatus
-from plenopticam.lfp_reader.cfa_processor import CfaProcessor
+from plenopticam.lfp_aligner.cfa_processor import CfaProcessor
 from plenopticam.misc import rgb2gray
 
 
@@ -48,15 +48,12 @@ class LfpCalibrator(object):
             self.sta.error = True
 
         # convert Bayer to RGB representation
-        if len(self._wht_img.shape) == 2:
+        if len(self._wht_img.shape) == 2 and 'bay' in self.cfg.lfpimg:
             # perform color filter array management and obtain rgb image
             cfa_obj = CfaProcessor(bay_img=self._wht_img, cfg=self.cfg, sta=self.sta)
-            cfa_obj.main()
+            cfa_obj.bay2rgb()
             self._wht_img = cfa_obj.rgb_img
             del cfa_obj
-        from plenopticam import misc
-        import os
-        misc.save_img_file(self._wht_img, os.path.join(self.cfg.exp_path, 'wht_img.png'))
 
         # ensure white image is monochromatic
         self._wht_img = rgb2gray(self._wht_img) if len(self._wht_img.shape) is 3 else self._wht_img
