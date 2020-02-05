@@ -54,6 +54,7 @@ def usage():
     print("--con                             Contrast automation flag")
     print("--hot                             Hot pixel treatment flag")
     print("--sat                             Saturation automation flag")
+    print("--art                             Artifact removal flag")
     print("--rm                              Override output folder flag")
 
     print("-h,            --help             Print this help message")
@@ -67,7 +68,7 @@ def parse_options(argv, cfg):
     try:
         opts, args = getopt.getopt(argv, "ghf:c:p:r:",
                                         ["gui", "help", "file=", "cali=", "patch=", "refo=", "dbug", "refi",
-                                         "vgn", "awb", "con", "hot", "sat", "rm"])
+                                         "vgn", "awb", "con", "hot", "sat", "art", "rm"])
     except getopt.GetoptError as e:
         print(e)
         sys.exit(2)
@@ -103,6 +104,8 @@ def parse_options(argv, cfg):
                 cfg.params[cfg.opt_lier] = True
             if opt == "--sat":
                 cfg.params[cfg.opt_sat_] = True
+            if opt == "--art":
+                cfg.params[cfg.opt_arti] = True
             if opt == "--rm":
                 cfg.params[cfg.dir_remo] = True
     # create dictionary containing all parameters for the light field

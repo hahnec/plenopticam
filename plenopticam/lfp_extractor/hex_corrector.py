@@ -22,10 +22,7 @@ __license__ = """
 
 import numpy as np
 import os
-from scipy.interpolate import interp2d, interp1d
-import matplotlib.pyplot as plt
-from scipy.signal import medfilt
-from scipy import ndimage
+from scipy.interpolate import interp1d
 
 from plenopticam import misc
 from plenopticam.lfp_extractor import LfpViewpoints
@@ -44,7 +41,8 @@ class HexCorrector(LfpViewpoints):
 
     def main(self):
 
-        self.proc_vp_arr(self.ver_hex_bulge, msg='Hexagonal artifact removal')
+        if self.cfg.calibs[self.cfg.pat_type] == 'hex':
+            self.proc_vp_arr(self.ver_hex_bulge, msg='Hexagonal artifact removal')
 
         self.vp_img_arr = misc.Normalizer(self.vp_img_arr).uint16_norm()
 

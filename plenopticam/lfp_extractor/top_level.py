@@ -82,7 +82,7 @@ class LfpExtractor(object):
             del obj
 
         # reduction of hexagonal sampling artifacts
-        if self.cfg.calibs[self.cfg.pat_type] == 'hex' and not self.sta.interrupt:
+        if self.cfg.params[self.cfg.opt_arti] and not self.sta.interrupt:
             obj = HexCorrector(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
             obj.main()
             self.vp_img_arr = obj.vp_img_arr

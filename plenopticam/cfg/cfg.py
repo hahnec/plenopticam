@@ -38,7 +38,7 @@ class PlenopticamConfig(object):
     ptc_leng, \
     ran_refo, \
     opt_cali, opt_vign, opt_lier, opt_cont, opt_colo, opt_awb_, opt_sat_, opt_view, opt_refo, opt_refi, opt_pflu, \
-    opt_rota, opt_dbug, opt_prnt, dir_remo, \
+    opt_arti, opt_rota, opt_dbug, opt_prnt, dir_remo \
     = PARAMS_KEYS
 
     pat_type, ptc_mean, mic_list = CALIBS_KEYS
