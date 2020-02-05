@@ -41,7 +41,7 @@ class LfpExtractor(object):
         self.sta = sta if sta is not None else misc.PlenopticamStatus()
 
         # internal variable
-        self._vp_img_arr = []
+        self.vp_img_arr = []
 
     def main(self):
 
