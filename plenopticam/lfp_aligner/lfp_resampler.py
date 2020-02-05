@@ -84,8 +84,8 @@ class LfpResampler(LfpMicroLenses):
                                  np.arange(window.shape[0])+mic[0]-rint(mic[0]))
 
         # treatment of interpolated values being below or above original extrema
-        patch[patch < window.min()] = window.min()
-        patch[patch > window.max()] = window.max()
+        #patch[patch < window.min()] = window.min()
+        #patch[patch > window.max()] = window.max()
 
         return patch
 
