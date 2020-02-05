@@ -37,7 +37,7 @@ class LfpResampler(LfpMicroLenses):
         ''' cropping micro images to square shape while interpolating around their detected center (MIC) '''
 
         # print status
-        self.sta.status_msg('Light field alignment', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.status_msg('Light-field alignment', self.cfg.params[self.cfg.opt_prnt])
 
         # start resampling process (taking micro lens arrangement into account)
         if self.cfg.calibs[self.cfg.pat_type] == 'rec':
@@ -52,18 +52,24 @@ class LfpResampler(LfpMicroLenses):
 
     def _write_lfp_align(self):
 
+        # print status
+        self.sta.status_msg('Save aligned light-field', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
+
         # convert to 16bit unsigned integer
         self._lfp_out = misc.Normalizer(self._lfp_out).uint16_norm()
 
         # create output data folder
         misc.mkdir_p(self.cfg.exp_path, self.cfg.params[self.cfg.opt_prnt])
 
-        # write aligned light field as pickle file to avoid recalculation
+        # write aligned light field as pickle file to avoid re-calculation
         with open(os.path.join(self.cfg.exp_path, 'lfp_img_align.pkl'), 'wb') as f:
             pickle.dump(self._lfp_out, f)
 
         if self.cfg.params[self.cfg.opt_dbug]:
             misc.save_img_file(self._lfp_out, os.path.join(self.cfg.exp_path, 'lfp_img_align.tiff'))
+
+        self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
 
     def _patch_align(self, window, mic):
 
