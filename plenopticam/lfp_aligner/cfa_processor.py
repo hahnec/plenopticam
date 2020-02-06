@@ -63,7 +63,7 @@ class CfaProcessor(object):
 
         # debayer to rgb image
         if 'bay' in self.cfg.lfpimg.keys() and len(self._bay_img.shape) == 2:
-            self.bay2rgb(1)
+            self.bay2rgb(2)
 
         # convert to uint16
         self._rgb_img = misc.Normalizer(self._rgb_img).uint16_norm()
