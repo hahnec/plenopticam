@@ -73,7 +73,7 @@ def img_resize(img, x_scale=1, y_scale=None, method=None):
     new_img = np.zeros([int(n*y_scale), int(m*x_scale), P])
     for p in range(P):
         f = interp2d(range(m), range(n), img[:, :, p], kind=method)
-        new_img[:, :, p] = f(np.linspace(0, m - 1, m * x_scale), np.linspace(0, n - 1, n * y_scale))
+        new_img[:, :, p] = f(np.linspace(0, m - 1, int(m*x_scale)), np.linspace(0, n - 1, int(n*y_scale)))
 
     return new_img
 

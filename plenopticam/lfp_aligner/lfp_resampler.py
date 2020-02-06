@@ -181,7 +181,8 @@ class LfpResampler(LfpMicroLenses):
                 for x in range(self._M):
                     for p in range(self._DIMS[2]):
                         # stack of micro images elongated in x-direction
-                        interp_coords = np.linspace(0, self._LENS_X_MAX, self._LENS_X_MAX*2/np.sqrt(3))+.5*np.mod(ly+hex_odd, 2)
+                        interp_coords = np.linspace(0, self._LENS_X_MAX, int(np.round(self._LENS_X_MAX*2/np.sqrt(3))))+\
+                                        .5*np.mod(ly+hex_odd, 2)
                         interp_stack[:, y, x, p] = np.interp(interp_coords, range(self._LENS_X_MAX), patch_stack[:, y, x, p])
 
             self._lfp_out[ly*self._M:ly*self._M+self._M, :] = \
