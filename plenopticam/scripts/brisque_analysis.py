@@ -51,6 +51,7 @@ if __name__ == "__main__":
                        'thumb_collection_menon_rgb-clip',
                        #'thumb_collection_menon_rgb-clip-more'
                       ]
+
     path = r'C:\Users\chahne\Pictures\Dataset_INRIA_SIROCCO'
     exts = ('png')
     skip_list = []#'Checkerboard', 'Framed'
@@ -78,12 +79,15 @@ if __name__ == "__main__":
                     hh, hw = [x//10 for x in img.shape[:2]]
                     img_tile = img[cy-hh:cy+hh+1, cx-hw:cx+hw+1]
                 else:
-                    img_tile = img#[2:-2, 2:-2, ...]
+                    img_tile = img[2:-2, 2:-2, ...] if file.endswith('Thumb.png') else img
 
-                #img_tile /= img_tile.max()
-                #gain = 10
-                #cutoff = 0.5
-                #img_tile = 1./(1+np.exp(gain*(cutoff-misc.Normalizer(img_tile).type_norm())))
+                if not file.endswith('Thumb.png'):
+                    img_tile /= img_tile.max()
+                    gain = 8#10
+                    cutoff = 0.5#0.5
+                    from plenopticam import misc
+                    img_tile = 1./(1+np.exp(gain*(cutoff-misc.Normalizer(img_tile).type_norm())))
+
                 score = brisque_metric(Normalizer(img_tile).uint8_norm())
                 scores.append(score)
                 print(file+': %s' % scores[-1])
