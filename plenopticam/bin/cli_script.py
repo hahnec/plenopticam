@@ -140,6 +140,9 @@ def main():
         # open selection window (at current lfp file directory) to set calibration folder path
         cfg.params[cfg.cal_path] = misc.select_file(cfg.params[cfg.lfp_path], 'Select calibration image')
 
+    # provide number of found images to user
+    print("\n %s Image(s) found" % len(lfp_filenames))
+
     # cancel if file paths not provided
     sta.validate(checklist=lfp_filenames+[cfg.params[cfg.lfp_path]], msg='Canceled due to missing image file path')
 
