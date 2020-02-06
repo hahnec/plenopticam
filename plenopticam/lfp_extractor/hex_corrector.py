@@ -169,7 +169,7 @@ class HexCorrector(LfpViewpoints):
 
         idx = np.flatnonzero(np.r_[True, ~w, True])
         lens = np.diff(idx) - 1
-        comb = np.vstack(zip(idx, lens))
+        comb = np.vstack(list(zip(idx, lens)))
         filt = comb[comb[:, 1] >= n]
         vals = np.zeros_like(w)
         for f in filt:
