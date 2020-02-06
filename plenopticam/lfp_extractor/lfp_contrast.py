@@ -64,16 +64,17 @@ class LfpContrast(LfpViewpoints):
         #self._vp_img_arr = misc.Normalizer(self._vp_img_arr).type_norm()
 
         # clip to gray limits
-        gray_opt = False
+        gray_opt = True
         if gray_opt:
             ref_img = misc.rgb2gray(self.central_view)
-            p_lo, p_hi = (0.001, 99.999)
+            #ref_img = misc.rgb2hsv(self.central_view)[..., 2]
+            p_lo, p_hi = (0.1, 99.999)#(0.001, 99.999)
         else:
             ref_img = self.central_view
             p_lo, p_hi = (0.5, 99.9)
 
-        min_perc = np.percentile(self.central_view, p_lo)
-        max_perc = np.percentile(self.central_view, p_hi)
+        min_perc = np.percentile(ref_img, p_lo)
+        max_perc = np.percentile(ref_img, p_hi)
         self.vp_img_arr = misc.Normalizer(self.vp_img_arr, min=min_perc, max=max_perc).type_norm()
 
         # gamma correction
@@ -246,8 +247,12 @@ class LfpContrast(LfpViewpoints):
 
     def sat_bal(self):
 
-        self.set_stretch_hsv()
-        self.proc_vp_arr(self.apply_stretch_hsv, msg='Color saturation')
+        #self.set_stretch_hsv()
+        #self.proc_vp_arr(self.apply_stretch_hsv, msg='Color saturation')
+
+        self.proc_vp_arr(misc.hsv_conv, msg='Color saturation')
+        self.vp_img_arr[..., 1] *= 1.1
+        self.proc_vp_arr(misc.hsv_conv, invsere=True, msg='Color saturation')
 
         return True
 
