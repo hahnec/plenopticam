@@ -9,6 +9,7 @@ import os
 from itertools import cycle
 import matplotlib.pyplot as plt
 import numpy as np
+import platform
 
 from plenopticam.misc import load_img_file, Normalizer
 
@@ -52,7 +53,12 @@ if __name__ == "__main__":
                        #'thumb_collection_menon_rgb-clip-more'
                       ]
 
-    path = r'C:\Users\chahne\Pictures\Dataset_INRIA_SIROCCO'
+    if platform.system() == 'Windows':
+        path = r'C:\Users\chahne\Pictures\Dataset_INRIA_SIROCCO'
+    elif platform.system() == 'Darwin':
+        path = r'/Users/Admin/Pictures/Plenoptic/'
+    else:
+        path = os.getcwd()
     exts = ('png')
     skip_list = []#'Checkerboard', 'Framed'
 
