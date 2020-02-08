@@ -29,6 +29,7 @@
 # image files
 *.psd
 /docs/img/fruits.gif
+/plenopticam/gui/*.png
 
 # LaTeX files
 *.tex
