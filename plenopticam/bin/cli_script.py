@@ -147,7 +147,7 @@ def main():
     sta.validate(checklist=lfp_filenames+[cfg.params[cfg.lfp_path]], msg='Canceled due to missing image file path')
 
     # iterate through light field image(s)
-    for lfp_filename in lfp_filenames:
+    for lfp_filename in sorted(lfp_filenames):
 
         # change path to next filename
         cfg.params[cfg.lfp_path] = os.path.join(os.path.dirname(cfg.params[cfg.lfp_path]), lfp_filename)
