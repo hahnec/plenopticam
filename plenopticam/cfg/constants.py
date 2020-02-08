@@ -105,7 +105,7 @@ PARAMS_NAME = (
     'Refocused image extraction',
     'Refocus refinement',
     'Scheimpflug focus',
-    'Hexagonal artifact removal',
+    'Artifact removal',
     'Rotation of light field',
     'Debug option',
     'Status print option',
