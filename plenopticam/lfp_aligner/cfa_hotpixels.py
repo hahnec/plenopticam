@@ -89,7 +89,14 @@ class CfaHotPixels(object):
         # pre-select outlier candidates (narrow-down search area to speed-up the process)
         m_val = np.mean(ref_img)
         s_val = np.std(ref_img)
-        candidate_idxs = np.where((ref_img < m_val - s_val * sig_lev) | (ref_img > m_val + s_val * sig_lev))
+        candidate_idxs = np.where(ref_img > m_val + s_val * sig_lev)
+        #candidate_idxs = np.where((ref_img < m_val - s_val * sig_lev) | (ref_img > m_val + s_val * sig_lev))
+        #candidates = list(zip(candidate_idxs[0], candidate_idxs[1]))
+
+        ref_img = np.zeros_like(channel)
+        ref_img[candidate_idxs[0], candidate_idxs[1]] = channel[candidate_idxs[0], candidate_idxs[1]]
+        ref_img[ref_img < .3] = 0
+        candidate_idxs = np.where(ref_img != 0)
         candidates = list(zip(candidate_idxs[0], candidate_idxs[1]))
 
         if n < 1 or not misc.isint(n):
@@ -100,19 +107,37 @@ class CfaHotPixels(object):
 
             j, i = idx
 
-            if n < j < ref_img.shape[0]-n and n < i < ref_img.shape[1]-n:
-                win = channel[j-n:j+n+1, i-n:i+n+1]
-            else:
-                # treat candidates being too close to image border
-                alt_n = min(j, abs(ref_img.shape[0]-j), i, abs(ref_img.shape[1]-i))
-                win = channel[j-alt_n:j+alt_n+1, i-alt_n:i+alt_n+1]
+            adj_cands = (candidate_idxs[0] > j-n**2) & (candidate_idxs[0] < j+n**2) & \
+                        (candidate_idxs[1] > i-n**2) & (candidate_idxs[1] < i+n**2)
 
-            m_val = np.mean(win)
-            s_val = np.std(win)
-            if channel[j, i] < m_val - s_val * sig_lev or channel[j, i] > m_val + s_val * sig_lev:
+            if np.count_nonzero(adj_cands) < n:
 
-                # replace outlier
-                channel[j, i] = med_img[j, i]
+                # intensities from adjacents
+                #idxs = np.array(candidates)[adj_cands]
+                #if np.count_nonzero(idxs) != 0:
+                #    loc_mean = np.mean(channel[idxs[:, 0], idxs[:, 1]])
+                #    loc_std = np.std(channel[idxs[:, 0], idxs[:, 1]])
+                #else:
+                #    loc_mean = 0
+                #    loc_std = 0
+#
+                #sig_lev = .25
+                #if loc_mean+loc_std*sig_lev < channel[j, i] or loc_mean-loc_std*sig_lev > channel[j, i]:
+
+                if n < j < ref_img.shape[0]-n and n < i < ref_img.shape[1]-n:
+                    win = channel[j-n:j+n+1, i-n:i+n+1]
+                else:
+                    # treat candidates being too close to image border
+                    alt_n = min(j, abs(ref_img.shape[0]-j), i, abs(ref_img.shape[1]-i))
+                    win = channel[j-alt_n:j+alt_n+1, i-alt_n:i+alt_n+1]
+#
+                m_val = np.mean(win)
+                s_val = np.std(win)
+#
+                if channel[j, i] < m_val - s_val * sig_lev or channel[j, i] > m_val + s_val * sig_lev:
+
+                    # replace outlier
+                    channel[j, i] = med_img[j, i]
 
             # check interrupt status
             if self.sta.interrupt:

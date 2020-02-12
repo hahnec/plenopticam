@@ -43,7 +43,7 @@ class LfpAligner(object):
         if self.cfg.lfpimg:
             # hot pixel correction
             obj = CfaHotPixels(bay_img=self._lfp_img, cfg=self.cfg, sta=self.sta)
-            obj.rectify_candidates_bayer(n=9, sig_lev=3.5)
+            obj.rectify_candidates_bayer(n=9, sig_lev=2.5)
             self._lfp_img = obj.bay_img
             del obj
 
