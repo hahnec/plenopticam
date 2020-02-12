@@ -115,9 +115,10 @@ class LfpShiftAndSum(LfpViewpoints):
 
             # write upscaled version to hard drive
             if self.cfg.params[self.cfg.opt_refi]:
-                final_img = LfpContrast().auto_hist_align(final_img, ref_img=final_img, opt=True)
-                final_img = GammaConverter().srgb_conv(img=final_img)
-                LfpExporter(cfg=self.cfg, sta=self.sta).save_refo_slice(a=a, refo_img=final_img, string='upscale_')
+                upscale_img = LfpContrast().auto_hist_align(final_img, ref_img=final_img, opt=True)
+                upscale_img = GammaConverter().srgb_conv(img=upscale_img)
+                LfpExporter(cfg=self.cfg, sta=self.sta).save_refo_slice(a=a, refo_img=upscale_img, string='upscale_')
+                del upscale_img
 
             # spatially downscale image to original resolution (less memory required)
             final_img = misc.img_resize(final_img, 1./factor) if factor > 1 else final_img
