@@ -121,12 +121,9 @@ class HexCorrector(LfpViewpoints):
         arr_res = arr_vec.reshape(arr.T.shape).T
         #rat_res = rat_gau.reshape(rat.T.shape).T
 
-        if self.cfg.params[self.cfg.opt_dbug]:
-            misc.save_img_file(arr_res, os.path.join(self.cfg.exp_path, 'img_filter.png'), tag=True)
-
         # threshold values with insufficient difference
         mask = np.divide(arr_res, arr_res.max(), out=np.zeros_like(arr_res), where=arr_res != 0)
-        th = 0.08
+        th = 0.1
         mask[mask < th] = 0
         mask[mask >= th] = 1
 
