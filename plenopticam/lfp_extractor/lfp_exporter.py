@@ -107,8 +107,8 @@ class LfpExporter(LfpViewpoints):
             if downscale else self.views_stacked_img.copy()
 
         # normalization
-        p_lo = np.percentile(views_stacked_img, 1)
-        p_hi = np.percentile(views_stacked_img, 99)
+        p_lo = np.percentile(misc.rgb2gray(self.central_view), 0.05)
+        p_hi = np.percentile(misc.rgb2gray(self.central_view), 99.995)
         views_stacked_img = misc.Normalizer(views_stacked_img, min=p_lo, max=p_hi).uint8_norm()
 
         # export all viewpoints in single image
