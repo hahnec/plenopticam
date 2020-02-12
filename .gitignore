@@ -4,8 +4,9 @@
 # OS-specific files
 *.DS_Store
 
-# json results
+# results
 *.json
+*.npy
 
 # setuptools distribution folder
 /dist/
