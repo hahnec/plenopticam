@@ -1,9 +1,9 @@
 
-import brisque
 import os
 from itertools import cycle
 import matplotlib.pyplot as plt
 import numpy as np
+import platform
 
 from plenopticam.misc import load_img_file
 
@@ -17,14 +17,6 @@ if pgf:
         'text.usetex': True,
         'pgf.rcfonts': False,
     })
-
-
-def brisque_metric(img_tile):
-
-    brisq = brisque.BRISQUE()
-    score = brisq.get_score(img_tile)
-
-    return score
 
 
 def psnr(img1=None, img2=None, quant_steps=2**8-1):
@@ -65,22 +57,33 @@ if __name__ == "__main__":
     plt.style.use('seaborn-white')
 
     fig = plt.figure()
-    a = 4
-    softx__width = 5.39749
-    fig.set_size_inches(w=softx__width, h=a)
+    a = 3 #4
+    softx_width = 5.39749
+    ieee_width = 7.14113
+    fig.set_size_inches(w=ieee_width, h=a)
+    width = .3
 
     target_folders = [
-                       'comparison\dans_colour_srgb',
-                       'comparison\clim_clr',
-                       'thumb_collection_gam09-bidg+illgam_mic'
+                       'comparison/dans_colour_srgb',
+                       'comparison/clim_clr',
+                       #'thumb_collection_bilin-resample-hotp',
+                       #'thumb_collection_paper',
+                       'thumb_collection',
                       ]
-    path = r'C:\Users\chahne\Pictures\Dataset_INRIA_SIROCCO'
+
+    if platform.system() == 'Windows':
+        path = r'C:\Users\chahne\Pictures\Dataset_INRIA_SIROCCO'
+    elif platform.system() == 'Darwin':
+        path = r'/Users/Admin/Pictures/Plenoptic/'
+    else:
+        path = os.getcwd()
+
     exts = ('png')
     skip_list = []  #["Checkerboard, Framed"]
 
-    labels = ['LFToolbox v0.4', 'CLIM V-SENSE', 'PlenoptiCam v1.0.0']
+    labels = ['LFToolbox v0.4', 'CLIM-VSENSE', 'PlenoptiCam v1.0.0']
     labelcycler = cycle(labels)
-    labelcycler = cycle(target_folders)
+    #labelcycler = cycle(target_folders)
 
     lines = ["-", "--", "-.", ":"]
     linecycler = cycle(lines)
@@ -115,8 +118,9 @@ if __name__ == "__main__":
 
         label = target_folder.split('_')[-1].replace('_', '-')
         #label = target_folder.split('_')[0]
-        plt.plot(range(len(scores)), scores, linewidth=1,
-                 label=next(labelcycler), linestyle=next(linecycler), marker=next(markercycler))
+        x_range = [x + (i - len(target_folders) // 2) * width for x in list(range(len(scores)))]  # range(len(scores))#
+        plt.bar(x_range, scores, width,
+                label=next(labelcycler), linestyle=next(linecycler))#, marker=next(markercycler))
 
         score_series.append(scores)
 
@@ -126,17 +130,20 @@ if __name__ == "__main__":
     plt.xticks(range(len(tick_labels)), tick_labels, rotation='vertical')
 
     # leave space for tick labels
-    plt.subplots_adjust(bottom=0.25)
+    plt.subplots_adjust(bottom=0.33)
 
     # grids
     plt.grid(True, alpha=.5)
 
-    plt.ylim(0, np.asarray(score_series)[1].mean())
+    scnd_max = np.partition(np.asarray(score_series).flatten(), -2)[-2]
+    mean = np.mean(np.asarray(score_series))
+    plt.ylim(0, mean)
+    plt.xlim(-1, len(scores))
     plt.ylabel('Histogram distance $D$ [a.u.]')
     plt.legend(frameon=True)
 
-    plt.show()
     plt.savefig("hist_dist.pgf")
+    plt.show()
 
     # score assessment
     series = np.array(score_series)
