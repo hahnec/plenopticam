@@ -24,6 +24,7 @@ from plenopticam.lfp_aligner.lfp_microlenses import LfpMicroLenses
 from plenopticam.misc import isint
 
 import numpy as np
+import os
 
 
 class LfpCropper(LfpMicroLenses):
@@ -48,6 +49,16 @@ class LfpCropper(LfpMicroLenses):
         # get maximum (M) and desired (Mn) micro image pitches
         self._M = self.pitch_analyse(shape=self._lfp_img_align.shape)
         self._Mn = self.pitch_eval(self._M, self.cfg.params[self.cfg.ptc_leng], self.sta)
+
+        # validate micro image size in lfp is large enough
+        if self._M < self._Mn:
+            # remove existing pickle file
+            fp = os.path.join(self.cfg.exp_path, 'lfp_img_align.pkl')
+            os.remove(fp)
+            # status update
+            self.sta.status_msg('Angular resolution mismatch in previous alignment. Redo process')
+            self.sta.error = True
+
         self.cfg.params[self.cfg.ptc_leng] = self._Mn
 
         # use _k as crop margin
