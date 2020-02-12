@@ -133,6 +133,16 @@ class HexCorrector(LfpViewpoints):
         # ignore small regions
         mask = self.retain_connected(mask, n=4)
 
+        # generate mask
+        if self.cfg.params[self.cfg.opt_dbug]:
+            full_mask = np.zeros(img.shape)
+            if full_mask[j::2, ...].shape[0] == mask.shape[0]:
+                full_mask[j::2, ...] = mask
+            else:
+                full_mask[j::2, ...][:-1] = mask
+            misc.save_img_file(full_mask, os.path.join(self.cfg.exp_path, 'hex_filter_mask.png'), tag=True)
+
+        # generate image indicating which pixels were treated
         if self.cfg.params[self.cfg.opt_dbug]:
             tes = img.copy()
             for p in range(ch):
