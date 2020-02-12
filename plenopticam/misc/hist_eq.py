@@ -172,8 +172,14 @@ def plot_hist(data, dtype=None):
     h = np.histogram(data, bins=bins)
 
     import matplotlib.pyplot as plt
+    plt.switch_backend('Agg')
     plt.figure()
     plt.plot(h[1][:-1], h[0])
-    plt.show()
+    plt.savefig('iwas.png')
+    try:
+        plt.show()
+    except:
+        pass
+
 
     return True
