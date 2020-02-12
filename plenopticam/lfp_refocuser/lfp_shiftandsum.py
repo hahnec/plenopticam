@@ -24,6 +24,8 @@ __license__ = """
 from plenopticam import misc
 from plenopticam.lfp_extractor.lfp_viewpoints import LfpViewpoints
 from plenopticam.lfp_extractor.lfp_exporter import LfpExporter
+from plenopticam.lfp_extractor.lfp_contrast import LfpContrast
+from plenopticam.misc import GammaConverter
 
 # external
 import numpy as np
@@ -59,15 +61,6 @@ class LfpShiftAndSum(LfpViewpoints):
 
         # tbd
         self.all_in_focus()
-
-        # check interrupt status
-        if not self.sta.interrupt:
-
-            # write refocused images to hard drive
-            refo_obj = LfpExporter(refo_stack=self._refo_stack, cfg=self.cfg, sta=self.sta)
-            refo_obj.export_refo_stack(file_type='png')
-            refo_obj.gif_refo()
-            del refo_obj
 
         return True
 
@@ -122,9 +115,11 @@ class LfpShiftAndSum(LfpViewpoints):
 
             # write upscaled version to hard drive
             if self.cfg.params[self.cfg.opt_refi]:
+                final_img = LfpContrast().auto_hist_align(final_img, ref_img=final_img, opt=True)
+                final_img = GammaConverter().srgb_conv(img=final_img)
                 LfpExporter(cfg=self.cfg, sta=self.sta).save_refo_slice(a=a, refo_img=final_img, string='upscale_')
 
-            # spatially downscale image to original resolution (for less memory usage)
+            # spatially downscale image to original resolution (less memory required)
             final_img = misc.img_resize(final_img, 1./factor) if factor > 1 else final_img
 
             self._refo_stack.append(final_img)
@@ -279,7 +274,7 @@ class LfpShiftAndSum(LfpViewpoints):
             final_img = ver_refo[crop:-crop, crop:-crop, :] if (a != 0) else ver_refo
 
             # write upscaled version to hard drive
-            LfpExporter(cfg=self.cfg, sta=self.sta).save_refo_slice(i=a, refo_img=final_img)
+            LfpExporter(cfg=self.cfg, sta=self.sta).save_refo_slice(a=a, refo_img=final_img)
 
             # spatially downscale image to original resolution (for less memory usage)
             final_img = misc.img_resize(final_img, 1./factor) if factor > 1 else final_img

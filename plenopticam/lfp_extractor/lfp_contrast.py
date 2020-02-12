@@ -25,7 +25,6 @@ import numpy as np
 from plenopticam import misc
 from plenopticam.lfp_extractor import LfpViewpoints
 from plenopticam.misc.hist_eq import HistogramEqualizer
-from plenopticam.lfp_aligner.cfa_processor import CfaProcessor
 
 
 class LfpContrast(LfpViewpoints):
@@ -47,7 +46,6 @@ class LfpContrast(LfpViewpoints):
         if self.cfg.params[self.cfg.opt_cont] and not self.sta.interrupt:
             obj = HistogramEqualizer(img=self._vp_img_arr)
             self._vp_img_arr = obj.lum_eq()
-            #self.vp_img_arr = obj.awb_eq()
             del obj
 
         if self.cfg.params[self.cfg.opt_awb_] and not self.sta.interrupt:
@@ -58,45 +56,29 @@ class LfpContrast(LfpViewpoints):
             self.p_hi, self.p_lo = (1, 0)
             self.sat_bal()
 
-        if self.vp_img_arr is not None:
-            self.apply_ccm()
-        #self._vp_img_arr = misc.data_proc.thresh_hist_stretch(self._vp_img_arr)
-        #self._vp_img_arr = misc.Normalizer(self._vp_img_arr).type_norm()
-
-        # clip to gray limits
-        gray_opt = True
-        if gray_opt:
-            ref_img = misc.rgb2gray(self.central_view)
-            #ref_img = misc.rgb2hsv(self.central_view)[..., 2]
-            p_lo, p_hi = (0.1, 99.999)#(0.001, 99.999)
-        else:
-            ref_img = self.central_view
-            p_lo, p_hi = (0.5, 99.9)
-
-        min_perc = np.percentile(ref_img, p_lo)
-        max_perc = np.percentile(ref_img, p_hi)
-        self.vp_img_arr = misc.Normalizer(self.vp_img_arr, min=min_perc, max=max_perc).type_norm()
+        # automatic histogram alignment
+        self._vp_img_arr = self.auto_hist_align(img=self._vp_img_arr, ref_img=self.central_view, opt=True)
 
         # gamma correction
-        gamma = 1#self.cfg.lfpimg['gam'] if self.cfg.lfpimg and 'gam' in self.cfg.lfpimg.keys() else 1 / 2.2
-        gam_obj = misc.GammaConverter(img=self._vp_img_arr, gamma=gamma, profile='sRGB')
-        #gam_obj.estimate_gamma(self.central_view)   # automatic gamma proved to yield better results
-        self._vp_img_arr = gam_obj.correct_gamma()
+        self._vp_img_arr = misc.GammaConverter().srgb_conv(img=self._vp_img_arr)
 
-        # cut-off lower end
-        #self.thresh_hist_stretch(th=5e-11)    #2e-10
+        return True
 
-        # boost gamma
-        #self.vp_img_arr /= self.vp_img_arr.max()
-        #self.vp_img_arr **= .9
+    @staticmethod
+    def auto_hist_align(img, ref_img, opt=None):
 
-        #min_perc = np.percentile(self.central_view, 0.035)
-        #max_perc = np.percentile(self.central_view, 99.95)
-        #self.vp_img_arr = misc.Normalizer(self.vp_img_arr, min=min_perc, max=max_perc).type_norm()
+        if opt:
+            p_lo, p_hi = (0.005, 99.9)#(0.001, 99.999)
+            min_perc = np.percentile(misc.rgb2gray(ref_img), p_lo)
+            max_perc = np.percentile(ref_img, p_hi)
+        else:
+            p_lo, p_hi = (0.5, 99.9)
+            min_perc = np.percentile(ref_img, p_lo)
+            max_perc = np.percentile(ref_img, p_hi)
 
-        # boost gamma
-        #self.vp_img_arr /= self.vp_img_arr.max()
-        #self.vp_img_arr **= .7
+        img = misc.Normalizer(img, min=min_perc, max=max_perc).type_norm()
+
+        return img
 
     def thresh_hist_stretch(self, th=2e-10, bins=2**16-1):
 
@@ -109,38 +91,6 @@ class LfpContrast(LfpViewpoints):
 
         #img = misc.Normalizer(self.central_view.copy(), min=x_vals[1], max=self.central_view.max()).type_norm()
         self.proc_vp_arr(misc.Normalizer().type_norm, msg='Histogram crop', min=x_vals[1], max=1)
-
-        return True
-
-    def apply_ccm(self):
-
-        # color matrix correction
-        if 'ccm' in self.cfg.lfpimg.keys():
-
-            # ccm mat selection
-            if 'ccm_wht' in self.cfg.lfpimg:
-                ccm_arr = self.cfg.lfpimg['ccm_wht']
-            else:
-                ccm_arr = np.array([2.4827811717987061, -1.1018080711364746, -0.38097298145294189,
-                                    -0.36761483550071716, 1.6667767763137817, -0.29916191101074219,
-                                    -0.18722048401832581, -0.73317205905914307, 1.9203925132751465])
-                #ccm_arr = self.cfg.lfpimg['ccm']
-
-            # normalize
-            self.vp_img_arr /= self.vp_img_arr.max()
-
-            sat_lev = 2 ** (-self.cfg.lfpimg['exp'])
-            self.vp_img_arr *= sat_lev
-
-            # transpose and flip ccm_mat for RGB order
-            ccm_mat = np.reshape(ccm_arr, (3, 3)).T
-            self._vp_img_arr = CfaProcessor().correct_color(self._vp_img_arr.copy(), ccm_mat=ccm_mat)
-
-            # remove potential NaNs
-            self._vp_img_arr[self._vp_img_arr < 0] = 0
-            #self._vp_img_arr[self._vp_img_arr > sat_lev] = sat_lev
-            #self._vp_img_arr /= sat_lev
-            self._vp_img_arr /= self._vp_img_arr.max()
 
         return True
 

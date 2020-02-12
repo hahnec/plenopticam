@@ -71,26 +71,29 @@ class LfpExtractor(object):
         if self.cfg.params[self.cfg.opt_colo] and not self.sta.interrupt:
             obj = LfpColorEqualizer(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
             obj.main()
-            self.vp_img_arr = obj._vp_img_arr
+            self.vp_img_arr = obj.vp_img_arr
             del obj
+
+        # copy light-field for refocusing process prior to contrast alignment and export
+        vp_img_exp = self.vp_img_arr.copy()
 
         # color management automation
         if not self.sta.interrupt:
-            obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta, p_lo=0.01, p_hi=0.995)
+            obj = LfpContrast(vp_img_arr=vp_img_exp, cfg=self.cfg, sta=self.sta)
             obj.main()
-            self.vp_img_arr = obj.vp_img_arr
+            vp_img_exp = obj.vp_img_arr
             del obj
 
         # reduction of hexagonal sampling artifacts
         if self.cfg.params[self.cfg.opt_arti] and not self.sta.interrupt:
-            obj = HexCorrector(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
+            obj = HexCorrector(vp_img_arr=vp_img_exp, cfg=self.cfg, sta=self.sta)
             obj.main()
-            self.vp_img_arr = obj.vp_img_arr
+            vp_img_exp = obj.vp_img_arr
             del obj
 
         # write viewpoint data to hard drive
         if self.cfg.params[self.cfg.opt_view] and not self.sta.interrupt:
-            obj = LfpExporter(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
+            obj = LfpExporter(vp_img_arr=vp_img_exp, cfg=self.cfg, sta=self.sta)
             obj.write_viewpoint_data()
             del obj
 

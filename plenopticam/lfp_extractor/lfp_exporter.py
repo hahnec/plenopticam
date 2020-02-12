@@ -35,7 +35,7 @@ class LfpExporter(LfpViewpoints):
     def __init__(self, refo_stack=None, *args, **kwargs):
         super(LfpExporter, self).__init__(*args, **kwargs)
 
-        self.refo_stack = np.asarray(refo_stack) if refo_stack else None
+        self.refo_stack = np.asarray(refo_stack) if refo_stack is not None else None
 
     def write_viewpoint_data(self):
 
