@@ -44,16 +44,16 @@ class LfpScheimpflug(object):
         self.sta.status_msg('Scheimpflug extraction', self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
-        if self.refo_stack:
+        if self.refo_stack is not None:
             self.scheimpflug_from_stack()
-        elif self.lfp_img:
+        elif self.lfp_img is not None:
             self.scheimpflug_from_scratch()
 
         return True
 
     def scheimpflug_from_stack(self):
 
-        a_start, a_stop = self.cfg.params[self.cfg.ran_refo]
+        a_start, a_stop = (0, len(self.refo_stack))
 
         if len(self.refo_stack[0].shape) == 3:
             m, n, p = self.refo_stack[0].shape
@@ -91,7 +91,8 @@ class LfpScheimpflug(object):
 
         # write image file to hard drive
         fp = os.path.splitext(self.cfg.params[self.cfg.lfp_path])[0]
-        fn = 'scheimpflug_' + str(a_start) + '_' + str(a_stop) + '_' + self.cfg.params[self.cfg.opt_pflu] + '.png'
+        a_ran = self.cfg.params[self.cfg.ran_refo]
+        fn = 'scheimpflug_' + str(a_ran[0]) + '_' + str(a_ran[-1]) + '_' + self.cfg.params[self.cfg.opt_pflu] + '.png'
         misc.save_img_file(misc.Normalizer(scheimpflug_img).uint16_norm(), os.path.join(fp, fn))
 
         return True

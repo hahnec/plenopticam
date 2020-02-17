@@ -120,7 +120,7 @@ class CfaHotPixels(object):
                 #else:
                 #    loc_mean = 0
                 #    loc_std = 0
-#
+
                 #sig_lev = .25
                 #if loc_mean+loc_std*sig_lev < channel[j, i] or loc_mean-loc_std*sig_lev > channel[j, i]:
 
@@ -130,10 +130,10 @@ class CfaHotPixels(object):
                     # treat candidates being too close to image border
                     alt_n = min(j, abs(ref_img.shape[0]-j), i, abs(ref_img.shape[1]-i))
                     win = channel[j-alt_n:j+alt_n+1, i-alt_n:i+alt_n+1]
-#
+
                 m_val = np.mean(win)
                 s_val = np.std(win)
-#
+
                 if channel[j, i] < m_val - s_val * sig_lev or channel[j, i] > m_val + s_val * sig_lev:
 
                     # replace outlier
