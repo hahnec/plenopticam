@@ -25,6 +25,7 @@ import sys, errno
 from os import makedirs, remove
 from os.path import isdir, isfile, expanduser
 
+
 def mkdir_p(path, print_opt=False):
 
     try:
@@ -37,6 +38,7 @@ def mkdir_p(path, print_opt=False):
         #    raise OSError('\n Could not create directory.')
 
     return True
+
 
 def rmdir_p(path, print_opt=False):
 
@@ -57,6 +59,7 @@ def rm_file(path, print_opt=False):
     except OSError as e:
         if print_opt:
             print("\n Error: %s - %s." % (e.filename, e.strerror))
+
 
 def select_file(init_dir=None, title=''):
     ''' get filepath from tkinter dialog '''
