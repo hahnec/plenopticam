@@ -64,10 +64,10 @@ def crop_imgs(folder, coords_lists):
     exts = ('tif', 'tiff', 'png')
 
     misc.mkdir_p(os.path.join(folder, 'auto-crop'))
-    folders = [f for f in os.listdir(folder) if f.endswith(exts)]
-    folders.sort()
+    files = [f for f in os.listdir(folder) if f.endswith(exts) and not f.startswith('.')]
+    files.sort()
 
-    for i, file in enumerate(folders):
+    for i, file in enumerate(files):
         coords_nested = coords_lists[i]
         for j, coords in enumerate(coords_nested):
             if coords[0] != 0 and coords[1] != 0:
@@ -75,7 +75,6 @@ def crop_imgs(folder, coords_lists):
                 img = misc.load_img_file(os.path.join(folder, file))
                 tile = img[cy-h//2:cy+h//2, cx-w//2:cx+w//2, ...]
                 img_tiles.append(tile)
-                files.append(file)
                 fn, ext = os.path.splitext(file)
                 misc.save_img_file(tile, os.path.join(folder, 'auto-crop', fn+'_crop'+str(j)), 'png', tag=True)
 
@@ -84,9 +83,8 @@ def crop_imgs(folder, coords_lists):
 
 if __name__ == "__main__":
 
-    #fp_ours = '/Users/Admin/Unterlagen/PhD/07 publications/18_plenopticam/softwarex_pcam/img/refo_upscale_7px_/'
-    fp_ours = '/Users/Admin/Pictures/Plenoptic/Bumblebee/refo_upscale_7px'
-    fp_lytro = '/Users/Admin/Unterlagen/PhD/07 publications/18_plenopticam/softwarex_pcam/img/refo_lytro'
+    fp_ours = '/Volumes/SD CARD 1/IEEEtran/img/refo_upscale_7px'
+    fp_lytro = '/Volumes/SD CARD 1/IEEEtran/img/refo_lytro'
 
     # bumblebee crop positions
     coords_lists_lytro = [
@@ -101,9 +99,9 @@ if __name__ == "__main__":
     coords_lists_lytro = np.asarray(coords_lists_lytro, dtype='int')
     coords_lists_pcam = np.round(coords_lists_lytro*scale_comp_x).astype('int')
 
-    coords_lists_pcam[0, 0, :2] += [158, 159]
-    coords_lists_pcam[1, :, :2] += [120, -20]
-    coords_lists_pcam[2, :, :2] += [40, -100]
+    coords_lists_pcam[0, 0, :2] += [110, 130]#[158, 159]
+    coords_lists_pcam[1, :, :2] += [70, 20]
+    coords_lists_pcam[2, :, :2] += [40, -80]
 
     s_list = list()
 
