@@ -197,11 +197,11 @@ Further information
 
 .. |spiderman| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/spiderman.gif" height="186px" max-width:"100%">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/demo_custom.gif" height="187px" max-width:"100%">
 
 .. |fruits| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/fruits_r.gif" height="186px" max-width:"100%">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/cfa-dev/docs/img/demo_illum.gif" height="187px" max-width:"100%">
 
 .. |UoB| raw:: html
 

@@ -1,2 +1,2 @@
 :: resize gif for fast web transmission
-magick convert fruits.gif -resize 274 fruits_r.gif
+magick convert demo_illum.gif -gamma .45455 -resize 274 -gamma 2.2 demo_illum_lores.gif
