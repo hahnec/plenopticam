@@ -16,7 +16,7 @@ Copyright (c) 2019 Christopher Hahne <inbox@christopherhahne.de>
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-__version__ = '0.3.1'
+__version__ = '0.4.0'
 
 from . import misc
 from . import cfg
