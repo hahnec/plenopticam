@@ -20,6 +20,7 @@ PARAMS_KEYS = (
     'opt_refo',
     'opt_refi',
     'opt_pflu',
+    'opt_arti',
     'opt_rota',
     'opt_dbug',
     'opt_prnt',
@@ -50,6 +51,7 @@ PARAMS_VALS = (
     'off',
     False,
     False,
+    False,
     True,
     False
 )
@@ -78,6 +80,7 @@ PARAMS_TYPE = (
     'bool',
     'bool',
     'bool',
+    'bool',
     'bool'
 )
 
@@ -102,6 +105,7 @@ PARAMS_NAME = (
     'Refocused image extraction',
     'Refocus refinement',
     'Scheimpflug focus',
+    'Fringe artifact removal',
     'Rotation of light field',
     'Debug option',
     'Status print option',

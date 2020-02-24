@@ -4,8 +4,9 @@
 # OS-specific files
 *.DS_Store
 
-# json results
+# results
 *.json
+*.npy
 
 # setuptools distribution folder
 /dist/
@@ -29,6 +30,7 @@
 # image files
 *.psd
 /docs/img/fruits.gif
+/plenopticam/gui/*.png
 
 # LaTeX files
 *.tex

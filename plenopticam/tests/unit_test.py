@@ -87,6 +87,7 @@ class PlenoptiCamTester(unittest.TestCase):
         cfg.reset_values()
         cfg.params[cfg.opt_dbug] = False
         cfg.params[cfg.opt_prnt] = True
+        cfg.params[cfg.opt_vign] = False
 
         for fn_lfp, fn_wht in zip(self.fnames_lfp, self.fnames_wht):
 

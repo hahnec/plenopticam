@@ -80,7 +80,6 @@ class LfpViewpoints(object):
         new_shape = fun(self._vp_img_arr[0, 0, ...], *args).shape
         new_array = np.zeros(self._vp_img_arr.shape[:2] + new_shape)
 
-        #try:
         for j in range(self._vp_img_arr.shape[0]):
             for i in range(self._vp_img_arr.shape[1]):
 
@@ -94,10 +93,6 @@ class LfpViewpoints(object):
                     self._vp_img_arr[j, i, ...] = res
                 else:
                     new_array[j, i, ...] = res
-                    #shape_diff = np.array(res.shape) - np.array(self._vp_img_arr[j, i, ...].shape)
-                    #pad_vec = [(0, x) for x in shape_diff]
-                    #np.pad(self._vp_img_arr[j, i, ...], self._vp_img_arr[j, i, ...].shape-res.shape)
-                    #self._vp_img_arr[j, i, ...] = res
 
                 # progress update
                 percent = (j*self._vp_img_arr.shape[1]+i+1)/np.dot(*self._vp_img_arr.shape[:2])

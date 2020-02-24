@@ -54,7 +54,10 @@ class LfpRotator(object):
 
         # write plot img to hard drive (debug only)
         if self.cfg.params[self.cfg.opt_dbug] and not self.sta.interrupt:
+            self.sta.status_msg('Save rotated image (debug mode)')
+            self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
             CentroidDrawer(self._lfp_img, self._centroids, self.cfg).write_centroids_img(fn='lfp_rotated.png')
+            self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
 
         return True
 

@@ -22,10 +22,7 @@ __license__ = """
 
 import numpy as np
 import os
-from scipy.interpolate import interp2d, interp1d
-import matplotlib.pyplot as plt
-from scipy.signal import medfilt
-from scipy import ndimage
+from scipy.interpolate import interp1d
 
 from plenopticam import misc
 from plenopticam.lfp_extractor import LfpViewpoints
@@ -44,7 +41,8 @@ class HexCorrector(LfpViewpoints):
 
     def main(self):
 
-        self.proc_vp_arr(self.ver_hex_bulge, msg='Hexagonal artifact removal')
+        if self.cfg.calibs[self.cfg.pat_type] == 'hex':
+            self.proc_vp_arr(self.ver_hex_bulge, msg='Hexagonal artifact removal')
 
         self.vp_img_arr = misc.Normalizer(self.vp_img_arr).uint16_norm()
 
@@ -123,18 +121,25 @@ class HexCorrector(LfpViewpoints):
         arr_res = arr_vec.reshape(arr.T.shape).T
         #rat_res = rat_gau.reshape(rat.T.shape).T
 
-        if self.cfg.params[self.cfg.opt_dbug]:
-            misc.save_img_file(arr_res, os.path.join(self.cfg.exp_path, 'img_filter.png'), tag=True)
-
         # threshold values with insufficient difference
         mask = np.divide(arr_res, arr_res.max(), out=np.zeros_like(arr_res), where=arr_res != 0)
-        th = 0.08
+        th = 0.1
         mask[mask < th] = 0
         mask[mask >= th] = 1
 
         # ignore small regions
         mask = self.retain_connected(mask, n=4)
 
+        # generate mask
+        if self.cfg.params[self.cfg.opt_dbug]:
+            full_mask = np.zeros(img.shape)
+            if full_mask[j::2, ...].shape[0] == mask.shape[0]:
+                full_mask[j::2, ...] = mask
+            else:
+                full_mask[j::2, ...][:-1] = mask
+            misc.save_img_file(full_mask, os.path.join(self.cfg.exp_path, 'hex_filter_mask.png'), tag=True)
+
+        # generate image indicating which pixels were treated
         if self.cfg.params[self.cfg.opt_dbug]:
             tes = img.copy()
             for p in range(ch):
@@ -171,7 +176,7 @@ class HexCorrector(LfpViewpoints):
 
         idx = np.flatnonzero(np.r_[True, ~w, True])
         lens = np.diff(idx) - 1
-        comb = np.vstack(zip(idx, lens))
+        comb = np.vstack(list(zip(idx, lens)))
         filt = comb[comb[:, 1] >= n]
         vals = np.zeros_like(w)
         for f in filt:

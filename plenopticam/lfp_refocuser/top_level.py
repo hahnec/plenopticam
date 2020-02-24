@@ -24,6 +24,9 @@ __license__ = """
 from plenopticam.lfp_extractor.lfp_viewpoints import LfpViewpoints
 from plenopticam.lfp_refocuser.lfp_shiftandsum import LfpShiftAndSum
 from plenopticam.lfp_refocuser.lfp_scheimpflug import LfpScheimpflug
+from plenopticam.lfp_extractor.lfp_exporter import LfpExporter
+from plenopticam.lfp_extractor.lfp_contrast import LfpContrast
+from plenopticam.misc import GammaConverter
 
 
 class LfpRefocuser(LfpViewpoints):
@@ -45,13 +48,27 @@ class LfpRefocuser(LfpViewpoints):
 
     def shift_and_sum(self):
 
-        lfp_obj = LfpShiftAndSum(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
-        lfp_obj.main()
-        self.refo_stack = lfp_obj.refo_stack
-        del lfp_obj
+        # refocusing
+        if not self.sta.interrupt:
+            obj = LfpShiftAndSum(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
+            obj.main()
+            self.refo_stack = obj.refo_stack
+            del obj
+
+        # color management automation
+        self.refo_stack = LfpContrast().auto_hist_align(self.refo_stack, ref_img=self.refo_stack[0], opt=True)
+        self.refo_stack = GammaConverter().srgb_conv(img=self.refo_stack)
+
+        # write refocused images to hard drive
+        if not self.sta.interrupt:
+            obj = LfpExporter(refo_stack=self.refo_stack, cfg=self.cfg, sta=self.sta)
+            obj.export_refo_stack(file_type='png')
+            obj.gif_refo()
+            del obj
 
     def scheimpflug(self):
 
-        lfp_obj = LfpScheimpflug(refo_stack=self.refo_stack, cfg=self.cfg, sta=self.sta)
-        lfp_obj.main()
-        del lfp_obj
+        if not self.sta.interrupt:
+            obj = LfpScheimpflug(refo_stack=self.refo_stack, cfg=self.cfg, sta=self.sta)
+            obj.main()
+            del obj

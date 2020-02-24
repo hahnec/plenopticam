@@ -24,6 +24,7 @@ __license__ = """
 import numpy as np
 
 from plenopticam.lfp_extractor import LfpViewpoints
+from plenopticam.lfp_aligner.cfa_processor import CfaProcessor
 from plenopticam import misc
 
 try:
@@ -43,6 +44,10 @@ class LfpColorEqualizer(LfpViewpoints):
 
     def main(self):
 
+        if self.vp_img_arr is not None and not self.sta.interrupt:
+            self.apply_ccm()
+            self._ref_img = self.central_view
+
         # color transfer functions to be iterated through
         funs = (self.hist_match, self.mk_transfer, self.hist_match)
         n = len(funs)
@@ -55,6 +60,43 @@ class LfpColorEqualizer(LfpViewpoints):
 
         # zero-out sub-apertures suffering from cross-talk (e.g. to exclude them in refocusing)
         self._exclude_crosstalk_views()
+
+    def apply_ccm(self):
+
+        # color matrix correction
+        if 'ccm' in self.cfg.lfpimg.keys():
+
+            # ccm mat selection
+            if 'ccm_wht' in self.cfg.lfpimg:
+                ccm_arr = self.cfg.lfpimg['ccm_wht']
+            elif 'ccm' in self.cfg.lfpimg:
+                #ccm_arr = self.cfg.lfpimg['ccm']
+                ccm_arr = np.array([2.4827811717987061, -1.1018080711364746, -0.38097298145294189,
+                                    -0.36761483550071716, 1.6667767763137817, -0.29916191101074219,
+                                    -0.18722048401832581, -0.73317205905914307, 1.9203925132751465])
+            else:
+                ccm_arr = np.diag(np.ones(3))
+
+            # normalize
+            self.vp_img_arr /= self.vp_img_arr.max()
+
+            if 'exp' in self.cfg.lfpimg:
+                sat_lev = 2 ** (-self.cfg.lfpimg['exp'])
+            else:
+                sat_lev = 1
+            self.vp_img_arr *= sat_lev
+
+            # transpose and flip ccm_mat for RGB order
+            ccm_mat = np.reshape(ccm_arr, (3, 3)).T
+            self._vp_img_arr = CfaProcessor().correct_color(self._vp_img_arr.copy(), ccm_mat=ccm_mat)
+
+            # remove potential NaNs
+            self._vp_img_arr[self._vp_img_arr < 0] = 0
+            self._vp_img_arr[self._vp_img_arr > sat_lev] = sat_lev
+            #self._vp_img_arr /= sat_lev
+            self._vp_img_arr /= self._vp_img_arr.max()
+
+        return True
 
     @staticmethod
     def hist_match(src, ref):

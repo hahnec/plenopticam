@@ -9,6 +9,7 @@ import os
 from itertools import cycle
 import matplotlib.pyplot as plt
 import numpy as np
+import platform
 
 from plenopticam.misc import load_img_file, Normalizer
 
@@ -34,23 +35,28 @@ def brisque_metric(img_tile):
 
 if __name__ == "__main__":
 
-    path = r'C:\Users\chahne\Pictures\Dataset_INRIA_SIROCCO'
-    exts = ('png')
     target_folders = [
-                        #'comparison\dans_colour_srgb',
-                        #'comparison\clim_clr',
-                        #'thumb_collection_menon_rgb-clip',
-                        'thumb_collection_menon_gray-clip-less',
-                        'thumb_collection_menon_gray-clip',
-                        'thumb_collection_value-clip',
-                        'thumb_collection_menon_rgb-clip'
+                        # 'checker'
+                        'comparison/dans_colour_srgb',
+                        'comparison/clim_clr',
+                        # 'comparison/clim_wo_gam',
+                        # 'comparison/clim_bar',
+                        'thumb_collection'
                       ]
-    skip_list = [
-                 ]
 
-    labels = ['LFToolbox v0.4', 'CLIM_V-SENSE', 'PlenoptiCam v1.0.0']
+    if platform.system() == 'Windows':
+        path = r'C:\Users\chahne\Pictures\Dataset_INRIA_SIROCCO'
+    elif platform.system() == 'Darwin':
+        path = r'/Users/Admin/Pictures/Plenoptic/'
+    else:
+        path = os.getcwd()
+    exts = ('png')
+
+    skip_list = []
+
+    labels = ['LFToolbox v0.4', 'CLIM-VSENSE', 'PlenoptiCam v1.0.0']
     labelcycler = cycle(labels)
-    labelcycler = cycle(target_folders)
+    #labelcycler = cycle(target_folders)
 
     lines = ["-", "--", "-.", ":"]
     linecycler = cycle(lines)
@@ -77,11 +83,12 @@ if __name__ == "__main__":
 
                 # extract image tile
                 if crop_opt:
+                    img = img[2:-2, 2:-2, ...] if file.endswith('Thumb.png') else img
                     cy, cx = [x//2 for x in img.shape[:2]]
                     hh, hw = [x//10 for x in img.shape[:2]]
                     img_tile = img[cy-hh:cy+hh+1, cx-hw:cx+hw+1]
                 else:
-                    img_tile = img#[2:-2, 2:-2, ...]
+                    img_tile = img
 
                 score = brisque_metric(Normalizer(img_tile).uint8_norm())
                 scores.append(score)
@@ -95,9 +102,9 @@ if __name__ == "__main__":
     plt.style.use('seaborn-white')
     fig = plt.figure()
     softx__width = 5.39749
-    a = softx__width*4   #4
+    a = softx__width*4
     fig.set_size_inches(w=softx__width, h=a)
-    width = .25
+    width = .3#.25
 
     for i, scores in enumerate(score_series):
         label = target_folder.split('_')[-1].replace('_', '-')
@@ -111,7 +118,7 @@ if __name__ == "__main__":
     plt.yticks(range(len(tick_labels)), tick_labels, rotation='horizontal')
 
     # leave space for tick labels
-    plt.subplots_adjust(left=0.25)
+    plt.subplots_adjust(left=0)#.25
 
     # grids
     plt.grid(True, alpha=.5)
@@ -119,6 +126,7 @@ if __name__ == "__main__":
     # define axis limits
     plt.xlim(10*(np.min(score_series)//10), 10*(np.max(score_series)//10)+5)
     plt.ylim(-1, len(scores))
+    plt.gca().invert_yaxis()
 
     # aspect ratio
     fig.axes[0].set_aspect(a / softx__width)
@@ -137,5 +145,5 @@ if __name__ == "__main__":
     except:
         pass
 
-    plt.show()
     plt.savefig("brisque_central.pgf")
+    plt.show()

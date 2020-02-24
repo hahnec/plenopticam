@@ -1,6 +1,9 @@
 from plenopticam.misc import rgb2gray
 
 import numpy as np
+import os
+from plenopticam import misc
+import platform
 
 def blur_metric(img_tile):
     ''' img_tile : cropped image '''
@@ -37,11 +40,15 @@ def michelson_contrast(img_tile):
 
 if __name__ == "__main__":
 
-    import os
-    from plenopticam import misc
-
-    fp_lytro = '/Users/Admin/Unterlagen/PhD/07 publications/18_plenopticam/softwarex_pcam/img/refo_lytro'
-    fp_ours = '/Users/Admin/Unterlagen/PhD/07 publications/18_plenopticam/softwarex_pcam/img/refo_9px_gam'
+    if platform.system() == 'Windows':
+        fp_lytro = ''
+        fp_ours = ''
+    elif platform.system() == 'Darwin':
+        fp_lytro = '/Volumes/SD CARD 1/IEEEtran/img/refo_lytro'
+        fp_ours = '/Volumes/SD CARD 1/IEEEtran/img/refo_upscale_7px'
+    else:
+        fp_lytro = ''
+        fp_ours = ''
 
     # loop over directories
     for fp in [fp_lytro, fp_ours]:

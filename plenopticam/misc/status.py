@@ -25,6 +25,7 @@ __license__ = """
 from plenopticam.misc.type_checks import isfloat
 import threading
 
+
 class PlenopticamStatus(object):
 
     def __init__(self):

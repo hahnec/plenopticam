@@ -63,7 +63,7 @@ class CfaProcessor(object):
 
         # debayer to rgb image
         if 'bay' in self.cfg.lfpimg.keys() and len(self._bay_img.shape) == 2:
-            self.bay2rgb(1)
+            self.bay2rgb(2)
 
         # convert to uint16
         self._rgb_img = misc.Normalizer(self._rgb_img).uint16_norm()
@@ -76,8 +76,6 @@ class CfaProcessor(object):
         self.sta.status_msg('Debayering', self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
-        #self._bay_img = misc.Normalizer(self._bay_img).type_norm()
-
         # Bayer to RGB conversion
         if method == 0:
             self._rgb_img = demosaicing_CFA_Bayer_bilinear(self._bay_img, self.cfg.lfpimg['bay'])
@@ -88,7 +86,7 @@ class CfaProcessor(object):
 
         # normalize image
         min = np.percentile(self._rgb_img, 0.05)
-        max = np.percentile(self._rgb_img, 99.995)
+        max = np.max(self.rgb_img)#np.percentile(self._rgb_img, 99.995)
         self._rgb_img = misc.Normalizer(self._rgb_img, min=min, max=max).type_norm()
 
         # update status message

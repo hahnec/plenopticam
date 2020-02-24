@@ -35,7 +35,7 @@ class LfpExporter(LfpViewpoints):
     def __init__(self, refo_stack=None, *args, **kwargs):
         super(LfpExporter, self).__init__(*args, **kwargs)
 
-        self.refo_stack = np.asarray(refo_stack) if refo_stack else None
+        self.refo_stack = np.asarray(refo_stack) if refo_stack is not None else None
 
     def write_viewpoint_data(self):
 
@@ -107,8 +107,8 @@ class LfpExporter(LfpViewpoints):
             if downscale else self.views_stacked_img.copy()
 
         # normalization
-        p_lo = np.percentile(views_stacked_img, 1)
-        p_hi = np.percentile(views_stacked_img, 99)
+        p_lo = np.percentile(misc.rgb2gray(self.central_view), 0.05)
+        p_hi = np.percentile(misc.rgb2gray(self.central_view), 99.995)
         views_stacked_img = misc.Normalizer(views_stacked_img, min=p_lo, max=p_hi).uint8_norm()
 
         # export all viewpoints in single image
@@ -128,7 +128,7 @@ class LfpExporter(LfpViewpoints):
         refo_stack = misc.Normalizer(self.refo_stack).uint16_norm()
         if self.cfg.params[self.cfg.opt_refi]:
             a_list = np.arange(*np.array(self.cfg.params[self.cfg.ran_refo]) * self.cfg.params[self.cfg.ptc_leng])
-            a_list = a_list / self.cfg.params[self.cfg.ptc_leng]
+            a_list = np.round(a_list / self.cfg.params[self.cfg.ptc_leng], 2)
         else:
             a_list = range(*self.cfg.params[self.cfg.ran_refo])
 
@@ -157,9 +157,6 @@ class LfpExporter(LfpViewpoints):
         if folder_path is None:
             folder_path = os.path.join(self.cfg.exp_path, 'refo_' + string + str(self._M) + 'px')
             misc.mkdir_p(folder_path)
-
-        # account for sub-pixel precise depth value
-        a = round(float(a) / self._M, 2) if self.cfg.params[self.cfg.opt_refi] else a
 
         # write image file
         misc.save_img_file(refo_img, os.path.join(folder_path, str(a)), file_type=file_type)

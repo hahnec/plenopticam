@@ -9,6 +9,7 @@ import os
 from itertools import cycle
 import matplotlib.pyplot as plt
 import numpy as np
+import platform
 
 from plenopticam.misc import load_img_file, Normalizer
 
@@ -35,24 +36,22 @@ def brisque_metric(img_tile):
 if __name__ == "__main__":
 
     target_folders = [
-                       # 'checker'
-                       'comparison\dans_colour_srgb',
-                       'comparison\clim_clr',
-                       #'comparison\clim_wo_gam',
-                       #'comparison\clim_bar',
-                       #'thumb_collection_bilinear',
-                       #'thumb_collection_menon',
-                       #'thumb_collection_indi-ccm',
-                       #'thumb_collection_malvar_clip_srgb',
-                       #'thumb_collection_malvar_ccm-indi',
-                       #'thumb_collection_menon_gray-clip-less',
-                       #'thumb_collection_value-clip',
-                       #'thumb_collection_value-clip-hex',
-                       'thumb_collection_menon_rgb-clip',
-                       #'thumb_collection_menon_rgb-clip-more'
+                       #'checker'
+                       'comparison/dans_colour_srgb',
+                       'comparison/clim_clr',
+                       #'comparison/clim_wo_gam',
+                       #'comparison/clim_bar',
+                       'thumb_collection_paper'
                       ]
-    path = r'C:\Users\chahne\Pictures\Dataset_INRIA_SIROCCO'
-    exts = ('png')
+
+    if platform.system() == 'Windows':
+        path = r'C:\Users\chahne\Pictures\Dataset_INRIA_SIROCCO'
+    elif platform.system() == 'Darwin':
+        path = r'/Users/Admin/Pictures/Plenoptic/'
+    else:
+        path = os.getcwd()
+
+    exts = ('png', 'tiff')
     skip_list = []#'Checkerboard', 'Framed'
 
     crop_opt = False
@@ -74,16 +73,13 @@ if __name__ == "__main__":
 
                 # extract image tile
                 if crop_opt:
+                    img = img[2:-2, 2:-2, ...] if file.endswith('Thumb.png') else img
                     cy, cx = [x//2 for x in img.shape[:2]]
                     hh, hw = [x//10 for x in img.shape[:2]]
                     img_tile = img[cy-hh:cy+hh+1, cx-hw:cx+hw+1]
                 else:
-                    img_tile = img#[2:-2, 2:-2, ...]
+                    img_tile = img
 
-                #img_tile /= img_tile.max()
-                #gain = 10
-                #cutoff = 0.5
-                #img_tile = 1./(1+np.exp(gain*(cutoff-misc.Normalizer(img_tile).type_norm())))
                 score = brisque_metric(Normalizer(img_tile).uint8_norm())
                 scores.append(score)
                 print(file+': %s' % scores[-1])
@@ -95,14 +91,15 @@ if __name__ == "__main__":
     # plot
     plt.style.use('seaborn-white')
     fig = plt.figure()
-    a = 4
-    softx__width = 5.39749
-    fig.set_size_inches(w=softx__width, h=a)
-    width = .2
+    a = 3 #4
+    softx_width = 5.39749
+    ieee_width = 7.14113
+    fig.set_size_inches(w=ieee_width, h=a)
+    width = .3
 
-    labels = ['LFToolbox v0.4', 'CLIM V-SENSE', 'PlenoptiCam v1.0.0']
+    labels = ['LFToolbox v0.4', 'CLIM-VSENSE', 'PlenoptiCam v1.0.0']
     labelcycler = cycle(labels)
-    labelcycler = cycle(target_folders)
+    #labelcycler = cycle(target_folders)
 
     lines = ["-", "--", "-.", ":"]
     linecycler = cycle(lines)
@@ -110,10 +107,13 @@ if __name__ == "__main__":
     markers = ["x", ".", "+", "^", "s", "d"]
     markercycler = cycle(markers)
 
+    hatches = ['/', '.', '+']
+    hatchcycler = cycle(hatches)
+
     for i, scores in enumerate(score_series):
         x_range = [x + (i - len(target_folders) // 2) * width for x in list(range(len(scores)))]  # range(len(scores))#
-        plt.bar(x_range, scores, width,
-                label=next(labelcycler), linestyle=next(linecycler))  # , marker=next(markercycler))
+        plt.bar(x_range, scores, width, #edgecolor='black',
+                label=next(labelcycler), hatch=next(hatchcycler))  # , marker=next(markercycler)) linestyle=next(linecycler),
 
     # tick labels
     tick_labels = [os.path.splitext(file)[0] for file in files if os.path.splitext(file)[0].split('_')[0] not in skip_list]
@@ -121,26 +121,27 @@ if __name__ == "__main__":
     plt.xticks(range(len(tick_labels)), tick_labels, rotation='vertical')
 
     # leave space for tick labels
-    plt.subplots_adjust(bottom=0.25)
+    plt.subplots_adjust(bottom=0.33)
 
     # grids
-    plt.grid(True, alpha=.5)
+    plt.grid(True, alpha=.35)
 
     plt.ylabel('BRISQUE [Score]')
     plt.legend(frameon=True)
 
     # define axis limits
-    plt.ylim(10*(np.min(score_series)//10), 10*(np.max(score_series)//10)+5)
-    plt.xlim(-1, len(scores))
+    if np.asarray(score_series).dtype != 'O':
+        plt.ylim(10*(np.min(score_series)//10), 10*np.ceil(np.max(score_series)/10))
+        plt.xlim(-1, len(scores))
 
     # score assessment
     try:
-        series = np.array(score_series)
+        series = np.asarray(score_series)
         cnts = [np.sum(np.argmin(np.swapaxes(series, axis1=0, axis2=1), axis=1) == i) for i in range(len(series))]
         print(cnts)
         print([i.sum() for i in series])
     except:
         pass
 
-    plt.show()
     plt.savefig("brisque_central.pgf")
+    plt.show()

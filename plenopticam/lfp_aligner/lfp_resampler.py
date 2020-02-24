@@ -37,7 +37,7 @@ class LfpResampler(LfpMicroLenses):
         ''' cropping micro images to square shape while interpolating around their detected center (MIC) '''
 
         # print status
-        self.sta.status_msg('Light field alignment', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.status_msg('Light-field alignment', self.cfg.params[self.cfg.opt_prnt])
 
         # start resampling process (taking micro lens arrangement into account)
         if self.cfg.calibs[self.cfg.pat_type] == 'rec':
@@ -52,18 +52,24 @@ class LfpResampler(LfpMicroLenses):
 
     def _write_lfp_align(self):
 
+        # print status
+        self.sta.status_msg('Save aligned light-field', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
+
         # convert to 16bit unsigned integer
         self._lfp_out = misc.Normalizer(self._lfp_out).uint16_norm()
 
         # create output data folder
         misc.mkdir_p(self.cfg.exp_path, self.cfg.params[self.cfg.opt_prnt])
 
-        # write aligned light field as pickle file to avoid recalculation
+        # write aligned light field as pickle file to avoid re-calculation
         with open(os.path.join(self.cfg.exp_path, 'lfp_img_align.pkl'), 'wb') as f:
             pickle.dump(self._lfp_out, f)
 
         if self.cfg.params[self.cfg.opt_dbug]:
             misc.save_img_file(self._lfp_out, os.path.join(self.cfg.exp_path, 'lfp_img_align.tiff'))
+
+        self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
 
     def _patch_align(self, window, mic):
 
@@ -78,8 +84,8 @@ class LfpResampler(LfpMicroLenses):
                                  np.arange(window.shape[0])+mic[0]-rint(mic[0]))
 
         # treatment of interpolated values being below or above original extrema
-        patch[patch < window.min()] = window.min()
-        patch[patch > window.max()] = window.max()
+        #patch[patch < window.min()] = window.min()
+        #patch[patch > window.max()] = window.max()
 
         return patch
 
@@ -175,7 +181,8 @@ class LfpResampler(LfpMicroLenses):
                 for x in range(self._M):
                     for p in range(self._DIMS[2]):
                         # stack of micro images elongated in x-direction
-                        interp_coords = np.linspace(0, self._LENS_X_MAX, self._LENS_X_MAX*2/np.sqrt(3))+.5*np.mod(ly+hex_odd, 2)
+                        interp_coords = np.linspace(0, self._LENS_X_MAX, int(np.round(self._LENS_X_MAX*2/np.sqrt(3))))+\
+                                        .5*np.mod(ly+hex_odd, 2)
                         interp_stack[:, y, x, p] = np.interp(interp_coords, range(self._LENS_X_MAX), patch_stack[:, y, x, p])
 
             self._lfp_out[ly*self._M:ly*self._M+self._M, :] = \

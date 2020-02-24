@@ -1,5 +1,6 @@
 import os
 from shutil import copyfile, rmtree
+import platform
 
 
 def mkdir_p(path):
@@ -8,8 +9,12 @@ def mkdir_p(path):
     except OSError as exc:  # Python >2.5
         pass
 
-
-path = r'C:\Users\chahne\Pictures\Dataset_INRIA_SIROCCO\Data' #os.getcwd()
+if platform.system() == 'Windows':
+    path = r'C:\Users\chahne\Pictures\Dataset_INRIA_SIROCCO\Data'
+elif platform.system() == 'Darwin':
+    path = r'/Users/Admin/Pictures/Plenoptic/INRIA_SIROCCO'
+else:
+    path = os.getcwd()
 
 # create folder for thumbnails
 dst = os.path.join(os.path.dirname(path), 'thumb_collection')

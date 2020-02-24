@@ -22,13 +22,14 @@ __license__ = """
 
 
 import sys, errno
-from os import makedirs, remove
+from os import makedirs, remove, chmod
 from os.path import isdir, isfile, expanduser
+
 
 def mkdir_p(path, print_opt=False):
 
     try:
-        makedirs(path)
+        makedirs(path, mode=0o777)
     except OSError as exc:  # Python >2.5
         if exc.errno == errno.EEXIST and isdir(path):
             if print_opt:
@@ -38,16 +39,27 @@ def mkdir_p(path, print_opt=False):
 
     return True
 
+
 def rmdir_p(path, print_opt=False):
 
     try:
         import shutil
-        shutil.rmtree(path, ignore_errors=True)
+        shutil.rmtree(path, onerror=remove_readonly)
     except:
         if print_opt:
             print('\n Directory {0} could not be removed'.format(path))
 
     return True
+
+
+def remove_readonly(func, path, _):
+    "Clear the readonly bit and reattempt the removal"
+
+    import stat
+    chmod(path, stat.S_IWRITE)
+
+    func(path)
+
 
 def rm_file(path, print_opt=False):
 
@@ -57,6 +69,7 @@ def rm_file(path, print_opt=False):
     except OSError as e:
         if print_opt:
             print("\n Error: %s - %s." % (e.filename, e.strerror))
+
 
 def select_file(init_dir=None, title=''):
     ''' get filepath from tkinter dialog '''
