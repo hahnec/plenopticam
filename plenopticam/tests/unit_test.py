@@ -34,6 +34,7 @@ from plenopticam.lfp_refocuser import LfpRefocuser
 from plenopticam.cfg.cfg import PlenopticamConfig
 from plenopticam.misc import PlenopticamStatus, mkdir_p, load_img_file
 
+
 class PlenoptiCamTester(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
