@@ -17,7 +17,6 @@
 # plenopticam folders
 releases/
 plenopticam/tests/data/
-scripts/
 docs/build/doctrees/
 
 # Python egg metadata, regenerated from source files by setuptools
@@ -33,9 +32,10 @@ plenopticam/gui/*.png
 *.eps
 *.pgf
 
-# Advanced Installer
-pcam_installer_build-cache/
-pcam_installer_build-SetupFiles/
+# bundling folders
+scripts/bundling/pcam_installer_build-cache/
+scripts/bundling/pcam_installer_build-SetupFiles/
+scripts/bundling/*/
 
 ### PYTHON related (GitHub template)
 
