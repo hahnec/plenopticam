@@ -241,11 +241,12 @@ class CtrlWidget(tk.Frame):
         except EOFError:
             os.remove(fp)
 
-        # load LFP metadata settings
+        # load LFP metadata settings (for Lytro files only)
         fp = join(self.cfg.exp_path, splitext(basename(self.cfg.params[self.cfg.lfp_path]))[0]+'.json')
-        json_dict = self.cfg.load_json(fp=fp, sta=None)
-        from plenopticam.lfp_reader.lfp_decoder import LfpDecoder
-        self.cfg.lfpimg = LfpDecoder().filter_lfp_json(json_dict, settings=self.cfg.lfpimg)
+        if os.path.isfile(fp):
+            json_dict = self.cfg.load_json(fp=fp, sta=None)
+            from plenopticam.lfp_reader.lfp_decoder import LfpDecoder
+            self.cfg.lfpimg = LfpDecoder().filter_lfp_json(json_dict, settings=self.cfg.lfpimg)
 
     def lfp_extract(self):
 
