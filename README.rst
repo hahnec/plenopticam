@@ -1,5 +1,5 @@
 ===========
-PlenoptiCam
+plenopticam
 ===========
 .. A light field photography application (macOS_ or Win_) for computational change of perspective view and synthetic focus based on a Standard Plenoptic Camera (SPC).
 
@@ -11,6 +11,21 @@ Raw exposures from a plenoptic camera require four-dimensional image alignment i
 This application is meant for researchers, developers, beginners and other fiddlers who like to experiment with light field technology. Its scope comprises custom-types of plenoptic cameras and is thus not limited to Lytro's image data.
 
 |release| |license| |code| |repo| |downloads|
+
+Results
+-------
+
+.. list-table::
+   :widths: 8 8
+
+   * - |OpEx|_
+     - |INRIA|_
+   * - |spiderman|
+     - |fruits|
+   * - plenoptic camera built at Univ. of Bedfordshire
+     - Lytro Illum camera image from raw capture
+
+.. * |Stanford|_
 
 Installation
 ------------
@@ -109,9 +124,6 @@ More information on optional arguments, can be found using the help parameter
 
 ``plenopticam -h``
 
-Results
--------
-
 Results can be found inside a folder named after your light field file which is located in the same directory path.
 Depending on provided files and settings, your results folder may contain the following data:
 
@@ -122,19 +134,7 @@ Depending on provided files and settings, your results folder may contain the fo
     - light field metadata as json file (in case of Lytro image file)
     - scheimpflug focus file
 
-Exemplary view animations can be seen below (image quality due to lower resolution and limited gif colours)
-
-.. list-table::
-   :widths: 8 8
-
-   * - |OpEx|_
-     - |INRIA|_
-   * - |spiderman|
-     - |fruits|
-   * - plenoptic camera built at Univ. of Bedfordshire
-     - Lytro Illum camera image from raw capture
-
-.. * |Stanford|_
+Exemplary view animations can be seen above (image quality due to lower resolution and limited gif colours)
 
 Credits
 -------
