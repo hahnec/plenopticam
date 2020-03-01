@@ -24,6 +24,7 @@ from setuptools import setup, find_packages
 from plenopticam import __version__
 from sys import platform
 from docutils import core
+import os
 
 APP = ['plenopticam/gui/top_level.py']
 
@@ -65,7 +66,8 @@ else:
  )
 
 # parse description section text
-with open("README.rst", "r") as f:
+readme_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'README.rst')
+with open(readme_path, "r") as f:
     data = f.read()
     readme_nodes = list(core.publish_doctree(data))
     for node in readme_nodes:
