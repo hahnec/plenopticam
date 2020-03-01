@@ -175,7 +175,8 @@ class PlenopticamConfig(object):
                 raise PlenopticamError('Calibration JSON File may be corrupted. Attempt to delete file %s' % fp)
         else:
             json_dict = None
-            sta.status_msg('Provided file %s does not exist' % fp, opt=True)
+            if splitext(fp)[-1].lower() in ('.lfp', 'lfr', '.raw'):
+                sta.status_msg('Provided file %s does not exist' % fp, opt=True)
 
         return json_dict
 
