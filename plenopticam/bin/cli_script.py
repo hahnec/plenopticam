@@ -60,8 +60,6 @@ def usage():
     print("-h,            --help             Print this help message")
     print("")
 
-    sys.exit()
-
 
 def parse_options(argv, cfg):
 
