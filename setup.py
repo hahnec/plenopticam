@@ -82,7 +82,8 @@ setup(
       author='Christopher Hahne',
       author_email='inbox@christopherhahne.de',
       license='GNU GPL V3.0',
-      keywords='lightfield plenoptic rendering engine image processing software application lytro toolbox',
+      keywords='lightfield plenoptic rendering engine image processing software application lytro toolbox calibration '
+               'light field depth refocusing refocus baseline disparity resolution',
       scripts=['plenopticam/bin/cli_script.py'],
       entry_points={'console_scripts': ['plenopticam=plenopticam.bin.cli_script:main'], },
       packages=find_packages(),
