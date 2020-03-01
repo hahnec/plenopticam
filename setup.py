@@ -27,18 +27,11 @@ from docutils import core
 
 APP = ['plenopticam/gui/top_level.py']
 
-MAC_FILES = [
+FILES = [
         # ('subdir' , ['file_path'])
         ('cfg', ['plenopticam/cfg/cfg.json']),
-        ('gui/icns', ['plenopticam/gui/icns/1055104.icns'])
-]
-
-WIN_FILES = [
-        # ('subdir' , ['file_path'])
-        ('gui/icns', ['plenopticam/gui/icns/1055104.ico'])
-]
-UNIX_FILES = [
-        # ('subdir' , ['file_path'])
+        ('gui/icns', ['plenopticam/gui/icns/1055104.icns']),
+        ('gui/icns', ['plenopticam/gui/icns/1055104.ico']),
         ('gui/icns', ['plenopticam/gui/icns/1055104.gif'])
 ]
 
@@ -56,19 +49,19 @@ if platform == 'darwin':
     extra_options = dict(
         setup_requires=['py2app'],
         app=APP,
-        data_files=MAC_FILES,
+        data_files=FILES,
         options=dict(py2app=OPTIONS),
     )
 elif platform == 'win32':
     extra_options = dict(
         setup_requires=[],
         #app=APP,
-        data_files=WIN_FILES,
+        data_files=FILES,
     )
 else:
     extra_options = dict(
         setup_requires=[],
-        data_files=UNIX_FILES,
+        data_files=FILES,
  )
 
 # parse description section text
