@@ -220,7 +220,8 @@ class PlenopticamConfig(object):
                (self.params[self.opt_cali] or self.params[self.opt_vign] or self.cond_lfp_align())
 
     def cond_perf_cali(self):
-        return (self.params[self.opt_cali] and self.cond_lfp_align()) or not self.cond_meta_file()
+        return self.params[self.opt_cali] or \
+               (not self.cond_meta_file() and self.cond_lfp_align())
 
     def cond_lfp_align(self):
         return not exists(join(self.exp_path, 'lfp_img_align.pkl'))
