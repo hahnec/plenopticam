@@ -76,12 +76,18 @@ class LfpResampler(LfpMicroLenses):
         # initialize patch
         patch = np.zeros(window.shape)
 
-        for p in range(window.shape[2]):
+        # wrong window shapes cause crashes which is why we
+        if window.shape[0] == self._M+2 and window.shape[1] == self._M+2:
+            # iterate through color channels
+            for p in range(self._DIMS[2]):
 
-            fun = self._interpol_method(range(window.shape[1]), range(window.shape[0]), window[:, :, p])
+                fun = self._interpol_method(range(window.shape[1]), range(window.shape[0]), window[:, :, p])
 
-            patch[:, :, p] = fun(np.arange(window.shape[1])+mic[1]-rint(mic[1]),
-                                 np.arange(window.shape[0])+mic[0]-rint(mic[0]))
+                patch[:, :, p] = fun(np.arange(window.shape[1])+mic[1]-rint(mic[1]),
+                                     np.arange(window.shape[0])+mic[0]-rint(mic[0]))
+        else:
+            self.sta.status_msg('Warning: chosen micro image size exceeds light-field borders')
+            return np.zeros((self._M+2,)*2+(window.shape[2],))
 
         # treatment of interpolated values being below or above original extrema
         #patch[patch < window.min()] = window.min()
@@ -141,7 +147,8 @@ class LfpResampler(LfpMicroLenses):
                 mic = self.get_coords_by_idx(ly=ly, lx=lx)
 
                 # interpolate each micro image with its MIC as the center with consistent micro image size
-                window = self._lfp_img[rint(mic[0]) - self._C - 1:rint(mic[0]) + self._C + 2, rint(mic[1]) - self._C - 1:rint(mic[1]) + self._C + 2]
+                window = self._lfp_img[rint(mic[0]) - self._C - 1:rint(mic[0]) + self._C + 2,
+                                       rint(mic[1]) - self._C - 1:rint(mic[1]) + self._C + 2]
                 self._lfp_out[ly * self._M:(ly + 1) * self._M, lx * self._M:(lx + 1) * self._M] = \
                     self._patch_align(window, mic)[1:-1, 1:-1]
 
@@ -173,7 +180,8 @@ class LfpResampler(LfpMicroLenses):
                 mic = self.get_coords_by_idx(ly=ly, lx=lx)
 
                 # interpolate each micro image with its MIC as the center and consistent micro image size
-                window = self._lfp_img[rint(mic[0])-self._C-1:rint(mic[0])+self._C+2, rint(mic[1])-self._C-1:rint(mic[1])+self._C+2]
+                window = self._lfp_img[rint(mic[0])-self._C-1:rint(mic[0])+self._C+2,
+                                       rint(mic[1])-self._C-1:rint(mic[1])+self._C+2]
                 patch_stack[lx, :, :] = self._patch_align(window, mic)[1:-1, 1:-1]
 
             # image stretch interpolation in x-direction to compensate for hex-alignment
