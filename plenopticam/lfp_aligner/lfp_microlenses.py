@@ -58,7 +58,6 @@ class LfpMicroLenses(object):
         except IndexError:
             self.sta.status_msg('Incompatible image dimensions: Please either use KxLx3 or KxLx1 array dimensions')
             self.sta.error = True
-            self._CHS = 1
 
     @property
     def lfp_img(self):
