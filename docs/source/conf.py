@@ -20,7 +20,7 @@ import plenopticam
 # -- Project information -----------------------------------------------------
 
 project = 'PlenoptiCam'
-copyright = '2019, Christopher Hahne'
+copyright = '2020, Christopher Hahne'
 author = plenopticam.__author__
 
 # The short X.Y version
