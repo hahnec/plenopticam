@@ -93,20 +93,27 @@ class PictureWindow(tk.Canvas, LfpViewpoints):
         self._ht = self.winfo_screenheight()
         self._wd = self.winfo_screenwidth()
 
+        # window settings
+        # self['bg'] = "white"
+        self.master.title("PlenoptiCam Viewer")
+
         vp_dirs = glob.glob(os.path.join(self.cfg.exp_path, 'viewpoints_*px'))
         rf_dirs = glob.glob(os.path.join(self.cfg.exp_path, 'refo_*px'))
         try:
             self.vp_img_arr = kwargs['vp_img_arr'] if 'vp_img_arr' in kwargs else get_list(vp_dirs[0], vp=1)
             self.refo_stack = kwargs['refo_stack'] if 'refo_stack' in kwargs else get_list(rf_dirs[0], vp=0)
         except Exception as e:
-            self.sta.status_msg(msg=e, opt=self.cfg.opt_prnt)
+            print(e)
+            self.sta.status_msg(msg='\nNo valid image data found', opt=self.cfg.opt_prnt)
 
-        # light-field related data
-        self._M = self.vp_img_arr.shape[0]  # self.cfg.params[self.cfg.ptc_leng]
-        self._v = self._u = self._M // 2
-        self._a = 0
-        self._k = -1
-        self.move_coords = self.get_move_coords(pattern='circle', arr_dims=self.vp_img_arr.shape[:2])
+        if hasattr(self, 'vp_img_arr'):
+
+            # light-field related data
+            self._M = self.vp_img_arr.shape[0]  # self.cfg.params[self.cfg.ptc_leng]
+            self._v = self._u = self._C = self._M // 2
+            self._a = 0
+            self._k = -1
+            self.move_coords = self.get_move_coords(pattern='circle', arr_dims=self.vp_img_arr.shape[:2])
 
         # initialize member variables
         self.vp_mode = True
@@ -115,12 +122,9 @@ class PictureWindow(tk.Canvas, LfpViewpoints):
         self._mode_text.set('VP' if self.vp_mode else 'RF')
         self.all_function_trigger()
 
-        # window settings
-        self['bg'] = "white"
-        self.master.title("PlenoptiCam Viewer")
-
         # display initial image
         self.next_frame()
+
 
     def show_image(self):
 
@@ -252,6 +256,7 @@ class PictureWindow(tk.Canvas, LfpViewpoints):
 
             self.show_image()
             self._k += 1
+
 
 def main():
 
