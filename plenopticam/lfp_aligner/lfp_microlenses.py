@@ -51,8 +51,13 @@ class LfpMicroLenses(object):
             self._M = self.pitch_eval(self._M, self.cfg.params[self.cfg.ptc_leng], self.sta)
             self._C = self._M//2
 
-        if self._lfp_img is not None:
+        try:
             self._DIMS = self._lfp_img.shape if len(self._lfp_img.shape) == 3 else self._lfp_img.shape + (1,)
+        except (TypeError, AttributeError):
+            pass
+        except IndexError:
+            self.sta.status_msg('Incompatible image dimensions: Please either use KxLx3 or KxLx1 array dimensions')
+            self.sta.error = True
 
     @property
     def lfp_img(self):

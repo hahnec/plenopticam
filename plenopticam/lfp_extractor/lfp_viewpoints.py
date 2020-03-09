@@ -36,6 +36,14 @@ class LfpViewpoints(object):
         self._M = self.cfg.params[self.cfg.ptc_leng]
         self._C = self._M // 2
 
+        try:
+            self._DIMS = self._vp_img_arr.shape if len(self._vp_img_arr.shape) == 3 else self._vp_img_arr.shape + (1,)
+        except (TypeError, AttributeError):
+            pass
+        except IndexError:
+            self.sta.status_msg('Incompatible image dimensions: Please either use KxLx3 or KxLx1 array dimensions')
+            self.sta.error = True
+
     @property
     def vp_img_arr(self):
         return self._vp_img_arr

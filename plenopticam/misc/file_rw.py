@@ -126,7 +126,7 @@ def save_gif(img_set, duration=.1, fp='', fn='default'):
 
     try:
         import imageio
-        imageio.mimsave(os.path.join(fp, fn), [place_dnp(img) for img in img_set], duration=duration, palettesize=2**8)
+        imageio.mimwrite(os.path.join(fp, fn), [place_dnp(img) for img in img_set], duration=duration, palettesize=2**8)
     except ImportError:
         # only use pillow for gif animation if necessary as it yields poorer image quality
         pil_arr = [Image.fromarray(place_dnp(img)) for img in img_set]

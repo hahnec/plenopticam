@@ -109,7 +109,7 @@ class CnfgWidget(object):
     def refi(self):
 
         # set refocus refinement option if scheimpflug focus type is desired
-        if self.tk_vars[self.cfg.opt_pflu].get() != 'off':
+        if self.tk_vars[self.cfg.opt_pflu].get():
             self.tk_vars[self.cfg.opt_refi].set(value=True)
             self.obj_ents[self.cfg.opt_refi].select()
             self.cfg.params[self.cfg.opt_refi] = True

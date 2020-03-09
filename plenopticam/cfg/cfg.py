@@ -175,7 +175,8 @@ class PlenopticamConfig(object):
                 raise PlenopticamError('Calibration JSON File may be corrupted. Attempt to delete file %s' % fp)
         else:
             json_dict = None
-            sta.status_msg('Provided file %s does not exist' % fp, opt=True)
+            if splitext(fp)[-1].lower() in ('.lfp', 'lfr', '.raw'):
+                sta.status_msg('Provided file %s does not exist' % fp, opt=True)
 
         return json_dict
 
@@ -215,10 +216,12 @@ class PlenopticamConfig(object):
         return isdir(self.params[self.cal_path]) or self.params[self.cal_path].lower().endswith('.tar')
 
     def cond_load_wimg(self):
-        return not self.cond_auto_find and (self.params[self.opt_cali] or self.params[self.opt_vign] or self.cond_lfp_align)
+        return not self.cond_auto_find() and \
+               (self.params[self.opt_cali] or self.params[self.opt_vign] or self.cond_lfp_align())
 
     def cond_perf_cali(self):
-        return (self.params[self.opt_cali] and self.cond_lfp_align) or not self.cond_meta_file()
+        return self.params[self.opt_cali] or \
+               (not self.cond_meta_file() and self.cond_lfp_align())
 
     def cond_lfp_align(self):
         return not exists(join(self.exp_path, 'lfp_img_align.pkl'))

@@ -9,6 +9,7 @@ def mkdir_p(path):
     except OSError as exc:  # Python >2.5
         pass
 
+
 if platform.system() == 'Windows':
     path = r'C:\Users\chahne\Pictures\Dataset_INRIA_SIROCCO\Data'
 elif platform.system() == 'Darwin':

@@ -72,7 +72,7 @@ class LfpCalibrator(object):
 
         # write micro image center image to hard drive if debug option is set
         if not self.sta.interrupt:
-            CentroidDrawer(self._wht_img, centroids, self.cfg).write_centroids_img(fn='wht_img+mics_unsorted.png')
+            CentroidDrawer(self._wht_img, centroids, self.cfg, self.sta).write_centroids_img(fn='wht_img+mics_unsorted.png')
 
         # reorder MICs and assign indices based on the detected MLA pattern
         obj = CentroidSorter(centroids, self.cfg, self.sta)

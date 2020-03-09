@@ -60,8 +60,6 @@ def usage():
     print("-h,            --help             Print this help message")
     print("")
 
-    sys.exit()
-
 
 def parse_options(argv, cfg):
 
@@ -137,6 +135,8 @@ def main():
         lfp_filenames = [cfg.params[cfg.lfp_path]]
 
     if not cfg.params[cfg.cal_path]:
+        # manual calibration data selection
+        sta.status_msg('\r Please select white image calibration source manually', cfg.params[cfg.opt_prnt])
         # open selection window (at current lfp file directory) to set calibration folder path
         cfg.params[cfg.cal_path] = misc.select_file(cfg.params[cfg.lfp_path], 'Select calibration image')
 
@@ -151,7 +151,7 @@ def main():
 
         # change path to next filename
         cfg.params[cfg.lfp_path] = os.path.join(os.path.dirname(cfg.params[cfg.lfp_path]), lfp_filename)
-        sta.status_msg(msg=cfg.params[cfg.lfp_path], opt=cfg.params[cfg.opt_prnt])
+        sta.status_msg(msg='Process file '+os.path.basename(cfg.params[cfg.lfp_path]), opt=cfg.params[cfg.opt_prnt])
 
         # remove output folder if option is set
         misc.rmdir_p(cfg.exp_path) if cfg.params[cfg.dir_remo] else None
@@ -169,7 +169,7 @@ def main():
         # create output data folder
         misc.mkdir_p(cfg.exp_path, cfg.params[cfg.opt_prnt])
 
-        if cfg.cond_auto_find:
+        if cfg.cond_auto_find():
             # automatic calibration data selection
             obj = lfp_calibrator.CaliFinder(cfg, sta)
             obj.main()
@@ -177,8 +177,6 @@ def main():
             del obj
 
         else:
-            # manual calibration data selection
-            sta.status_msg('\r Please select white image calibration source manually', cfg.params[cfg.opt_prnt])
             # load white image calibration file
             wht_img = misc.load_img_file(cfg.params[cfg.cal_path])
             # save settings configuration

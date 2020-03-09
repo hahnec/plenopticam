@@ -47,7 +47,10 @@ class LfpCropper(LfpMicroLenses):
     def var_init(self):
 
         # get maximum (M) and desired (Mn) micro image pitches
-        self._M = self.pitch_analyse(shape=self._lfp_img_align.shape)
+        if hasattr(self, '_CENTROIDS'):
+            self._M = self.pitch_analyse(shape=self._lfp_img_align.shape)
+        else:
+            self._M = self.cfg.params[self.cfg.ptc_leng]
         self._Mn = self.pitch_eval(self._M, self.cfg.params[self.cfg.ptc_leng], self.sta)
 
         # validate micro image size in lfp is large enough

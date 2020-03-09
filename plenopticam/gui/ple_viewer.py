@@ -58,7 +58,7 @@ def get_list(img_dir, vp=1):
     for i in dir_list:
         img_path = os.path.join(img_dir, i)
         ext = img_path.split('.')[::-1][0].lower()
-        if ext in [gen_ext.replace('*.', '') for gen_ext in GENERIC_EXTS]:
+        if ext in GENERIC_EXTS:
 
             # load image
             img = misc.load_img_file(img_path)
@@ -93,32 +93,38 @@ class PictureWindow(tk.Canvas, LfpViewpoints):
         self._ht = self.winfo_screenheight()
         self._wd = self.winfo_screenwidth()
 
+        # window settings
+        # self['bg'] = "white"
+        self.master.title("PlenoptiCam Viewer")
+
         vp_dirs = glob.glob(os.path.join(self.cfg.exp_path, 'viewpoints_*px'))
         rf_dirs = glob.glob(os.path.join(self.cfg.exp_path, 'refo_*px'))
         try:
             self.vp_img_arr = kwargs['vp_img_arr'] if 'vp_img_arr' in kwargs else get_list(vp_dirs[0], vp=1)
             self.refo_stack = kwargs['refo_stack'] if 'refo_stack' in kwargs else get_list(rf_dirs[0], vp=0)
         except Exception as e:
-            self.sta.status_msg(msg=e, opt=self.cfg.opt_prnt)
+            print(e)
+            self.sta.status_msg(msg='\nNo valid image data found', opt=self.cfg.opt_prnt)
 
-        # light-field related data
-        self._M = self.vp_img_arr.shape[0]  # self.cfg.params[self.cfg.ptc_leng]
-        self._v = self._u = self._M // 2
-        self._a = 0
+        if hasattr(self, 'vp_img_arr'):
+
+            # light-field related data
+            self._M = self.vp_img_arr.shape[0]  # self.cfg.params[self.cfg.ptc_leng]
+            self._v = self._u = self._C = self._M // 2
+            self._a = 0
+            self._k = -1
+            self.move_coords = self.get_move_coords(pattern='circle', arr_dims=self.vp_img_arr.shape[:2])
 
         # initialize member variables
         self.vp_mode = True
-        self.auto_mode = True
+        self.auto_mode = False
         self._mode_text = tk.StringVar()
         self._mode_text.set('VP' if self.vp_mode else 'RF')
         self.all_function_trigger()
 
-        # window settings
-        self['bg'] = "white"
-        self.master.title("PlenoptiCam Viewer")
-
         # display initial image
         self.next_frame()
+
 
     def show_image(self):
 
@@ -185,9 +191,9 @@ class PictureWindow(tk.Canvas, LfpViewpoints):
 
         # auto-play button
         btn_auto_text = tk.StringVar()
-        btn_auto_text.set("⭮")
-        btn_auto = tk.Button(self, textvariable=btn_auto_text, command=self.auto_play, height=1, width=2)
-        btn_auto.place(x=self._wd/2*.05, y=self._ht/2*.05, anchor=tk.CENTER)
+        btn_auto_text.set("↻")
+        self.btn_auto = tk.Button(self, textvariable=btn_auto_text, command=self.auto_play, height=1, width=2)
+        self.btn_auto.place(x=self._wd/2*.05, y=self._ht/2*.05, anchor=tk.CENTER)
 
         # mode button
         self.btn_mode = tk.Button(self, textvariable=self._mode_text, command=self.switch_mode, height=1, width=2)
@@ -225,23 +231,32 @@ class PictureWindow(tk.Canvas, LfpViewpoints):
 
     def auto_play(self):
 
-        k = -1
-        move_coords = self.get_move_coords(pattern='circle', arr_dims=self.vp_img_arr.shape[:2])
+        self.auto_mode = not self.auto_mode
 
-        while self.auto_mode:
-            k += 1
+        if self.auto_mode:
+            #self.btn_auto.focus_set()
+            self.btn_auto.configure(bg="green")
+        else:
+            self.btn_auto.configure(bg="red")
+
+        self.auto_loop()
+
+    def auto_loop(self):
+
+        if self.auto_mode:
 
             if self.vp_mode:
-                self._u, self._v = move_coords[k]
-                k = 0 if k == len(move_coords)-1 else k
+                self._k = 0 if self._k >= len(self.move_coords) else self._k
+                self._u, self._v = self.move_coords[self._k]
+                self.after(100, self.auto_loop)
             else:
-                self._a = k
-                k = 0 if k == len(self.refo_stack)-1 else k
+                self._k = 0 if self._k >= len(self.refo_stack) else self._k
+                self._a = self._k
+                self.after(1000, self.auto_loop)
 
             self.show_image()
+            self._k += 1
 
-            # wait
-            #_ = [_ for _ in range(200000)]
 
 def main():
 

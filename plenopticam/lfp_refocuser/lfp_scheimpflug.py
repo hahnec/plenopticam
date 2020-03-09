@@ -38,16 +38,26 @@ class LfpScheimpflug(object):
         self.cfg = cfg
         self.sta = sta
 
+        self.fp = os.path.join(os.path.splitext(self.cfg.params[self.cfg.lfp_path])[0], 'scheimpflug')
+
     def main(self):
 
         # print status
-        self.sta.status_msg('Scheimpflug extraction', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.status_msg('Scheimpflug extraction \n', self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
-        if self.refo_stack is not None:
-            self.scheimpflug_from_stack()
-        elif self.lfp_img is not None:
-            self.scheimpflug_from_scratch()
+        # create output folder
+        misc.mkdir_p(self.fp)
+
+        # iterate through directions
+        for direction in list(c.PFLU_VALS):
+            self.cfg.params[self.cfg.opt_pflu] = direction
+            self.sta.status_msg(direction+':')
+
+            if self.refo_stack is not None:
+                self.scheimpflug_from_stack()
+            elif self.lfp_img is not None:
+                self.scheimpflug_from_scratch()
 
         return True
 
@@ -75,7 +85,10 @@ class LfpScheimpflug(object):
             a_map = a_map_x
         # diagonal orientation
         elif self.cfg.params[self.cfg.opt_pflu] == (c.PFLU_VALS[3] or c.PFLU_VALS[4]):
-            a_map = np.mean([a_map_x, a_map_y], dtype='int', axis=self.cfg.params[self.cfg.opt_pflu]-3)
+            # swap refocusing directions if option set
+            if self.cfg.params[self.cfg.opt_pflu] == c.PFLU_VALS[4]:
+                a_map_x, a_map_y = a_map_x[::-1], a_map_y[::-1]
+            a_map = np.mean(np.stack([a_map_x, a_map_y]), dtype='int', axis=0)
 
         for y in range(m):
             for x in range(n):
@@ -90,10 +103,9 @@ class LfpScheimpflug(object):
                 self.sta.progress(percentage, self.cfg.params[self.cfg.opt_prnt])
 
         # write image file to hard drive
-        fp = os.path.splitext(self.cfg.params[self.cfg.lfp_path])[0]
         a_ran = self.cfg.params[self.cfg.ran_refo]
         fn = 'scheimpflug_' + str(a_ran[0]) + '_' + str(a_ran[-1]) + '_' + self.cfg.params[self.cfg.opt_pflu] + '.png'
-        misc.save_img_file(misc.Normalizer(scheimpflug_img).uint16_norm(), os.path.join(fp, fn))
+        misc.save_img_file(misc.Normalizer(scheimpflug_img).uint16_norm(), os.path.join(self.fp, fn))
 
         return True
 
@@ -178,8 +190,7 @@ class LfpScheimpflug(object):
             self.sta.progress(((x+1)/new_n+.5)*100, self.cfg.params[self.cfg.opt_prnt])
 
         # write image file to hard drive
-        fp = self.cfg.params[self.cfg.cfn_path].split('.')[0]
-        img = misc.uint16_norm(ver_refo)
-        misc.save_img_file(img, os.path.join(fp, 'scheimpflug_' + str(patch_len) + 'px.tiff'))
+        img = misc.Normalizer(ver_refo).uint16_norm()
+        misc.save_img_file(img, os.path.join(self.fp, 'scheimpflug_' + str(patch_len) + 'px.tiff'))
 
         return True
