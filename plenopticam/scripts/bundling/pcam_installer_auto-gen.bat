@@ -27,7 +27,7 @@ set prjpath=".\pcam_installer_auto-gen.aip"
 %advinst% /edit %prjpath% /SetOutputLocation -path ".\dist\"
 %advinst% /edit %prjpath% /AddFile APPDIR "dist\plenopticam.exe"
 %advinst% /edit %prjpath% /SetIcon -icon "..\..\gui\icns\1055104.ico"
-%advinst% /edit %prjpath% /SetPackageName PlenoptiCam_v%version%.msi
+%advinst% /edit %prjpath% /SetPackageName plenopticam_v%version%.msi
 
 :: save project
 %advinst% /save %prjpath%
