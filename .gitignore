@@ -33,9 +33,9 @@ plenopticam/gui/*.png
 *.pgf
 
 # bundling folders
-scripts/bundling/pcam_installer_build-cache/
-scripts/bundling/pcam_installer_build-SetupFiles/
-scripts/bundling/*/
+plenopticam/scripts/bundling/pcam_installer_build-cache/
+plenopticam/scripts/bundling/pcam_installer_build-SetupFiles/
+plenopticam/scripts/bundling/*/
 
 ### PYTHON related (GitHub template)
 
