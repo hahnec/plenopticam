@@ -4,18 +4,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>1. plenopticam &#8212; PlenoptiCam 0.3.1 documentation</title>
+    <title>1. plenopticam &#8212; PlenoptiCam 0.3.4 documentation</title>
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="2. User Guide" href="guide.html" />
-    <link rel="prev" title="Welcome to PlenoptiCam’s documentation!" href="index.html" /> 
+    <link rel="prev" title="PlenoptiCam’s Reference Document" href="index.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -27,9 +27,9 @@
           <a href="guide.html" title="2. User Guide"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to PlenoptiCam’s documentation!"
+          <a href="index.html" title="PlenoptiCam’s Reference Document"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.3.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.3.4 documentation</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -58,10 +58,10 @@
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
-                        title="previous chapter">Welcome to PlenoptiCam’s documentation!</a></p>
+                        title="previous chapter">PlenoptiCam’s Reference Document</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="guide.html"
-                        title="next chapter"><span class="section-number">2. </span>User Guide</a></p>
+                        title="next chapter">2. User Guide</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -70,15 +70,15 @@
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
+  <h3>Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
 
@@ -88,17 +88,17 @@
           <div class="body" role="main">
             
   <div class="section" id="plenopticam">
-<h1><span class="section-number">1. </span>plenopticam<a class="headerlink" href="#plenopticam" title="Permalink to this headline">¶</a></h1>
+<h1>1. plenopticam<a class="headerlink" href="#plenopticam" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="description">
-<h2><span class="section-number">1.1. </span>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p><em>PlenoptiCam</em> is an open-source software (<a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.2.0-beta/plenopticam_0.2.0-beta_macOS.zip">macOS</a>, <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.2.0-beta/plenopticam_0.2.0-beta_win.zip">Win</a> or <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.2.0-beta/plenopticam_0.2.0-beta_linux.zip">Linux</a>) for scientific light field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
+<h2>1.1. Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><em>PlenoptiCam</em> is an open-source software (<a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.3.4-beta/plenopticam_0.3.4-beta_macOS.zip">macOS</a>, <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.3.4-beta/plenopticam_0.3.4-beta_win.zip">Win</a> or <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.3.4-beta/plenopticam_0.3.4-beta_linux.zip">Linux</a>) for scientific light field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
 Raw exposures from a plenoptic camera require four-dimensional image alignment in order to be decoded as a light field. Provided software addresses this by its ability to calibrate an image taken by a plenoptic camera and extract sub-aperture images or synthetically focused photographs.
 This application is meant for researchers, developers, beginners and other fiddlers who like to experiment with light field technology. Its scope comprises custom-types of plenoptic cameras and is thus not limited to Lytro’s image data.</p>
 <p><a class="reference external" href="https://github.com/hahnec/plenopticam/releases/"><img alt="release" src="https://img.shields.io/github/release/hahnec/plenopticam.svg?style=flat-square" /></a> <a class="reference external" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img alt="License" src="https://img.shields.io/badge/License-GPL%20v3.0-orange.svg?style=flat-square" /></a> <a class="reference external" href="https://github.com/hahnec/plenopticam/archive/master.zip"><img alt="Code size" src="https://img.shields.io/github/languages/code-size/hahnec/plenopticam.svg?style=flat-square" /></a> <a class="reference external" href="https://github.com/hahnec/plenopticam/archive/master.zip"><img alt="Repo size" src="https://img.shields.io/github/repo-size/hahnec/plenopticam.svg?style=flat-square" /></a> <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/"><img alt="Downloads" src="https://img.shields.io/github/downloads/hahnec/plenopticam/total.svg?style=flat-square" /></a></p>
 </div>
 <div class="section" id="results">
-<h2><span class="section-number">1.2. </span>Results<a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h2>
-<table class="colwidths-given docutils align-default">
+<h2>1.2. Results<a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -117,11 +117,11 @@ This application is meant for researchers, developers, beginners and other fiddl
 </table>
 </div>
 <div class="section" id="installation">
-<h2><span class="section-number">1.3. </span>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<h2>1.3. Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><dl class="simple">
 <dt>executable:</dt><dd><ol class="arabic simple">
-<li><p>download bundled <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/">apps</a> for <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.2.0-beta/plenopticam_0.2.0-beta_macOS.zip">macOS</a>, <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.2.0-beta/plenopticam_0.2.0-beta_win.zip">Win</a> or <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.2.0-beta/plenopticam_0.2.0-beta_linux.zip">Linux</a></p></li>
+<li><p>download bundled <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/">apps</a> for <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.3.4-beta/plenopticam_0.3.4-beta_macOS.zip">macOS</a>, <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.3.4-beta/plenopticam_0.3.4-beta_win.zip">Win</a> or <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.3.4-beta/plenopticam_0.3.4-beta_linux.zip">Linux</a></p></li>
 <li><p>extract archive</p></li>
 <li><p>run executable (may take a while on first start-up)</p></li>
 <li><p>user interface will show up (see below)</p></li>
@@ -161,9 +161,9 @@ This application is meant for researchers, developers, beginners and other fiddl
 </ul>
 </div>
 <div class="section" id="usage">
-<h2><span class="section-number">1.4. </span>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<h2>1.4. Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="application">
-<h3><span class="section-number">1.4.1. </span>Application<a class="headerlink" href="#application" title="Permalink to this headline">¶</a></h3>
+<h3>1.4.1. Application<a class="headerlink" href="#application" title="Permalink to this headline">¶</a></h3>
 <p><p align="center">
     <img src="https://raw.githubusercontent.com/hahnec/plenopticam/develop/docs/img/gui_linux.png" width="66%">
 <p></p>
@@ -246,7 +246,7 @@ In such case, the white image calibration file corresponding to the Lytro Illum 
 </div>
 </div>
 <div class="section" id="command-line">
-<h3><span class="section-number">1.4.2. </span>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline">¶</a></h3>
+<h3>1.4.2. Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline">¶</a></h3>
 <p>For computing a stack of light-field images, it may be convenient to iterate through them. This can be done by:</p>
 <p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">sudo</span> <span class="pre">plenopticam</span> <span class="pre">-f</span> <span class="pre">'/Users/../Folder/'</span> <span class="pre">-c</span> <span class="pre">'Users/../caldata-B5144000XXX.tar'</span></code></p>
 <p>with necessary write privileges on Unix Systems. A Windows-equivalent command would be as follows:</p>
@@ -269,18 +269,18 @@ Depending on provided files and settings, your results folder may contain the fo
 </div>
 </div>
 <div class="section" id="credits">
-<h2><span class="section-number">1.5. </span>Credits<a class="headerlink" href="#credits" title="Permalink to this headline">¶</a></h2>
+<h2>1.5. Credits<a class="headerlink" href="#credits" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="contributors">
-<h3><span class="section-number">1.5.1. </span>Contributors<a class="headerlink" href="#contributors" title="Permalink to this headline">¶</a></h3>
+<h3>1.5.1. Contributors<a class="headerlink" href="#contributors" title="Permalink to this headline">¶</a></h3>
 <p><img src="http://www.christopherhahne.de/images/about.jpg" width="15%"></p>
 <p><a class="reference external" href="http://www.christopherhahne.de/">Christopher Hahne</a></p>
 </div>
 <div class="section" id="sponsors">
-<h3><span class="section-number">1.5.2. </span>Sponsors<a class="headerlink" href="#sponsors" title="Permalink to this headline">¶</a></h3>
+<h3>1.5.2. Sponsors<a class="headerlink" href="#sponsors" title="Permalink to this headline">¶</a></h3>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<table class="colwidths-given docutils align-default">
+<table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -297,7 +297,7 @@ Depending on provided files and settings, your results folder may contain the fo
 </div>
 </div>
 <div class="section" id="citation">
-<h2><span class="section-number">1.6. </span>Citation<a class="headerlink" href="#citation" title="Permalink to this headline">¶</a></h2>
+<h2>1.6. Citation<a class="headerlink" href="#citation" title="Permalink to this headline">¶</a></h2>
 <p>If you find this work helpful for your research, please cite as appropriate:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://doi.org/10.1364/OE.24.021521">Refocusing distance of a standard plenoptic camera</a>, <em>OpticsExpress</em>, <a class="reference external" href="http://www.plenoptic.info/bibtex/HAHNE-OPEX.2016.bib">[BibTeX]</a></p></li>
@@ -305,7 +305,7 @@ Depending on provided files and settings, your results folder may contain the fo
 </ul>
 </div>
 <div class="section" id="further-information">
-<h2><span class="section-number">1.7. </span>Further information<a class="headerlink" href="#further-information" title="Permalink to this headline">¶</a></h2>
+<h2>1.7. Further information<a class="headerlink" href="#further-information" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>check out PlenoptiCam’s partner project <a class="reference external" href="https://github.com/hahnec/plenoptisign/">PlenoptiSign</a> capable of estimating metric light field geometries</p></li>
 <li><p>visit <a class="reference external" href="http://www.plenoptic.info">plenoptic.info</a> for technical details, animated figures and theoretical background</p></li>
@@ -329,14 +329,14 @@ Depending on provided files and settings, your results folder may contain the fo
           <a href="guide.html" title="2. User Guide"
              >next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to PlenoptiCam’s documentation!"
+          <a href="index.html" title="PlenoptiCam’s Reference Document"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.3.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.3.4 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2019, Christopher Hahne.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.3.
+        &#169; Copyright 2020, Christopher Hahne.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
     </div>
   </body>
 </html>
