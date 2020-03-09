@@ -119,7 +119,7 @@ class LfpDevignetter(LfpMicroLenses):
 
         return True
 
-    def compose_vandermonde(self, x, y, deg=2):
+    def compose_vandermonde_2d(self, x, y, deg=2):
         if deg == 1:
             return np.array([np.ones(len(x)), x, y]).T
         elif deg == 2:
@@ -139,9 +139,9 @@ class LfpDevignetter(LfpMicroLenses):
 
         X = X.flatten()
         Y = Y.flatten()
-        b = plenopticam.misc.clr_spc_conv.yuv_conv(patch)[..., 0].flatten() if len(patch.shape) == 3 else patch.flatten()
+        b = plenopticam.misc.clr_spc_conv.rgb2gray(patch)[..., 0].flatten() if len(patch.shape) == 3 else patch.flatten()
 
-        A = self.compose_vandermonde(X, Y, deg=3)
+        A = self.compose_vandermonde_2d(X, Y, deg=3)
 
         # Solve for a least squares estimate via pseudo inverse and coefficients in beta
         coeffs = np.dot(np.linalg.pinv(A), b)
@@ -160,7 +160,7 @@ class LfpDevignetter(LfpMicroLenses):
 
         X = X.flatten()
         Y = Y.flatten()
-        A = self.compose_vandermonde(X, Y, deg=3)
+        A = self.compose_vandermonde_2d(X, Y, deg=3)
 
         surf_z = np.dot(A, coeffs).reshape(patch.shape[1], patch.shape[0])
 
