@@ -120,7 +120,7 @@ def rgb2lab(input):
     XYZ[1] = round(Y, 4)
     XYZ[2] = round(Z, 4)
 
-    XYZ[0] = float(XYZ[0]) / 95.047         # ref_X =  95.047   Observer= 2°, Illuminant= D65
+    XYZ[0] = float(XYZ[0]) / 95.047         # ref_X =  95.047   Observer= 2deg, Illuminant= D65
     XYZ[1] = float(XYZ[1]) / 100.0          # ref_Y = 100.000
     XYZ[2] = float(XYZ[2]) / 108.883        # ref_Z = 108.883
 
