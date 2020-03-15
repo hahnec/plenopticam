@@ -168,7 +168,7 @@ class CtrlWidget(tk.Frame):
         self.var_init()
 
         # status update
-        self.sta.status_msg('Starting ...', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.status_msg('Loading data', self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
         # disable button activity
