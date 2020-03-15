@@ -46,7 +46,7 @@ class PlenopticamError(Exception):
         if self.cfg:
             if self.cfg.params[self.cfg.lfp_path]:
                 fp = os.path.join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'err_log.txt')
-                self.sta.status_msg('Error! See log file in %s.' % fp)
+                self.sta.status_msg('Error! See log file in %s.' % os.path.join('.', os.path.pardir(fp), 'err_log.txt'))
             else:
                 fp = None
                 self.sta.status_msg(*self.args)
@@ -54,7 +54,7 @@ class PlenopticamError(Exception):
             if fp and os.path.exists(os.path.dirname(fp)):
                 with open(fp, 'a') as f:
                     f.writelines(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'))
-                    f.writelines('\nOpen issue at %s and paste below traceback.\n' % self.URL_ISSUE)
+                    f.writelines('\nOpen issue at %s and paste below traceback.\n\n' % self.URL_ISSUE)
                     f.writelines(self.args.__str__())
                     f.writelines('\n\n\n')
 
