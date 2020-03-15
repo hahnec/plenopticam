@@ -25,7 +25,7 @@ __license__ = """
 import numpy as np
 from scipy.interpolate import interp2d
 
-from plenopticam import misc
+from plenopticam.misc.normalizer import Normalizer
 
 
 def create_gauss_kernel(l=25, sig=1.):
@@ -93,7 +93,7 @@ def eq_channels(img):
 def robust_awb(img, t=0.3, max_iter=1000):
     ''' inspired by Jun-yan Huo et al. and http://web.stanford.edu/~sujason/ColorBalancing/Code/robustAWB.m '''
 
-    img = misc.Normalizer(img).type_norm(new_min=0, new_max=1.0)
+    img = Normalizer(img).type_norm(new_min=0, new_max=1.0)
     ref_pixel = img[0, 0, :].copy()
 
     u = .01  # gain step size
