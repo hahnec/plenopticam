@@ -4,7 +4,6 @@
 python3 -m pip install --user --upgrade twine
 
 # bundle pypi package
-#python3 ../setup.py sdist
 python3 setup.py sdist bdist_wheel
 
 # test upload and download
