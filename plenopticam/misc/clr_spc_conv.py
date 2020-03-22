@@ -52,6 +52,7 @@ def rgb2hsv(rgb):
 
     return hsv
 
+
 def hsv_conv(img, inverse=False):
 
     if len(img.shape) != 3 or img.shape[2] != 3:
@@ -91,58 +92,100 @@ def yuv_conv(img, inverse=False, standard='HDTV'):
     return np.dot(img, yuv_mat)
 
 
-def rgb2lab(input):
-    ''' https://stackoverflow.com/questions/13405956/convert-an-image-rgb-lab-with-python
-    :param input: RGB tuple
-    :return: Lab tuple
+def rgb2xyz(rgb):
+    '''
+    https://web.archive.org/web/20120502065620/http://cookbooks.adobe.com/post_Useful_color_equations__RGB_to_LAB_converter-14227.html
     '''
 
-    num = 0
-    RGB = [0, 0, 0]
+    rgb = rgb / np.max(rgb)
 
-    for value in input:
-        value = float(value) / 255
+    for ch in range(rgb.shape[2]):
+        mask = rgb[..., ch] > 0.04045
+        rgb[..., ch][mask] = np.power((rgb[..., ch] + 0.055) / 1.055, 2.4)[mask]
+        rgb[..., ch][~mask] /= 12.92
 
-        if value > 0.04045:
-            value = ((value + 0.055) / 1.055) ** 2.4
-        else :
-            value = value / 12.92
+    rgb *= 100
 
-        RGB[num] = value * 100
-        num = num + 1
+    # Observer. = 2°, Illuminant = D65 (from Adobe)
+    mat_adb = np.array([[0.4124, 0.2126, 0.0193], [0.3576, 0.7152, 0.1192], [0.1805, 0.0722, 0.9505]])
 
-    XYZ = [0, 0, 0]
+    # from Reinhard et al. paper (2001)
+    mat_itu = np.array([[0.4306, 0.2220, 0.0202], [0.3415, 0.7067, 0.1295], [0.1784, 0.0713, 0.9394]])
 
-    X = RGB[0] * 0.4124 + RGB[1] * 0.3576 + RGB[2] * 0.1805
-    Y = RGB[0] * 0.2126 + RGB[1] * 0.7152 + RGB[2] * 0.0722
-    Z = RGB[0] * 0.0193 + RGB[1] * 0.1192 + RGB[2] * 0.9505
-    XYZ[0] = round(X, 4)
-    XYZ[1] = round(Y, 4)
-    XYZ[2] = round(Z, 4)
+    xyz = np.dot(rgb, mat_adb)
 
-    XYZ[0] = float(XYZ[0]) / 95.047         # ref_X =  95.047   Observer= 2deg, Illuminant= D65
-    XYZ[1] = float(XYZ[1]) / 100.0          # ref_Y = 100.000
-    XYZ[2] = float(XYZ[2]) / 108.883        # ref_Z = 108.883
+    return xyz
 
-    num = 0
-    for value in XYZ:
+# Observer. = 2°, Illuminant = D65
+REF_X = 95.047
+REF_Y = 100.000
+REF_Z = 108.883
 
-        if value > 0.008856:
-            value = value ** (0.3333333333333333)
-        else :
-            value = (7.787 * value) + (16/116)
 
-        XYZ[num] = value
-        num = num + 1
+def xyz2lab(xyz):
 
-    Lab = [0, 0, 0]
+    xyz[..., 0] /= REF_X
+    xyz[..., 1] /= REF_Y
+    xyz[..., 2] /= REF_Z
 
-    L = (116 * XYZ[1]) - 16
-    a = 500 * (XYZ[0] - XYZ[1])
-    b = 200 * (XYZ[1] - XYZ[2])
+    for ch in range(xyz.shape[2]):
+        mask = xyz[..., ch]>0.008856
+        xyz[..., ch][mask] = np.power(xyz[..., ch], 1/3.)[mask]
+        xyz[..., ch][~mask] = (7.787*xyz[..., ch] + 16/116.)[~mask]
 
-    Lab[0] = round(L, 4)
-    Lab[1] = round(a, 4)
-    Lab[2] = round(b, 4)
+    lab = np.zeros(xyz.shape)
+    lab[..., 0] = (116 * xyz[..., 1]) - 16
+    lab[..., 1] = 500 * (xyz[..., 0]-xyz[..., 1])
+    lab[..., 2] = 200 * (xyz[..., 1]-xyz[..., 2])
 
-    return Lab
+    return lab
+
+
+def lab2xyz(lab):
+
+    xyz = np.zeros(lab.shape)
+    xyz[..., 1] = (lab[..., 0] + 16) / 116.
+    xyz[..., 0] = lab[..., 1] / 500. + xyz[..., 1]
+    xyz[..., 2] = xyz[..., 1] - lab[..., 2] / 200.
+
+    for ch in range(xyz.shape[2]):
+        mask = np.power(xyz[..., ch], 3) > 0.008856
+        xyz[..., ch][mask] = np.power(xyz[..., ch], 3)[mask]
+        xyz[..., ch][~mask] = (xyz[..., ch] - 16/116.)[~mask] / 7.787
+
+    xyz[..., 0] *= REF_X
+    xyz[..., 1] *= REF_Y
+    xyz[..., 2] *= REF_Z
+
+    return xyz
+
+
+def xyz2rgb(xyz):
+
+    xyz /= 100.
+
+    # Observer. = 2°, Illuminant = D65
+    mat = np.array([[3.2406, -0.9689, -0.0557], [-1.5372,  1.8758, -0.204], [-0.4986, -0.0415,  1.057]])
+    rgb = np.dot(xyz, mat)
+
+    for ch in range(rgb.shape[2]):
+        mask = rgb[..., ch] > 0.0031308
+        rgb[..., ch][mask] = 1.055 * np.power(rgb[..., ch], 1/2.4)[mask] - 0.055
+        rgb[..., ch][~mask] *= 12.92
+
+    return rgb
+
+
+def rgb2lab(rgb):
+
+    xyz = rgb2xyz(rgb)
+    lab = xyz2lab(xyz)
+
+    return lab
+
+
+def lab2rgb(lab):
+    xyz = lab2xyz(lab)
+    rgb = xyz2rgb(xyz)
+
+    return rgb
