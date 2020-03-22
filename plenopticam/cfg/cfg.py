@@ -52,7 +52,7 @@ class PlenopticamConfig(object):
 
         self._file_name = 'cfg.json'
         self._dir_path = dirname(abspath(__file__))     # for pip installed versions
-        if not isdir(self._dir_path):
+        if not isdir(self._dir_path) and isdir(join(abspath('.'), 'cfg')):
             self._dir_path = join(abspath('.'), 'cfg')  # for py2app contents
 
         try:
