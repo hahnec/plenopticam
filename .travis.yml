@@ -27,7 +27,7 @@ before_install:
   #- cd ..
   #- sudo ./packages.sh
   #- arch -i386 python -c "import wx; print wx.__version__"
-  - arch -i386 pip install pyinstaller
+ # - arch -i386 pip install pyinstaller
   #- arch -i386 pyinstaller --noconsole --onefile hw.py
   #- ls
   #- hdiutil create dist/hw.dmg -srcfolder dist/ -ov
