@@ -1,10 +1,16 @@
+notifications:
+  email: false
+
+#language: python
+language: generic
+
 os:
   - linux
   - osx
   - windows
-language: python
+
 python:
-  - "3.5"
+  #- "3.5"
   - "3.6"      # current default Python on Travis CI
   - "3.7"
   - "3.8"
