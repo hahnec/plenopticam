@@ -19,14 +19,14 @@ python:
 
 before_install:
   - which python
-  - export VERSIONER_PYTHON_PREFER_32_BIT=yes
+  #- export VERSIONER_PYTHON_PREFER_32_BIT=yes
   - python --version
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install python3; fi
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then export PATH="/c/Python37:/c/Python37/Scripts:$PATH"; fi
 
 # command to install dependencies
 install:
-  - python -m pip install --upgrade pip
+  - python -m pip install --upgrade pip --user
   - pip install -r requirements.txt
   - pip install pyinstaller
 # command to run tests
