@@ -43,6 +43,10 @@ install:
   - pip install pyinstaller
 # command to run tests
 script:
-  - bash plenopticam/script/bundling/pyinst2app.sh
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then bash plenopticam/script/bundling/pyinst2app.sh; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then bash plenopticam/script/bundling/py2bin.sh; fi
+  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then bash plenopticam/script/bundling/py2exe.bat; fi
   - sleep 1
-  - dist/plenopticam.app
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then dist/plenopticam.app; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then dist/plenopticam.app; fi
+  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then dist/plenopticam.app; fi
