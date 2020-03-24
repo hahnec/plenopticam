@@ -1,0 +1,8 @@
+numpy
+scipy
+colour_demosaicing
+colour
+imageio
+color_matcher
+docutils
+Pillow
