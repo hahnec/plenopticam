@@ -15,8 +15,8 @@ before_install:
   #- brew install wget
   #- which python
   - export VERSIONER_PYTHON_PREFER_32_BIT=yes
-  - defaults write com.apple.versioner.python Prefer-32-Bit -bool yes
-  - which python
+  #- defaults write com.apple.versioner.python Prefer-32-Bit -bool yes
+  #- which python
   - python --version
   # https://github.com/Homebrew/homebrew/issues/34470
   #- arch -i386 brew install wxpython --universal
