@@ -45,14 +45,16 @@ class PlenopticamError(Exception):
 
         if self.cfg:
             if self.cfg.params[self.cfg.lfp_path]:
-                fp = os.path.join(self.cfg.params[self.cfg.lfp_path].split('.')[0], 'err_log.txt')
-                self.sta.status_msg('Error! See log file in %s.' % os.path.join('.', os.path.pardir(fp), 'err_log.txt'))
+                fp = self.cfg.params[self.cfg.lfp_path].split('.')[0]   # export folder path
+                fn = os.path.join(fp, 'err_log.txt')                    # absolute log file name
+                self.sta.status_msg('Error! See log file in %s.' %
+                                    os.path.join(os.pardir, os.path.basename(fp), 'err_log.txt'))
             else:
-                fp = None
+                fp, fn = None, None
                 self.sta.status_msg(*self.args)
 
-            if fp and os.path.exists(os.path.dirname(fp)):
-                with open(fp, 'a') as f:
+            if fn and os.path.exists(fp):
+                with open(fn, 'a') as f:
                     f.writelines(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'))
                     f.writelines('\nOpen issue at %s and paste below traceback.\n\n' % self.URL_ISSUE)
                     f.writelines(self.args.__str__())
