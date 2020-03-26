@@ -74,8 +74,7 @@ class LfpReader(object):
                 self._lfp_img = misc.load_img_file(self._lfp_path)
             except TypeError as e:
                 self.sta.status_msg('File type not recognized')
-                self.sta.interrupt = True
-                raise LfpTypeError(e)
+                self.sta.error = True
 
             try:
                 # try to load json file (if present)
