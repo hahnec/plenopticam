@@ -48,7 +48,7 @@ class CaliFinder(object):
         self._cal_fn = None
         self._raw_data = None
         self._file_found = None
-        self._opt_prnt = False if sta is not None else self.cfg.params[self.cfg.opt_prnt]
+        self._opt_prnt = True if sta is not None else self.cfg.params[self.cfg.opt_prnt]
         self._path = self.cfg.params[self.cfg.cal_path]
 
         # output variables
@@ -93,7 +93,6 @@ class CaliFinder(object):
                 # print status and interrupt process
                 self.sta.status_msg('White image file not found. Revise calibration path settings', self._opt_prnt)
                 self.sta.error = True
-
             # load and keep white image if found and options are set or meta data is missing
             cond = self.cfg.params[self.cfg.opt_cali] or \
                    self.cfg.params[self.cfg.opt_vign] or \
@@ -214,9 +213,9 @@ class CaliFinder(object):
                 self._wht_json = tar_obj.extractfile('unitdata/' + self._cal_fn.upper().replace('.RAW', '.TXT'))
 
         except FileNotFoundError:
-            self.sta.status_msg('Did not find calibration file.', opt=True)
+            self.sta.status_msg('Did not find calibration file', opt=self._opt_prnt)
         except KeyError:
-            self.sta.status_msg('Did not find "cal_file_manifest.json" in tar archive', opt=True)
+            self.sta.status_msg('Did not find "cal_file_manifest.json" in tar archive', opt=self._opt_prnt)
         except Exception:
             pass
 
