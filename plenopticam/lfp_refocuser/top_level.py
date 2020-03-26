@@ -56,8 +56,9 @@ class LfpRefocuser(LfpViewpoints):
             del obj
 
         # color management automation
-        self.refo_stack = LfpContrast().auto_hist_align(self.refo_stack, ref_img=self.refo_stack[0], opt=True)
-        self.refo_stack = GammaConverter().srgb_conv(img=self.refo_stack)
+        if not self.sta.interrupt:
+            self.refo_stack = LfpContrast().auto_hist_align(self.refo_stack, ref_img=self.refo_stack[0], opt=True)
+            self.refo_stack = GammaConverter().srgb_conv(img=self.refo_stack)
 
         # write refocused images to hard drive
         if not self.sta.interrupt:
