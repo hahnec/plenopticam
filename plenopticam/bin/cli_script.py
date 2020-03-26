@@ -126,9 +126,14 @@ def main():
     sta = misc.PlenopticamStatus()
     sta.bind_to_interrupt(sys.exit)     # set interrupt
 
-    # select light field image(s) considering provided folder or file
+    # force relative paths to be absolute
+    cfg.params[cfg.lfp_path] = os.path.abspath(cfg.params[cfg.lfp_path])
+    cfg.params[cfg.cal_path] = os.path.abspath(cfg.params[cfg.cal_path])
+
+    # collect light field image file name(s) based on provided path
     if os.path.isdir(cfg.params[cfg.lfp_path]):
         lfp_filenames = [f for f in os.listdir(cfg.params[cfg.lfp_path]) if f.lower().endswith(SUPP_FILE_EXT)]
+        cfg.params[cfg.lfp_path] = os.path.join(cfg.params[cfg.lfp_path], 'dummy.ext')
     elif not os.path.isfile(cfg.params[cfg.lfp_path]):
         lfp_filenames = [misc.select_file(cfg.params[cfg.lfp_path], 'Select plenoptic image')]
     else:
@@ -151,7 +156,8 @@ def main():
 
         # change path to next filename
         cfg.params[cfg.lfp_path] = os.path.join(os.path.dirname(cfg.params[cfg.lfp_path]), lfp_filename)
-        sta.status_msg(msg='Process file '+os.path.basename(cfg.params[cfg.lfp_path]), opt=cfg.params[cfg.opt_prnt])
+        print(cfg.params[cfg.lfp_path])
+        sta.status_msg(msg='Process file '+lfp_filename, opt=cfg.params[cfg.opt_prnt])
 
         # remove output folder if option is set
         misc.rmdir_p(cfg.exp_path) if cfg.params[cfg.dir_remo] else None
@@ -165,7 +171,6 @@ def main():
         except Exception as e:
             misc.PlenopticamError(e)
             continue
-
         # create output data folder
         misc.mkdir_p(cfg.exp_path, cfg.params[cfg.opt_prnt])
 
