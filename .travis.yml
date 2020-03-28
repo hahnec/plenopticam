@@ -29,9 +29,9 @@ install:
 script:
   - python3 test/unit_test.py || python test/unit_test.py
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then bash plenopticam/script/bundling/pyinst2app.sh; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then bash plenopticam/script/bundling/py2bin.sh; fi
+  - if [ "$TRAVIS_OS_NAME" = "xenial" ]; then bash plenopticam/script/bundling/py2bin.sh; fi
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then plenopticam/script/bundling/py2exe.bat; fi
   - sleep 1
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then dist/plenopticam.app; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then dist/plenopticam.app; fi
+  - if [ "$TRAVIS_OS_NAME" = "xenial" ]; then dist/plenopticam.app; fi
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then dist/plenopticam.app; fi
