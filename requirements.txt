@@ -6,3 +6,4 @@ imageio
 color_matcher
 docutils
 Pillow
+requests
