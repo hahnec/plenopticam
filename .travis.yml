@@ -20,14 +20,15 @@ install:
   - pip3 install --upgrade pip  # all three OSes agree about 'pip3'
   - pip3 install -r requirements.txt
   - pip3 install pyinstaller
+  - pip3 setup.py install
 
 # commands to run tests
 script:
   - python3 test/unit_test.py || python test/unit_test.py
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then bash plenopticam/script/bundling/pyinst2app.sh; done
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then bash plenopticam/script/bundling/py2bin.sh; done
-  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then plenopticam/script/bundling/py2exe.bat; done
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then bash plenopticam/script/bundling/pyinst2app.sh; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then bash plenopticam/script/bundling/py2bin.sh; fi
+  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then plenopticam/script/bundling/py2exe.bat; fi
   - sleep 1
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then dist/plenopticam.app; done
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then dist/plenopticam.app; done
-  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then dist/plenopticam.app; done
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then dist/plenopticam.app; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then dist/plenopticam.app; fi
+  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then dist/plenopticam.app; fi
