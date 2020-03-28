@@ -24,7 +24,6 @@ __license__ = """
 # local imports
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc import safe_get, PlenopticamStatus
-from plenopticam.misc.errors import LfpTypeError, LfpAttributeError
 from plenopticam.lfp_reader.constants import SUPP_FILE_EXT
 
 # external libs
@@ -64,16 +63,15 @@ class LfpDecoder(object):
     def main(self):
 
         # LFC type decoding
-        if self.cfg.params[self.cfg.lfp_path].lower().endswith(SUPP_FILE_EXT[1:]):
-
+        if self._lfp_path.lower().endswith(SUPP_FILE_EXT[:2]):
             self.decode_lfc()
 
-            # json file export
-            dp = os.path.splitext(self._lfp_path)[0]
-            self.cfg.save_json(os.path.join(dp, os.path.basename(dp) + '.json'), json_dict=self.json_dict)
+        # C.x bundle type decoding
+        elif self._lfp_path.lower().endswith(SUPP_FILE_EXT[2:]):
+            self.decode_bundle()
 
         # raw type decoding
-        elif self.cfg.params[self.cfg.lfp_path].lower().endswith(SUPP_FILE_EXT[0]):
+        elif self._lfp_path.lower().endswith(SUPP_FILE_EXT[2]):
             self.decode_raw()
 
     def decode_lfc(self):
@@ -81,8 +79,16 @@ class LfpDecoder(object):
         # decode lfp file
         sections = self.read_buffer(self.file)
 
-        # analyze JSON data
+        # retrieve JSON data
         self._json_dict = self.read_json(sections)
+
+        # JSON file export
+        dp = os.path.splitext(self._lfp_path)[0]
+        self.cfg.save_json(os.path.join(dp, os.path.basename(dp) + '.json'), json_dict=self.json_dict)
+
+        # validate camera format support
+        if not self.valid_cam_type:
+            return False
 
         # decompose JSON data
         self._shape = [safe_get(self._json_dict, 'image', 'width'), safe_get(self._json_dict, 'image', 'height')]
@@ -91,7 +97,7 @@ class LfpDecoder(object):
         self.cfg.lfpimg = self.filter_lfp_json(self._json_dict)
 
         # compose bayer image from lfp file
-        sec_idx = self.get_idx(sections, int(self._shape[0] * self._shape[1] * self.cfg.lfpimg['bit'] / 8))
+        sec_idx = self.get_idx(sections, int(self._shape[0] * self._shape[1] * self.cfg.lfpimg['bit'] / 8))[0]
         self._img_buf = list(sections[sec_idx])
         self.comp_bayer()
 
@@ -111,12 +117,61 @@ class LfpDecoder(object):
             self._shape = [3280, 3280]
             self.cfg.lfpimg['bay'] = 'BGGR'
         else:
-            raise LfpTypeError('File type not recognized')
+            self.sta.status_msg('File type not recognized')
+            self.sta.error = True
+            return False
 
         # compose bayer image from lfp file
         self.comp_bayer()
 
         return True
+
+    def decode_bundle(self):
+
+        #from plenopticam.misc import save_img_file, mkdir_p
+
+        # decode lfp file
+        sections = self.read_buffer(self.file)
+
+        # retrieve JSON data
+        self._json_dict = self.read_json(sections)
+
+        # JSON file export
+        dp = os.path.splitext(self._lfp_path)[0]
+        #mkdir_p(dp)
+        self.cfg.save_json(os.path.join(dp, os.path.basename(self._lfp_path) + '.json'), json_dict=self.json_dict)
+
+        # decompose packed files from calibration bundle
+        FILE_NUM = len(self._json_dict['files'])
+        for idx, (section, file_dict) in enumerate(zip(sections[-FILE_NUM:], self._json_dict['files'])):
+            # extract file name and write file
+            fn = file_dict['name'].split('\\')[-1]
+            with open(os.path.join(dp, fn), 'w') as f:
+                try:
+                    f.write(section.decode('utf-8'))
+                except:
+                    f.write(str(section))
+
+        return True
+
+    @property
+    def valid_cam_type(self):
+        ''' check if Lytro file format is supported '''
+
+        # search for 2nd generation keys (filter camera serial and model )
+        serial = safe_get(self._json_dict, "camera", "serialNumber")
+        cam_model = serial if serial else safe_get(self._json_dict, "camera", "model")
+
+        # search for 1st generations keys (file names)
+        #files = safe_get(self._json_dict, "files")
+
+        if cam_model is None:# and files is None:
+            self.sta.status_msg('File type not recognized')
+            self.sta.error = True
+            return False
+
+        return True
+
 
     @staticmethod
     def filter_lfp_json(json_dict, settings=None):
@@ -127,8 +182,8 @@ class LfpDecoder(object):
         channels = ['b', 'r', 'gb', 'gr']
 
         # filter camera serial and model
-        serial = safe_get(json_dict, "camera", "serialNumber")
-        cam_model = serial if serial else safe_get(json_dict, "camera", "model")
+        serial = safe_get(json_dict, 'camera', 'serialNumber')
+        cam_model = serial if serial else safe_get(json_dict, 'camera', 'model')
 
         # set decode paramaters considering camera model
         if cam_model.startswith(('A', 'F')):    # 1st generation Lytro
@@ -158,9 +213,6 @@ class LfpDecoder(object):
             settings['gam'] = safe_get(json_dict, 'master', 'picture', 'frameArray', 0, 'frame', 'metadata', 'image',
                                        'color', 'gamma')
             settings['exp'] = safe_get(json_dict, "image", "modulationExposureBias")
-
-        else:
-            raise LfpTypeError('Camera type not recognized')
 
         return settings
 
@@ -281,16 +333,18 @@ class LfpDecoder(object):
                 json_dict.update(json.loads(sections[i].decode('utf-8')))
             except UnicodeDecodeError:
                 pass
+            except json.decoder.JSONDecodeError:
+                pass
 
         return json_dict
 
     @staticmethod
     def get_idx(checklist, value):
-        return [x for x in range(len(checklist)) if len(checklist[x]) == value][0]
+        return [x for x in range(len(checklist)) if len(checklist[x]) == value]
 
     @property
     def bay_img(self):
-        return (self._bay_img.copy()-65)/(1023-65)
+        return (self._bay_img.copy()-65)/(1023-65) if self._bay_img is not None else None
 
     @property
     def json_dict(self):

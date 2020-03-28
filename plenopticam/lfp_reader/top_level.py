@@ -100,8 +100,8 @@ class LfpReader(object):
             self._json_dict = obj.json_dict
             del obj
 
+            # save bayer image as file (if not already present)
             if not os.path.exists(self.fp) and not self.sta.interrupt:
-                # save bayer image as file
                 self.sta.status_msg(msg='Save raw image', opt=self.cfg.params[self.cfg.opt_prnt])
                 self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
                 misc.save_img_file(misc.Normalizer(self._lfp_img).uint16_norm(), self.fp, file_type='tiff')

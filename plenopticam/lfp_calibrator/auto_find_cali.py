@@ -25,10 +25,12 @@ from plenopticam.misc import safe_get
 from plenopticam.misc.status import PlenopticamStatus
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam.lfp_aligner.cfa_processor import CfaProcessor
+from plenopticam.lfp_reader.constants import SUPP_FILE_EXT
+from plenopticam.lfp_reader.lfp_decoder import LfpDecoder
 
 # external libs
 import json
-from os.path import join, exists, isdir, dirname
+from os.path import join, exists, isdir, dirname, splitext, basename
 from os import listdir
 import tarfile
 
@@ -44,7 +46,9 @@ class CaliFinder(object):
         # internal variables
         self._lfp_json = {}
         self._georef = None
+        self._lensref = None
         self._serial = None
+        self._cam_model = ''
         self._cal_fn = None
         self._raw_data = None
         self._file_found = None
@@ -62,12 +66,18 @@ class CaliFinder(object):
             # read JSON file from selected *.lfp image
             self._lfp_json = self.cfg.load_json(self.cfg.params[self.cfg.lfp_path])
 
-            # extract calibration reference data
-            frames = safe_get(self._lfp_json, 'frames')
-            self._georef = safe_get(frames[0], 'frame', 'geometryCorrectionRef') if frames else ''
-
             # extract serial number to support search
             self._serial = safe_get(self._lfp_json, 'camera', 'serialNumber')
+            self._cam_model = self._serial if self._serial else safe_get(self._lfp_json, 'camera', 'model')
+
+            # extract calibration reference data
+            if self._cam_model.startswith(('A', 'F')):
+                frames = safe_get(self._lfp_json, 'picture', 'derivationArray') #'frameArray')  #
+                self._georef = frames[0]    #safe_get(frames[0], 'frame', 'imageRef') if frames else ''   #
+
+            elif self._cam_model.startswith(('B', 'I')):
+                frames = safe_get(self._lfp_json, 'frames')
+                self._georef = safe_get(frames[0], 'frame', 'geometryCorrectionRef') if frames else ''
 
             # print status
             if not self._serial and isdir(self._path):
@@ -109,8 +119,6 @@ class CaliFinder(object):
         # skip if calibrated json file already exists, otherwise perform centroid calibration
         if self._raw_data:
 
-            from plenopticam.lfp_reader.lfp_decoder import LfpDecoder
-
             # decode raw data
             obj = LfpDecoder(self._raw_data, self.cfg, self.sta)
             obj.decode_raw()
@@ -136,13 +144,25 @@ class CaliFinder(object):
 
         return True
 
+    def _match_lens(self, lens_spec):
+
+        if lens_spec == self._lensref:
+            self._cal_fn = lens_spec['name'].replace('.GCT', '.RAW')
+            self._file_found = True
+
+        return True
+
     def _match_georef(self, json_dict):
         ''' compare georef hash value with that in provided json dictionary '''
 
+        # use JSON keys according to LFR type
+        key1, key2 = ('calibrationFiles', 'hash') if self._cam_model.startswith(('B', 'I')) else ('frame', 'imageRef')#('derivationArray', 0) #('files', 'dataRef')
+
         # search for georef hash value in geometry files of calibration folder
-        for item in json_dict['calibrationFiles']:
-            if item['hash'] == self._georef:  # stop when hash values match
+        for item in json_dict[key1]:
+            if item[key2] == self._georef:  # stop when hash values match
                 self._cal_fn = item['name'].replace('.GCT', '.RAW')     # save calibration file
+                self._file_found = True
                 break
 
         return True
@@ -153,25 +173,45 @@ class CaliFinder(object):
         # skip if file already found or if provided path is not a directory
         if not self._file_found:
             onlydirs = [d for d in listdir(self._path)]
-            dirnames = [self._serial] if onlydirs.count(self._serial) else onlydirs
+            items = [self._serial] if onlydirs.count(self._serial) else onlydirs
 
             # iterate through directories
-            for dirname in dirnames:
-                cali_manifest = join(join(self._path, dirname), 'cal_file_manifest.json')
+            for item in items:
+                cali_manifest = join(join(self._path, item), 'cal_file_manifest.json')
                 if exists(cali_manifest):
                     with open(cali_manifest, 'r') as f:
+                        # find matching sha-1 value
                         json_dict = json.load(f)
                         self._match_georef(json_dict)
-                        if self._cal_fn is not None:
-                            self._file_found = True
-
-                            # update config
+                        if self._file_found:
+                            # update config and load raw data
                             self.cfg.params[self.cfg.cal_meta] = join(join(self._path.split('.')[0], self._serial), self._cal_fn)
-
-                            # load raw data
                             self._raw_data = open(self.cfg.params[self.cfg.cal_meta], mode='rb')
-
                             break
+
+                # extract Lytro's 1st generation files
+                elif item.lower().endswith(SUPP_FILE_EXT[-4:]):
+                    fn = join(join(self._path, item))
+                    if not exists(splitext(fn)[0]):
+                        # status update
+                        self.sta.status_msg('Extract ' + basename(fn), self.cfg.params[self.cfg.opt_prnt])
+                        # bundle type decoding
+                        with open(fn, mode='rb') as file:
+                            obj = LfpDecoder(file, self.cfg, self.sta, lfp_path=fn)
+                            obj.main()
+                            del obj
+
+                    # find matching file
+                    mod_txts = [d for d in listdir(splitext(fn)[0])
+                                if d.lower().startswith('mod') and d.lower().endswith('.txt')]
+                    for mod_txt in mod_txts:
+                        with open(join(splitext(fn)[0], mod_txt), 'r') as f:
+                            json_dict = {}
+                            json_dict.update(json.loads(f.read().rpartition('}')[0]+'}'))
+                            #self._match_georef(json_dict['master']['picture']['frameArray'][0])
+                            #if json_dict['master']['picture']['frameArray'][0]['frame']['imageRef'] == self._georef:
+                            if json_dict['master']['picture']['derivationArray'] == self._georef:
+                                self._file_found = True
 
         return True
 

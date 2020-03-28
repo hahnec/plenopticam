@@ -1,1 +1,1 @@
-SUPP_FILE_EXT = ('.raw', '.lfp', '.lfr') + tuple('.c.' + str(num) for num in (0, 1, 2, 3))
+SUPP_FILE_EXT = ('.lfp', '.lfr', '.raw') + tuple('.c.' + str(num) for num in (0, 1, 2, 3))
