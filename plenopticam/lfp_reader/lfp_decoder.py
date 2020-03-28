@@ -128,8 +128,6 @@ class LfpDecoder(object):
 
     def decode_bundle(self):
 
-        #from plenopticam.misc import save_img_file, mkdir_p
-
         # decode lfp file
         sections = self.read_buffer(self.file)
 
@@ -138,7 +136,6 @@ class LfpDecoder(object):
 
         # JSON file export
         dp = os.path.splitext(self._lfp_path)[0]
-        #mkdir_p(dp)
         self.cfg.save_json(os.path.join(dp, os.path.basename(self._lfp_path) + '.json'), json_dict=self.json_dict)
 
         # decompose packed files from calibration bundle
