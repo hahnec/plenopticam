@@ -87,7 +87,7 @@ class PlenoptiCamTester(unittest.TestCase):
         cfg = PlenopticamConfig()
         cfg.reset_values()
         cfg.params[cfg.opt_dbug] = False
-        cfg.params[cfg.opt_prnt] = True
+        cfg.params[cfg.opt_prnt] = False    # prevent Travis CI to terminate after reaching 4MB logfile size
         cfg.params[cfg.opt_vign] = False
         cfg.params[cfg.opt_sat_] = True
 
@@ -115,7 +115,8 @@ class PlenoptiCamTester(unittest.TestCase):
         sta = PlenopticamStatus()
         cfg = PlenopticamConfig()
         cfg.reset_values()
-        cfg.params[cfg.opt_dbug] = True
+        cfg.params[cfg.opt_dbug] = False
+        cfg.params[cfg.opt_prnt] = False    # prevent Travis CI to terminate after reaching 4MB logfile size
 
         for fn_lfp, fn_wht in zip(self.fnames_lfp, self.fnames_wht):
 
