@@ -1,0 +1,26 @@
+{
+    "cal_meta": "",
+    "cal_path": "/Users/Admin/Pictures/Plenoptic/CalibFolder",
+    "dir_remo": 0,
+    "lfp_path": "/Users/Admin/Pictures/Plenoptic/INRIA_SIROCCO/Bee_2.LFR",
+    "opt_arti": 1,
+    "opt_awb_": 0,
+    "opt_cali": 0,
+    "opt_colo": 1,
+    "opt_cont": 0,
+    "opt_dbug": 0,
+    "opt_lier": 0,
+    "opt_pflu": 0,
+    "opt_prnt": 1,
+    "opt_refi": 0,
+    "opt_refo": 1,
+    "opt_rota": 0,
+    "opt_sat_": 0,
+    "opt_view": 1,
+    "opt_vign": 0,
+    "ptc_leng": 7,
+    "ran_refo": [
+        0,
+        2
+    ]
+}

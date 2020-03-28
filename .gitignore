@@ -5,7 +5,6 @@
 *.DS_Store
 
 # results
-*.json
 *.npy
 
 # pyinstaller files
