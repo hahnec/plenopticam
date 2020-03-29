@@ -27,19 +27,25 @@ install:
 
 # commands to run tests
 script:
+  # open app from CLI
+  - plenopticam -h
+  # trigger unit tests
   - python3 test/unit_test.py || python test/unit_test.py
   - sleep 1
+  # osx bundling
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
         npm install --global create-dmg;
         bash plenopticam/scripts/bundling/pyinst2app.sh;
         sleep 1;
-        open dist/plenopticam;
+        open dist/plenopticam.app;
     fi
+  # linux bundling
   - if [ "$TRAVIS_OS_NAME" = "xenial" ]; then
         bash plenopticam/scripts/bundling/py2bin.sh;
         sleep 1;
         dist/plenopticam.app;
     fi
+  # win bundling
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
         plenopticam/scripts/bundling/py2exe.bat;
         sleep 1;
