@@ -255,9 +255,9 @@ class CfaProcessor(object):
         # skip process if gains not set
         if gains is not None:
             if len(self._bay_img.shape) == 2 or len(self._bay_img.shape) == 3 and self._bay_img.shape[-1] == 4:
-                if self._bay_pat is "GRBG":
+                if self._bay_pat == "GRBG":
                     self._gains = np.array([gains[2], gains[1], gains[0], gains[3]])
-                elif self._bay_pat is "BGGR":
+                elif self._bay_pat == "BGGR":
                     self._gains = np.array([gains[0], gains[2], gains[3], gains[1]])
                 else:
                     return None

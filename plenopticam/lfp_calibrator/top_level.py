@@ -56,7 +56,7 @@ class LfpCalibrator(object):
             del cfa_obj
 
         # ensure white image is monochromatic
-        self._wht_img = rgb2gray(self._wht_img) if len(self._wht_img.shape) is 3 else self._wht_img
+        self._wht_img = rgb2gray(self._wht_img) if len(self._wht_img.shape) == 3 else self._wht_img
 
         # estimate micro image diameter
         obj = PitchEstimator(self._wht_img, self.cfg, self.sta)
