@@ -113,7 +113,7 @@ def parse_options(argv, cfg):
 def main():
 
     # program info
-    print("\nPlenopticam v%s \n" % __version__)
+    print("\nPlenoptiCam v%s \n" % __version__)
 
     # create config object
     cfg = PlenopticamConfig()
