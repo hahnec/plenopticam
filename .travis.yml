@@ -28,6 +28,7 @@ install:
 # commands to run tests
 script:
   - python3 test/unit_test.py || python test/unit_test.py
+  - sleep 1
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then bash plenopticam/script/bundling/pyinst2app.sh; fi
   - if [ "$TRAVIS_OS_NAME" = "xenial" ]; then bash plenopticam/script/bundling/py2bin.sh; fi
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then plenopticam/script/bundling/py2exe.bat; fi
