@@ -94,7 +94,6 @@ class PlenoptiCamTester(unittest.TestCase):
         for fn_lfp, fn_wht in zip(self.fnames_lfp, self.fnames_wht):
 
             # generate console output to prevent abort in Travis CI
-            print(fn_lfp)
             print(fn_wht)
 
             # update file paths and calibration data in config
@@ -126,7 +125,6 @@ class PlenoptiCamTester(unittest.TestCase):
 
             # generate console output to prevent abort in Travis CI
             print(fn_lfp)
-            print(fn_wht)
 
             # update file paths and calibration data in config
             cfg.params[cfg.lfp_path] = os.path.join(self.fp, fn_lfp)
