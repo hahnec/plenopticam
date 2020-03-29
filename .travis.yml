@@ -45,6 +45,7 @@ before_deploy:
     fi
   # linux bundling
   - if [ "$TRAVIS_OS_NAME" = "xenial" ]; then
+        bash pypi_automation.sh;  # pypi distro
         bash plenopticam/scripts/bundling/py2bin.sh;
         sleep 1;
         dist/plenopticam.app;
