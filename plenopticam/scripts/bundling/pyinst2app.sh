@@ -22,13 +22,16 @@ pyinstaller plenopticam/gui/top_level.py \
 	--noconsole \
 	--name=plenopticam \
 	--icon=plenopticam/gui/icns/1055104.icns \
-	--add-data=/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/imageio/:./imageio \
+	--add-data=/usr/local/lib/python3.7/site-packages/imageio/:./imageio \
 	--add-data=./docs/build/html/:./docs/build/html/ \
     --exclude-module=matplotlib \
     --osx-bundle-identifier='org.pythonmac.unspecified.plenopticam' \
-    --add-binary='/Library/Frameworks/Python.framework/Versions/3.6/lib/libtk8.6.dylib':'tk' \
-    --add-binary='/Library/Frameworks/Python.framework/Versions/3.6/lib/libtcl8.6.dylib':'tcl' \
+    --add-binary='/usr/local/Cellar/python/3.7.7/Frameworks/Python.framework/Versions/3.7/lib/libtk8.6.dylib':'tk' \
+    --add-binary='/usr/local/Cellar/python/3.7.7/Frameworks/Python.framework/Versions/3.7/lib/libtcl8.6.dylib':'tcl' \
     --add-data=plenopticam/cfg/cfg.json:cfg
+#	--add-data=/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/imageio/:./imageio \
+#    --add-binary='/Library/Frameworks/Python.framework/Versions/3.6/lib/libtk8.6.dylib':'tk' \
+#    --add-binary='/Library/Frameworks/Python.framework/Versions/3.6/lib/libtcl8.6.dylib':'tcl' \
 #    --add-data='./plenopticam/cfg/cfg.json':'Resources/cfg' \
 #    --add-binary='/System/Library/Frameworks/Tk.framework/Tk':'tk' \
 #    --add-binary='/System/Library/Frameworks/Tcl.framework/Tcl':'tcl' \
@@ -68,7 +71,7 @@ sudo cp -r ./plenopticam/gui/icns ./dist/plenopticam.app/Contents/Resources/gui/
 sudo codesign --deep --signature-size 9400 -f -s "hahnec" ./dist/plenopticam.app
 
 # create dmg (requires npm and create-dmg)
-sudo xcode-select -switch "/Applications/Xcode.app/Contents/Developer/"
+#sudo xcode-select -switch "/Applications/Xcode.app/Contents/Developer/"
 sudo create-dmg ./dist/plenopticam.app ./dist
 
 # replace space by underscore
