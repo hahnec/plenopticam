@@ -31,10 +31,10 @@ script:
   # open app from CLI
   - plenopticam -h
   # trigger unit tests
-  - python3 test/unit_test.py || python test/unit_test.py
+  #- python3 test/unit_test.py || python test/unit_test.py
   - sleep 1
 
-before_deploy:
+#before_deploy:
   - pip3 install pyinstaller
   # osx bundling
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
@@ -72,4 +72,5 @@ deploy:
   draft: true
   on:
     tags: true
+    repo: hahnec/plenopticam
   name: PlenoptiCam $TRAVIS_TAG
