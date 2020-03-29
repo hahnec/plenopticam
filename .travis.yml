@@ -33,7 +33,7 @@ script:
         npm install --global create-dmg;
         bash plenopticam/scripts/bundling/pyinst2app.sh;
         sleep 1;
-        dist/plenopticam.app;
+        open dist/plenopticam;
     fi
   - if [ "$TRAVIS_OS_NAME" = "xenial" ]; then
         bash plenopticam/scripts/bundling/py2bin.sh;
