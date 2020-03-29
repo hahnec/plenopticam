@@ -24,7 +24,6 @@ jobs:
 install:
   - pip3 install --upgrade pip  # all three OSes agree about 'pip3'
   - sudo pip3 install -r requirements.txt || pip3 install -r requirements.txt
-  - pip3 install pyinstaller
   - python3 setup.py install || python setup.py install
 
 # commands to run tests
@@ -34,6 +33,9 @@ script:
   # trigger unit tests
   - python3 test/unit_test.py || python test/unit_test.py
   - sleep 1
+
+before_deploy:
+  - pip3 install pyinstaller
   # osx bundling
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
         npm install --global create-dmg;
@@ -49,8 +51,24 @@ script:
     fi
   # win bundling
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
+        python -m pip install pywin32
         plenopticam/scripts/bundling/py2exe.bat;
         python --version;
         dist/plenopticam.exe;
         python --version;
     fi
+
+# open release draft on GitHub
+deploy:
+  provider: releases
+  api_key: $RELEASE_TOKEN
+  file_glob: true
+  file:
+    - /Users/travis/build/hahnec/plenoprivate/dist/plenopticam_0.3.5.dmg
+    - /home/travis/build/hahnec/plenoprivate/dist/plenopticam_0.3.5.tar.gz
+    - C:\Users\travis\build\hahnec\plenoprivate\dist\plenopticam.exe
+  skip_cleanup: true
+  draft: true
+  on:
+    tags: true
+  name: $TRAVIS_TAG
