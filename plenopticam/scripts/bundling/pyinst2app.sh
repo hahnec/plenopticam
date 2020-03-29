@@ -3,19 +3,6 @@
 # remove build directories
 sudo rm -rf build dist
 
-#line_num=187
-#line_text="if 'Library/Frameworks' in path_to_tcl and 'Python' not in path_to_tcl:"
-#file_name="/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/PyInstaller/hooks/hook-_tkinter.py"
-#sed -i ${line_num}s/.*/$line_text/ $file_name
-
-#sed -i "187s/.*/if 'Library/Frameworks' in path_to_tcl and 'Python' not in path_to_tcl:/" echo "$file_name"
-
-#sed -i '' 's/toreplace/replacewith/g'
-
-#line_text="if 'Library/Frameworks' in path_to_tcl and 'Python' not in path_to_tcl:"
-#sed -i '' -e "s/if 'Library/Frameworks' in path_to_tcl.*/" echo "$line_text" "=187/" echo "$file_name"
-#sed -i '' -e 's/text-on-line-to-be-changed.*/text-to-replace-the=whole-line/' file-name
-
 # run pyinstaller with provided options
 pyinstaller plenopticam/gui/top_level.py \
     --onefile \
