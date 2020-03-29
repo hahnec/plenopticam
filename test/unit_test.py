@@ -93,6 +93,10 @@ class PlenoptiCamTester(unittest.TestCase):
 
         for fn_lfp, fn_wht in zip(self.fnames_lfp, self.fnames_wht):
 
+            # generate console output to prevent abort in Travis CI
+            print(fn_lfp)
+            print(fn_wht)
+
             # update file paths and calibration data in config
             cfg.params[cfg.lfp_path] = os.path.join(self.fp, fn_lfp)
             cfg.params[cfg.cal_path] = os.path.join(self.fp, fn_wht)
@@ -119,6 +123,10 @@ class PlenoptiCamTester(unittest.TestCase):
         cfg.params[cfg.opt_prnt] = False    # prevent Travis CI to terminate after reaching 4MB logfile size
 
         for fn_lfp, fn_wht in zip(self.fnames_lfp, self.fnames_wht):
+
+            # generate console output to prevent abort in Travis CI
+            print(fn_lfp)
+            print(fn_wht)
 
             # update file paths and calibration data in config
             cfg.params[cfg.lfp_path] = os.path.join(self.fp, fn_lfp)
