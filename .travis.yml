@@ -50,5 +50,7 @@ script:
   # win bundling
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
         plenopticam/scripts/bundling/py2exe.bat;
+        python --version;
         dist/plenopticam.exe;
+        python --version;
     fi
