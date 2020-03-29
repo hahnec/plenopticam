@@ -76,7 +76,7 @@ class PlenoptiCamTester(unittest.TestCase):
         for fn in file.namelist():
             file.extract(fn, self.fp)
 
-        print('Progress: Finished')
+        print('Finished download')
 
         return True
 
