@@ -87,7 +87,7 @@ Application
 
 2. Choose calibration source data using lower **Browse** button. Supported file types are:
     - *bmp*, *jpg* or *png* file from custom-built plenoptic camera
-    - *tar* archive or respective *raw* file from Lytro Illum
+    - *caldata-XXX.tar* archive or respective *raw* file from Lytro Illum
     - tick "Pick folder" and point to a directory containing all *tar* files or extracted folders (calibration file will be found automatically)
     - Lytro 1st Generation (to come)
 
