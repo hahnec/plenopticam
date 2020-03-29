@@ -45,7 +45,7 @@ before_deploy:
     fi
   # linux bundling
   - if [ "$TRAVIS_OS_NAME" = "xenial" ]; then
-        bash pypi_automation.sh;  # pypi distro
+        bash pypi_automation.sh;
         bash plenopticam/scripts/bundling/py2bin.sh;
         sleep 1;
         dist/plenopticam.app;
@@ -72,4 +72,4 @@ deploy:
   draft: true
   on:
     tags: true
-  name: $TRAVIS_TAG
+  name: PlenoptiCam $TRAVIS_TAG
