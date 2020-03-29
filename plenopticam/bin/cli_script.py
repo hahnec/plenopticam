@@ -46,6 +46,7 @@ def usage():
     print("-c <calipath>, --cali=<calipath>  Specify calibration file to process")
     print("-p <number>,   --patch=<number>   Patch size")
     print("-r <list>,     --refo=[0, 2]      Refocusing range")
+    print("-h,            --help             Print this help message")
     print("")
     # boolean options
     print("--refi                            Refocusing refinement")
@@ -56,8 +57,6 @@ def usage():
     print("--sat                             Saturation automation")
     print("--art                             Artifact removal")
     print("--rm                              Override output folder")
-
-    print("-h,            --help             Print this help message")
     print("")
 
 
