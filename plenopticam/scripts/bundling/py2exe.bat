@@ -4,7 +4,7 @@
 
 :: run pyinstaller with provided options
 pyinstaller plenopticam\gui\top_level.py^
-    	--onefile^
+    --onefile^
 	--noconsole^
 	--name=plenopticam^
 	--icon=plenopticam\gui\icns\1055104.ico^

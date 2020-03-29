@@ -9,8 +9,8 @@ sudo rm -rf build/
 sudo rm -rf dist/
 
 # run pyinstaller with provided options
-pyinstaller3.cp ../../gui/top_level.py \
-    	--onefile \
+pyinstaller3.cp plenopticam/gui/top_level.py \
+    --onefile \
 	--noconsole \
 	--add-data=/home/chris/.local/lib/python3.6/site-packages/imageio/:./imageio \
 	--name=plenopticam \
