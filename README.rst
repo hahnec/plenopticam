@@ -1,5 +1,5 @@
 ===========
-plenopticam
+PlenoptiCam
 ===========
 .. A light field photography application (macOS_ or Win_) for computational change of perspective view and synthetic focus based on a Standard Plenoptic Camera (SPC).
 
