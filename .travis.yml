@@ -71,6 +71,6 @@ deploy:
     - C:\Users\travis\build\hahnec\plenoprivate\dist\plenopticam.exe
   draft: true
   on:
-    tags: true
+#    tags: true
     repo: hahnec/plenoprivate
   name: PlenoptiCam $TRAVIS_TAG
