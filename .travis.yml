@@ -52,7 +52,7 @@ script:
     fi
   # win bundling
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
-        python -m pip install pywin32
+        python -m pip install pywin32;
         plenopticam/scripts/bundling/py2exe.bat;
         dist/plenopticam.exe;
     fi
@@ -60,6 +60,7 @@ script:
 # open release draft on GitHub
 deploy:
   provider: releases
+  skip_cleanup: true
   api_key:
     secure: D13p76AjmWYGFgV+xndTrhgC7TPZ0rL/i83KLwXUswqVbYAragJDVdjIMqYyhnjJbnwuiJzBK/jiHwcuuBDl/aaoSebjY6UQQrdiHkrgSun9FkJsAaAhEmH5dZRokQxMHBk3Z82SSaqv8+KtoisAoNfHun5vWUtbWK4YMjegSIFLBWVmoLyC9uYji0fBb+IF/AICdiAb5fqWDVIFBgt0qo0UJ6CacINb+vaTHani5mjig07WCAb1b/2W9ef1y434cJNXql7sxUbvZDiCKW0fXtZFo0WGNPyCFauqt+3tT8uGf+sYbllMFBZnheim+mxqSq5L7Emv96ayJk7ewIJqIyHdBkeI55rmxDyzoFEd5KD1yFwiuAcNcHlhrCiV6FTVy0QaWuELFFdyDVuKYjubBEEnLZAlZv4kWfdtpaiPYWYzUlqPQZBj/UqqIkBPL6fMnON1HsuPslcSM83ws7HqA674vKGr3qHI6HSmLvGmQnZ5hpUTC1/XfypKshzZ2QhQGrP8qNzX2+MSDaIf3g9V+834otJhXOUNQxVy4tR/9O1JRLi4wyYqmN0Qrcb+hK6TU54RUACqp4tZ5OfadCGONBRmDWRPl2GpIhW51BXGiQAe9ilzHLd4glV0/jaLNk6Y6VH64H58FP8hGvCn9n3Iug9PTiB5Ww4W6LRSNP+F858=
   file_glob: true
@@ -67,7 +68,6 @@ deploy:
     - /Users/travis/build/hahnec/plenoprivate/dist/plenopticam_0.3.5.dmg
     - /home/travis/build/hahnec/plenoprivate/dist/plenopticam_0.3.5.tar.gz
     - C:\Users\travis\build\hahnec\plenoprivate\dist\plenopticam.exe
-  skip_cleanup: true
   draft: true
   on:
     tags: true
