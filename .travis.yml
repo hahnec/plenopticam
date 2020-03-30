@@ -52,7 +52,7 @@ script:
     fi
   # win bundling
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
-        python -m pip install pywin32;
+        pip3 install pywin32;
         plenopticam/scripts/bundling/py2exe.bat;
         python --version;
         dist/plenopticam.exe;
