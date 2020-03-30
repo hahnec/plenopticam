@@ -54,9 +54,10 @@ script:
   # win bundling
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
         pip3 install pywin32;
+        pip3 install numpy==1.15.4;
         plenopticam/scripts/bundling/py2exe.bat;
-        ls dist;
-        dist/plenopticam.exe;
+        ls dist/plenopticam;
+        #dist/plenopticam.exe;
     fi
 
 # open release draft on GitHub
