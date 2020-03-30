@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # install additional tkinter package in ubuntu
-sudo apt install python3-tk
-sudo pip3 install numpy==1.16.2 # solves issue in bundling with pyinstaller
+#sudo apt-get install python3-tk
+#sudo pip3 install numpy==1.16.2 # solves issue in bundling with pyinstaller
 
 # rmeove build directories
 sudo rm -rf build/

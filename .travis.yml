@@ -45,7 +45,7 @@ script:
     fi
   # linux bundling
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-        bash pypi_automation.sh;
+        bash plenopticam/scripts/bundling/pypi_automation.sh;
         bash plenopticam/scripts/bundling/py2bin.sh;
         sleep 1;
         dist/plenopticam.app;
