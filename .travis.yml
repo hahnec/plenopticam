@@ -44,11 +44,10 @@ script:
         open dist/plenopticam.app;
     fi
   # linux bundling
-  - if [ "$TRAVIS_OS_NAME" = "xenial" ]; then
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
         bash pypi_automation.sh;
         bash plenopticam/scripts/bundling/py2bin.sh;
         sleep 1;
-        echo "ls dist";
         dist/plenopticam.app;
     fi
   # win bundling
