@@ -48,14 +48,16 @@ script:
         bash pypi_automation.sh;
         bash plenopticam/scripts/bundling/py2bin.sh;
         sleep 1;
-        ls dist;
+        echo "ls dist";
         dist/plenopticam.app;
     fi
   # win bundling
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
         python -m pip install pywin32;
         plenopticam/scripts/bundling/py2exe.bat;
+        python --version;
         dist/plenopticam.exe;
+        python --version;
     fi
 
 # open release draft on GitHub
