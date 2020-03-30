@@ -105,7 +105,7 @@ class LfpResampler(LfpMicroLenses):
         return shift_win
 
     @staticmethod
-    def _get_hex_direction(centroids: np.ndarray) -> bool:
+    def get_hex_direction(centroids: np.ndarray) -> bool:
         """ check if lower neighbor of upper left MIC is shifted to left or right in hex grid
 
         :param centroids: phased array data
@@ -170,7 +170,7 @@ class LfpResampler(LfpMicroLenses):
         self._lfp_out = np.zeros([self._LENS_Y_MAX * self._M, hex_stretch * self._M, self._DIMS[2]])
 
         # check if lower neighbor of upper left MIC is shifted to left or right
-        hex_odd = self._get_hex_direction(self._CENTROIDS)
+        hex_odd = self.get_hex_direction(self._CENTROIDS)
 
         # iterate over each MIC
         for ly in range(self._LENS_Y_MAX):
