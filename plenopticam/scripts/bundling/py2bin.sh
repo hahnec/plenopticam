@@ -28,4 +28,4 @@ gio set -t string ./dist/plenopticam 'metadata::custom-icon' 'file:/home/chris/M
 version=$(sed -ne 's@__version__ = \([^]]*\)@\1@gp' plenopticam/__init__.py)
 
 # compress to archive (c-create archive; z-compress archive with gzip; v-display progress in the terminal; f-filename)
-tar -czvf plenopticam_${version}.tar.gz ./dist/plenopticam.app
+tar -czvf plenopticam_${version}.tar.gz ./dist/plenopticam
