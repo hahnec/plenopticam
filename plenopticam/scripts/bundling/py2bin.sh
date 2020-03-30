@@ -24,9 +24,8 @@ pyinstaller plenopticam/gui/top_level.py \
 # set absolute path to icon file
 #gio set -t string ./dist/plenopticam 'metadata::custom-icon' 'file:./plenopticam/gui/icns/1055104.gif'
 
-# extract version number from python file
-version=$(sed -ne 's@__version__ = \([^]]*\)@\1@gp' plenopticam/__init__.py)
-echo "${version}"
+# extract version number from python file (first get substring in quotation marks, then remove the quotation marks)
+version=$(sed -ne 's@__version__ = \([^]]*\)@\1@gp' plenopticam/__init__.py | sed 's/'\''//g')
 
 # compress to archive (c-create archive; z-compress archive with gzip; v-display progress in the terminal; f-filename)
 tar -czvf ./dist/plenopticam_${version}.tar.gz ./dist/plenopticam
