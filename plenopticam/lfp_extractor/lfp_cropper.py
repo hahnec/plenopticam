@@ -44,13 +44,26 @@ class LfpCropper(LfpMicroLenses):
             self.new_lfp_img = np.zeros([int(self._Mn * self._LENS_Y_MAX), int(self._Mn * self._LENS_X_MAX), p],
                                         dtype=self._lfp_img_align.dtype)
 
+    def lfp_align_pitch_guess(self):
+
+        # iterate through potential (uneven) micro image size candidates
+        for d in np.arange(3,51,2):
+            # take pitch where remainder of aligned image dimensions and candidate size is zero
+            if (self._lfp_img_align.shape[0] / d) % 1 == 0 and (self._lfp_img_align.shape[1] / d) % 1 == 0:
+                self._M = int(d)
+                break
+
+        return self._M
+
     def var_init(self):
 
         # get maximum (M) and desired (Mn) micro image pitches
         if hasattr(self, '_CENTROIDS'):
+            # get micro image size from centroid analysis
             self._M = self.pitch_analyse(shape=self._lfp_img_align.shape)
         else:
-            self._M = self.cfg.params[self.cfg.ptc_leng]
+            # guess micro image size based on aligned light field
+            self._M = self.lfp_align_pitch_guess()
         self._Mn = self.pitch_eval(self._M, self.cfg.params[self.cfg.ptc_leng], self.sta)
 
         # validate micro image size in lfp is large enough
