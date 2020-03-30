@@ -12,6 +12,7 @@ sudo rm -rf dist/
 pyinstaller plenopticam/gui/top_level.py \
     --onefile \
 	--noconsole \
+	--noconfirm \
 	--add-data=/home/travis/virtualenv/python3.8.0/lib/python3.8/site-packages/imageio/:./imageio \
 	--name=plenopticam \
 	--icon=plenopticam/gui/icns/1055104.gif \
