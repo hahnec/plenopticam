@@ -12,4 +12,4 @@ pyinstaller plenopticam\gui\top_level.py^
 	--add-data=plenopticam\gui\icns\1055104.ico;.\icns\
 
 ::	--noconfirm
-::	--onefile^
+::  --onefile^
