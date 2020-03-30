@@ -4,6 +4,7 @@
 
 :: run pyinstaller with provided options
 pyinstaller plenopticam\gui\top_level.py^
+    --onefile^
 	--name=plenopticam^
 	--icon=plenopticam\gui\icns\1055104.ico^
 	--add-data C:\Python38\lib\site-packages\imageio;.\imageio^
@@ -12,5 +13,4 @@ pyinstaller plenopticam\gui\top_level.py^
 	--noconfirm
 
 
-::    --onefile^
 ::	--noconsole^
