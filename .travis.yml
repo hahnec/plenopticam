@@ -26,6 +26,13 @@ install:
   - sudo pip3 install -r requirements.txt || pip3 install -r requirements.txt
   - python3 setup.py install || python setup.py install
 
+before_script:
+    - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
+        curl "https://www.advancedinstaller.com/downloads/advinst.msi" -o NUL;
+        sleep 1;
+        msiexec /i advinst.msi /qn;
+      fi
+
 # commands to run tests
 script:
   # open app from CLI
@@ -58,10 +65,6 @@ script:
         sleep 1;
         ls dist/plenopticam;
         sleep 1;
-        curl "https://www.advancedinstaller.com/downloads/advinst.msi" -o NUL;
-        sleep 1;
-        msiexec /i advinst.msi /qn;
-        sleep 1;
         compact /c /s:"dist/plenopticam";
     fi
     #Compress-Archive -Path dist/plenopticam -CompressionLevel Optimal -DestinationPath dist/plenopticam.zip -Force > nul;
@@ -88,9 +91,10 @@ deploy:
   name: PlenoptiCam $TRAVIS_TAG
 
   deploy:
-    provider: testpypi
+    provider: pypi
     skip_existing: true
-    server: https://test.pypi.org/
+    skip_cleanup: true
+    server: https://testpypi.python.org/pypi
     user: hahnec
     password:
       secure: WvUIg6H5cXTrbii42b8krKprrMB9MgXgHX64Da18pQrKG7ByjB4tSZmD7pxpab2OFlFV3b9bMRxaFuTxwIfM00aQ8LnV5Km2oSNOMC75qvjsjvLsfT/TS0RnZ9vq+p0rs5NmPMgdqXz4JdQ8iC0pnKYZhUsMCa7YAVGcPAt9XmQZeDZ46SOiqAVpwaPFJj+OJT+dc0jmIfnrYO2jNH3lRTTNM711fBLONhoXUUdgpIS4CpuKiGBD6AbeU7JkzivKPeZ+t7wt/WZfhR1a3Uwva7pV+EBJAueMBNHyABnO3KHsSGGGbZZ8ORTrCIS7r8fVMPmledk3IO4D8kurhfROcYySzkpTPNgdO7Y6QHq0EgOV9SHan8svHm19GyJJeWpFrus6v8g9NeNZa9h6OiLMEX5m6kxo4TCQnEq80nvHRchSNIE9s2m4RiMiikZFoabhQyVhHTKV/298Lbdbf3FFBe8xH4+/nz6/k2Lp008Yhc4wQSEbHyxhh4m4sh2wPoWSceYITtmCoawVUzCMLSfNTGVmQduvCYX4a+SIh1omlApkCqqKMlNAlL3PYd4UxJlybS//AB+58eH52lMxWKFIpfoLsUEyfEu/mWltncNc/TxVL2gTfX0w1utr/5dqBzQD0O8h1p9GdqBrnV5RWPp2ql9sfNioqxI5dgEIP8NYoro=
