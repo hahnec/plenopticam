@@ -28,7 +28,8 @@ install:
 
 before_script:
     - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
-        curl "https://www.advancedinstaller.com/downloads/advinst.msi" -o ./advinst.msi;
+        mkdir dl
+        curl "https://www.advancedinstaller.com/downloads/advinst.msi" -o ./dl/advinst.msi;
         sleep 1;
         msiexec /i advinst.msi /qn;
       fi
