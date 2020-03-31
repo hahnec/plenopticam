@@ -190,9 +190,9 @@ class PictureWindow(tk.Canvas, LfpViewpoints):
     def create_buttons(self):
 
         # auto-play button
-        btn_auto_text = tk.StringVar()
-        btn_auto_text.set("↻")
-        self.btn_auto = tk.Button(self, textvariable=btn_auto_text, command=self.auto_play, height=1, width=2)
+        self._btn_auto_text = tk.StringVar()
+        self._btn_auto_text.set('↻')
+        self.btn_auto = tk.Button(self, textvariable=self._btn_auto_text, command=self.auto_play, height=1, width=2)
         self.btn_auto.place(x=self._wd/2*.05, y=self._ht/2*.05, anchor=tk.CENTER)
 
         # mode button
@@ -203,7 +203,7 @@ class PictureWindow(tk.Canvas, LfpViewpoints):
         self.btn_arrows = list()
         btn_pos = [[self._wd/2*.95, self._wd/2*.05, self._wd/4, self._wd/4],
                    [self._ht/4, self._ht/4, self._ht/2*.05, self._ht/2*.95]]
-        for i, text in enumerate([" ▶ ", " ◀ ", " ▲ ", " ▼ "]):
+        for i, text in enumerate([' ▶ ', ' ◀ ', ' ▲ ', ' ▼ ']):
             next_frame_arg = partial(self.next_frame, i)
             self.btn_arrows.append(tk.Button(self, text=text, command=next_frame_arg, height=1, width=1))
             self.btn_arrows[i].place(x=btn_pos[0][i], y=btn_pos[1][i], anchor=tk.CENTER)
@@ -234,10 +234,9 @@ class PictureWindow(tk.Canvas, LfpViewpoints):
         self.auto_mode = not self.auto_mode
 
         if self.auto_mode:
-            #self.btn_auto.focus_set()
-            self.btn_auto.configure(bg="green")
+            self._btn_auto_text.set('❙❙')
         else:
-            self.btn_auto.configure(bg="red")
+            self._btn_auto_text.set('↻')
 
         self.auto_loop()
 
