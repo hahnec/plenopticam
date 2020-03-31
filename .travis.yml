@@ -58,13 +58,13 @@ script:
         sleep 1;
         ls dist/plenopticam;
         sleep 1;
-        Compress-Archive -Path dist/plenopticam -CompressionLevel Optimal -DestinationPath dist/plenopticam.zip -Force > nul
-        sleep 1;
-        curl https://www.advancedinstaller.com/downloads/advinst.msi;
+        curl "https://www.advancedinstaller.com/downloads/advinst.msi" -o NUL;
         sleep 1;
         msiexec /i advinst.msi /qn;
+        sleep 1;
+        compact /c /s:"dist/plenopticam";
     fi
-    #compact /c /s:dist/plenopticam
+    #Compress-Archive -Path dist/plenopticam -CompressionLevel Optimal -DestinationPath dist/plenopticam.zip -Force > nul;
     #dist/plenopticam/plenopticam.exe;
     #pip3 install pywin32;
 # https://www.advancedinstaller.com/forums/viewtopic.php?t=31973
