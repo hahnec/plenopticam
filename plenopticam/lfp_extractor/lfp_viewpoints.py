@@ -85,7 +85,7 @@ class LfpViewpoints(object):
 
         args = self.remove_proc_keys(kwargs, data_type=list)
 
-        new_shape = fun(self._vp_img_arr[0, 0, ...], *args).shape
+        new_shape = fun(self._vp_img_arr[0, 0, ...].copy(), *args).shape
         new_array = np.zeros(self._vp_img_arr.shape[:2] + new_shape)
 
         for j in range(self._vp_img_arr.shape[0]):
