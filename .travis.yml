@@ -58,13 +58,14 @@ script:
         sleep 1;
         ls dist/plenopticam;
         sleep 1;
-        dist/plenopticam/plenopticam.exe;
+        Compress-Archive -Path dist/plenopticam -CompressionLevel Optimal -DestinationPath dist/plenopticam.zip
         sleep 1;
         curl https://www.advancedinstaller.com/downloads/advinst.msi;
         sleep 1;
         msiexec /i advinst.msi /qn;
     fi
 
+    #dist/plenopticam/plenopticam.exe;
     #pip3 install pywin32;
 # https://www.advancedinstaller.com/forums/viewtopic.php?t=31973
 # C:\ProgramData\Caphyon\Advanced Installer
@@ -79,7 +80,7 @@ deploy:
   file:
     - /Users/travis/build/hahnec/plenoprivate/dist/plenopticam_0.3.5.dmg
     - /home/travis/build/hahnec/plenoprivate/dist/plenopticam_0.3.5.tar.gz
-    - C:\Users\travis\build\hahnec\plenoprivate\dist\plenopticam.exe
+    - C:\Users\travis\build\hahnec\plenoprivate\dist\plenopticam.zip
   draft: true
   on:
 #    tags: true
