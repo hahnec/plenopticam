@@ -109,7 +109,7 @@ class PictureWindow(tk.Canvas, LfpViewpoints):
         if hasattr(self, 'vp_img_arr'):
 
             # light-field related data
-            self._M = self.vp_img_arr.shape[0]  # self.cfg.params[self.cfg.ptc_leng]
+            self._M = self.cfg.params[self.cfg.ptc_leng]    #self.vp_img_arr.shape[0]  #
             self._v = self._u = self._C = self._M // 2
             self._a = 0
             self._k = -1
