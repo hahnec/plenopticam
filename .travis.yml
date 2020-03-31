@@ -26,14 +26,14 @@ install:
   - pip3 install --upgrade pip  # all three OSes agree about 'pip3'
   - sudo pip3 install -r requirements.txt || pip3 install -r requirements.txt
   - python3 setup.py install || python setup.py install
+
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
       mkdir dl;
       pwd;
       curl -SfL "http://wp12283669.server-he.de/Xchange/advinst.msi" -o ./dl/advinst.msi;
-      msiexec /i "c:\Users\travis\build\hahnec\plenoprivate\dl\advinst.msi" APPDIR="\Users\travis\build\hahnec\plenoprivate\dl\" /qn -lv ./dl/log.txt;
-      ls dl;
+      msiexec /i "c:\users\travis\build\hahnec\plenoprivate\dl\advinst.msi" APPDIR="c:\users\travis\build\hahnec\plenoprivate\dl\" /qn;
     fi
-
+# use manual setup for advanced installer
 # commands to run tests
 script:
   # open app from CLI
