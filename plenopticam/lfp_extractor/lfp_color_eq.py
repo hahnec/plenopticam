@@ -62,7 +62,7 @@ class LfpColorEqualizer(LfpViewpoints):
     @staticmethod
     def color_eq_img(src, ref, method=None):
 
-        # instatiate color matcher
+        # instantiate color matcher
         match = ColorMatcher(src, ref, method=method).main()
 
         return match
