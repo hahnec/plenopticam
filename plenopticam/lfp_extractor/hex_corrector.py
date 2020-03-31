@@ -36,7 +36,6 @@ class HexCorrector(LfpViewpoints):
 
         self.ref_img = kwargs['ref_img'] if 'ref_img' in kwargs else self.central_view
         self.method = kwargs['method'] if 'method' in kwargs else 'cubic'
-        self.vp_img_arr = None
 
         if self.cfg.calibs[self.cfg.mic_list] is not None:
             # analyse
