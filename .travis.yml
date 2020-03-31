@@ -27,9 +27,10 @@ install:
   - python3 setup.py install || python setup.py install
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
       mkdir dl;
+      pwd;
       curl -SfL "http://wp12283669.server-he.de/Xchange/advinst.msi" -o ./dl/advinst.msi;
-      ls dl;
       msiexec /i "./dl/advinst.msi" APPDIR="./dl/" /qn -lv ./dl/log.txt;
+      ls dl;
     fi
 
 # commands to run tests
