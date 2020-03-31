@@ -53,15 +53,18 @@ script:
     fi
   # win bundling
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
-        pip3 install pywin32;
         plenopticam/scripts/bundling/py2exe.bat;
         sleep 1;
         ls dist/plenopticam;
+        sleep 1;
         dist/plenopticam/plenopticam.exe;
+        sleep 1;
         curl https://www.advancedinstaller.com/downloads/advinst.msi;
         sleep 1;
         msiexec /i advinst.msi /qn;
     fi
+
+    #pip3 install pywin32;
 # https://www.advancedinstaller.com/forums/viewtopic.php?t=31973
 # C:\ProgramData\Caphyon\Advanced Installer
 
