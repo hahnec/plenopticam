@@ -42,16 +42,15 @@ class LfpContrast(LfpViewpoints):
 
     def main(self):
 
-        # histogram equalization
+        # auto contrast balance
         if self.cfg.params[self.cfg.opt_cont] and not self.sta.interrupt:
-            obj = HistogramEqualizer(img=self._vp_img_arr)
-            self._vp_img_arr = obj.lum_eq()
-            del obj
-
+            self.p_hi, self.p_lo = (1, 0)
+            self.con_bal()
+        # auto white balance
         if self.cfg.params[self.cfg.opt_awb_] and not self.sta.interrupt:
-            self.contrast_bal()
-
-        # automatic saturation
+            #self.p_hi, self.p_lo = (1, 0)
+            self.wht_bal()
+        # auto saturation
         if self.cfg.params[self.cfg.opt_sat_] and not self.sta.interrupt:
             self.p_hi, self.p_lo = (1, 0)
             self.sat_bal()
@@ -64,82 +63,31 @@ class LfpContrast(LfpViewpoints):
 
         return True
 
-    @staticmethod
-    def auto_hist_align(img, ref_img, opt=None):
-
-        if opt:
-            p_lo, p_hi = (0.005, 99.9)#(0.001, 99.999)
-            min_perc = np.percentile(misc.rgb2gray(ref_img), p_lo)
-            max_perc = np.percentile(ref_img, p_hi)
-        else:
-            p_lo, p_hi = (0.5, 99.9)
-            min_perc = np.percentile(ref_img, p_lo)
-            max_perc = np.percentile(ref_img, p_hi)
-
-        img = misc.Normalizer(img, min=min_perc, max=max_perc).type_norm()
-
-        return img
-
-    def thresh_hist_stretch(self, th=2e-10, bins=2**16-1):
-
-        h = np.histogram(self.central_view, bins=bins)
-        hn = h[0] / h[0].sum()
-        x_vals = np.where(hn / len(hn) > th)[0] / bins
-
-        hs = np.diff(h[0][::128] / h[0][::128].sum())
-        s_vals = np.where(hs > 1.5e-4)[0] / (bins / 128)
-
-        #img = misc.Normalizer(self.central_view.copy(), min=x_vals[1], max=self.central_view.max()).type_norm()
-        self.proc_vp_arr(misc.Normalizer().type_norm, msg='Histogram crop', min=x_vals[1], max=1)
-
-        return True
-
-    def contrast_bal(self):
-
-        # status update
-        self.sta.status_msg(msg='Contrast balance', opt=self.cfg.params[self.cfg.opt_prnt])
-        self.sta.progress(None, opt=self.cfg.params[self.cfg.opt_prnt])
+    def con_bal(self):
 
         # estimate contrast and brightness via least-squares method
-        self.set_stretch_lum(img=self.vp_img_arr)
+        self.set_stretch(ref_ch=misc.yuv_conv(self.central_view)[..., 0])
 
-        # apply estimated brightness and contrast levels to viewpoint array
-        self.vp_img_arr = self.apply_stretch_lum(img=self.vp_img_arr)
+        self.proc_vp_arr(misc.yuv_conv)
+        self.proc_vp_arr(self.apply_stretch, ch=0, msg='Contrast balance')
+        self.proc_vp_arr(misc.yuv_conv, inverse=True)
 
         # status update
         self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt])
 
-    def post_lum(self, ch=None):
+    def sat_bal(self):
 
-        self.vp_img_arr = misc.Normalizer(self.vp_img_arr).uint16_norm()
+        self.proc_vp_arr(misc.hsv_conv)
+        self.sta.status_msg(msg='Contrast balance', opt=self.cfg.params[self.cfg.opt_prnt])
+        self.vp_img_arr[..., 1] *= 1.1
+        self.proc_vp_arr(misc.hsv_conv, inverse=True)
 
-        # channel selection
-        ch = ch if ch is not None else 0
-        ref_ch = misc.clr_spc_conv.yuv_conv(self.central_view)[..., ch]
+        # status update
+        self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt])
 
-        # define level limits
-        self._min = np.percentile(ref_ch, self.p_lo*100)
-        self._max = np.percentile(ref_ch, self.p_hi*100)
+        return True
 
-        self.proc_vp_arr(self.lum_norm, msg='Luminance normalization')
-
-    def lum_norm(self, img, ch=None):
-
-        # set default channel
-        ch = ch if ch is not None else 0
-
-        # RGB to YUV conversion
-        img = misc.clr_spc_conv.yuv_conv(img)
-
-        # normalization of Y (luminance channel)
-        img = misc.Normalizer(img, min=self._min, max=self._max).uint16_norm()
-
-        # YUV to RGB conversion
-        img = misc.clr_spc_conv.yuv_conv(img, inverse=True)
-
-        return img
-
-    def auto_wht_bal(self, method=None, msg_opt=True):
+    def wht_bal(self, method=None, msg_opt=True):
 
         # status update
         if msg_opt:
@@ -195,17 +143,6 @@ class LfpContrast(LfpViewpoints):
 
         return True
 
-    def sat_bal(self):
-
-        #self.set_stretch_hsv()
-        #self.proc_vp_arr(self.apply_stretch_hsv, msg='Color saturation')
-
-        self.proc_vp_arr(misc.hsv_conv, msg='Color saturation')
-        self.vp_img_arr[..., 1] *= 1.1
-        self.proc_vp_arr(misc.hsv_conv, invsere=True, msg='Color saturation')
-
-        return True
-
     def set_stretch(self, ref_ch, val_lim=None):
         ''' according to https://stackoverflow.com/questions/9744255/instagram-lux-effect/9761841#9761841 '''
 
@@ -244,39 +181,17 @@ class LfpContrast(LfpViewpoints):
         ''' contrast and brightness rectification For provided RGB image '''
 
         img = img if img is not None else self.vp_img_arr
-        #ch = ch if ch is not None else 0
+        ch = ch if ch is not None else 0
 
         # convert to float
-        f = img.astype(np.float32)
+        f = img.astype(np.float64)
 
         # perform auto contrast (by default: "lum" channel only)
-        img = self._contrast * f + self._brightness
+        img[..., ch] = self._contrast * f[..., ch] + self._brightness
 
         # clip to input extrema to remove contrast outliers
-        img[img < f.min()] = f.min()
-        img[img > f.max()] = f.max()
-
-        return img
-
-    def set_stretch_lum(self, img=None):
-
-        img = img if img is not None else self.ref_img
-
-        # use luminance channel for parameter analysis
-        ref_img = misc.clr_spc_conv.yuv_conv(img)
-        self.set_stretch(ref_ch=ref_img[..., 0])
-
-    def apply_stretch_lum(self, img=None):
-        ''' contrast and brightness rectification to luminance channel of provided RGB image '''
-
-        # color model conversion
-        img = misc.clr_spc_conv.yuv_conv(img) if img is not None else misc.clr_spc_conv.yuv_conv(self.vp_img_arr)
-
-        # apply histogram stretching to luminance channel only
-        img = self.apply_stretch(img=img, ch=0)
-
-        # color model conversion
-        img = misc.clr_spc_conv.yuv_conv(img, inverse=True)
+        #img[img < f.min()] = f.min()
+        #img[img > f.max()] = f.max()
 
         return img
 
@@ -301,3 +216,63 @@ class LfpContrast(LfpViewpoints):
         rgb = misc.clr_spc_conv.hsv_conv(hsv, inverse=True)
 
         return rgb
+
+    @staticmethod
+    def auto_hist_align(img, ref_img, opt=None):
+
+        if opt:
+            p_lo, p_hi = (0.005, 99.9)#(0.001, 99.999)
+            min_perc = np.percentile(misc.rgb2gray(ref_img), p_lo)
+            max_perc = np.percentile(ref_img, p_hi)
+        else:
+            p_lo, p_hi = (0.5, 99.9)
+            min_perc = np.percentile(ref_img, p_lo)
+            max_perc = np.percentile(ref_img, p_hi)
+
+        img = misc.Normalizer(img, min=min_perc, max=max_perc).type_norm()
+
+        return img
+
+    def thresh_hist_stretch(self, th=2e-10, bins=2**16-1):
+
+        h = np.histogram(self.central_view, bins=bins)
+        hn = h[0] / h[0].sum()
+        x_vals = np.where(hn / len(hn) > th)[0] / bins
+
+        hs = np.diff(h[0][::128] / h[0][::128].sum())
+        s_vals = np.where(hs > 1.5e-4)[0] / (bins / 128)
+
+        #img = misc.Normalizer(self.central_view.copy(), min=x_vals[1], max=self.central_view.max()).type_norm()
+        self.proc_vp_arr(misc.Normalizer().type_norm, msg='Histogram crop', min=x_vals[1], max=1)
+
+        return True
+
+    def post_lum(self, ch=None):
+
+        self.vp_img_arr = misc.Normalizer(self.vp_img_arr).uint16_norm()
+
+        # channel selection
+        ch = ch if ch is not None else 0
+        ref_ch = misc.clr_spc_conv.yuv_conv(self.central_view)[..., ch]
+
+        # define level limits
+        self._min = np.percentile(ref_ch, self.p_lo*100)
+        self._max = np.percentile(ref_ch, self.p_hi*100)
+
+        self.proc_vp_arr(self.lum_norm, msg='Luminance normalization')
+
+    def lum_norm(self, img, ch=None):
+
+        # set default channel
+        ch = ch if ch is not None else 0
+
+        # RGB to YUV conversion
+        img = misc.clr_spc_conv.yuv_conv(img)
+
+        # normalization of Y (luminance channel)
+        img = misc.Normalizer(img, min=self._min, max=self._max).uint16_norm()
+
+        # YUV to RGB conversion
+        img = misc.clr_spc_conv.yuv_conv(img, inverse=True)
+
+        return img
