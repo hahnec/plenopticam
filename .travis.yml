@@ -28,11 +28,10 @@ install:
 
 before_script:
     - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
-        Invoke-WebRequest https://www.advancedinstaller.com/downloads/advinst.msi -OutFile ./advinst.msi;
+        url "https://www.advancedinstaller.com/downloads/advinst.msi" -o ./advinst.msi;
         sleep 1;
         msiexec /i advinst.msi /qn;
       fi
-#         curl "https://www.advancedinstaller.com/downloads/advinst.msi" -o NUL;
 
 # commands to run tests
 script:
