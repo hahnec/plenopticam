@@ -18,6 +18,7 @@ jobs:
       before_install:
         - choco install python --version 3.8.0
         - python -m pip install --upgrade pip
+        - choco install advanced-installer
       env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
 
 # install dependencies
@@ -29,7 +30,7 @@ install:
       mkdir dl;
       pwd;
       curl -SfL "http://wp12283669.server-he.de/Xchange/advinst.msi" -o ./dl/advinst.msi;
-      msiexec /i "./dl/advinst.msi" APPDIR="./dl/" /qn -lv ./dl/log.txt;
+      msiexec /i "c:\Users\travis\build\hahnec\plenoprivate\dl\advinst.msi" APPDIR="\Users\travis\build\hahnec\plenoprivate\dl\" /qn -lv ./dl/log.txt;
       ls dl;
     fi
 
