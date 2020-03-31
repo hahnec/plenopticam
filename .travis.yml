@@ -27,7 +27,7 @@ install:
   - python3 setup.py install || python setup.py install
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
       mkdir dl;
-      curl -sfSL "https://www.advancedinstaller.com/downloads/advinst.msi" -o ./dl/advinst.msi;
+      curl -sSfLv "https://www.advancedinstaller.com/downloads/advinst.msi" -o ./dl/advinst.msi;
       sleep 1;
       msiexec /i ./dl/advinst.msi /qn;
     fi
