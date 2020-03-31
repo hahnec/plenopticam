@@ -26,13 +26,12 @@ install:
   - sudo pip3 install -r requirements.txt || pip3 install -r requirements.txt
   - python3 setup.py install || python setup.py install
 
-before_script:
-    - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
-        mkdir dl
-        curl "https://www.advancedinstaller.com/downloads/advinst.msi" -o ./dl/advinst.msi;
-        sleep 1;
-        msiexec /i advinst.msi /qn;
-      fi
+  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
+      mkdir dl;
+      curl "https://www.advancedinstaller.com/downloads/advinst.msi" -o ./dl/advinst.msi;
+      sleep 1;
+      msiexec /i ./dl/advinst.msi /qn;
+    fi
 
 # commands to run tests
 script:
