@@ -1,7 +1,7 @@
 :: determine version number from __init__.py file
 @ECHO OFF
 SETLOCAL ENABLEDELAYEDEXPANSION
-for /f "tokens=*" %%a in (../../../plenopticam/__init__.py) do (
+for /f "tokens=*" %%a in (plenopticam/__init__.py) do (
     SET b=%%a
     SET prefix=!b:~0,11!
     IF !prefix!==__version__ (
@@ -31,7 +31,7 @@ set /P target=<tmp.txt
 echo !target!
 %advinst% /edit %prjpath% /SetOutputLocation -buildname DefaultBuild -path %target%\dist
 %advinst% /edit %prjpath% /AddFile APPDIR "dist\plenopticam.exe"
-%advinst% /edit %prjpath% /SetIcon -icon "..\..\gui\icns\1055104.ico"
+%advinst% /edit %prjpath% /SetIcon -icon "plenopticam\gui\icns\1055104.ico"
 %advinst% /edit %prjpath% /SetPackageName plenopticam_v%version%.msi
 
 :: save project

@@ -78,7 +78,7 @@ deploy:
   file:
     - /Users/travis/build/hahnec/plenoprivate/dist/plenopticam_0.3.5.dmg
     - /home/travis/build/hahnec/plenoprivate/dist/plenopticam_0.3.5.tar.gz
-    - C:\Users\travis\build\hahnec\plenoprivate\dist\plenopticam.zip
+    - C:\Users\travis\build\hahnec\plenoprivate\dist\plenopticam_0.3.5.msi
   draft: true
   on:
 #    tags: true
