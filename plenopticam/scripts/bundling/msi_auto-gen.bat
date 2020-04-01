@@ -34,8 +34,5 @@ echo !target!
 %advinst% /edit %prjpath% /SetIcon -icon "..\..\gui\icns\1055104.ico"
 %advinst% /edit %prjpath% /SetPackageName plenopticam_%version%.msi
 
-:: save project
-::%advinst% /save %prjpath%
-
 :: run build
 %advinst% /build %prjpath%
