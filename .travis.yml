@@ -79,6 +79,10 @@ deploy:
   on:
     tags: true
     repo: hahnec/plenoprivate
+    branches:
+      only:
+        - develop
+        - master
   name: PlenoptiCam $TRAVIS_TAG
 
 #  deploy:
