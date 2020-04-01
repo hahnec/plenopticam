@@ -76,12 +76,12 @@ deploy:
     - C:\Users\travis\build\hahnec\plenoprivate\dist\plenopticam_0.3.5.msi
   draft: true
   on:
-    tags: true
     repo: hahnec/plenoprivate
-    branches:
-      only:
-        - develop
-        - master
+#    tags: true
+#    branches:
+#      only:
+#        - develop
+#        - master
   name: PlenoptiCam $TRAVIS_TAG
 
 #  deploy:
