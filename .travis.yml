@@ -55,7 +55,7 @@ script:
   # win bundling
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
         pip3 install pypiwin32;
-        pip3 install pyinstaller==3.5
+        pip3 install pyinstaller==3.5;
         plenopticam/scripts/bundling/py2exe.bat;
         sleep 1;
         ls dist/plenopticam;
