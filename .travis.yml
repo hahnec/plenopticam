@@ -85,7 +85,7 @@ deploy:
     repo: hahnec/plenoprivate
   name: PlenoptiCam $TRAVIS_TAG
 
- deploy:
+  deploy:
    provider: pypi
    skip_existing: true
    skip_cleanup: true
