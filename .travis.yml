@@ -48,7 +48,6 @@ script:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
         bash plenopticam/scripts/bundling/py2bin.sh;
         sleep 1;
-        ls dist;
         dist/plenopticam;
     fi
   # win bundling
