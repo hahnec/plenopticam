@@ -170,7 +170,7 @@ def xyz2rgb(xyz):
 
     for ch in range(rgb.shape[2]):
         mask = rgb[..., ch] > 0.0031308
-        rgb[..., ch][mask] = 1.055 * np.power(rgb[..., ch], 1/2.4)[mask] - 0.055
+        rgb[..., ch][mask] = 1.055 * np.power(rgb[..., ch][mask], 1 / 2.4) - 0.055
         rgb[..., ch][~mask] *= 12.92
 
     return rgb
