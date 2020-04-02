@@ -42,9 +42,6 @@ echo "            )" >> ./plenopticam.spec
 # re-run pyinstaller with extended spec file
 sudo pyinstaller plenopticam.spec --noconfirm
 
-# add plist file to app bundle (as an alternative to modifying the spec file)
-#cp -f ./plenopticam/scripts/bundling/Info.plist dist/plenopticam.app/Contents/Info.plist
-
 #pyinstaller ./plenopticam.spec
 sudo mkdir ./dist/plenopticam.app/Contents/Resources/cfg
 sudo cp ./plenopticam/cfg/cfg.json ./dist/plenopticam.app/Contents/Resources/cfg/cfg.json
