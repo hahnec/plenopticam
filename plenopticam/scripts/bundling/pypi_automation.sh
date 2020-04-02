@@ -7,7 +7,7 @@ pip3 install --upgrade twine
 python3 setup.py sdist bdist_wheel
 
 # test upload and download
-python3 -m twine upload --repository testpypi dist/*
+python3 -m twine upload --repository testpypi dist/* -u hahnec -p $TEST_PYPI
 python3 -m pip install --index-url https://test.pypi.org/simple/ plenopticam
 
 # production upload and download
