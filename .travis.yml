@@ -92,6 +92,6 @@ after_deploy:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
         pip3 install --upgrade twine;
         python3 setup.py sdist bdist_wheel;
-        python3 -m twine upload --repository testpypi dist/* -u hahnec -p $TEST_PYPI;
+        python3 -m twine upload --repository testpypi dist/* -u hahnec -p $TEST_PYPI --verbose;
         python3 -m pip install --index-url https://test.pypi.org/simple/ plenopticam;
     fi
