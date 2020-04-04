@@ -43,17 +43,16 @@ script:
         sleep 1;
         open dist/plenopticam.app;
         export RELEASE_PKG_FILE=$(ls dist/*.dmg);
-        export RELEASE_WHL_FILE=$'';
     fi
   # linux bundling (with wheel upload to pypi)
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
         bash plenopticam/scripts/bundling/py2bin.sh;
         dist/plenopticam;
+        export RELEASE_PKG_FILE=$(ls dist/*.tar.gz);
         pip3 install --upgrade twine;
         python3 setup.py sdist bdist_wheel;
         python3 -m twine upload --repository https://test.pypi.org/legacy/ dist/* -u __token__ -p $TEST_PYPI;
         python3 -m pip install --index-url https://test.pypi.org/legacy/ plenopticam;
-        export RELEASE_PKG_FILE=$(ls dist/*.tar.gz);
         export RELEASE_WHL_FILE=$(ls dist/*.whl);
     fi
   # win bundling
@@ -64,7 +63,6 @@ script:
         sleep 1;
         plenopticam/scripts/bundling/msi_auto-gen.bat;
         export RELEASE_PKG_FILE=$(ls dist/*.msi);
-        export RELEASE_WHL_FILE=$'';
     fi
 
 before_deploy:
@@ -86,7 +84,6 @@ deploy:
       secure: HpkQsqXHzAd62Hc1f/eMdcRzluQo4cS44q8WbMrUTxMFjGQ822JPsO/s7uTZAs5FZZzE/cPUTyYU2c8Rmn9tg547v3D5Dy16eG5jr8dJqGKkwN3vggv4x7U8PiajAIhbmWRqde7ywduqq98kcipTXaATrCtYvCIfRb7H08qmozV5L30DYdICvTlgFVXu6wq/TzQsCqG2XzXiVyvlTq/JVnC+Tl2Kl/33sDa9kJoaQbib4yNZlx5zWTOydkQQvTvK3O9HvHF5ZpWiSxbrg70C6zFQKscpmcpGth/FJEWoQxZvO91jUWBU1Thl5RgrQIZlSQFGfoVioTamCKy219ytlbgpmxvyZzeO4FirNoJ5xDKWy2HfY9JQJVt2cMi1kbniRfw3nSZRig7pGjg07eamvb38a5FWWyQe7gt/Obcbf0lyAQQVeo9HiktETRX8tAnfJjxv2qrLoYUuH0n27XZP+CJfLK35j6ptoYeesmyiZgYSYt2M7exhMP1UX+ts977nnmf7/JZIOg/Ytm4+Ba4FzIyvGPizKTSYyGmcLYYoW0LIdYkAO/mr/PSvrjdt6p9dZcNAKBMufrgwAuH3tyQgS+pAO8h4GFwfG8OrBR/eoBBJf5QaZj/YvZwWLj55bGr6+g4KSS3JVeFvx2xCLKs640gVtoQQF/682IYuGGU3J2g=
     file:
       - "${RELEASE_PKG_FILE}"
-      - "${RELEASE_WHL_FILE}"
     draft: true
     on:
       repo: hahnec/plenoprivate
@@ -95,6 +92,18 @@ deploy:
 #      only:
 #        - develop
 #        - master
+
+  - provider: releases
+    name: PlenoptiCam $TRAVIS_TAG
+    skip_cleanup: true
+    api_key:
+      secure: HpkQsqXHzAd62Hc1f/eMdcRzluQo4cS44q8WbMrUTxMFjGQ822JPsO/s7uTZAs5FZZzE/cPUTyYU2c8Rmn9tg547v3D5Dy16eG5jr8dJqGKkwN3vggv4x7U8PiajAIhbmWRqde7ywduqq98kcipTXaATrCtYvCIfRb7H08qmozV5L30DYdICvTlgFVXu6wq/TzQsCqG2XzXiVyvlTq/JVnC+Tl2Kl/33sDa9kJoaQbib4yNZlx5zWTOydkQQvTvK3O9HvHF5ZpWiSxbrg70C6zFQKscpmcpGth/FJEWoQxZvO91jUWBU1Thl5RgrQIZlSQFGfoVioTamCKy219ytlbgpmxvyZzeO4FirNoJ5xDKWy2HfY9JQJVt2cMi1kbniRfw3nSZRig7pGjg07eamvb38a5FWWyQe7gt/Obcbf0lyAQQVeo9HiktETRX8tAnfJjxv2qrLoYUuH0n27XZP+CJfLK35j6ptoYeesmyiZgYSYt2M7exhMP1UX+ts977nnmf7/JZIOg/Ytm4+Ba4FzIyvGPizKTSYyGmcLYYoW0LIdYkAO/mr/PSvrjdt6p9dZcNAKBMufrgwAuH3tyQgS+pAO8h4GFwfG8OrBR/eoBBJf5QaZj/YvZwWLj55bGr6+g4KSS3JVeFvx2xCLKs640gVtoQQF/682IYuGGU3J2g=
+    file:
+      - "${RELEASE_WHL_FILE}"
+    draft: true
+    on:
+      repo: hahnec/plenoprivate
+      condition: $TRAVIS_OS_NAME = linux
 
   - provider: pypi
     skip_existing: true
