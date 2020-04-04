@@ -196,7 +196,7 @@ Further information
     :target: https://github.com/hahnec/plenopticam/releases/
     :alt: Downloads
 
-.. |build| image:: https://img.shields.io/travis/com/hahnec/plenoprivate?style=flat-square
+.. |build| image:: https://img.shields.io/travis/com/hahnec/plenopticam?style=flat-square
     :target: https://travis-ci.com/github/hahnec/plenopticam
 
 .. |spiderman| raw:: html
