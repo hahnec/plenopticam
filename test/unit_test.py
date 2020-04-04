@@ -53,8 +53,6 @@ class PlenoptiCamTester(unittest.TestCase):
             if not os.path.exists(os.path.join(self.fp, fn)):
                 self.download_data(url)
 
-        self.runTest()
-
     def runTest(self):
 
         self.test_cal()
