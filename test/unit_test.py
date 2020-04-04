@@ -42,7 +42,7 @@ class PlenoptiCamTester(unittest.TestCase):
 
     def setUp(self):
 
-        self.fp = os.path.join(os.path.abspath(__file__), 'data')
+        self.fp = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
         self.fnames_wht = ['f197with4m11pxf16Final.bmp', 'f197Inf9pxFinalShift12.7cmf22.bmp']
         self.fnames_lfp = ['f197with4m11pxFinal.bmp', 'f197Inf9pxFinalShift12.7cm.bmp']
 
