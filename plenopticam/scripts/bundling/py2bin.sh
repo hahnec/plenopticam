@@ -29,4 +29,4 @@ pyinstaller plenopticam/gui/top_level.py \
 version=$(sed -ne 's@__version__ = \([^]]*\)@\1@gp' plenopticam/__init__.py | sed 's/'\''//g')
 
 # compress to archive (c-create archive; z-compress archive with gzip; v-display progress in the terminal; f-filename)
-tar -czvf ./dist/plenopticam_${version}.tar.gz ./dist/plenopticam
+tar -czvf ./dist/plenopticam_${version}.tar.gz dist/plenopticam
