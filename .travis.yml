@@ -55,8 +55,6 @@ script:
         plenopticam/scripts/bundling/py2exe.bat;
         sleep 1;
         plenopticam/scripts/bundling/msi_auto-gen.bat;
-        sleep 1;
-        ls dist;
     fi
 
 before_deploy:
@@ -79,7 +77,7 @@ deploy:
     file:
       - /Users/travis/build/hahnec/plenoprivate/dist/plenopticam_*.dmg
       - /home/travis/build/hahnec/plenoprivate/dist/plenopticam_*.tar.gz
-      - C:\Users\travis\build\hahnec\plenoprivate\dist\plenopticam_*.msi
+      - C:\Users\travis\build\hahnec\plenoprivate\dist\plenopticam_0.3.6.msi
     draft: true
     on:
       repo: hahnec/plenoprivate
@@ -95,6 +93,6 @@ deploy:
     server: https://upload.pypi.org/legacy/
     user: __token__
     password:
-      secure: joSfCl33XmE6P0DZjtRRn/ZRBNfyTO3Ibd1aULWXSdfA9STJswxVR5THl/X4pKOFHSU+3LBVOO9+zjJgC3M+Nr9TrsI365+kdmD+0tOQ47rt9N+2H4/FuXdOj0EL07eF73LGbvfhTBtdFd0hW8UFL3lWJLdLOUxRUX+OWgRtx5vusLu+No8Zy6aje7oTo8kdGEy47XzjYwXhXTNrvxXeQPasjaKUtfmpb6f/J8ozsW/H/Ok2VgqPCakKiqPknXzE0SMcb+nd0otix3x6VKci2vvlTF8sDq9CF3hyFPKvuIvTzrhESQwvGFDk9Tt3AEa9MqXxrswPyM5i6bvB8YI/kV/vmA22MyglziVsU4Gf7u+S7gYTHliWsyOaiWm8dTpJU5ApR4yfSoBUPxNMBybfOpzaiCflOIy/QFcDzGPRKRsNDl9vvvMvpdcwU65djeaeuNnR7bVbsox4dq5/l+N+p86X3Fm9Odo/M77Qs1KtjUD3vjMf/ku2mEEn3WL4GrLgpyvt5PaWaeRqQT1twT20XCGiI9tZcybsAvYH1KyXTfwz5t6+xVJ4Ccyr/6cdamwwogzuNNLyWkpGhRdqMyRYUQQPfkNWQEzr1xyPAU3QPjZ822YgEBVl3kSixR0JOg0Q25Tv0juRom4pTZK1yA21yMyYa9caJlh7zWg1A6n6/js=
+      secure: BUeNcM5jZixQ+1fjKmXmPY97lAEtr2NZNVm8SmyJUoaMWXGoO+qGKb9Fy8aVVIT7qvYRZKiGuTaoOb9VuVSTq7spRAmPXKXQbXMybbWPszapCKxmxVse7ADZEq3zQJ4vulmMtqzFwYlLgyNo4OnbVSGBwPe8jA8QeMSXCsAqKoJZW414yvd62g/qFfXVcNz7nL/oFIxPSzWezrXHWbbIfpf14H4rD6dJ95dyqMqzPr0W4OpKN5Q7vSpg9EwDggP3ypwoXbS2cPkQjIpt4UviFdyIAbJ7/Kofqhomfi1V9WRY0xpAJL7lPkMnsEpTSu8jACIyH6Trvs3o1+eS1V/RuR3+nUl5sX0eZSFcS+PF9Qce+r32f3BahhH+x6innrQ3idSQh/N77FFz0WdLIVW6iJ8ziyzrP3CSEzPUCLDUTQwyI1fJ9jDmAXIRCwm6VyaqrcTvekBtjsurZ+dIahuDzdNCz1Zl9Pq6mxtUjMoIE4rY7rjACXgbtkSWHsUvByFl4RTurkD14fVOun3Gu7QauXtOxg25PrF+bvVqNeei6spMQbTRXutUqTKJI16m+0/hUAyJuD6NPaQp++2+sPBJ2c4/GtBY+2W9pOj+9WX5ckuCcgmj+2asdxz8lO60MtZ7Zr8v2eW8i3l0u63ahQ4YxHsaNTvXRkUaOZoub08FogE=
     on:
       condition: $TRAVIS_OS_NAME = linux
