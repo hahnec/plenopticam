@@ -32,7 +32,7 @@ script:
   # open app from CLI
   - plenopticam -h
   # trigger unit tests
-  - python3 -m test.unit_test || python -m test.unit_test
+  #- python3 -m test.unit_test || python -m test.unit_test
 
 #before_deploy:
   - pip3 install pyinstaller
