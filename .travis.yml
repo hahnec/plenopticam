@@ -66,17 +66,10 @@ script:
     fi
 
 before_deploy:
-  #bash plenopticam/scripts/bundling/pypi_automation.sh;
-  #- if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-  #      p#ip3 install --upgrade twine;
-  #      python3 setup.py sdist bdist_wheel;
-  #      python3 -m twine upload --repository https://test.pypi.org/legacy/ dist/* -u __token__ -p $TEST_PYPI;
-  #      python3 -m pip install --index-url https://test.pypi.org/legacy/ plenopticam;
-  #  fi
   - echo "deploying $RELEASE_PKG_FILE to GitHub releases"
 
-# open release draft on GitHub
 deploy:
+  # upload bundled apps to GitHub
   - provider: releases
     name: PlenoptiCam $TRAVIS_TAG
     skip_cleanup: true
@@ -93,6 +86,7 @@ deploy:
 #        - develop
 #        - master
 
+  # upload wheel file to GitHub
   - provider: releases
     name: PlenoptiCam $TRAVIS_TAG
     skip_cleanup: true
@@ -105,6 +99,7 @@ deploy:
       repo: hahnec/plenoprivate
       condition: $TRAVIS_OS_NAME = linux
 
+  # upload wheel file to PyPi
   - provider: pypi
     skip_existing: true
     skip_cleanup: true
