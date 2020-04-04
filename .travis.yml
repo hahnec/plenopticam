@@ -27,6 +27,7 @@ install:
   - sudo pip3 install -r requirements.txt || pip3 install -r requirements.txt
   - python3 setup.py install || python setup.py install
   - pip3 install sphinx
+  - pip3 install sphinx-quickstart
 
 # commands to run tests
 script:
@@ -34,7 +35,7 @@ script:
   - plenopticam -h
   # re-compile docs
   - cd docs
-  - make html
+  - make html -d
   - cd ..
   # trigger unit tests (time critical travis osx due to 10min limit and output suppression in setUp function)
   - python3 -m test.unit_test || python -m test.unit_test
