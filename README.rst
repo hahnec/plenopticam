@@ -196,7 +196,7 @@ Further information
     :target: https://github.com/hahnec/plenopticam/releases/
     :alt: Downloads
 
-.. |build| image:: https://img.shields.io/travis/com/hahnec/plenoprivate?style=flat-square
+.. |build| image:: https://img.shields.io/travis/com/hahnec/plenopticam?style=flat-square
     :target: https://travis-ci.com/github/hahnec/plenopticam
 
 .. |spiderman| raw:: html
@@ -226,9 +226,9 @@ Further information
 .. Hyperlink aliases
 
 .. _source: https://github.com/hahnec/plenopticam/archive/master.zip
-.. _macOS: https://github.com/hahnec/plenopticam/releases/download/v0.3.4-beta/plenopticam_0.3.4.dmg
-.. _Win: https://github.com/hahnec/plenopticam/releases/download/v0.3.4-beta/plenopticam_0.3.4.msi
-.. _Linux: https://github.com/hahnec/plenopticam/releases/download/v0.3.4-beta/plenopticam_0.3.4.tar.xz
+.. _macOS: https://github.com/hahnec/plenopticam/releases/download/v0.4.1-beta/plenopticam_0.4.1.dmg
+.. _Win: https://github.com/hahnec/plenopticam/releases/download/v0.4.1-beta/plenopticam_0.4.1.msi
+.. _Linux: https://github.com/hahnec/plenopticam/releases/download/v0.4.1-beta/plenopticam_0.4.1.tar.xz
 .. _PlenoptiSign: https://github.com/hahnec/plenoptisign/
 .. _apps: https://github.com/hahnec/plenopticam/releases/
 
