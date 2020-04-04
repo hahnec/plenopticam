@@ -108,7 +108,7 @@ deploy:
   # upload wheel file to PyPi
   - provider: pypi
     skip_existing: true
-    cleanup: true
+    skip_cleanup: true
     distributions: sdist bdist_wheel
     server: https://upload.pypi.org/legacy/
     user: __token__
