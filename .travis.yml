@@ -90,7 +90,7 @@ deploy:
   - provider: pypi
     skip_existing: true
     skip_cleanup: true
-    server: https://upload.pypi.org/
+    server: https://upload.pypi.org/legacy/
     user: __token__
     password:
       secure: f7UDlxrdGOYFUJFBtZ8f+GOiHL6Cxy5sGPd2QBH04t4HKNDHjOt8uHaZmuvVmbamZrTloTiP5z8JEIkXlYvNE9fif2AxaKlls38W+H2/QupAX92xj7J2+MXAhlFk+CRy5s8HVzwlcUugVLAiwbvWjWQ7JU7D4KkLx7+GWEIUm5KOXed1VDmBbt8im4V6JAkXJyB1U31xPZZY1UvHWGHCEKJxQ/ScYVxZvlfEzbEtSXSjK9PIS88j/y1JVC34kQDH0s0pTn3ufdGTjNgzeTap+UcOSiP2GQPD+PgAXY3MUKGLp1PRySPbH6ERo5Jc5In6XVdHvHnKPH/pRAzKHA6VO4AwDktYf4v6oyVAsx8LCCHjBxqKnX4c3tmj+WGYL2lRxPsCKNj5YVAIwUTTib1fzPKHf6iGxasU+kQwY4VpnohENEEafG/KhMGSDGDdb+66JvZpJBEPXEYMFxUepu1wT7qztnJriZQbbYJyaO7vChK7Awc5YduVe5W5Acplof6gQ5xadiIjqcIViL+P5C/97yXMS2pYHN00PnFgxdGmX9wIqT5V4D7ypO4UtlDXfNMZwe996bTsSXDrHZliED//OTc327ErKtT60nYWlYNe28UhLj7Tzn8N3Lz/c2jF38cc6daCJhWgsURp+l0h8VifYWOZ9EPBMV+x+rYyUEznY1c=
