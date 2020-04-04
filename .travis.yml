@@ -57,41 +57,40 @@ script:
         plenopticam/scripts/bundling/msi_auto-gen.bat;
     fi
 
+before_deploy:
+  #bash plenopticam/scripts/bundling/pypi_automation.sh;
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+        pip3 install --upgrade twine;
+        python3 setup.py sdist bdist_wheel;
+        python3 -m twine upload --repository https://test.pypi.org/legacy/ dist/* -u __token__ -p $TEST_PYPI;
+        python3 -m pip install --index-url https://test.pypi.org/legacy/ plenopticam;
+    fi
+
 # open release draft on GitHub
 deploy:
-  provider: releases
-  name: PlenoptiCam $TRAVIS_TAG
-  skip_cleanup: true
-  api_key:
-    secure: HpkQsqXHzAd62Hc1f/eMdcRzluQo4cS44q8WbMrUTxMFjGQ822JPsO/s7uTZAs5FZZzE/cPUTyYU2c8Rmn9tg547v3D5Dy16eG5jr8dJqGKkwN3vggv4x7U8PiajAIhbmWRqde7ywduqq98kcipTXaATrCtYvCIfRb7H08qmozV5L30DYdICvTlgFVXu6wq/TzQsCqG2XzXiVyvlTq/JVnC+Tl2Kl/33sDa9kJoaQbib4yNZlx5zWTOydkQQvTvK3O9HvHF5ZpWiSxbrg70C6zFQKscpmcpGth/FJEWoQxZvO91jUWBU1Thl5RgrQIZlSQFGfoVioTamCKy219ytlbgpmxvyZzeO4FirNoJ5xDKWy2HfY9JQJVt2cMi1kbniRfw3nSZRig7pGjg07eamvb38a5FWWyQe7gt/Obcbf0lyAQQVeo9HiktETRX8tAnfJjxv2qrLoYUuH0n27XZP+CJfLK35j6ptoYeesmyiZgYSYt2M7exhMP1UX+ts977nnmf7/JZIOg/Ytm4+Ba4FzIyvGPizKTSYyGmcLYYoW0LIdYkAO/mr/PSvrjdt6p9dZcNAKBMufrgwAuH3tyQgS+pAO8h4GFwfG8OrBR/eoBBJf5QaZj/YvZwWLj55bGr6+g4KSS3JVeFvx2xCLKs640gVtoQQF/682IYuGGU3J2g=
-  file_glob: true
-  file:
-    - /Users/travis/build/hahnec/plenoprivate/dist/plenopticam_*.dmg
-    - /home/travis/build/hahnec/plenoprivate/dist/plenopticam_*.tar.gz
-    - C:\Users\travis\build\hahnec\plenoprivate\dist\plenopticam_*.msi
-  draft: true
-  on:
-    repo: hahnec/plenoprivate
+  - provider: releases
+    name: PlenoptiCam $TRAVIS_TAG
+    skip_cleanup: true
+    api_key:
+      secure: HpkQsqXHzAd62Hc1f/eMdcRzluQo4cS44q8WbMrUTxMFjGQ822JPsO/s7uTZAs5FZZzE/cPUTyYU2c8Rmn9tg547v3D5Dy16eG5jr8dJqGKkwN3vggv4x7U8PiajAIhbmWRqde7ywduqq98kcipTXaATrCtYvCIfRb7H08qmozV5L30DYdICvTlgFVXu6wq/TzQsCqG2XzXiVyvlTq/JVnC+Tl2Kl/33sDa9kJoaQbib4yNZlx5zWTOydkQQvTvK3O9HvHF5ZpWiSxbrg70C6zFQKscpmcpGth/FJEWoQxZvO91jUWBU1Thl5RgrQIZlSQFGfoVioTamCKy219ytlbgpmxvyZzeO4FirNoJ5xDKWy2HfY9JQJVt2cMi1kbniRfw3nSZRig7pGjg07eamvb38a5FWWyQe7gt/Obcbf0lyAQQVeo9HiktETRX8tAnfJjxv2qrLoYUuH0n27XZP+CJfLK35j6ptoYeesmyiZgYSYt2M7exhMP1UX+ts977nnmf7/JZIOg/Ytm4+Ba4FzIyvGPizKTSYyGmcLYYoW0LIdYkAO/mr/PSvrjdt6p9dZcNAKBMufrgwAuH3tyQgS+pAO8h4GFwfG8OrBR/eoBBJf5QaZj/YvZwWLj55bGr6+g4KSS3JVeFvx2xCLKs640gVtoQQF/682IYuGGU3J2g=
+    file_glob: true
+    file:
+      - /Users/travis/build/hahnec/plenoprivate/dist/plenopticam_*.dmg
+      - /home/travis/build/hahnec/plenoprivate/dist/plenopticam_*.tar.gz
+      - C:\Users\travis\build\hahnec\plenoprivate\dist\plenopticam_*.msi
+    draft: true
+    on:
+      repo: hahnec/plenoprivate
 #    tags: true
 #    branches:
 #      only:
 #        - develop
 #        - master
 
-#  deploy:
-#    provider: pypi
-#    skip_existing: true
-#    skip_cleanup: true
-#    se  rver: https://testpypi.python.org/pypi
-#    user: hahnec
-#    password:
-#      secure: WvUIg6H5cXTrb#ii42b8krKprrMB9MgXgHX64Da18pQrKG7ByjB4tSZmD7pxpab2OFlFV3b9bMRxaFuTxwIfM00aQ8LnV5Km2oSNOMC75qvjsjvLsfT/TS0RnZ9vq+p0rs5NmPMgdqXz4JdQ8iC0pnKYZhUsMCa7YAVGcPAt9XmQZeDZ46SOiqAVpwaPFJj+OJT+dc0jmIfnrYO2jNH3lRTTNM711fBLONhoXUUdgpIS4CpuKiGBD6AbeU7JkzivKPeZ+t7wt/WZfhR1a3Uwva7pV+EBJAueMBNHyABnO3KHsSGGGbZZ8ORTrCIS7r8fVMPmledk3IO4D8kurhfROcYySzkpTPNgdO7Y6QHq0EgOV9SHan8svHm19GyJJeWpFrus6v8g9NeNZa9h6OiLMEX5m6kxo4TCQnEq80nvHRchSNIE9s2m4RiMiikZFoabhQyVhHTKV/298Lbdbf3FFBe8xH4+/nz6/k2Lp008Yhc4wQSEbHyxhh4m4sh2wPoWSceYITtmCoawVUzCMLSfNTGVmQduvCYX4a+SIh1omlApkCqqKMlNAlL3PYd4UxJlybS//AB+58eH52lMxWKFIpfoLsUEyfEu/mWltncNc/TxVL2gTfX0w1utr/5dqBzQD0O8h1p9GdqBrnV5RWPp2ql9sfNioqxI5dgEIP8NYoro=
-
-after_deploy:
-  #bash plenopticam/scripts/bundling/pypi_automation.sh;
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-        pip3 install --upgrade twine;
-        python3 setup.py sdist bdist_wheel;
-        python3 -m twine upload --repository testpypi dist/* -u hahnec -p $TEST_PYPI --verbose;
-        python3 -m pip install --index-url https://test.pypi.org/simple/ plenopticam;
-    fi
+    - provider: pypi
+      skip_existing: true
+      skip_cleanup: true
+      server: https://testpypi.python.org/pypi
+      user: __token__
+      password:
+        secure: uTuqcvLFG1A/Pu8J9ePW8gdZbNNrDj1+XtLFXgktCmHjgRX9w0E9pjAvNJiTYVhTlbmdMdHXLVWqTmyeIDoS+qgl7QfU9Bbi6Fjitj7Ae4oTH30ldUc5YVjSRXe3ofSGm8rxA1/ZdBNOiZPh6VZGn8+IA9IAg44c92h/y5Wcv0sZ8F++O/r+CgUBDxUJPNKsKoZE+QDahA3ZAJoDLHchJaZ1CNUJU0U7pP076pRnCyNqMUGCjwRHal7oAogkPezLv5rZEfqQg2xU2nnnOwsNVH0QtFRWJRnsEjXfgtSNDWCFDZZXo6HHJRwCe8WpGdnKKFrQMsLvTDNnxjTZUMtok8L70WlOdPPHUPadNyJ3y2hzyJHLQ2S9MRv966bHbT+0Fp1hQESYLmkcxFPqtErnTFd2iy9YsnL9P5uEOzZtxjX5z3E4G+TX0m8K7eIrmlzO8w6W5Dmjdka/NUNLBYkMRanwvCe4K/FTrFFJWK5cdN7swFmD7Pnh1Ba07YqjCQ77Q/lPSwBkTXqtf+DYzCpFhesAGvgtGf1RNTxVJPhmLO298Js8NfxdLLgZbUWA+8hdy10LwWILf8fV6OhpXp6dIoAvDdZK0K5fvjDjetxPxy5WPlI5VN4iorqusT8J+xO4BkAmeDQyqOF85EDmbNzXca601BgslbzWuRGgPippiTc=
