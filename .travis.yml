@@ -27,7 +27,6 @@ install:
   - sudo pip3 install -r requirements.txt || pip3 install -r requirements.txt
   - python3 setup.py install || python setup.py install
   - pip3 install sphinx
-  - pip3 install sphinx-quickstart
 
 # commands to run tests
 script:
