@@ -31,7 +31,7 @@ install:
 script:
   # open app from CLI
   - plenopticam -h
-  # trigger unit tests
+  # trigger unit tests (time critical travis osx due to 10min limit and output suppression in setUp function)
   - python3 -m test.unit_test || python -m test.unit_test
 
 #before_deploy:
@@ -48,7 +48,11 @@ script:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
         bash plenopticam/scripts/bundling/py2bin.sh;
         dist/plenopticam;
-        export RELEASE_PKG_FILE=$(ls dist/*.tar.gz);
+        pip3 install --upgrade twine;
+        python3 setup.py sdist bdist_wheel;
+        python3 -m twine upload --repository https://test.pypi.org/legacy/ dist/* -u __token__ -p $TEST_PYPI;
+        python3 -m pip install --index-url https://test.pypi.org/legacy/ plenopticam;
+        export RELEASE_PKG_FILE=$(ls dist/*.tar.gz dist/*.whl);
     fi
   # win bundling
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
@@ -62,12 +66,12 @@ script:
 
 before_deploy:
   #bash plenopticam/scripts/bundling/pypi_automation.sh;
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-        pip3 install --upgrade twine;
-        python3 setup.py sdist bdist_wheel;
-        python3 -m twine upload --repository https://test.pypi.org/legacy/ dist/* -u __token__ -p $TEST_PYPI;
-        python3 -m pip install --index-url https://test.pypi.org/legacy/ plenopticam;
-    fi
+  #- if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+  #      p#ip3 install --upgrade twine;
+  #      python3 setup.py sdist bdist_wheel;
+  #      python3 -m twine upload --repository https://test.pypi.org/legacy/ dist/* -u __token__ -p $TEST_PYPI;
+  #      python3 -m pip install --index-url https://test.pypi.org/legacy/ plenopticam;
+  #  fi
   - echo "deploying $RELEASE_PKG_FILE to GitHub releases"
 
 # open release draft on GitHub
