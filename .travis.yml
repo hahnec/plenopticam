@@ -74,12 +74,12 @@ deploy:
     name: PlenoptiCam $TRAVIS_TAG
     skip_cleanup: true
     api_key:
-      secure: HpkQsqXHzAd62Hc1f/eMdcRzluQo4cS44q8WbMrUTxMFjGQ822JPsO/s7uTZAs5FZZzE/cPUTyYU2c8Rmn9tg547v3D5Dy16eG5jr8dJqGKkwN3vggv4x7U8PiajAIhbmWRqde7ywduqq98kcipTXaATrCtYvCIfRb7H08qmozV5L30DYdICvTlgFVXu6wq/TzQsCqG2XzXiVyvlTq/JVnC+Tl2Kl/33sDa9kJoaQbib4yNZlx5zWTOydkQQvTvK3O9HvHF5ZpWiSxbrg70C6zFQKscpmcpGth/FJEWoQxZvO91jUWBU1Thl5RgrQIZlSQFGfoVioTamCKy219ytlbgpmxvyZzeO4FirNoJ5xDKWy2HfY9JQJVt2cMi1kbniRfw3nSZRig7pGjg07eamvb38a5FWWyQe7gt/Obcbf0lyAQQVeo9HiktETRX8tAnfJjxv2qrLoYUuH0n27XZP+CJfLK35j6ptoYeesmyiZgYSYt2M7exhMP1UX+ts977nnmf7/JZIOg/Ytm4+Ba4FzIyvGPizKTSYyGmcLYYoW0LIdYkAO/mr/PSvrjdt6p9dZcNAKBMufrgwAuH3tyQgS+pAO8h4GFwfG8OrBR/eoBBJf5QaZj/YvZwWLj55bGr6+g4KSS3JVeFvx2xCLKs640gVtoQQF/682IYuGGU3J2g=
+      secure: mgks1YLiAjZzv+qEccnmm33AQP427IOr2k/fK5mezI5Ye+NzfO+vPrlSgbkO7SoqtTlApWqSOzU8UFm/1wI13T8zuo6+AJcBCv7dQAOBZNrN4eAW6yWepirHgZ7JKMwMNIUKCM2GejCi6KvA/7lQrIf7KUNZBU4QjQ5sZGKEeSudwJ+uMfnvMZvznGvunySrA6CvPXoAcZ1Xa8GwvBZPP+FZNLpfnQIZ9/xnirJyc36w69z4BhlTjnbK/VIQ6e1UqnCIIv0LjbQHLjPGRyhkU/NPRHjKmz7nlqule+Xp1iJhDrdvkXoRo0EPTmV2hjk0vjUzcWC3hqAgs7AmasbLt0nG7J9AB2SkRfMsNEN8aikixNkiyZ6zid6fiTc8ZeYGFukfxXH1rBcEJ4WCwfzBpaSjSqP6aCuZw5FRS6W45i4So+Em5TguqqlC+Hg4+K8iLdhFenZiSmzhUzZDY+nRQFqZNpc2HimEPTDM6z/+2c3pDYOMhchY5ZWxnWJ5A/m39yCgWi/zo1MPQNfsak4zN/Ymt7TTm4bUwCSlbCxQ9G9kMxntwKJhczOteLwUFMHaTrLBMflIpU6rMKetVh+dC7EtoVPkNBvfixYOXq7tgmi2T5LTLsgzSLxcZt4tzrP+lNC+Ek9Tk7wo/DWr3y8Wu+2goLjn4x+SEI6AxoiMNcU=
     file:
       - "${RELEASE_PKG_FILE}"
     draft: true
     on:
-      repo: hahnec/plenoprivate
+      repo: hahnec/plenopticam
 #    tags: true
 #    branches:
 #      only:
@@ -91,12 +91,12 @@ deploy:
     name: PlenoptiCam $TRAVIS_TAG
     skip_cleanup: true
     api_key:
-      secure: HpkQsqXHzAd62Hc1f/eMdcRzluQo4cS44q8WbMrUTxMFjGQ822JPsO/s7uTZAs5FZZzE/cPUTyYU2c8Rmn9tg547v3D5Dy16eG5jr8dJqGKkwN3vggv4x7U8PiajAIhbmWRqde7ywduqq98kcipTXaATrCtYvCIfRb7H08qmozV5L30DYdICvTlgFVXu6wq/TzQsCqG2XzXiVyvlTq/JVnC+Tl2Kl/33sDa9kJoaQbib4yNZlx5zWTOydkQQvTvK3O9HvHF5ZpWiSxbrg70C6zFQKscpmcpGth/FJEWoQxZvO91jUWBU1Thl5RgrQIZlSQFGfoVioTamCKy219ytlbgpmxvyZzeO4FirNoJ5xDKWy2HfY9JQJVt2cMi1kbniRfw3nSZRig7pGjg07eamvb38a5FWWyQe7gt/Obcbf0lyAQQVeo9HiktETRX8tAnfJjxv2qrLoYUuH0n27XZP+CJfLK35j6ptoYeesmyiZgYSYt2M7exhMP1UX+ts977nnmf7/JZIOg/Ytm4+Ba4FzIyvGPizKTSYyGmcLYYoW0LIdYkAO/mr/PSvrjdt6p9dZcNAKBMufrgwAuH3tyQgS+pAO8h4GFwfG8OrBR/eoBBJf5QaZj/YvZwWLj55bGr6+g4KSS3JVeFvx2xCLKs640gVtoQQF/682IYuGGU3J2g=
+      secure: mgks1YLiAjZzv+qEccnmm33AQP427IOr2k/fK5mezI5Ye+NzfO+vPrlSgbkO7SoqtTlApWqSOzU8UFm/1wI13T8zuo6+AJcBCv7dQAOBZNrN4eAW6yWepirHgZ7JKMwMNIUKCM2GejCi6KvA/7lQrIf7KUNZBU4QjQ5sZGKEeSudwJ+uMfnvMZvznGvunySrA6CvPXoAcZ1Xa8GwvBZPP+FZNLpfnQIZ9/xnirJyc36w69z4BhlTjnbK/VIQ6e1UqnCIIv0LjbQHLjPGRyhkU/NPRHjKmz7nlqule+Xp1iJhDrdvkXoRo0EPTmV2hjk0vjUzcWC3hqAgs7AmasbLt0nG7J9AB2SkRfMsNEN8aikixNkiyZ6zid6fiTc8ZeYGFukfxXH1rBcEJ4WCwfzBpaSjSqP6aCuZw5FRS6W45i4So+Em5TguqqlC+Hg4+K8iLdhFenZiSmzhUzZDY+nRQFqZNpc2HimEPTDM6z/+2c3pDYOMhchY5ZWxnWJ5A/m39yCgWi/zo1MPQNfsak4zN/Ymt7TTm4bUwCSlbCxQ9G9kMxntwKJhczOteLwUFMHaTrLBMflIpU6rMKetVh+dC7EtoVPkNBvfixYOXq7tgmi2T5LTLsgzSLxcZt4tzrP+lNC+Ek9Tk7wo/DWr3y8Wu+2goLjn4x+SEI6AxoiMNcU=
     file:
       - "${RELEASE_WHL_FILE}"
     draft: true
     on:
-      repo: hahnec/plenoprivate
+      repo: hahnec/plenopticam
       condition: $TRAVIS_OS_NAME = linux
 
   # upload wheel file to PyPi
@@ -107,6 +107,6 @@ deploy:
     server: https://upload.pypi.org/legacy/
     user: __token__
     password:
-      secure: k3qOCsITHCBm0RwSb2IHnXoYpLJV6LBkRCs+ZMR8zB6Y82z55r49FqJFkWXIcM24hDoQ/HKZEcLlHLPPFagVjXMDIwMFAQjYkVu9BCxx8M27Qe8TLHQwQqMJ1ciKix/qhWYI/r158IMHr3IVHc0onkYVJlVs+4aCD38ARyIgISSnvouF7Hj9FRQFqzQl+fs2NnUwbN2A+j7/YX+pd6bnrZAx2UO7oMN84UhWmjiU6c6a9bqWBV6CiRT3FfjeRacDiX32/yJ4ShYe8CgZwKwTAyEWyUr3hThaeDF5/Q/ZvSnj/fIxo2mKKICXg3PN6iiMXMmJEsH7u0UZjvvvtZPULl7kRKYUcKYuXZ6vYsnS9ZMajVCBG3kenSuqtAUwz1/FopcSzX1QfVtTX0m8l73FBRKn8fp1TQbX9USJFWmiP0IxDi6gXl3KAXcmhjGYEIQs4wyfKcUuJ194PJLE2QYX6ymYm/gXsKbaTHSgAYT+3N9tihC/kCXDIMXzlcO5mAt6GjHsMgVfdcXxrrnvMvulSzpsVx45oSflK4BuAwAqfo9ha5kJrJPVGUTqYcfp2SJrT2beRRrRNOoLrep2rCvsiZ4qyMTi4ykAMTXdrs23jGoxuT4Dw+RSWjQQwnSb2JZNEwH2azHHtVefDzcf6I5Ptib0Mf18tc5jRIOpGi2jxyo=
+      secure: PveBH8u++hpVrgEC9p//bJctyaCfbINio6fMdjXtQ+80V0GHd4VAYN2lfP/YFh1Hn0rKjzn13HVvh0gV0NHS0z55Ui39gPqcw/7sMMcdYrkTUllcp36rJva6PfdIZS2qYPzKqGVNiqIsDZu+6mRxXKBUlCDG8NqOj6/SbwjxhhKAQQYDgq4Df1ECZJWXXXR0rp6pPKNWesIDnZFL5qnzk5iXKEZyQ9or8WH7MByLhue2n5WQbEhSuA6OUbm2YeL0n2hG0QofaY3t1jSgIqDT/FcXl4+LFMghIQokO+kVMi8FTyV6i4wLT2eVCV5DAehsbHxzyRHJZWUd0fj16Ka4o5ghM61aG2oHWHKUdqCmFGLPe/MGnQ+TX2NfGIVWIuibdMyfZb+7rIACFvY6zeaeCNqp6C8jm4RB/k/NtOv00Tre1LINmqb550LfyyyeiP4WdRIlCf0XAkNwolpnZX8ndxjd8k/w6TiaHbSHzT2sK3MTScq41/i8hY7RAeTJT4Z4m1h42hbkfBzdJeZZjDo87rFLW1YwbODPCEs4Kh7enIPZF3PxjmF4HEwml9u7t6JoY9/pWfx6Mlf5cstePqnR/F4SBc3bs+Eq3UGD2WzTbNHsZt3zPEyqDwq0xBp6NOqkUvyrd6HEv7PdikEFz+tZxjvfzMr7BBDnC2/gGnlaWpE=
     on:
       condition: $TRAVIS_OS_NAME = linux
