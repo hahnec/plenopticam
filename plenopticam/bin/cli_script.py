@@ -223,6 +223,8 @@ def main():
             obj.main()
             del obj
 
+    return True
+
 
 if __name__ == "__main__":
 
