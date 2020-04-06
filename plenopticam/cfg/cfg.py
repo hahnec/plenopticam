@@ -28,7 +28,7 @@ from plenopticam.cfg.constants import PARAMS_KEYS, PARAMS_VALS, CALIBS_KEYS
 # external libs
 import json
 from os.path import join, abspath, dirname, basename, splitext, isdir, isfile, exists
-from os import remove
+from os import remove, stat, chmod
 
 
 class PlenopticamConfig(object):
@@ -197,6 +197,11 @@ class PlenopticamConfig(object):
         # save calibration data as json file
         json_dict = kwargs['json_dict'] if 'json_dict' in kwargs else kwargs
         try:
+            # amend write privileges of (potentially existing) config file
+            if exists(fp):
+                st = stat(fp)
+                chmod(fp, st.st_mode | 0o111)
+            # write file
             with open(fp, 'wt') as f:
                 json.dump(json_dict, f, sort_keys=True, indent=4)
         except:
