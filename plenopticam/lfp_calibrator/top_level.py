@@ -71,8 +71,10 @@ class LfpCalibrator(object):
         del obj
 
         # write micro image center image to hard drive if debug option is set
-        if not self.sta.interrupt:
-            CentroidDrawer(self._wht_img, centroids, self.cfg, self.sta).write_centroids_img(fn='wht_img+mics_unsorted.png')
+        if self.cfg.params[self.cfg.opt_dbug] and not self.sta.interrupt:
+            draw_obj = CentroidDrawer(self._wht_img, centroids, self.cfg, self.sta)
+            draw_obj.write_centroids_img(fn='wht_img+mics_unsorted.png')
+            del draw_obj
 
         # reorder MICs and assign indices based on the detected MLA pattern
         obj = CentroidSorter(centroids, self.cfg, self.sta)
@@ -90,6 +92,9 @@ class LfpCalibrator(object):
             self.sta.status_msg('Could not save calibration data', opt=self.cfg.params[self.cfg.opt_prnt])
 
         # write image to hard drive (only if debug option is set)
-        CentroidDrawer(self._wht_img, mic_list, self.cfg, self.sta).write_centroids_img(fn='wht_img+mics_sorted.png')
+        if self.cfg.params[self.cfg.opt_dbug] and not self.sta.interrupt:
+            draw_obj = CentroidDrawer(self._wht_img, mic_list, self.cfg, self.sta)
+            draw_obj.write_centroids_img(fn='wht_img+mics_sorted.png')
+            del draw_obj
 
         return True

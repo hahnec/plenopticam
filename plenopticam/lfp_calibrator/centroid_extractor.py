@@ -21,10 +21,12 @@ __license__ = """
 """
 
 # local imports
+from plenopticam.cfg import PlenopticamConfig
+from plenopticam.misc.status import PlenopticamStatus
 from plenopticam.lfp_calibrator.non_max_supp import NonMaxSuppression
 from plenopticam.lfp_calibrator.centroid_refiner import CentroidRefiner
+from plenopticam.lfp_calibrator.centroid_drawer import CentroidDrawer
 from plenopticam.misc import create_gauss_kernel
-from plenopticam.misc.status import PlenopticamStatus
 
 # external libs
 import numpy as np
@@ -39,8 +41,8 @@ class CentroidExtractor(object):
 
         # input variables
         self._img = img
-        self._cfg = cfg
-        self._sta = sta if sta is not None else PlenopticamStatus()
+        self.cfg = cfg if cfg is not None else PlenopticamConfig()
+        self.sta = sta if sta is not None else PlenopticamStatus()
         self._M = M if M is not None else 9
         self._method = method if method is not None else 'area'
 
@@ -56,18 +58,22 @@ class CentroidExtractor(object):
         # find micro image centers
         self.compute_centroids()
 
-        from plenopticam.lfp_calibrator.centroid_drawer import CentroidDrawer
-        CentroidDrawer(self._peak_img, self._centroids, self._cfg).write_centroids_img(fn='wht_img+mics_nms.png')
+        if self.cfg.params[self.cfg.opt_dbug] and not self.sta.interrupt:
+            draw_obj = CentroidDrawer(self._peak_img, self._centroids, self.cfg)
+            draw_obj.write_centroids_img(fn='wht_img+mics_nms.png')
+            del draw_obj
 
         if self._method is not None:
             # refine centroids with sub-pixel precision using provided method
-            ref_obj = CentroidRefiner(self._peak_img, self._centroids, self._cfg, self._sta, self._M, method=self._method)
+            ref_obj = CentroidRefiner(self._peak_img, self._centroids, self.cfg, self.sta, self._M, method=self._method)
             ref_obj.main()
             self._centroids = ref_obj.centroids_refined
             del ref_obj
 
-            from plenopticam.lfp_calibrator.centroid_drawer import CentroidDrawer
-            CentroidDrawer(self._img, self._centroids, self._cfg).write_centroids_img(fn='wht_img+mics_refi.png')
+            if self.cfg.params[self.cfg.opt_dbug] and not self.sta.interrupt:
+                draw_obj = CentroidDrawer(self._img, self._centroids, self.cfg)
+                draw_obj.write_centroids_img(fn='wht_img+mics_refi.png')
+                del draw_obj
 
         return True
 
@@ -75,7 +81,7 @@ class CentroidExtractor(object):
         ''' compute Laplacian of Gaussian (LoG) '''
 
         # print status
-        self._sta.status_msg('Compute LoG', self._cfg.params[self._cfg.opt_prnt])
+        self.sta.status_msg('Compute LoG', self.cfg.params[self.cfg.opt_prnt])
 
         # Gaussian sigma
         sig = int(self._M/4)/1.18
@@ -87,7 +93,7 @@ class CentroidExtractor(object):
         self._peak_img = scipy.signal.convolve2d(self._img, mexican_hat, 'same')
 
         # print progress
-        self._sta.progress(100, self._cfg.params[self._cfg.opt_prnt])
+        self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
 
         return True
 
@@ -95,7 +101,7 @@ class CentroidExtractor(object):
         ''' find coordinates of micro image centers '''
 
         # compute local maxima with non-maximum suppression (NMS) using Down-sampling Rate (DR)
-        nms_obj = NonMaxSuppression(self._peak_img[::DR, ::DR], self._cfg, self._sta)
+        nms_obj = NonMaxSuppression(self._peak_img[::DR, ::DR], self.cfg, self.sta)
         nms_obj.main()
         max_idx = nms_obj.idx * DR   # multiply by DR to compensate for index
         del nms_obj
