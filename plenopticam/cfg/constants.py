@@ -120,4 +120,4 @@ CALIBS_KEYS = (
    'mic_list'
 )
 
-PFLU_VALS = ('off', 'vertical', 'horizontal', 'skew up', 'skew down')
+PFLU_VALS = ('vertical', 'horizontal', 'skew up', 'skew down')
