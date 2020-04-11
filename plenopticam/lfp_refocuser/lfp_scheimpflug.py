@@ -81,12 +81,12 @@ class LfpScheimpflug(object):
         # vertical orientation (default)
         a_map = a_map_y
         # horizontal orientation
-        if self.cfg.params[self.cfg.opt_pflu] == c.PFLU_VALS[2]:
+        if self.cfg.params[self.cfg.opt_pflu] == c.PFLU_VALS[1]:
             a_map = a_map_x
         # diagonal orientation
-        elif self.cfg.params[self.cfg.opt_pflu] == (c.PFLU_VALS[3] or c.PFLU_VALS[4]):
+        elif self.cfg.params[self.cfg.opt_pflu] == (c.PFLU_VALS[2] or c.PFLU_VALS[3]):
             # swap refocusing directions if option set
-            if self.cfg.params[self.cfg.opt_pflu] == c.PFLU_VALS[4]:
+            if self.cfg.params[self.cfg.opt_pflu] == c.PFLU_VALS[3]:
                 a_map_x, a_map_y = a_map_x[::-1], a_map_y[::-1]
             a_map = np.mean(np.stack([a_map_x, a_map_y]), dtype='int', axis=0)
 
