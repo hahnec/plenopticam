@@ -28,6 +28,7 @@ from plenopticam.misc.status import PlenopticamStatus
 import numpy as np
 import scipy
 
+
 class PitchEstimator(object):
 
     def __init__(self, img, cfg, sta=None, scale_val=1.625, CR=10):
