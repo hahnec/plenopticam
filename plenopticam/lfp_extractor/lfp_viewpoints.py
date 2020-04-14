@@ -225,3 +225,26 @@ class LfpViewpoints(object):
     def views_stacked_img(self):
         ''' concatenation of all sub-aperture images for single image representation '''
         return np.moveaxis(np.concatenate(np.moveaxis(np.concatenate(np.moveaxis(self.vp_img_arr, 1, 2)), 0, 2)), 0, 1)
+
+    def circular_view_aperture(self, offset=None, ellipse=None):
+
+        # initialize variables
+        offset = offset if offset is not None else 0
+        ratio = self.vp_img_arr.shape[3]/self.vp_img_arr.shape[2] if ellipse else 1
+        r = self._M // 2
+        mask = np.zeros([2*r+1, 2*r+1])
+
+        # determine mask for affected views
+        for x in range(-r, r + 1):
+            for y in range(-r, r + 1):
+                if int(np.round(np.sqrt(x ** 2 + y ** 2 * ratio))) > r + offset:
+                    mask[r + y][r + x] = 1
+
+        # extract coordinates from mask
+        coords_table = [(y, x) for y in range(len(mask)) for x in range(len(mask)) if mask[y][x]]
+
+        # zero-out selected views
+        for coords in coords_table:
+            self.vp_img_arr[coords[0], coords[1], ...] = np.zeros(self.vp_img_arr.shape[2:])
+
+        return True

@@ -105,22 +105,6 @@ class LfpColorEqualizer(LfpViewpoints):
         return True
 
     def _exclude_crosstalk_views(self):
+        ''' function wrapper to exclude Lytro Illum views that suffer from cross-talk '''
 
-        ratio = self.vp_img_arr.shape[3]/self.vp_img_arr.shape[2]
-        r = self._M // 2
-        mask = np.zeros([2*r+1, 2*r+1])
-
-        # determine mask for affected views
-        for x in range(-r, r + 1):
-            for y in range(-r, r + 1):
-                if int(np.round(np.sqrt(x ** 2 + y ** 2 * ratio))) > r + 2:
-                    mask[r + y][r + x] = 1
-
-        # extract coordinates from mask
-        coords_table = [(y, x) for y in range(len(mask)) for x in range(len(mask)) if mask[y][x]]
-
-        # zero-out selected views
-        for coords in coords_table:
-            self.vp_img_arr[coords[0], coords[1], ...] = np.zeros(self.vp_img_arr.shape[2:])
-
-        return True
+        self.circular_view_aperture(offset=2, ellipse=True)
