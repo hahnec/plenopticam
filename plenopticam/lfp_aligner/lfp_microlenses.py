@@ -30,9 +30,10 @@ class LfpMicroLenses(object):
 
     def __init__(self, *args, **kwargs):
 
-        # input variables
+        # variables
         self._lfp_img = kwargs['lfp_img'] if 'lfp_img' in kwargs else None
         self._wht_img = kwargs['wht_img'] if 'wht_img' in kwargs else None
+        self._lfp_img_align = kwargs['lfp_img_align'] if 'lfp_img_align' in kwargs else None
         self.cfg = kwargs['cfg'] if 'cfg' in kwargs else PlenopticamConfig()
         self.sta = kwargs['sta'] if 'sta' in kwargs else misc.PlenopticamStatus()
 
@@ -112,12 +113,12 @@ class LfpMicroLenses(object):
 
         # comparison of patch size and mean size
         msg_str = None
-        if patch_size <= mean_pitch+2 and patch_size > 3:
+        if 3 < patch_size <= mean_pitch+2:
             patch_safe = patch_size
         elif patch_size > mean_pitch:
             patch_safe = mean_pitch
             msg_str = 'Patch size ({0} px) is larger than micro image size and reduced to {1} pixels.'
-        elif patch_size < 3 and mean_pitch > 3:
+        elif patch_size < 3 < mean_pitch:
             patch_safe = mean_pitch
             msg_str = 'Patch size ({0} px) is too small and increased to {1} pixels.'
         elif patch_size < 3 and mean_pitch < 3:
@@ -159,3 +160,17 @@ class LfpMicroLenses(object):
             pitch_estimate = int(pitch_estimate)
 
         return pitch_estimate
+
+    def lfp_align_pitch_guess(self):
+
+        if self._lfp_img_align is None:
+            return False
+
+        # iterate through potential (uneven) micro image size candidates
+        for d in np.arange(3, 51, 2):
+            # take pitch where remainder of ratio between aligned image dimensions and candidate size is zero
+            if (self._lfp_img_align.shape[0] / d) % 1 == 0 and (self._lfp_img_align.shape[1] / d) % 1 == 0:
+                self._M = int(d)
+                break
+
+        return self._M

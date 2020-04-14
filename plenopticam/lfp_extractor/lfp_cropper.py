@@ -32,8 +32,6 @@ class LfpCropper(LfpMicroLenses):
     def __init__(self, *args, **kwargs):
         super(LfpCropper, self).__init__(*args, **kwargs)
 
-        self._lfp_img_align = kwargs['lfp_img_align'] if 'lfp_img_align' in kwargs else None
-
         self.var_init()
 
         if self._lfp_img_align is not None:
@@ -43,17 +41,6 @@ class LfpCropper(LfpMicroLenses):
             p = self._lfp_img_align.shape[-1] if len(self._lfp_img_align.shape) == 3 else 1
             self.new_lfp_img = np.zeros([int(self._Mn * self._LENS_Y_MAX), int(self._Mn * self._LENS_X_MAX), p],
                                         dtype=self._lfp_img_align.dtype)
-
-    def lfp_align_pitch_guess(self):
-
-        # iterate through potential (uneven) micro image size candidates
-        for d in np.arange(3,51,2):
-            # take pitch where remainder of aligned image dimensions and candidate size is zero
-            if (self._lfp_img_align.shape[0] / d) % 1 == 0 and (self._lfp_img_align.shape[1] / d) % 1 == 0:
-                self._M = int(d)
-                break
-
-        return self._M
 
     def var_init(self):
 
