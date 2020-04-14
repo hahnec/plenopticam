@@ -74,6 +74,32 @@ def rgb2gray(rgb, standard='HDTV'):
     return np.dot(rgb[..., :3], GRAY) if len(rgb.shape) == 3 else rgb
 
 
+def rgb2yuv(img, standard='HDTV'):
+
+    # excludes foot- and headroom
+    YUV_MAT_HDTV = np.array([[0.2126, -0.09991, 0.615], [0.7152, -0.33609, -0.55861], [0.0722, 0.436, -0.05639]])
+
+    # includes foot- and headroom
+    YUV_MAT_SDTV = np.array([[0.299, -0.299, 0.701], [0.587, -0.587, -0.587], [0.144, 0.886, -0.114]])
+
+    yuv_mat = YUV_MAT_HDTV if standard == 'HDTV' else YUV_MAT_SDTV
+
+    return np.dot(img, yuv_mat)
+
+
+def yuv2rgb(img, standard='HDTV'):
+
+    # excludes foot- and headroom
+    YUV_MAT_HDTV_INV = np.array([[1.0, 1.0, 1.0], [0.0, -0.21482, 2.12798], [1.28033, -0.38059, 0.0]])
+
+    # includes foot- and headroom
+    YUV_MAT_SDTV_INV = np.array([[1.0, 1.0, 1.0], [0.0, -0.39465, 2.03211], [1.13983, -0.58060, 0]])
+
+    yuv_mat = YUV_MAT_HDTV_INV if standard == 'HDTV' else YUV_MAT_SDTV_INV
+
+    return np.dot(img, yuv_mat)
+
+
 def yuv_conv(img, inverse=False, standard='HDTV'):
 
     # excludes foot- and headroom
