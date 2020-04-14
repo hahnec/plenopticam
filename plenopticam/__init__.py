@@ -3,7 +3,7 @@
 __author__ = "Christopher Hahne"
 __email__ = "inbox@christopherhahne.de"
 __license__ = """
-Copyright (c) 2019 Christopher Hahne <inbox@christopherhahne.de>
+    Copyright (c) 2020 Christopher Hahne <inbox@christopherhahne.de>
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@ Copyright (c) 2019 Christopher Hahne <inbox@christopherhahne.de>
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-__version__ = '0.4.1'
+__version__ = '0.4.2'
 
 from . import misc
 from . import cfg
