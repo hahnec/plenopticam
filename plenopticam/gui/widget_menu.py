@@ -29,6 +29,7 @@ from plenopticam.gui.widget_about import AbtWidget
 import os
 import sys
 
+
 # make object for plot widget
 class MenuWidget(tk.Frame):
 
@@ -45,8 +46,8 @@ class MenuWidget(tk.Frame):
         filemenu.add_command(label="Process", command=self.parent.process)
         filemenu.add_command(label="Settings", command=self.parent.cfg_change)
         filemenu.add_separator()
-        filemenu.add_command(label="Stop", command=self.parent.stp)
-        filemenu.add_command(label="Quit", command=self.parent.qit)
+        filemenu.add_command(label="Stop", command=self.parent.stop)
+        filemenu.add_command(label="Quit", command=self.parent.quit)
         menubar.add_cascade(label="File", menu=filemenu)
 
         helpmenu = tk.Menu(menubar, tearoff=0)
