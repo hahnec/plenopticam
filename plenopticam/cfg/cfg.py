@@ -93,11 +93,15 @@ class PlenopticamConfig(object):
         try:
             # create config folder (if not already present)
             mkdir_p(self._dir_path)
+            # amend write privileges of (potentially existing) config file
+            if exists(fp):
+                st = stat(fp)
+                chmod(fp, st.st_mode | 0o111)
             # write config file
             with open(fp, 'w+') as f:
                 json.dump(self.params, f, sort_keys=True, indent=4, cls=NumpyTypeEncoder)
         except PermissionError:
-            pass    # raise PlenopticamError('\n\nGrant permission to write to the config file '+fp)
+            raise PlenopticamError('\n\nGrant permission to write to the config file '+fp)
 
         return True
 
