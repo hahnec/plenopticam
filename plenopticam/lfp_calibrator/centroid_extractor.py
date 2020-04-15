@@ -52,6 +52,10 @@ class CentroidExtractor(object):
 
     def main(self):
 
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
+
         # compute LoG to remove high frequency noise and emphasize peaks
         self.compute_log()
 

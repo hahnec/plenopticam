@@ -42,6 +42,10 @@ class CentroidDrawer(object):
 
     def write_centroids_img(self, fn='centroids_img.png'):
 
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
+
         # status message handling
         self.sta.status_msg(msg='Save centroids image', opt=self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])

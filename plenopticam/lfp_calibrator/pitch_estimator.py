@@ -49,6 +49,10 @@ class PitchEstimator(object):
 
     def main(self):
 
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
+
         # print status
         self.sta.status_msg('Estimate micro image size', self.cfg.params[self.cfg.opt_prnt])
 

@@ -46,9 +46,15 @@ class HexCorrector(LfpViewpoints):
 
     def main(self):
 
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
+
+        # remove hexagonal artifact
         if self.cfg.calibs[self.cfg.pat_type] == 'hex':
             self.proc_vp_arr(self.ver_hex_bulge, msg='Hexagonal artifact removal')
 
+        # normalize light-field
         self.vp_img_arr = misc.Normalizer(self.vp_img_arr).uint16_norm()
 
         return True

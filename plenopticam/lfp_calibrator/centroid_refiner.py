@@ -49,6 +49,10 @@ class CentroidRefiner(object):
 
     def main(self):
 
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
+
         # status message handling
         self.sta.status_msg('Refine micro image centers', self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])

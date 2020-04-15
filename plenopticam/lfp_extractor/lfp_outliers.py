@@ -34,6 +34,11 @@ class LfpOutliers(LfpViewpoints):
 
     def main(self):
 
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
+
+        # remove outliers
         self.proc_vp_arr(self.correct_outliers, msg='Pixel outlier removal')
 
     def correct_outliers(self, img, n=2, perc=.2):

@@ -53,6 +53,10 @@ class LfpReader(object):
 
     def main(self):
 
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
+
         if self._lfp_path.lower().endswith(SUPP_FILE_EXT):
 
             try:

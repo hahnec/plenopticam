@@ -58,6 +58,10 @@ class CfaProcessor(object):
 
     def main(self):
 
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
+
         # apply auto white balance gains while considering image highlights
         self.safe_bayer_awb()
 
@@ -86,7 +90,7 @@ class CfaProcessor(object):
 
         # normalize image
         min = np.percentile(self._rgb_img, 0.05)
-        max = np.max(self.rgb_img)#np.percentile(self._rgb_img, 99.995)
+        max = np.max(self.rgb_img)
         self._rgb_img = misc.Normalizer(self._rgb_img, min=min, max=max).type_norm()
 
         # update status message

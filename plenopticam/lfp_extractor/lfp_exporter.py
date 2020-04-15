@@ -39,6 +39,10 @@ class LfpExporter(LfpViewpoints):
 
     def write_viewpoint_data(self):
 
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
+
         # write central view as thumbnail image
         self.export_thumbnail(type='png')
 

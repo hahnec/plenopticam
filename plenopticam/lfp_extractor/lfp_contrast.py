@@ -42,6 +42,10 @@ class LfpContrast(LfpViewpoints):
 
     def main(self):
 
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
+
         # auto contrast balance
         if self.cfg.params[self.cfg.opt_cont] and not self.sta.interrupt:
             self.p_hi, self.p_lo = (1, 0)

@@ -30,11 +30,14 @@ class LfpResampler(LfpMicroLenses):
             self._interpol_method = interp2d_method
 
         # output variable
-        if self._lfp_img is not None:
-            self._lfp_out = np.zeros(self._lfp_img.shape)
+        self._lfp_out = np.zeros(self._lfp_img.shape) if self._lfp_img is not None else None
 
     def main(self):
         ''' cropping micro images to square shape while interpolating around their detected center (MIC) '''
+
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
 
         # print status
         self.sta.status_msg('Light-field alignment', self.cfg.params[self.cfg.opt_prnt])

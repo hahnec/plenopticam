@@ -46,6 +46,10 @@ class NonMaxSuppression(object):
 
     def main(self):
 
+        # ckeck interrupt status
+        if self.sta.interrupt:
+            return False
+
         # find local maxima
         self._non_max_suppression()
 

@@ -46,6 +46,10 @@ class LfpRearranger(LfpViewpoints):
 
     def main(self):
 
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
+
         # rearrange light-field to viewpoint representation
         self.viewpoint_extraction()
 

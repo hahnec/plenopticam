@@ -42,6 +42,10 @@ class LfpScheimpflug(object):
 
     def main(self):
 
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
+
         # print status
         self.sta.status_msg('Scheimpflug extraction \n', self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])

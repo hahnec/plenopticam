@@ -44,7 +44,7 @@ class LfpDevignetter(LfpMicroLenses):
 
         self._patch_mode = False
 
-        self._lfp_div = np.zeros(self._lfp_img.shape)
+        self._lfp_div = np.zeros(self._lfp_img.shape) if self._lfp_img is not None else None
 
         # white balance
         if len(self._wht_img.shape) == 3:
@@ -56,6 +56,10 @@ class LfpDevignetter(LfpMicroLenses):
         self._wht_img = self._wht_img if len(self._wht_img.shape) == len(self._lfp_img.shape) else misc.rgb2gray(self._wht_img)
 
     def main(self):
+
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
 
         # analyse noise in white image
         self._noise_lev = self._estimate_noise_level() if self._noise_lev is None else self._noise_lev

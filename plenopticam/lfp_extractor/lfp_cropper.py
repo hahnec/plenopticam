@@ -69,6 +69,10 @@ class LfpCropper(LfpMicroLenses):
 
     def main(self):
 
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
+
         # reduce light field in angular domain (depending on settings)
         if self._Mn < self._M and isint(self._M):
             self.proc_lens_iter(self.crop_micro_image, msg='Render angular domain')

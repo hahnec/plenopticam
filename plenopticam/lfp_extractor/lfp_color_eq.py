@@ -47,16 +47,22 @@ class LfpColorEqualizer(LfpViewpoints):
 
     def main(self):
 
-        if self.vp_img_arr is not None and not self.sta.interrupt:
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
+
+        # apply color correction
+        if self.vp_img_arr is not None:
             self.apply_ccm()
             self._ref_img = self.central_view
 
+        # equalize light field colors
         if self.prop_type == 'central':
             self.proc_vp_arr(fun=self.color_eq_img, ref=self._ref_img, method=self._method, msg='Color equalization')
         elif self.prop_type == 'axial':
             self.proc_ax_propagate_2d(fun=self.color_eq_img, method=self._method, msg='Color equalization')
 
-        # zero-out sub-apertures suffering from cross-talk (e.g. to exclude them in refocusing)
+        # zero-out marginal sub-apertures (e.g. suffering from cross-talk)
         self._exclude_crosstalk_views()
 
     @staticmethod

@@ -60,6 +60,10 @@ class CaliFinder(object):
 
     def main(self):
 
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
+
         # auto calibration can only be used if calibration source path is either directory or tar archive
         if isdir(self._path) or self._path.lower().endswith('.tar'):
 
