@@ -106,7 +106,7 @@ class LfpDecoder(object):
     def decode_raw(self):
 
         # read bytes from file
-        self._img_buf = list(self.file.read())
+        self._img_buf = list(self.file) if isinstance(self.file, bytes) else list(self.file.read())
 
         if len(self._img_buf) >= int(7728*5368*10/8):
             self.cfg.lfpimg['bit'] = 10
