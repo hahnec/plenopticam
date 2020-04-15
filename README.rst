@@ -194,14 +194,14 @@ Further information
 
 .. |downloads| image:: https://img.shields.io/github/downloads/hahnec/plenopticam/total?label=Release%20downloads&style=flat-square
     :target: https://github.com/hahnec/plenopticam/releases/
-    :alt: Downloads
+    :alt: Release Downloads
 
 .. |build| image:: https://img.shields.io/travis/com/hahnec/plenopticam?style=flat-square
     :target: https://travis-ci.com/github/hahnec/plenopticam
 
 .. |pypi| image:: https://img.shields.io/pypi/dm/plenopticam?label=PyPI%20downloads&style=flat-square
     :target: https://pypi.org/project/plenopticam/
-    :alt: Downloads
+    :alt: PyPI Downloads
 
 .. |spiderman| raw:: html
 
