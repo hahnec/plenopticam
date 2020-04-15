@@ -1,0 +1,142 @@
+#!/usr/bin/env python
+
+__author__ = "Christopher Hahne"
+__email__ = "inbox@christopherhahne.de"
+__license__ = """
+    Copyright (c) 2020 Christopher Hahne <inbox@christopherhahne.de>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""
+
+import unittest
+
+from zipfile import ZipFile
+import pickle
+import os
+
+from plenopticam.lfp_reader import LfpReader
+from plenopticam.lfp_calibrator import LfpCalibrator, CaliFinder
+from plenopticam.lfp_aligner import LfpAligner
+from plenopticam.lfp_extractor import LfpExtractor
+from plenopticam.lfp_refocuser import LfpRefocuser
+from plenopticam.cfg.cfg import PlenopticamConfig
+from plenopticam.misc import PlenopticamStatus, mkdir_p
+from test.unit_test_baseclass import PlenoptiCamTester
+
+
+class PlenoptiCamTesterIllum(PlenoptiCamTester):
+
+    def __init__(self, *args, **kwargs):
+        super(PlenoptiCamTesterIllum, self).__init__(*args, **kwargs)
+
+    def setUp(self):
+
+        # retrieve Lytro Illum data
+        url = 'http://wp12283669.server-he.de/Xchange/illum_test_data.zip'
+        archive_fn = os.path.join(self.fp, os.path.basename(url))
+        self.download_data(url) if not os.path.exists(archive_fn) else None
+        fnames_illum = [file for file in ZipFile(archive_fn).namelist() if file.startswith('caldata') or file.endswith('lfr')]
+        self.extract_archive(os.path.join(self.fp, os.path.basename(url)), fnames_illum)
+
+    def test_illum(self):
+
+        # instantiate config and status objects
+        cfg = PlenopticamConfig()
+        cfg.default_values()
+        sta = PlenopticamStatus()
+
+        # skip concole output message (prevent Travis from terminating due to reaching 4MB logfile size)
+        cfg.params[cfg.opt_prnt] = False
+
+        # use pre-loaded calibration dataset
+        wht_list = [file for file in os.listdir(self.fp) if file.startswith('caldata')]
+        lfp_list = [file for file in os.listdir(self.fp) if file.endswith(('lfr', 'lfp'))]
+
+        cfg.params[cfg.cal_path] = os.path.join(self.fp, wht_list[0])
+
+        for lfp_file in lfp_list:
+
+            print('Compute image %s' % os.path.basename(cfg.params[cfg.lfp_path]))
+            cfg.params[cfg.lfp_path] = os.path.join(self.fp, lfp_file)
+
+            # decode light field image
+            lfp_obj = LfpReader(cfg, sta)
+            ret_val = lfp_obj.main()
+            lfp_img = lfp_obj.lfp_img
+            del lfp_obj
+
+            self.assertEqual(True, ret_val)
+
+            # create output data folder
+            mkdir_p(cfg.exp_path, cfg.params[cfg.opt_prnt])
+
+            if not cfg.cond_meta_file():
+                # automatic calibration data selection
+                obj = CaliFinder(cfg, sta)
+                ret_val = obj.main()
+                wht_img = obj.wht_bay
+                del obj
+
+                self.assertEqual(True, ret_val)
+
+            meta_cond = not (os.path.exists(cfg.params[cfg.cal_meta]) and cfg.params[cfg.cal_meta].lower().endswith('json'))
+            if meta_cond or cfg.params[cfg.opt_cali]:
+                # perform centroid calibration
+                cal_obj = LfpCalibrator(wht_img, cfg, sta)
+                ret_val = cal_obj.main()
+                cfg = cal_obj.cfg
+                del cal_obj
+
+                self.assertEqual(True, ret_val)
+
+            # load calibration data
+            cfg.load_cal_data()
+
+            #  check if light field alignment has been done before
+            if cfg.cond_lfp_align():
+                # align light field
+                lfp_obj = LfpAligner(lfp_img, cfg, sta, wht_img)
+                ret_val = lfp_obj.main()
+                lfp_obj = lfp_obj.lfp_img
+                del lfp_obj
+
+                self.assertEqual(True, ret_val)
+
+            # load previously computed light field alignment
+            with open(os.path.join(cfg.exp_path, 'lfp_img_align.pkl'), 'rb') as f:
+                lfp_img_align = pickle.load(f)
+
+            # extract viewpoint data
+            CaliFinder(cfg).main()
+            obj = LfpExtractor(lfp_img_align, cfg=cfg, sta=sta)
+            ret_val = obj.main()
+            vp_img_arr = obj.vp_img_arr
+            del obj
+
+            self.assertEqual(True, ret_val)
+
+            # do refocusing
+            if cfg.params[cfg.opt_refo]:
+                obj = LfpRefocuser(vp_img_arr, cfg=cfg, sta=sta)
+                ret_val = obj.main()
+                del obj
+
+            self.assertEqual(True, ret_val)
+
+        return True
+
+
+if __name__ == '__main__':
+    unittest.main()

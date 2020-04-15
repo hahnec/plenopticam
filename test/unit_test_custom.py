@@ -21,38 +21,23 @@ __license__ = """
 """
 
 import unittest
-
-import requests
-from zipfile import ZipFile
-import pickle
 import os
 
-from plenopticam.lfp_reader import LfpReader
-from plenopticam.lfp_calibrator import LfpCalibrator, CaliFinder
+from plenopticam.lfp_calibrator import LfpCalibrator
 from plenopticam.lfp_aligner import LfpAligner
 from plenopticam.lfp_extractor import LfpExtractor
 from plenopticam.lfp_refocuser import LfpRefocuser
 from plenopticam.cfg.cfg import PlenopticamConfig
 from plenopticam.misc import PlenopticamStatus, mkdir_p, load_img_file
+from test.unit_test_baseclass import PlenoptiCamTester
 
 
-class PlenoptiCamTester(unittest.TestCase):
+class PlenoptiCamTesterCustom(PlenoptiCamTester):
 
     def __init__(self, *args, **kwargs):
-        super(PlenoptiCamTester, self).__init__(*args, **kwargs)
+        super(PlenoptiCamTesterCustom, self).__init__(*args, **kwargs)
 
     def setUp(self):
-
-        # refer to folder containing data
-        self.fp = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
-        mkdir_p(self.fp) if not os.path.exists(self.fp) else None
-
-        # retrieve Lytro Illum data
-        url = 'http://wp12283669.server-he.de/Xchange/illum_test_data.zip'
-        archive_fn = os.path.join(self.fp, os.path.basename(url))
-        self.download_data(url) if not os.path.exists(archive_fn) else None
-        fnames_illum = [file for file in ZipFile(archive_fn).namelist() if file.startswith('caldata') or file.endswith('lfr')]
-        self.extract_archive(os.path.join(self.fp, os.path.basename(url)), fnames_illum)
 
         # retrieve OpEx data from Hahne et al.
         url = 'https://ndownloader.figshare.com/files/5201452'
@@ -66,121 +51,6 @@ class PlenoptiCamTester(unittest.TestCase):
 
         self.test_custom_cal()
         self.test_custom_lfp()
-        self.test_illum()
-
-    def download_data(self, url):
-        ''' download plenoptic image data '''
-
-        print('Downloading data ...')
-
-        # establish internet connection for test data download
-        try:
-            r = requests.get(url)
-        except requests.exceptions.ConnectionError:
-            raise(Exception('Check your internet connection, which is required for downloading test data.'))
-
-        with open(os.path.join(self.fp, os.path.basename(url)), 'wb') as f:
-            f.write(r.content)
-
-        print('Finished download of %s' % os.path.basename(url))
-
-        return True
-
-    def extract_archive(self, archive_fn, fname_list):
-        ''' extract content from downloaded data '''
-
-        with ZipFile(archive_fn) as z:
-            for fn in z.namelist():
-                if fn in fname_list:
-                    z.extract(fn, self.fp)
-
-        return True
-
-    def test_illum(self):
-
-        # instantiate config and status objects
-        cfg = PlenopticamConfig()
-        cfg.default_values()
-        sta = PlenopticamStatus()
-
-        # skip concole output message (prevent Travis from terminating due to reaching 4MB logfile size)
-        cfg.params[cfg.opt_prnt] = True
-
-        # use pre-loaded calibration dataset
-        wht_list = [file for file in os.listdir(self.fp) if file.startswith('caldata')]
-        lfp_list = [file for file in os.listdir(self.fp) if file.endswith(('lfr', 'lfp'))]
-
-        cfg.params[cfg.cal_path] = os.path.join(self.fp, wht_list[0])
-
-        for lfp_file in lfp_list:
-            cfg.params[cfg.lfp_path] = os.path.join(self.fp, lfp_file)
-            print(cfg.params[cfg.lfp_path])
-
-            # decode light field image
-            lfp_obj = LfpReader(cfg, sta)
-            ret_val = lfp_obj.main()
-            lfp_img = lfp_obj.lfp_img
-            del lfp_obj
-
-            self.assertEqual(True, ret_val)
-
-            # create output data folder
-            mkdir_p(cfg.exp_path, cfg.params[cfg.opt_prnt])
-
-            if not cfg.cond_meta_file():
-                # automatic calibration data selection
-                obj = CaliFinder(cfg, sta)
-                ret_val = obj.main()
-                wht_img = obj.wht_bay
-                del obj
-
-                self.assertEqual(True, ret_val)
-
-            meta_cond = not (os.path.exists(cfg.params[cfg.cal_meta]) and cfg.params[cfg.cal_meta].lower().endswith('json'))
-            if meta_cond or cfg.params[cfg.opt_cali]:
-                # perform centroid calibration
-                cal_obj = LfpCalibrator(wht_img, cfg, sta)
-                ret_val = cal_obj.main()
-                cfg = cal_obj.cfg
-                del cal_obj
-
-                self.assertEqual(True, ret_val)
-
-            # load calibration data
-            cfg.load_cal_data()
-
-            #  check if light field alignment has been done before
-            if cfg.cond_lfp_align():
-                # align light field
-                lfp_obj = LfpAligner(lfp_img, cfg, sta, wht_img)
-                ret_val = lfp_obj.main()
-                lfp_obj = lfp_obj.lfp_img
-                del lfp_obj
-
-                self.assertEqual(True, ret_val)
-
-            # load previously computed light field alignment
-            with open(os.path.join(cfg.exp_path, 'lfp_img_align.pkl'), 'rb') as f:
-                lfp_img_align = pickle.load(f)
-
-            # extract viewpoint data
-            CaliFinder(cfg).main()
-            obj = LfpExtractor(lfp_img_align, cfg=cfg, sta=sta)
-            ret_val = obj.main()
-            vp_img_arr = obj.vp_img_arr
-            del obj
-
-            self.assertEqual(True, ret_val)
-
-            # do refocusing
-            if cfg.params[cfg.opt_refo]:
-                obj = LfpRefocuser(vp_img_arr, cfg=cfg, sta=sta)
-                ret_val = obj.main()
-                del obj
-
-            self.assertEqual(True, ret_val)
-
-        return True
 
     def test_custom_cal(self):
 

@@ -38,7 +38,7 @@ script:
   - make html
   - cd ..
   # trigger unit tests (time critical travis osx due to 10min limit and output suppression in setUp function)
-  - python3 -m test.unit_test || python -m test.unit_test
+  - python3 -m test.unit_test_custom || python -m test.unit_test_custom
 
 #before_deploy:
   - pip3 install pyinstaller
