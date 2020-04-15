@@ -46,8 +46,8 @@ class CfaProcessor(object):
         # input variables
         self.cfg = cfg if cfg is not None else PlenopticamConfig()
         self.sta = sta if sta is not None else misc.PlenopticamStatus()
-        self._bay_img = bay_img.astype('float') if type(bay_img) is np.ndarray else None
-        self._wht_img = wht_img.astype('float') if type(wht_img) is np.ndarray else None
+        self._bay_img = bay_img.astype('float32') if isinstance(bay_img, np.ndarray) else None
+        self._wht_img = wht_img.astype('float32') if isinstance(wht_img, np.ndarray) else None
 
         self._bit_pac = self.cfg.lfpimg['bit'] if 'bit' in self.cfg.lfpimg else 10
         self._gains = self.cfg.lfpimg['awb'] if 'awb' in self.cfg.lfpimg else [1, 1, 1, 1]
