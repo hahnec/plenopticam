@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import plenopticam.misc.clr_spc_conv
 
 __author__ = "Christopher Hahne"
 __email__ = "info@christopherhahne.de"
@@ -24,6 +23,7 @@ __license__ = """
 
 import numpy as np
 from scipy.interpolate import interp2d
+from color_space_converter import yuv_conv
 
 from plenopticam.misc.normalizer import Normalizer
 
@@ -103,7 +103,7 @@ def robust_awb(img, t=0.3, max_iter=1000):
     gains_adj = np.array([1., 1., 1.])
 
     for i in range(max_iter):
-        img_yuv = plenopticam.misc.clr_spc_conv.yuv_conv(img)
+        img_yuv = yuv_conv(img)
         f = (abs(img_yuv[..., 1]) + abs(img_yuv[..., 2])) / img_yuv[..., 0]
         grays = np.zeros(img_yuv.shape)
         grays[f < t] = img_yuv[f < t]
@@ -114,7 +114,7 @@ def robust_awb(img, t=0.3, max_iter=1000):
         u_bar = np.mean(grays[..., 1])  # estimate
         v_bar = np.mean(grays[..., 2])  # estimate
 
-        # rgb_est = misc.yuv_conv(np.array([100, u_bar, v_bar]), inverse=True)    # convert average gray from YUV to RGB
+        # rgb_est = yuv_conv(np.array([100, u_bar, v_bar]), inverse=True)    # convert average gray from YUV to RGB
 
         # U > V: blue needs adjustment otherwise red is treated
         err, ch = (u_bar, 2) if abs(u_bar) > abs(v_bar) else (v_bar, 0)

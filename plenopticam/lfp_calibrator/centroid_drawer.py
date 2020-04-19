@@ -23,10 +23,10 @@ __license__ = """
 
 # external libs
 import numpy as np
+from color_space_converter import rgb2gry
 
 # local imports
 from plenopticam.misc import Normalizer, save_img_file, PlenopticamStatus
-from plenopticam.misc.clr_spc_conv import rgb2gray
 from plenopticam.cfg import PlenopticamConfig
 
 
@@ -35,7 +35,7 @@ class CentroidDrawer(object):
     def __init__(self, img, centroids, cfg=None, sta=None):
 
         # input variables
-        self._img = Normalizer(rgb2gray(img.copy())).uint8_norm()
+        self._img = Normalizer(rgb2gry(img.copy())).uint8_norm()
         self._centroids = np.asarray(centroids)
         self.cfg = cfg if cfg is not None else PlenopticamConfig()
         self.sta = sta if sta is not None else PlenopticamStatus()

@@ -24,7 +24,7 @@ import numpy as np
 
 from plenopticam import misc
 from plenopticam.lfp_extractor import LfpViewpoints
-from plenopticam.misc.hist_eq import HistogramEqualizer
+from color_space_converter import hsv_conv, yuv_conv, rgb2gry
 
 
 class LfpContrast(LfpViewpoints):
@@ -52,7 +52,7 @@ class LfpContrast(LfpViewpoints):
             self.con_bal()
         # auto white balance
         if self.cfg.params[self.cfg.opt_awb_] and not self.sta.interrupt:
-            #self.p_hi, self.p_lo = (1, 0)
+            self.p_hi, self.p_lo = (1, 0)
             self.wht_bal()
         # auto saturation
         if self.cfg.params[self.cfg.opt_sat_] and not self.sta.interrupt:
@@ -69,25 +69,36 @@ class LfpContrast(LfpViewpoints):
 
     def con_bal(self):
 
-        # estimate contrast and brightness via least-squares method
-        self.set_stretch(ref_ch=misc.yuv_conv(self.central_view)[..., 0])
+        # find extrema from reference image
+        self.ref_img = yuv_conv(self.central_view)[..., 0]
+        max = self.ref_img.max()
+        min = self.ref_img.min()
 
-        self.proc_vp_arr(misc.yuv_conv)
-        self.proc_vp_arr(self.apply_stretch, ch=0, msg='Contrast balance')
-        self.proc_vp_arr(misc.yuv_conv, inverse=True)
+        # convert to yuv space
+        self.proc_vp_arr(yuv_conv, msg='Convert to YUV')
 
-        # status update
+        # boost luminance channel
+        self.sta.status_msg(msg='Contrast balance', opt=self.cfg.params[self.cfg.opt_prnt])
+        self._vp_img_arr[..., 0] = misc.Normalizer(self._vp_img_arr[..., 0]).type_norm(max=max, min=min)
         self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt])
+
+        # convert to rgb space
+        self.proc_vp_arr(yuv_conv, inverse=True, msg='Convert to RGB')
+
+        return True
 
     def sat_bal(self):
 
-        self.proc_vp_arr(misc.hsv_conv)
-        self.sta.status_msg(msg='Contrast balance', opt=self.cfg.params[self.cfg.opt_prnt])
-        self.vp_img_arr[..., 1] *= 1.1
-        self.proc_vp_arr(misc.hsv_conv, inverse=True)
+        # convert to hsv space
+        self.proc_vp_arr(hsv_conv, msg='Convert to HSV')
 
-        # status update
+        # boost saturation channel
+        self.sta.status_msg(msg='Saturation balance', opt=self.cfg.params[self.cfg.opt_prnt])
+        self.vp_img_arr[..., 1] *= 1.1
         self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt])
+
+        # convert to rgb space
+        self.proc_vp_arr(hsv_conv, inverse=True, msg='Convert to RGB')
 
         return True
 
@@ -141,6 +152,20 @@ class LfpContrast(LfpViewpoints):
 
         # normalization of color channel
         self.vp_img_arr = misc.Normalizer(self.vp_img_arr, min=min, max=max).uint16_norm()
+
+        # status update
+        self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt])
+
+        return True
+
+    def stretch_contrast(self):
+
+        # estimate contrast and brightness via least-squares method
+        self.set_stretch(ref_ch=yuv_conv(self.central_view)[..., 0])
+
+        self.proc_vp_arr(yuv_conv, msg='Convert to YUV')
+        self.proc_vp_arr(self.apply_stretch, ch=0, msg='Contrast balance')
+        self.proc_vp_arr(yuv_conv, inverse=True, msg='Convert to RGB')
 
         # status update
         self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt])
@@ -202,14 +227,14 @@ class LfpContrast(LfpViewpoints):
     def set_stretch_hsv(self):
 
         # use luminance channel for parameter analysis
-        ref_img = misc.clr_spc_conv.hsv_conv(self.ref_img)
+        ref_img = hsv_conv(self.ref_img)
         self.set_stretch(ref_ch=ref_img[..., 1]*(2**16-1))
 
     def apply_stretch_hsv(self, img):
         ''' saturation '''
 
         # color model conversion
-        hsv = misc.clr_spc_conv.hsv_conv(img)
+        hsv = hsv_conv(img)
 
         # apply histogram stretching to saturation channel only
         hsv[..., 1] *= (2**16-1)
@@ -217,7 +242,7 @@ class LfpContrast(LfpViewpoints):
         hsv[..., 1] /= (2**16-1)
 
         # color model conversion
-        rgb = misc.clr_spc_conv.hsv_conv(hsv, inverse=True)
+        rgb = hsv_conv(hsv, inverse=True)
 
         return rgb
 
@@ -226,7 +251,7 @@ class LfpContrast(LfpViewpoints):
 
         if opt:
             p_lo, p_hi = (0.005, 99.9)#(0.001, 99.999)
-            min_perc = np.percentile(misc.rgb2gray(ref_img), p_lo)
+            min_perc = np.percentile(rgb2gry(ref_img), p_lo)
             max_perc = np.percentile(ref_img, p_hi)
         else:
             p_lo, p_hi = (0.5, 99.9)
@@ -257,7 +282,7 @@ class LfpContrast(LfpViewpoints):
 
         # channel selection
         ch = ch if ch is not None else 0
-        ref_ch = misc.clr_spc_conv.yuv_conv(self.central_view)[..., ch]
+        ref_ch = yuv_conv(self.central_view)[..., ch]
 
         # define level limits
         self._min = np.percentile(ref_ch, self.p_lo*100)
@@ -271,12 +296,12 @@ class LfpContrast(LfpViewpoints):
         ch = ch if ch is not None else 0
 
         # RGB to YUV conversion
-        img = misc.clr_spc_conv.yuv_conv(img)
+        img = yuv_conv(img)
 
         # normalization of Y (luminance channel)
-        img = misc.Normalizer(img, min=self._min, max=self._max).uint16_norm()
+        img = misc.Normalizer(img[..., ch], min=self._min, max=self._max).uint16_norm()
 
         # YUV to RGB conversion
-        img = misc.clr_spc_conv.yuv_conv(img, inverse=True)
+        img = yuv_conv(img, inverse=True)
 
         return img

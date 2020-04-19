@@ -20,6 +20,10 @@ __license__ = """
 
 """
 
+# external
+from color_space_converter import rgb2gry
+
+
 # local imports
 from plenopticam.lfp_calibrator.pitch_estimator import PitchEstimator
 from plenopticam.lfp_calibrator.centroid_extractor import CentroidExtractor
@@ -28,7 +32,6 @@ from plenopticam.lfp_calibrator.centroid_drawer import CentroidDrawer
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc.status import PlenopticamStatus
 from plenopticam.lfp_aligner.cfa_processor import CfaProcessor
-from plenopticam.misc import rgb2gray
 
 
 class LfpCalibrator(object):
@@ -56,7 +59,7 @@ class LfpCalibrator(object):
             del cfa_obj
 
         # ensure white image is monochromatic
-        self._wht_img = rgb2gray(self._wht_img) if len(self._wht_img.shape) == 3 else self._wht_img
+        self._wht_img = rgb2gry(self._wht_img) if len(self._wht_img.shape) == 3 else self._wht_img
 
         # estimate micro image diameter
         obj = PitchEstimator(self._wht_img, self.cfg, self.sta)

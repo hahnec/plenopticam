@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import plenopticam.misc.clr_spc_conv
 
 __author__ = "Christopher Hahne"
 __email__ = "info@christopherhahne.de"
@@ -27,6 +26,7 @@ from plenopticam.misc.type_checks import rint
 
 import numpy as np
 from scipy.signal import convolve2d
+from color_space_converter import rgb2gry
 
 
 class LfpDevignetter(LfpMicroLenses):
@@ -50,10 +50,10 @@ class LfpDevignetter(LfpMicroLenses):
         if len(self._wht_img.shape) == 3:
             # balance RGB channels in white image
             #self._wht_img = misc.eq_channels(self._wht_img)
-            self._wht_img = misc.rgb2gray(self._wht_img)[..., np.newaxis]
+            self._wht_img = rgb2gry(self._wht_img)[..., np.newaxis]
 
         # check for same dimensionality
-        self._wht_img = self._wht_img if len(self._wht_img.shape) == len(self._lfp_img.shape) else misc.rgb2gray(self._wht_img)
+        self._wht_img = self._wht_img if len(self._wht_img.shape) == len(self._lfp_img.shape) else rgb2gry(self._wht_img)
 
     def main(self):
 
@@ -143,7 +143,7 @@ class LfpDevignetter(LfpMicroLenses):
 
         X = X.flatten()
         Y = Y.flatten()
-        b = plenopticam.misc.clr_spc_conv.rgb2gray(patch)[..., 0].flatten() if len(patch.shape) == 3 else patch.flatten()
+        b = rgb2gry(patch)[..., 0].flatten() if len(patch.shape) == 3 else patch.flatten()
 
         A = self.compose_vandermonde_2d(X, Y, deg=3)
 
@@ -214,7 +214,7 @@ class LfpDevignetter(LfpMicroLenses):
 
         M = np.mean(self.cfg.calibs[self.cfg.ptc_mean])
         lp_kernel = misc.create_gauss_kernel(l=M)
-        bw_img = misc.rgb2gray(self._wht_img) if len(self._wht_img.shape) == 3 else self._wht_img
+        bw_img = rgb2gry(self._wht_img) if len(self._wht_img.shape) == 3 else self._wht_img
         flt_img = convolve2d(bw_img, lp_kernel, 'same')
 
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
