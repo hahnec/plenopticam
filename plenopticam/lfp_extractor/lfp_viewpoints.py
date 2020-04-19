@@ -79,12 +79,16 @@ class LfpViewpoints(object):
         iter_tot = kwargs['iter_tot'] if 'iter_tot' in kwargs else 1
 
         # status message handling
+        self.sta.progress(0, self.cfg.params[self.cfg.opt_prnt])
         if iter_num == 0:
             msg = kwargs['msg'] if 'msg' in kwargs else 'Viewpoint process'
             self.sta.status_msg(msg, self.cfg.params[self.cfg.opt_prnt])
 
         args = self.remove_proc_keys(kwargs, data_type=list)
 
+        # light-field shape handling
+        if len(self.vp_img_arr.shape) != 5:
+            raise NotImplementedError
         new_shape = fun(self._vp_img_arr[0, 0, ...].copy(), *args).shape
         new_array = np.zeros(self._vp_img_arr.shape[:2] + new_shape)
 
@@ -106,10 +110,6 @@ class LfpViewpoints(object):
                 percent = (j*self._vp_img_arr.shape[1]+i+1)/np.dot(*self._vp_img_arr.shape[:2])
                 percent = percent / iter_tot + iter_num / iter_tot
                 self.sta.progress(percent*100, self.cfg.params[self.cfg.opt_prnt])
-
-        #except:
-        #    if len(self.vp_img_arr.shape) != 5:
-        #        raise NotImplementedError
 
         if new_array.sum() != 0:
             self._vp_img_arr = new_array
