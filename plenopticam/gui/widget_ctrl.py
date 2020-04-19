@@ -222,6 +222,9 @@ class CtrlWidget(tk.Frame):
         # open viewer window
         self.view()
 
+        # set button to quit
+        self.cmd_wid.btn_list[3].config(text='Quit')
+
     def lfp_refo(self):
 
         obj = lfp_refocuser.LfpRefocuser(self.vp_img_arr, cfg=self.cfg, sta=self.sta)
