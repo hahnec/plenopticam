@@ -30,7 +30,7 @@ class PlenopticamStatus(object):
 
     def __init__(self):
 
-        # initialize member variables
+        # private instance variables
         self._prog_var = 0
         self._stat_var = ''
         self._interrupt = threading.Event()
@@ -40,6 +40,12 @@ class PlenopticamStatus(object):
         self._prog_observers = []
         self._stat_observers = []
         self._interrupt_observers = []
+
+        # public instance variables
+        self.prog_var = 0
+        self.stat_var = ''
+        self.interrupt = False
+        self.error = False
 
     def progress(self, x, opt=False):
 
