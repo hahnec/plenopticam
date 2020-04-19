@@ -82,9 +82,9 @@ class PbarWidget(tk.Frame):
     def update_prog_msg(self, val):
 
         if isinstance(val, (float, int)):
-            prog_msg = "{0} %      ".format(val)
+            prog_msg = "{0} %       ".format(val)
         else:
-            prog_msg = val
+            prog_msg = "{0}         ".format(val)
 
         self.s.configure("LabeledProgressbar", text=prog_msg)
         self.update()
