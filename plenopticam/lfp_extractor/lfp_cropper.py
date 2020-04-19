@@ -32,7 +32,8 @@ class LfpCropper(LfpMicroLenses):
     def __init__(self, *args, **kwargs):
         super(LfpCropper, self).__init__(*args, **kwargs)
 
-        self.var_init()
+        # use _k as crop margin
+        self._k = (self._M - self._Mn) // 2
 
         if self._lfp_img_align is not None:
 
@@ -41,31 +42,6 @@ class LfpCropper(LfpMicroLenses):
             p = self._lfp_img_align.shape[-1] if len(self._lfp_img_align.shape) == 3 else 1
             self.new_lfp_img = np.zeros([int(self._Mn * self._LENS_Y_MAX), int(self._Mn * self._LENS_X_MAX), p],
                                         dtype=self._lfp_img_align.dtype)
-
-    def var_init(self):
-
-        # get maximum (M) and desired (Mn) micro image pitches
-        if hasattr(self, '_CENTROIDS'):
-            # get micro image size from centroid analysis
-            self._M = self.pitch_analyse(shape=self._lfp_img_align.shape)
-        else:
-            # guess micro image size based on aligned light field
-            self._M = self.lfp_align_pitch_guess()
-        self._Mn = self.pitch_eval(self._M, self.cfg.params[self.cfg.ptc_leng], self.sta)
-
-        # validate micro image size in lfp is large enough
-        if self._M < self._Mn:
-            # remove existing pickle file
-            fp = os.path.join(self.cfg.exp_path, 'lfp_img_align.pkl')
-            os.remove(fp)
-            # status update
-            self.sta.status_msg('Angular resolution mismatch in previous alignment. Redo process')
-            self.sta.error = True
-
-        self.cfg.params[self.cfg.ptc_leng] = self._Mn
-
-        # use _k as crop margin
-        self._k = (self._M - self._Mn)//2
 
     def main(self):
 
