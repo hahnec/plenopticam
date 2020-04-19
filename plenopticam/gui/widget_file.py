@@ -30,6 +30,7 @@ import os
 from plenopticam.gui.widget_path import PathWidget
 from plenopticam.gui.constants import PX, PY, GENERIC_EXTS, LYT_LFP_EXTS, LYT_CAL_EXTS, ALL_EXTS
 
+
 class FileWidget(tk.Frame):
 
     def __init__(self, parent):

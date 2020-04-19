@@ -94,10 +94,6 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
 
         tk.Canvas.__init__(self, *args, **kwargs)
 
-        # window settings
-        self['bg'] = "white"
-        self.master.title("PlenoptiCam Viewer")
-
         # take images from arguments or load from hard drive
         if 'vp_img_arr' in kwargs and 'refo_stack' in kwargs:
             self.vp_img_arr = kwargs['vp_img_arr']
@@ -105,10 +101,12 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
         else:
             self.load_data()
 
-        # window dimensions
-        self.shape = self.vp_img_arr.shape[2:] if self.vp_img_arr is not None else (200, 200, 1)
-        self._ht = self.shape[0]*2 + PY*11         #self.winfo_screenheight()
-        self._wd = self.shape[1]*2 + PX*15        #self.winfo_screenwidth()
+        # window settings
+        self['bg'] = "white"
+        self.master.title("PlenoptiCam Viewer")
+        self.shape = self.vp_img_arr.shape[2:] if self.vp_img_arr is not None else (250, 250, 1)
+        self._ht = self.shape[0]*2 + PY*11
+        self._wd = self.shape[1]*2 + PX*15
 
         # light-field related data
         self._M = self.vp_img_arr.shape[0] if self.vp_img_arr is not None else self._M

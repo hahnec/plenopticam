@@ -54,7 +54,7 @@ class LfpViewpoints(object):
 
     @property
     def central_view(self):
-        return self.vp_img_arr[self._C, self._C, ...].copy() if self._vp_img_arr is not None else None
+        return self._vp_img_arr[self._C, self._C, ...].copy() if self._vp_img_arr is not None else None
 
     @staticmethod
     def remove_proc_keys(kwargs, data_type=None):
