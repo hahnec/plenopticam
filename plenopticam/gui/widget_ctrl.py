@@ -100,6 +100,9 @@ class CtrlWidget(tk.Frame):
         self.job_queue = queue.Queue()
         self.cur_thread = None
 
+        # remove viewer window (if present)
+        self.view_frame.destroy() if hasattr(self, 'view_frame') else None
+
     def fetch_paths(self):
 
         # compare config path with path in user interface (detect change)
