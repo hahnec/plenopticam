@@ -85,7 +85,7 @@ deploy:
       - "${RELEASE_PKG_FILE}"
     draft: true
     on:
-      repo: hahnec/plenoprivate
+      repo: hahnec/plenopticam
 #    tags: true
     branches:
       only:
@@ -102,7 +102,7 @@ deploy:
       - "${RELEASE_WHL_FILE}"
     draft: true
     on:
-      repo: hahnec/plenoprivate
+      repo: hahnec/plenopticam
       condition: $TRAVIS_OS_NAME = linux
 
   # upload wheel file to PyPi
