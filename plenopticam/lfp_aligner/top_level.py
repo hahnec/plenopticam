@@ -28,6 +28,7 @@ from plenopticam.lfp_aligner.cfa_hotpixels import CfaHotPixels
 from plenopticam.lfp_aligner.cfa_processor import CfaProcessor
 from plenopticam.lfp_aligner.lfp_devignetter import LfpDevignetter
 
+
 class LfpAligner(object):
 
     def __init__(self, lfp_img, cfg=None, sta=None, wht_img=None):

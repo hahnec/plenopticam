@@ -181,5 +181,4 @@ def plot_hist(data, dtype=None):
     except:
         pass
 
-
     return True

@@ -216,7 +216,7 @@ class CtrlWidget(tk.Frame):
                           msg='Canceled due to missing image file path')
 
     def finish(self):
-        ''' procedure for finished process '''
+        """ procedure for finished process """
 
         self.sta.status_msg('Export finished', opt=True)
         self.sta.progress(100, opt=True)
@@ -326,7 +326,7 @@ class CtrlWidget(tk.Frame):
         self.toggle_btn_list(self.cmd_wid.btn_list[:2])
 
     def exit(self):
-        ''' this exit function is connected to most-right menu button triggering either stop or quit '''
+        """ this exit function is connected to most-right menu button triggering either stop or quit """
 
         if self.cmd_wid.btn_list[3].cget('text') == 'Quit':
             self.quit()
@@ -335,13 +335,13 @@ class CtrlWidget(tk.Frame):
             self.stop()
 
     def stop(self):
-        ''' stop app '''
+        """ stop app """
 
         # set interrupt in status
         self.sta.interrupt = True
 
     def quit(self):
-        ''' quit app '''
+        """ quit app """
 
         self.stop_thread()
 
@@ -352,7 +352,7 @@ class CtrlWidget(tk.Frame):
         sys.exit()
 
     def view(self):
-        ''' open viewer '''
+        """ open viewer """
 
         # disable button activity
         #self.toggle_btn_state(self.cmd_wid.btn_list[2])
@@ -368,25 +368,25 @@ class CtrlWidget(tk.Frame):
 
 
 class PropagatingThread(threading.Thread):
-    ''' Child threading class for exception handling and error traceback '''
+    """ Child threading class for exception handling and error traceback """
 
     def __init__(self, cfg=None, sta=None, *args, **kwargs):
         super(PropagatingThread, self).__init__(*args, **kwargs)
+
+        # init
         self.cfg = cfg if cfg is not None else PlenopticamConfig()
         self.sta = sta if sta is not None else misc.PlenopticamStatus()
+        self.exc = None
+        self.ret = None
 
     def run(self):
-        self.exc = None
-        try:
-            if hasattr(self, '_Thread__target'):
-                # Thread uses name mangling prior to Python 3.
-                self.ret = self._Thread__target(*self._Thread__args, **self._Thread__kwargs)
-            else:
-                self.ret = self._target(*self._args, **self._kwargs)
-                self.sta.stat_var = 'Stopped' if self.sta.interrupt and not self.sta._error else self.sta.stat_var
-        except Exception as e:
-            print('ThreadException '+str(e))
-            self.exc = traceback.format_exc()
+
+        if hasattr(self, '_Thread__target'):
+            # Thread uses name mangling prior to Python 3.
+            self.ret = self._Thread__target(*self._Thread__args, **self._Thread__kwargs)
+        else:
+            self.ret = self._target(*self._args, **self._kwargs)
+            self.sta.stat_var = 'Stopped' if self.sta.interrupt and not self.sta._error else self.sta.stat_var
 
     def join(self, timeout=None):
         super(PropagatingThread, self).join()
