@@ -1,8 +1,8 @@
 numpy
 scipy
-colour_demosaicing
+colour-demosaicing
 colour
-color_matcher
+color-matcher
 color-space-converter
 imageio
 docutils
