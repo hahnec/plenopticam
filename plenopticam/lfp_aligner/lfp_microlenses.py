@@ -50,21 +50,26 @@ class LfpMicroLenses(object):
             self._LENS_Y_MAX = int(max(self._CENTROIDS[:, 2])+1)    # +1 to account for index 0
             self._LENS_X_MAX = int(max(self._CENTROIDS[:, 3])+1)    # +1 to account for index 0
 
-        # micro image size evaluation based on centroids
+        # micro image size evaluation based on centroids (maximum)
         if hasattr(self, '_CENTROIDS'):
             # get pitch from centroids
-            self._M = self.centroid_avg_pitch(self._CENTROIDS)
+            mean_pitch = self.centroid_avg_pitch(self._CENTROIDS)
+        else:
+            mean_pitch = self._M
 
-        # micro image size evaluation based on aligned light-field
+        # micro image size evaluation based on aligned light-field (minimum)
         if hasattr(self, '_lfp_img'):
             # get pitch from aligned light field
-            self._M = self.lfp_align_pitch()
+            algn_pitch = self.lfp_align_pitch()
+        else:
+            # if aligned light-field not present
+            algn_pitch = 0
 
         # evaluate pitch size while considering that provided by user
-        self._Mn = self.safe_pitch_eval(mean_pitch=self._M, user_pitch=self.cfg.params[self.cfg.ptc_leng])
+        self._Mn = self.safe_pitch_eval(mean_pitch=mean_pitch, user_pitch=self.cfg.params[self.cfg.ptc_leng])
 
         # validate chosen micro image size in lfp is large enough
-        if self._M < self._Mn:
+        if 0 < algn_pitch < self._Mn:
             # remove existing pickle file
             fp = os.path.join(self.cfg.exp_path, 'lfp_img_align.pkl')
             os.remove(fp)
@@ -185,14 +190,20 @@ class LfpMicroLenses(object):
     def lfp_align_pitch(self) -> int:
         """ estimate pitch size from aligned light-field (when centroids not available) """
 
+        # initialize output variable (return zero if light field not present)
+        res = 0
         if self._lfp_img_align is None:
-            return self._M
+            return res
 
-        # iterate through potential (uneven) micro image size candidates
-        for d in np.arange(3, 51, 2):
-            # take pitch where remainder of ratio between aligned image dimensions and candidate size is zero
-            if (self._lfp_img_align.shape[0] / d) % 1 == 0 and (self._lfp_img_align.shape[1] / d) % 1 == 0:
-                self._M = int(d)
-                break
+        # use vertical dimension only (as horizontal may differ from hexagonal stretching)
+        if hasattr(self, '_LENS_Y_MAX'):
+            res = int(self._lfp_img_align.shape[0] / self._LENS_Y_MAX)
+        else:
+            # iterate through potential (uneven) micro image size candidates
+            for d in np.arange(3, 51, 2):
+                # take pitch where remainder of ratio between aligned image dimensions and candidate size is zero
+                if (self._lfp_img_align.shape[0] / d) % 1 == 0 and (self._lfp_img_align.shape[1] / d) % 1 == 0:
+                    res = int(d)
+                    break
 
-        return self._M
+        return res
