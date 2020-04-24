@@ -86,11 +86,11 @@ deploy:
     draft: true
     on:
       repo: hahnec/plenopticam
-#    tags: true
-    branches:
-      only:
-        - develop
-        - master
+      #tags: true
+      branches:
+        only:
+          - develop
+          - master
 
   # upload wheel file to GitHub
   - provider: releases
