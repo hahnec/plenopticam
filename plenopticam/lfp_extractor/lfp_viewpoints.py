@@ -22,6 +22,7 @@ __license__ = """
 
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc import PlenopticamStatus
+from plenopticam.misc.circle_drawer import bresenham_circle
 
 import numpy as np
 
@@ -117,11 +118,13 @@ class LfpViewpoints(object):
 
         return True
 
-    def get_move_coords(self, pattern, arr_dims, r=None):
+    @staticmethod
+    def get_move_coords(arr_dims: (int, int) = (None, None), pattern: str = None, r: int = None) -> list:
+        """ compute view coordinates that are used for loop iterations """
 
         # parameter initialization
         pattern = 'circle' if pattern is None else pattern
-        r = r if r is not None else self._C
+        r = r if r is not None else min(arr_dims)//2
         mask = [[0] * arr_dims[1] for _ in range(arr_dims[0])]
 
         if pattern == 'square':
@@ -130,16 +133,13 @@ class LfpViewpoints(object):
             mask[-1, :] = 1
             mask[:, -1] = 1
         if pattern == 'circle':
-            for x in range(-r, r + 1):
-                for y in range(-r, r + 1):
-                    if int(np.sqrt(x ** 2 + y ** 2)) == r:
-                        mask[self._C + y][self._C + x] = 1
+            mask = bresenham_circle(arr_dims, r=r)
 
         # extract coordinates from mask
         coords_table = [(y, x) for y in range(len(mask)) for x in range(len(mask)) if mask[y][x]]
 
         # sort coordinates in angular order
-        coords_table.sort(key=lambda coords: np.arctan2(coords[0] - self._C, coords[1] - self._C))
+        coords_table.sort(key=lambda coords: np.arctan2(coords[0] - arr_dims[0]//2, coords[1] - arr_dims[1]//2))
 
         return coords_table
 
@@ -147,8 +147,7 @@ class LfpViewpoints(object):
 
         # parameter initialization
         pattern = 'circle' if pattern is None else pattern
-        arr_dims = self.vp_img_arr.shape[:2]
-        move_coords = self.get_move_coords(pattern, arr_dims, r=lf_radius)
+        move_coords = self.get_move_coords(arr_dims=self.vp_img_arr.shape[:2], pattern=pattern, r=lf_radius)
 
         vp_img_set = []
         for coords in move_coords:

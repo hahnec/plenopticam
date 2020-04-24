@@ -112,7 +112,8 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
         self._M = self.vp_img_arr.shape[0] if self.vp_img_arr is not None else self._M
         self.reset_indices()
         if self.vp_img_arr is not None:
-            self.move_coords = self.get_move_coords(pattern='circle', arr_dims=self.vp_img_arr.shape[:2])
+            r = self.cfg.params[self.cfg.ptc_leng]//2
+            self.move_coords = self.get_move_coords(arr_dims=self.vp_img_arr.shape[:2], pattern='circle', r=r)
 
         # initialize member variables
         self.vp_mode = True
@@ -150,7 +151,7 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
         size_idx = 0
         for i, s in enumerate(dirs):
             size = int(s.split('_')[-1][:-2])
-            if size == self.cfg.params[self.cfg.ptc_leng]:
+            if size >= self.cfg.params[self.cfg.ptc_leng]:
                 size_idx = i
                 break
 
