@@ -246,7 +246,9 @@ class PlenopticamConfig(object):
         if exist:
             # load meta data file and validate content
             self.load_cal_data()
-            valid = len(self.calibs[self.mic_list]) > 0
+            min_res_y = max(map(lambda x: x[2], self.calibs[self.mic_list])) * self.calibs['ptc_mean'][0]
+            min_res_x = max(map(lambda x: x[3], self.calibs[self.mic_list])) * self.calibs['ptc_mean'][1]
+            valid = min_res_y > 0 and min_res_x > 0
         else:
             valid = False
 
