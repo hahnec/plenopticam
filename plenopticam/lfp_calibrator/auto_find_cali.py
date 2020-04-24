@@ -87,7 +87,7 @@ class CaliFinder(object):
             if not self._serial and isdir(self._path):
                 self.sta.status_msg('No serial number found in JSON file. Provide calibration file instead of folder',
                                     self._opt_prnt)
-                self.sta.interrupt = True
+                self.sta.error = True
 
             # when path is directory
             if isdir(self._path):
