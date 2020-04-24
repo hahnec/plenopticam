@@ -87,10 +87,7 @@ deploy:
     on:
       repo: hahnec/plenopticam
       #tags: true
-      branches:
-        only:
-          - develop
-          - master
+      all_branches: true
 
   # upload wheel file to GitHub
   - provider: releases
