@@ -75,7 +75,7 @@ class LfpExtractor(object):
             del obj
 
         # copy light-field for refocusing process prior to contrast alignment and export
-        vp_img_exp = self.vp_img_arr.copy()
+        vp_img_exp = self.vp_img_arr.copy() if self.vp_img_arr is not None else None
 
         # color management automation
         obj = LfpContrast(vp_img_arr=vp_img_exp, cfg=self.cfg, sta=self.sta)

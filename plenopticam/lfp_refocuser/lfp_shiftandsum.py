@@ -56,7 +56,7 @@ class LfpShiftAndSum(LfpViewpoints):
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
         # exclude views that lie outside max. radius for circular blur spots
-        self.circular_view_aperture()
+        self.circular_view_aperture() if self.vp_img_arr is not None else None
 
         # do refocus computation based on provided method
         if self.vp_img_arr is not None:
