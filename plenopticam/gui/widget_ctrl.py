@@ -119,9 +119,8 @@ class CtrlWidget(tk.Frame):
             # reset calibration image
             self.wht_img = None
 
-        # reset calibration metadata path (if roots in paths do not match)
-        if dirname(dirname(self.cfg.params[self.cfg.cal_meta])) not in dirname(self.cfg.params[self.cfg.cal_path]):
-            self.cfg.params[self.cfg.cal_meta] = ''
+        # reset calibration metadata path
+        self.cfg.params[self.cfg.cal_meta] = ''
 
         # save config to hard drive
         self.cfg.save_params()
