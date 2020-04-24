@@ -22,6 +22,7 @@ __license__ = """
 
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc import PlenopticamStatus
+from plenopticam.misc.circle_drawer import bresenham_circle
 
 import numpy as np
 
@@ -30,7 +31,8 @@ class LfpViewpoints(object):
 
     def __init__(self, *args, **kwargs):
 
-        self._vp_img_arr = kwargs['vp_img_arr'].astype('float64') if 'vp_img_arr' in kwargs else None
+        self._vp_img_arr = kwargs['vp_img_arr'] if 'vp_img_arr' in kwargs else None
+        self._vp_img_arr = self.vp_img_arr.astype('float64') if self.vp_img_arr is not None else None
         self.cfg = kwargs['cfg'] if 'cfg' in kwargs else PlenopticamConfig()
         self.sta = kwargs['sta'] if 'sta' in kwargs else PlenopticamStatus()
         self._M = self.cfg.params[self.cfg.ptc_leng]
@@ -54,7 +56,7 @@ class LfpViewpoints(object):
 
     @property
     def central_view(self):
-        return self.vp_img_arr[self._C, self._C, ...].copy() if self._vp_img_arr is not None else None
+        return self._vp_img_arr[self._C, self._C, ...].copy() if self._vp_img_arr is not None else None
 
     @staticmethod
     def remove_proc_keys(kwargs, data_type=None):
@@ -79,12 +81,16 @@ class LfpViewpoints(object):
         iter_tot = kwargs['iter_tot'] if 'iter_tot' in kwargs else 1
 
         # status message handling
+        self.sta.progress(0, self.cfg.params[self.cfg.opt_prnt])
         if iter_num == 0:
             msg = kwargs['msg'] if 'msg' in kwargs else 'Viewpoint process'
             self.sta.status_msg(msg, self.cfg.params[self.cfg.opt_prnt])
 
         args = self.remove_proc_keys(kwargs, data_type=list)
 
+        # light-field shape handling
+        if len(self.vp_img_arr.shape) != 5:
+            raise NotImplementedError
         new_shape = fun(self._vp_img_arr[0, 0, ...].copy(), *args).shape
         new_array = np.zeros(self._vp_img_arr.shape[:2] + new_shape)
 
@@ -107,20 +113,18 @@ class LfpViewpoints(object):
                 percent = percent / iter_tot + iter_num / iter_tot
                 self.sta.progress(percent*100, self.cfg.params[self.cfg.opt_prnt])
 
-        #except:
-        #    if len(self.vp_img_arr.shape) != 5:
-        #        raise NotImplementedError
-
         if new_array.sum() != 0:
             self._vp_img_arr = new_array
 
         return True
 
-    def get_move_coords(self, pattern, arr_dims, r=None):
+    @staticmethod
+    def get_move_coords(arr_dims: (int, int) = (None, None), pattern: str = None, r: int = None) -> list:
+        """ compute view coordinates that are used for loop iterations """
 
         # parameter initialization
         pattern = 'circle' if pattern is None else pattern
-        r = r if r is not None else self._C
+        r = r if r is not None else min(arr_dims)//2
         mask = [[0] * arr_dims[1] for _ in range(arr_dims[0])]
 
         if pattern == 'square':
@@ -129,16 +133,13 @@ class LfpViewpoints(object):
             mask[-1, :] = 1
             mask[:, -1] = 1
         if pattern == 'circle':
-            for x in range(-r, r + 1):
-                for y in range(-r, r + 1):
-                    if int(np.sqrt(x ** 2 + y ** 2)) == r:
-                        mask[self._C + y][self._C + x] = 1
+            mask = bresenham_circle(arr_dims, r=r)
 
         # extract coordinates from mask
         coords_table = [(y, x) for y in range(len(mask)) for x in range(len(mask)) if mask[y][x]]
 
         # sort coordinates in angular order
-        coords_table.sort(key=lambda coords: np.arctan2(coords[0] - self._C, coords[1] - self._C))
+        coords_table.sort(key=lambda coords: np.arctan2(coords[0] - arr_dims[0]//2, coords[1] - arr_dims[1]//2))
 
         return coords_table
 
@@ -146,8 +147,7 @@ class LfpViewpoints(object):
 
         # parameter initialization
         pattern = 'circle' if pattern is None else pattern
-        arr_dims = self.vp_img_arr.shape[:2]
-        move_coords = self.get_move_coords(pattern, arr_dims, r=lf_radius)
+        move_coords = self.get_move_coords(arr_dims=self.vp_img_arr.shape[:2], pattern=pattern, r=lf_radius)
 
         vp_img_set = []
         for coords in move_coords:
@@ -225,3 +225,26 @@ class LfpViewpoints(object):
     def views_stacked_img(self):
         ''' concatenation of all sub-aperture images for single image representation '''
         return np.moveaxis(np.concatenate(np.moveaxis(np.concatenate(np.moveaxis(self.vp_img_arr, 1, 2)), 0, 2)), 0, 1)
+
+    def circular_view_aperture(self, offset=None, ellipse=None):
+
+        # initialize variables
+        offset = offset if offset is not None else 0
+        ratio = self.vp_img_arr.shape[3]/self.vp_img_arr.shape[2] if ellipse else 1
+        r = self._M // 2
+        mask = np.zeros([2*r+1, 2*r+1])
+
+        # determine mask for affected views
+        for x in range(-r, r + 1):
+            for y in range(-r, r + 1):
+                if int(np.round(np.sqrt(x ** 2 + y ** 2 * ratio))) > r + offset:
+                    mask[r + y][r + x] = 1
+
+        # extract coordinates from mask
+        coords_table = [(y, x) for y in range(len(mask)) for x in range(len(mask)) if mask[y][x]]
+
+        # zero-out selected views
+        for coords in coords_table:
+            self.vp_img_arr[coords[0], coords[1], ...] = np.zeros(self.vp_img_arr.shape[2:])
+
+        return True

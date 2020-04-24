@@ -39,6 +39,10 @@ class LfpRefocuser(LfpViewpoints):
 
     def main(self):
 
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
+
         # refocused image stack
         if self.cfg.params[self.cfg.opt_refo]:
             self.shift_and_sum()
@@ -46,14 +50,15 @@ class LfpRefocuser(LfpViewpoints):
         if self.cfg.params[self.cfg.opt_pflu]:
             self.scheimpflug()
 
+        return True
+
     def shift_and_sum(self):
 
         # refocusing
-        if not self.sta.interrupt:
-            obj = LfpShiftAndSum(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
-            obj.main()
-            self.refo_stack = obj.refo_stack
-            del obj
+        obj = LfpShiftAndSum(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
+        obj.main()
+        self.refo_stack = obj.refo_stack
+        del obj
 
         # color management automation
         if not self.sta.interrupt:
@@ -69,7 +74,6 @@ class LfpRefocuser(LfpViewpoints):
 
     def scheimpflug(self):
 
-        if not self.sta.interrupt:
-            obj = LfpScheimpflug(refo_stack=self.refo_stack, cfg=self.cfg, sta=self.sta)
-            obj.main()
-            del obj
+        obj = LfpScheimpflug(refo_stack=self.refo_stack, cfg=self.cfg, sta=self.sta)
+        obj.main()
+        del obj

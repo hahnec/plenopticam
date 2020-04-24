@@ -33,9 +33,8 @@ from tempfile import mkstemp
 from plenopticam import __version__
 from plenopticam.gui.constants import PX, PY, ICON
 from plenopticam.gui.widget_ctrl import CtrlWidget
-from plenopticam.gui.widget_view import ViewWidget
+from plenopticam.gui.widget_pbar import PbarWidget
 from plenopticam.misc.status import PlenopticamStatus
-from plenopticam.misc import PlenopticamError
 
 
 class PlenopticamApp(tk.Tk):
@@ -62,8 +61,8 @@ class PlenopticamApp(tk.Tk):
         self.ctrl_wid.pack(fill='both', expand=True, side='top', padx=PX, pady=PY)
 
         # instantiate view
-        self.view_wid = ViewWidget(self)
-        self.view_wid.pack(fill='both', expand=True, side='bottom', padx=PX, pady=PY)
+        self.pbar_wid = PbarWidget(self)
+        self.pbar_wid.pack(fill='both', expand=True, side='bottom', padx=PX, pady=PY)
 
     def icon_handling(self):
         ''' use OS temp folder if present or current working directory '''
@@ -92,8 +91,5 @@ class PlenopticamApp(tk.Tk):
 
 if __name__ == "__main__":
 
-    try:
-        MainWin = PlenopticamApp(None)
-        MainWin.mainloop()
-    except Exception as e:
-        PlenopticamError(e)
+    MainWin = PlenopticamApp(None)
+    MainWin.mainloop()

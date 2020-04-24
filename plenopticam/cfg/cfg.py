@@ -28,7 +28,7 @@ from plenopticam.cfg.constants import PARAMS_KEYS, PARAMS_VALS, CALIBS_KEYS
 # external libs
 import json
 from os.path import join, abspath, dirname, basename, splitext, isdir, isfile, exists
-from os import remove
+from os import remove, stat, chmod
 
 
 class PlenopticamConfig(object):
@@ -93,11 +93,15 @@ class PlenopticamConfig(object):
         try:
             # create config folder (if not already present)
             mkdir_p(self._dir_path)
+            # amend write privileges of (potentially existing) config file
+            if exists(fp):
+                st = stat(fp)
+                chmod(fp, st.st_mode | 0o111)
             # write config file
             with open(fp, 'w+') as f:
                 json.dump(self.params, f, sort_keys=True, indent=4, cls=NumpyTypeEncoder)
         except PermissionError:
-            pass    # raise PlenopticamError('\n\nGrant permission to write to the config file '+fp)
+            raise PlenopticamError('\n\nGrant permission to write to the config file '+fp)
 
         return True
 
@@ -197,6 +201,11 @@ class PlenopticamConfig(object):
         # save calibration data as json file
         json_dict = kwargs['json_dict'] if 'json_dict' in kwargs else kwargs
         try:
+            # amend write privileges of (potentially existing) config file
+            if exists(fp):
+                st = stat(fp)
+                chmod(fp, st.st_mode | 0o111)
+            # write file
             with open(fp, 'wt') as f:
                 json.dump(json_dict, f, sort_keys=True, indent=4)
         except:
@@ -237,7 +246,9 @@ class PlenopticamConfig(object):
         if exist:
             # load meta data file and validate content
             self.load_cal_data()
-            valid = len(self.calibs[self.mic_list]) > 0
+            min_res_y = max(map(lambda x: x[2], self.calibs[self.mic_list])) * self.calibs['ptc_mean'][0]
+            min_res_x = max(map(lambda x: x[3], self.calibs[self.mic_list])) * self.calibs['ptc_mean'][1]
+            valid = min_res_y > 0 and min_res_x > 0
         else:
             valid = False
 

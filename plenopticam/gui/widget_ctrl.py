@@ -40,6 +40,7 @@ from plenopticam.gui.widget_menu import MenuWidget
 from plenopticam.gui.widget_file import FileWidget
 from plenopticam.gui.widget_cmnd import CmndWidget
 from plenopticam.gui.widget_cnfg import CnfgWidget
+from plenopticam.gui.widget_view import ViewWidget
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam import misc
 
@@ -81,7 +82,7 @@ class CtrlWidget(tk.Frame):
         self.cmd_wid = CmndWidget(self)
         self.cmd_wid.grid(padx=PX, pady=PY)
 
-        self.all_btn_list = self.cmd_wid.btn_list + self.fil_wid.btn_list + self.men_wid.btn_list
+        self.all_btn_list = self.fil_wid.btn_list + self.men_wid.btn_list + self.cmd_wid.btn_list[:2]
 
         self.var_init()
 
@@ -99,6 +100,9 @@ class CtrlWidget(tk.Frame):
         self.job_queue = queue.Queue()
         self.cur_thread = None
 
+        # remove viewer window (if present)
+        self.view_frame.destroy() if hasattr(self, 'view_frame') else None
+
     def fetch_paths(self):
 
         # compare config path with path in user interface (detect change)
@@ -115,9 +119,8 @@ class CtrlWidget(tk.Frame):
             # reset calibration image
             self.wht_img = None
 
-        # reset calibration metadata path (if roots in paths do not match)
-        if dirname(dirname(self.cfg.params[self.cfg.cal_meta])) not in dirname(self.cfg.params[self.cfg.cal_path]):
-            self.cfg.params[self.cfg.cal_meta] = ''
+        # reset calibration metadata path
+        self.cfg.params[self.cfg.cal_meta] = ''
 
         # save config to hard drive
         self.cfg.save_params()
@@ -173,6 +176,7 @@ class CtrlWidget(tk.Frame):
 
         # disable button activity
         self.toggle_btn_list(self.all_btn_list)
+        self.cmd_wid.btn_list[3].config(text='Stop')
 
         # read light field photo and calibration source paths
         self.fetch_paths()
@@ -180,7 +184,7 @@ class CtrlWidget(tk.Frame):
         # remove output folder if option is set
         misc.rmdir_p(self.cfg.exp_path) if self.cfg.params[self.cfg.dir_remo] else None
 
-        # remove calibrated light-field if calibration option is set
+        # remove calibrated light-field if calibration or devignetting option is set
         if self.cfg.params[self.cfg.opt_cali] or self.cfg.params[self.cfg.opt_vign]:
             misc.rm_file(join(self.cfg.exp_path, 'lfp_img_align.pkl'))
             if self.cfg.params[self.cfg.opt_cali]:
@@ -212,9 +216,16 @@ class CtrlWidget(tk.Frame):
                           msg='Canceled due to missing image file path')
 
     def finish(self):
+        """ procedure for finished process """
 
         self.sta.status_msg('Export finished', opt=True)
         self.sta.progress(100, opt=True)
+
+        # open viewer window
+        self.view()
+
+        # set button to quit
+        self.cmd_wid.btn_list[3].config(text='Quit')
 
     def lfp_refo(self):
 
@@ -306,51 +317,78 @@ class CtrlWidget(tk.Frame):
     def cfg_change(self):
 
         # disable button activity
-        self.toggle_btn_list(self.all_btn_list)
+        self.toggle_btn_list(self.cmd_wid.btn_list[:2])
 
         # create settings frame
         CnfgWidget(self.cfg)
 
         # enable buttons
-        self.toggle_btn_list(self.all_btn_list)
+        self.toggle_btn_list(self.cmd_wid.btn_list[:2])
 
-    def stp(self):
-        ''' stop app '''
+    def exit(self):
+        """ this exit function is connected to most-right menu button triggering either stop or quit """
+
+        if self.cmd_wid.btn_list[3].cget('text') == 'Quit':
+            self.quit()
+        else:
+            self.cmd_wid.btn_list[3].config(text='Quit')
+            self.stop()
+
+    def stop(self):
+        """ stop app """
 
         # set interrupt in status
         self.sta.interrupt = True
 
-    def qit(self):
-        ''' quit app '''
+    def quit(self):
+        """ quit app """
 
         self.stop_thread()
 
-        # destroy tkinter object
+        # destroy tkinter objects
+        self.view_frame.destroy() if hasattr(self, 'view_frame') else None
         self.parent.destroy()
+
         sys.exit()
+
+    def view(self):
+        """ open viewer """
+
+        # disable button activity
+        #self.toggle_btn_state(self.cmd_wid.btn_list[2])
+
+        view_thread = PropagatingThread(target=self.instantiate_viewer, args=[self.cmd_wid.btn_list[2]], cfg=self.cfg, sta=self.sta)
+        view_thread.start()
+
+    def instantiate_viewer(self, btn):
+
+        self.view_frame = tk.Toplevel(padx=PX, pady=PY)  # open window
+        self.view_frame.resizable(width=0, height=0)     # make window not resizable
+        ViewWidget(self.view_frame, cfg=self.cfg, sta=self.sta, btn=btn).pack(expand="no", fill="both")
 
 
 class PropagatingThread(threading.Thread):
-    ''' Child threading class for exception handling and error traceback '''
+    """ Child threading class for exception handling and error traceback """
 
     def __init__(self, cfg=None, sta=None, *args, **kwargs):
         super(PropagatingThread, self).__init__(*args, **kwargs)
+
+        # init
         self.cfg = cfg if cfg is not None else PlenopticamConfig()
         self.sta = sta if sta is not None else misc.PlenopticamStatus()
+        self.exc = None
+        self.ret = None
 
     def run(self):
-        self.exc = None
-        try:
-            if hasattr(self, '_Thread__target'):
-                # Thread uses name mangling prior to Python 3.
-                self.ret = self._Thread__target(*self._Thread__args, **self._Thread__kwargs)
-            else:
-                self.ret = self._target(*self._args, **self._kwargs)
-                self.sta.stat_var = 'Stopped' if self.sta.interrupt and not self.sta._error else self.sta.stat_var
-        except Exception:
-            self.exc = traceback.format_exc()
 
-    def join(self):
+        if hasattr(self, '_Thread__target'):
+            # Thread uses name mangling prior to Python 3.
+            self.ret = self._Thread__target(*self._Thread__args, **self._Thread__kwargs)
+        else:
+            self.ret = self._target(*self._args, **self._kwargs)
+            self.sta.stat_var = 'Stopped' if self.sta.interrupt and not self.sta._error else self.sta.stat_var
+
+    def join(self, timeout=None):
         super(PropagatingThread, self).join()
         if self.exc:
             raise misc.errors.PlenopticamError(self.exc, cfg=self.cfg, sta=self.sta)

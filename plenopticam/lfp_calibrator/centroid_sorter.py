@@ -27,6 +27,7 @@ from plenopticam.misc.status import PlenopticamStatus
 # external libs
 import numpy as np
 
+
 class CentroidSorter(object):
 
     def __init__(self, centroids, cfg, sta=None):

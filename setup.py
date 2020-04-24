@@ -89,8 +89,8 @@ setup(
       scripts=['plenopticam/bin/cli_script.py'],
       entry_points={'console_scripts': ['plenopticam=plenopticam.bin.cli_script:main'], },
       packages=find_packages(),
-      install_requires=['numpy', 'scipy', 'colour_demosaicing', 'colour', 'imageio', 'color_matcher', 'Pillow',
-                        'docutils', 'requests'],
+      install_requires=['numpy', 'scipy', 'imageio', 'Pillow', 'docutils', 'requests',
+                        'colour_demosaicing', 'colour', 'color_matcher', 'color-space-converter'],
       include_package_data=True,
       zip_safe=False,
       **extra_options

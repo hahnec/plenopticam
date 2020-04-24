@@ -32,8 +32,8 @@ class Normalizer(object):
 
     def _var_init(self, data=None, min=None, max=None):
 
-        self._data = self._data if data is None else np.asarray(data, dtype='float64')
-        self._dtype = str(self._data.dtype) if isinstance(self._data, np.ndarray) else 'float64'
+        self._data = self._data if data is None else np.asarray(data, dtype='float32')
+        self._dtype = str(self._data.dtype) if isinstance(self._data, np.ndarray) else 'float32'
 
         self._min = self._min if min is None else min
         self._max = self._max if max is None else max

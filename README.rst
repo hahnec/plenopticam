@@ -10,7 +10,7 @@ Description
 Raw exposures from a plenoptic camera require four-dimensional image alignment in order to be decoded as a light field. Provided software addresses this by its ability to calibrate an image taken by a plenoptic camera and extract sub-aperture images or synthetically focused photographs.
 This application is meant for researchers, developers, beginners and other fiddlers who like to experiment with light field technology. Its scope comprises custom-types of plenoptic cameras and is thus not limited to Lytro's image data.
 
-|release| |license| |build| |downloads|
+|release| |license| |build| |downloads| |pypi|
 
 Results
 -------
@@ -192,12 +192,16 @@ Further information
     :target: https://github.com/hahnec/plenopticam/archive/master.zip
     :alt: Repo size
 
-.. |downloads| image:: https://img.shields.io/github/downloads/hahnec/plenopticam/total.svg?style=flat-square
+.. |downloads| image:: https://img.shields.io/github/downloads/hahnec/plenopticam/total?label=Release%20downloads&style=flat-square
     :target: https://github.com/hahnec/plenopticam/releases/
-    :alt: Downloads
+    :alt: Release Downloads
 
 .. |build| image:: https://img.shields.io/travis/com/hahnec/plenopticam?style=flat-square
     :target: https://travis-ci.com/github/hahnec/plenopticam
+
+.. |pypi| image:: https://img.shields.io/pypi/dm/plenopticam?label=PyPI%20downloads&style=flat-square
+    :target: https://pypi.org/project/plenopticam/
+    :alt: PyPI Downloads
 
 .. |spiderman| raw:: html
 

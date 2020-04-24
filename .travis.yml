@@ -38,7 +38,7 @@ script:
   - make html
   - cd ..
   # trigger unit tests (time critical travis osx due to 10min limit and output suppression in setUp function)
-  - python3 -m test.unit_test || python -m test.unit_test
+  - python3 -m test.unit_test_custom || python -m test.unit_test_custom
 
 #before_deploy:
   - pip3 install pyinstaller
@@ -85,12 +85,12 @@ deploy:
       - "${RELEASE_PKG_FILE}"
     draft: true
     on:
-      repo: hahnec/plenopticam
+      repo: hahnec/plenoprivate
 #    tags: true
-#    branches:
-#      only:
-#        - develop
-#        - master
+    branches:
+      only:
+        - develop
+        - master
 
   # upload wheel file to GitHub
   - provider: releases
@@ -102,7 +102,7 @@ deploy:
       - "${RELEASE_WHL_FILE}"
     draft: true
     on:
-      repo: hahnec/plenopticam
+      repo: hahnec/plenoprivate
       condition: $TRAVIS_OS_NAME = linux
 
   # upload wheel file to PyPi
@@ -116,3 +116,6 @@ deploy:
       secure: LNQN75z48lArJ+sCwVvpqnF36kkn1AiLF3oswSgS/fDuc3HyQLv87n1zsye9E4a7TxiJuizt2fwgQRioKtBowKoNTptAJtCuLfPD2N8TVF1WbdT1hkdNvUay30YU/eTK5LFDvaoVj7wyMLoc9FuOnhDZ7UDXslf7+5bTDLcT/LfLBNiFAibt8Wr+7xGvdPaq1h8Oo7adSOSaKNLWHlHFWxj+Sp78U+Lyzr+Y/6IsMJ1k9OI/o4KQswM8V9TieVhbxDnhbmQRbBuvN+uA+2Dc3jGaV9b+qwj4GefQB9kB2UXXPrbdUjGJqQweOyhANTZiiIgmass8SDSjgs2KRj1SZs5lrsMuSItY94pKa5eS0h5YGzwQoHS/K6aD8vsf8hky7XMXJ+2iNH1p+9l7vYDZ+Ve/0hV4skNfga1Z6o/131KFx43oLN4TJc52Ty+VH/fJka2fi4f92xGrPJyUyL5ELSwdPftqH+7FrFPk9Z6QXF24km2QtYpvxhORmHZoVPRYZczkBmnLE2LWdO1HCZpKgflp3Od4QCNRDETQJ3uS99iwl9C1+gJSFuJjD5cfi6GQkyu2h+OUKsSauQWZm6tRzpSQoXCylaigclCxRbNOsbDKLVZktPd30GVOtywAaFwrejsIq4F1o4PTLn+BgHrd+mlZOLnGP7tg5ixvr9I5wpI=
     on:
       condition: $TRAVIS_OS_NAME = linux
+      branches:
+        only:
+          - master

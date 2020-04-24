@@ -20,6 +20,10 @@ __license__ = """
 
 """
 
+# external
+from color_space_converter import rgb2gry
+
+
 # local imports
 from plenopticam.lfp_calibrator.pitch_estimator import PitchEstimator
 from plenopticam.lfp_calibrator.centroid_extractor import CentroidExtractor
@@ -28,7 +32,6 @@ from plenopticam.lfp_calibrator.centroid_drawer import CentroidDrawer
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc.status import PlenopticamStatus
 from plenopticam.lfp_aligner.cfa_processor import CfaProcessor
-from plenopticam.misc import rgb2gray
 
 
 class LfpCalibrator(object):
@@ -56,7 +59,8 @@ class LfpCalibrator(object):
             del cfa_obj
 
         # ensure white image is monochromatic
-        self._wht_img = rgb2gray(self._wht_img) if len(self._wht_img.shape) == 3 else self._wht_img
+        if len(self._wht_img.shape) == 3:
+            self._wht_img = rgb2gry(self._wht_img)[..., 0] if self._wht_img.shape[-1] == 3 else self._wht_img
 
         # estimate micro image diameter
         obj = PitchEstimator(self._wht_img, self.cfg, self.sta)
@@ -71,8 +75,10 @@ class LfpCalibrator(object):
         del obj
 
         # write micro image center image to hard drive if debug option is set
-        if not self.sta.interrupt:
-            CentroidDrawer(self._wht_img, centroids, self.cfg, self.sta).write_centroids_img(fn='wht_img+mics_unsorted.png')
+        if self.cfg.params[self.cfg.opt_dbug]:
+            draw_obj = CentroidDrawer(self._wht_img, centroids, self.cfg, self.sta)
+            draw_obj.write_centroids_img(fn='wht_img+mics_unsorted.png')
+            del draw_obj
 
         # reorder MICs and assign indices based on the detected MLA pattern
         obj = CentroidSorter(centroids, self.cfg, self.sta)
@@ -90,6 +96,9 @@ class LfpCalibrator(object):
             self.sta.status_msg('Could not save calibration data', opt=self.cfg.params[self.cfg.opt_prnt])
 
         # write image to hard drive (only if debug option is set)
-        CentroidDrawer(self._wht_img, mic_list, self.cfg, self.sta).write_centroids_img(fn='wht_img+mics_sorted.png')
+        if self.cfg.params[self.cfg.opt_dbug]:
+            draw_obj = CentroidDrawer(self._wht_img, mic_list, self.cfg, self.sta)
+            draw_obj.write_centroids_img(fn='wht_img+mics_sorted.png')
+            del draw_obj
 
         return True

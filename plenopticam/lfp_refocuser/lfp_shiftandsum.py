@@ -47,10 +47,18 @@ class LfpShiftAndSum(LfpViewpoints):
 
     def main(self):
 
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
+
         # print status
         self.sta.status_msg('Compute refocused image stack', self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
+        # exclude views that lie outside max. radius for circular blur spots
+        self.circular_view_aperture() if self.vp_img_arr is not None else None
+
+        # do refocus computation based on provided method
         if self.vp_img_arr is not None:
             self.refo_from_vp()
         elif self.lfp_img is not None:
@@ -59,13 +67,15 @@ class LfpShiftAndSum(LfpViewpoints):
             else:
                 self.refo_from_scratch()
 
+        self._refo_stack = np.asarray(self._refo_stack)
+
         # tbd
         self.all_in_focus()
 
         return True
 
     def refo_from_vp(self):
-        ''' computational refocusing based on viewpoint shift and integration (see Eq. ) '''
+        ''' computational refocusing based on viewpoint shift and integration '''
 
         # print status
         self.sta.progress(0, self.cfg.params[self.cfg.opt_prnt])
@@ -115,7 +125,7 @@ class LfpShiftAndSum(LfpViewpoints):
 
             # write upscaled version to hard drive
             if self.cfg.params[self.cfg.opt_refi]:
-                upscale_img = LfpContrast().auto_hist_align(final_img, ref_img=final_img, opt=True)
+                upscale_img = LfpContrast().auto_hist_align(final_img.copy(), ref_img=final_img, opt=True)
                 upscale_img = GammaConverter().srgb_conv(img=upscale_img)
                 LfpExporter(cfg=self.cfg, sta=self.sta).save_refo_slice(a=a, refo_img=upscale_img, string='upscale_')
                 del upscale_img
@@ -128,7 +138,7 @@ class LfpShiftAndSum(LfpViewpoints):
         return True
 
     def refo_from_scratch(self):
-        ''' computational refocusing from aligned light field image (see Eq. ) '''
+        ''' computational refocusing from aligned light field image '''
 
         # print status
         self.sta.progress(0, self.cfg.params[self.cfg.opt_prnt])

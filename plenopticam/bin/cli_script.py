@@ -79,9 +79,9 @@ def parse_options(argv, cfg):
                 usage()
                 sys.exit()
             if opt in ("-f", "--file"):
-                cfg.params[cfg.lfp_path] = arg
+                cfg.params[cfg.lfp_path] = arg.strip(" \"\'")
             if opt in ("-c", "--cali"):
-                cfg.params[cfg.cal_path] = arg
+                cfg.params[cfg.cal_path] = arg.strip(" \"\'")
             if opt in ("-p", "--patch"):
                 cfg.params[cfg.ptc_leng] = misc.str2type(arg)
             if opt in ("-r", "--refo"):

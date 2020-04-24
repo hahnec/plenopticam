@@ -32,9 +32,8 @@ class LfpCropper(LfpMicroLenses):
     def __init__(self, *args, **kwargs):
         super(LfpCropper, self).__init__(*args, **kwargs)
 
-        self._lfp_img_align = kwargs['lfp_img_align'] if 'lfp_img_align' in kwargs else None
-
-        self.var_init()
+        # use _k as crop margin
+        self._k = (self._M - self._Mn) // 2
 
         if self._lfp_img_align is not None:
 
@@ -44,43 +43,11 @@ class LfpCropper(LfpMicroLenses):
             self.new_lfp_img = np.zeros([int(self._Mn * self._LENS_Y_MAX), int(self._Mn * self._LENS_X_MAX), p],
                                         dtype=self._lfp_img_align.dtype)
 
-    def lfp_align_pitch_guess(self):
-
-        # iterate through potential (uneven) micro image size candidates
-        for d in np.arange(3,51,2):
-            # take pitch where remainder of aligned image dimensions and candidate size is zero
-            if (self._lfp_img_align.shape[0] / d) % 1 == 0 and (self._lfp_img_align.shape[1] / d) % 1 == 0:
-                self._M = int(d)
-                break
-
-        return self._M
-
-    def var_init(self):
-
-        # get maximum (M) and desired (Mn) micro image pitches
-        if hasattr(self, '_CENTROIDS'):
-            # get micro image size from centroid analysis
-            self._M = self.pitch_analyse(shape=self._lfp_img_align.shape)
-        else:
-            # guess micro image size based on aligned light field
-            self._M = self.lfp_align_pitch_guess()
-        self._Mn = self.pitch_eval(self._M, self.cfg.params[self.cfg.ptc_leng], self.sta)
-
-        # validate micro image size in lfp is large enough
-        if self._M < self._Mn:
-            # remove existing pickle file
-            fp = os.path.join(self.cfg.exp_path, 'lfp_img_align.pkl')
-            os.remove(fp)
-            # status update
-            self.sta.status_msg('Angular resolution mismatch in previous alignment. Redo process')
-            self.sta.error = True
-
-        self.cfg.params[self.cfg.ptc_leng] = self._Mn
-
-        # use _k as crop margin
-        self._k = (self._M - self._Mn)//2
-
     def main(self):
+
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
 
         # reduce light field in angular domain (depending on settings)
         if self._Mn < self._M and isint(self._M):

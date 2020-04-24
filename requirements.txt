@@ -2,8 +2,9 @@ numpy
 scipy
 colour_demosaicing
 colour
-imageio
 color_matcher
+color-space-converter
+imageio
 docutils
 Pillow
 requests

@@ -31,7 +31,6 @@ class LfpRearranger(LfpViewpoints):
     def __init__(self, lfp_img_align=None, *args, **kwargs):
         super(LfpRearranger, self).__init__(*args, **kwargs)
 
-        #self._lfp_img_align = Normalizer(lfp_img_align).type_norm() if lfp_img_align is not None else None
         self._lfp_img_align = lfp_img_align if lfp_img_align is not None else None
         self._dtype = self._lfp_img_align.dtype
 
@@ -46,6 +45,10 @@ class LfpRearranger(LfpViewpoints):
         self._vp_img_arr = np.zeros([int(self._M), int(self._M), int(m/self._M), int(n/self._M), p], dtype=self._dtype)
 
     def main(self):
+
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
 
         # rearrange light-field to viewpoint representation
         self.viewpoint_extraction()

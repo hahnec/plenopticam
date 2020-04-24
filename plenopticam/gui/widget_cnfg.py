@@ -36,10 +36,8 @@ class CnfgWidget(object):
         # inherit cfg object
         self.cfg = cfg
 
-        # open about window
+        # open window
         self.frame = tk.Toplevel(padx=PX, pady=PY)
-
-        # window title
         self.frame.wm_title("Configuration")
 
         # tk variables init

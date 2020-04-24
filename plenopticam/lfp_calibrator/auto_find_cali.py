@@ -60,6 +60,10 @@ class CaliFinder(object):
 
     def main(self):
 
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
+
         # auto calibration can only be used if calibration source path is either directory or tar archive
         if isdir(self._path) or self._path.lower().endswith('.tar'):
 
@@ -83,7 +87,7 @@ class CaliFinder(object):
             if not self._serial and isdir(self._path):
                 self.sta.status_msg('No serial number found in JSON file. Provide calibration file instead of folder',
                                     self._opt_prnt)
-                self.sta.interrupt = True
+                self.sta.error = True
 
             # when path is directory
             if isdir(self._path):
@@ -127,8 +131,7 @@ class CaliFinder(object):
 
             # balance Bayer channels in white image
             try:
-                wht_json = json.loads(self._wht_json.read())
-                frame_arr = safe_get(wht_json, 'master', 'picture', 'frameArray')[0]
+                frame_arr = safe_get(self._wht_json, 'master', 'picture', 'frameArray')[0]
                 self.cfg.lfpimg['ccm_wht'] = safe_get(frame_arr, 'frame', 'metadata', 'image', 'color', 'ccmRgbToSrgbArray')
                 awb = safe_get(frame_arr, 'frame', 'metadata', 'devices', 'sensor', 'normalizedResponses')[0]
                 gains = [1./awb['b'], 1./awb['r'], 1./awb['gr'], 1./awb['gb']]
@@ -179,14 +182,15 @@ class CaliFinder(object):
             for item in items:
                 cali_manifest = join(join(self._path, item), 'cal_file_manifest.json')
                 if exists(cali_manifest):
-                    with open(cali_manifest, 'r') as f:
+                    with open(cali_manifest, 'r') as file:
                         # find matching sha-1 value
-                        json_dict = json.load(f)
+                        json_dict = json.load(file)
                         self._match_georef(json_dict)
                         if self._file_found:
                             # update config and load raw data
                             self.cfg.params[self.cfg.cal_meta] = join(join(self._path.split('.')[0], self._serial), self._cal_fn)
-                            self._raw_data = open(self.cfg.params[self.cfg.cal_meta], mode='rb')
+                            with open(self.cfg.params[self.cfg.cal_meta], mode='rb') as meta_file:
+                                self._raw_data = meta_file.read()
                             break
 
                 # extract Lytro's 1st generation files
@@ -235,22 +239,23 @@ class CaliFinder(object):
 
         # read mla_calibration JSON file from tar archive
         try:
-            tar_obj = tarfile.open(join(self._path, tarname), mode='r')
-            cal_manifest = tar_obj.extractfile('unitdata/cal_file_manifest.json')
-            json_dict = json.loads(cal_manifest.read().decode('utf-8'))
-            self._match_georef(json_dict)
-            if self._cal_fn:
-                self._file_found = True
+            with tarfile.open(join(self._path, tarname), mode='r') as tar_obj:
+                cal_manifest = tar_obj.extractfile('unitdata/cal_file_manifest.json')
+                json_dict = json.loads(cal_manifest.read().decode('utf-8'))
+                self._match_georef(json_dict)
+                if self._cal_fn:
+                    self._file_found = True
 
-                # update config
-                self._serial = tarname.split('-')[-1].split('.')[0]
-                tar_path = dirname(self._path) if self._path.lower().endswith('tar') else self._path
-                self.cfg.params[self.cfg.cal_meta] = join(tar_path, self._serial,
-                                                          self._cal_fn.lower().replace('.raw', '.json'))
+                    # update config
+                    self._serial = tarname.split('-')[-1].split('.')[0]
+                    tar_path = dirname(self._path) if self._path.lower().endswith('tar') else self._path
+                    self.cfg.params[self.cfg.cal_meta] = join(tar_path, self._serial,
+                                                              self._cal_fn.lower().replace('.raw', '.json'))
 
-                # load raw data
-                self._raw_data = tar_obj.extractfile('unitdata/' + self._cal_fn)
-                self._wht_json = tar_obj.extractfile('unitdata/' + self._cal_fn.upper().replace('.RAW', '.TXT'))
+                    # load raw data
+                    self._raw_data = tar_obj.extractfile('unitdata/' + self._cal_fn).read()
+                    json_file = tar_obj.extractfile('unitdata/' + self._cal_fn.upper().replace('.RAW', '.TXT'))
+                    self._wht_json = json.loads(json_file.read())
 
         except FileNotFoundError:
             self.sta.status_msg('Did not find calibration file', opt=self._opt_prnt)

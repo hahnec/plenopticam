@@ -53,12 +53,18 @@ def save_img_file(img, file_path=None, file_type=None, gamma=None, tag=None):
     img = img**gamma if gamma is not None else img
 
     file_path = os.getcwd() if file_path is None else file_path
-    ext = os.path.splitext(file_path)[-1][1:]
+
     try:
         img = place_dnp(img) if not tag else img
     except ValueError:
         pass
 
+    # amend write privileges of (potentially existing) config file
+    if os.path.exists(file_path):
+        st = os.stat(file_path)
+        os.chmod(file_path, st.st_mode | 0o111)
+
+    ext = os.path.splitext(file_path)[-1][1:]
     if not file_type:
         file_type = ext if ext == 'png' or ext == 'tiff' else 'tiff' if img.dtype == 'uint16' else 'png'
 
@@ -77,8 +83,8 @@ def save_img_file(img, file_path=None, file_type=None, gamma=None, tag=None):
 
     elif file_type == 'png' or file_type == 'bmp':
         try:
-            Image.fromarray(Normalizer(img).uint8_norm()).save(file_path, file_type, optimize=True)
-            #imageio.imwrite(uri=file_path, im=Normalizer(img).uint8_norm())
+            #Image.fromarray(Normalizer(img).uint8_norm()).save(file_path, file_type, optimize=True)
+            imageio.imwrite(uri=file_path, im=Normalizer(img).uint8_norm())
         except PermissionError as e:
             raise Exception(e)
 

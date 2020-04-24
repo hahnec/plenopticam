@@ -54,45 +54,44 @@ class LfpExtractor(object):
         del lfp_obj
 
         # rearrange light-field to sub-aperture images
-        if self.cfg.params[self.cfg.opt_view] and not self.sta.interrupt:
+        if self.cfg.params[self.cfg.opt_view]:
             lfp_obj = LfpRearranger(self._lfp_img_align, cfg=self.cfg, sta=self.sta)
             lfp_obj.main()
             self.vp_img_arr = lfp_obj.vp_img_arr
             del lfp_obj
 
         # remove outliers if option is set
-        if self.cfg.params[self.cfg.opt_lier] and not self.sta.interrupt:
+        if self.cfg.params[self.cfg.opt_lier]:
             obj = LfpOutliers(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
             obj.main()
             self.vp_img_arr = obj.vp_img_arr
             del obj
 
         # color equalization
-        if self.cfg.params[self.cfg.opt_colo] and not self.sta.interrupt:
+        if self.cfg.params[self.cfg.opt_colo]:
             obj = LfpColorEqualizer(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
             obj.main()
             self.vp_img_arr = obj.vp_img_arr
             del obj
 
         # copy light-field for refocusing process prior to contrast alignment and export
-        vp_img_exp = self.vp_img_arr.copy()
+        vp_img_exp = self.vp_img_arr.copy() if self.vp_img_arr is not None else None
 
         # color management automation
-        if not self.sta.interrupt:
-            obj = LfpContrast(vp_img_arr=vp_img_exp, cfg=self.cfg, sta=self.sta)
-            obj.main()
-            vp_img_exp = obj.vp_img_arr
-            del obj
+        obj = LfpContrast(vp_img_arr=vp_img_exp, cfg=self.cfg, sta=self.sta)
+        obj.main()
+        vp_img_exp = obj.vp_img_arr
+        del obj
 
         # reduction of hexagonal sampling artifacts
-        if self.cfg.params[self.cfg.opt_arti] and not self.sta.interrupt:
+        if self.cfg.params[self.cfg.opt_arti]:
             obj = HexCorrector(vp_img_arr=vp_img_exp, cfg=self.cfg, sta=self.sta)
             obj.main()
             vp_img_exp = obj.vp_img_arr
             del obj
 
         # write viewpoint data to hard drive
-        if self.cfg.params[self.cfg.opt_view] and not self.sta.interrupt:
+        if self.cfg.params[self.cfg.opt_view]:
             obj = LfpExporter(vp_img_arr=vp_img_exp, cfg=self.cfg, sta=self.sta)
             obj.write_viewpoint_data()
             del obj

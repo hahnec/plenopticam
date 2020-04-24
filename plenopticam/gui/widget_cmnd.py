@@ -27,6 +27,7 @@ except ImportError:
 
 from plenopticam.gui.constants import PX, PY, BTN_W
 
+
 # make object for command widget
 class CmndWidget(tk.Frame):
 
@@ -49,9 +50,11 @@ class CmndWidget(tk.Frame):
         self.btn_list.append(cfg_btn)
 
         # button to stop/cancel process
-        stp_btn = tk.Button(self, text='Stop', width=BTN_W, command=self.parent.stp)
-        stp_btn.grid(row=0, column=2, padx=PX, pady=PY)
+        viw_btn = tk.Button(self, text='Viewer', width=BTN_W, command=self.parent.view)
+        viw_btn.grid(row=0, column=2, padx=PX, pady=PY)
+        self.btn_list.append(viw_btn)
 
         # button for application shutdown
-        qit_btn = tk.Button(self, text='Quit', width=BTN_W, command=self.parent.qit)
+        qit_btn = tk.Button(self, text='Quit', width=BTN_W, command=self.parent.exit)
         qit_btn.grid(row=0, column=3, padx=PX, pady=PY)
+        self.btn_list.append(qit_btn)

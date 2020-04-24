@@ -43,6 +43,10 @@ class LfpRotator(object):
 
     def main(self):
 
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
+
         # determine rotation angle (radians) of micro image centers (skip if angle already set)
         self._estimate_rad() if self._rad is None else None
 

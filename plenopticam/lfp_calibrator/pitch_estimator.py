@@ -28,6 +28,7 @@ from plenopticam.misc.status import PlenopticamStatus
 import numpy as np
 import scipy
 
+
 class PitchEstimator(object):
 
     def __init__(self, img, cfg, sta=None, scale_val=1.625, CR=10):
@@ -47,6 +48,10 @@ class PitchEstimator(object):
         self._M = None
 
     def main(self):
+
+        # check interrupt status
+        if self.sta.interrupt:
+            return False
 
         # print status
         self.sta.status_msg('Estimate micro image size', self.cfg.params[self.cfg.opt_prnt])
