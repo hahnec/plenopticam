@@ -44,7 +44,7 @@ OPTIONS = {
     "excludes": ['matplotlib'],
     "plist": dict(NSHumanReadableCopyright='2020 Christopher Hahne'),
     "packages": ['numpy', 'scipy', 'imageio', 'docutils', 'PIL', 
-                 'colour_demosaicing', 'colour', 'color_matcher', 'color-space-converter'],
+                 'colour_demosaicing', 'colour', 'color_matcher', 'color_space_converter'],
 }
 
 if platform == 'darwin':
@@ -91,7 +91,7 @@ setup(
       entry_points={'console_scripts': ['plenopticam=plenopticam.bin.cli_script:main'], },
       packages=find_packages(),
       install_requires=['numpy', 'scipy', 'imageio', 'Pillow', 'docutils', 'requests',
-                        'colour_demosaicing', 'colour', 'color_matcher', 'color-space-converter'],
+                        'colour_demosaicing', 'colour', 'color_matcher', 'color_space_converter'],
       include_package_data=True,
       zip_safe=False,
       **extra_options
