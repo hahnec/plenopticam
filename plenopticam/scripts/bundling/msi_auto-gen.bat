@@ -11,7 +11,7 @@ for /f "tokens=*" %%a in (plenopticam/__init__.py) do (
 )
 
 :: path where advanced installer resides
-set advinst="C:\Program Files (x86)\Caphyon\Advanced Installer 16.9\bin\x86\advinst.exe"
+set advinst="C:\Program Files (x86)\Caphyon\Advanced Installer 17.0\bin\x86\advinst.exe"
 set prjpath=".\plenopticam\scripts\bundling\msi_auto-gen.aip"
 :: create new project file (overwrite option only needed once)
 %advinst% /newproject %prjpath% -lang "en" -overwrite
