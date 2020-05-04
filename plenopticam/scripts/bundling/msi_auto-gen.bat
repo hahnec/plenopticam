@@ -26,9 +26,6 @@ set prjpath=".\plenopticam\scripts\bundling\msi_auto-gen.aip"
 %advinst% /edit %prjpath% /SetProperty ARPCONTACT="inbox[ät]christopherhahne.de"
 %advinst% /edit %prjpath% /SetProperty ARPHELPLINK="https://hahnec.github.io/plenopticam/build/html/index.html"
 
-:: place shortcut on desktop
-::%advinst% /edit %prjpath% /NewShortcut -name PlenoptiCam -dir DesktopFolder -target APPDIR\plenopticam.exe -icon "plenopticam\gui\icns\1055104.ico"
-
 :: set installer output path
 python -c "import os,sys; print(os.getcwd())" > tmp.txt
 set /P target=<tmp.txt
@@ -37,6 +34,9 @@ echo !target!
 %advinst% /edit %prjpath% /AddFile APPDIR "dist\plenopticam.exe"
 %advinst% /edit %prjpath% /SetIcon -icon "..\..\gui\icns\1055104.ico"
 %advinst% /edit %prjpath% /SetPackageName plenopticam_%version%.msi
+
+:: place shortcut on desktop
+%advinst% /edit %prjpath% /NewShortcut -name PlenoptiCam -dir DesktopFolder -target APPDIR\plenopticam.exe -arg /AppArg -icon "plenopticam\gui\icns\1055104.ico"
 
 :: run build
 %advinst% /build %prjpath%
