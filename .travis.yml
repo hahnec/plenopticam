@@ -18,7 +18,7 @@ jobs:
       before_install:
         - choco install python --version 3.8.0
         - python -m pip install --upgrade pip
-        - choco install advanced-installer
+        - choco install advanced-installer --version=17.0.0
         - choco install make
       env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
 
