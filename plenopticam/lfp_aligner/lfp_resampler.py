@@ -109,7 +109,7 @@ class LfpResampler(LfpMicroLenses):
 
     @staticmethod
     def get_hex_direction(centroids: np.ndarray) -> bool:
-        """ check if lower neighbor of upper left MIC is shifted to left or right in hex grid
+        """ check if lower neighbor of upper left micro image center is shifted to left or right in hex grid
 
         :param centroids: phased array data
         :return: True if shifted to right
@@ -150,9 +150,9 @@ class LfpResampler(LfpMicroLenses):
                 mic = self.get_coords_by_idx(ly=ly, lx=lx)
 
                 # interpolate each micro image with its MIC as the center with consistent micro image size
-                window = self._lfp_img[rint(mic[0]) - self._C - 1:rint(mic[0]) + self._C + 2,
-                                       rint(mic[1]) - self._C - 1:rint(mic[1]) + self._C + 2]
-                self._lfp_out[ly * self._M:(ly + 1) * self._M, lx * self._M:(lx + 1) * self._M] = \
+                window = self._lfp_img[rint(mic[0])-self._C-1:rint(mic[0])+self._C+2,
+                                       rint(mic[1])-self._C-1:rint(mic[1])+self._C+2]
+                self._lfp_out[ly*self._M:(ly+1)*self._M, lx*self._M:(lx+1)*self._M] = \
                     self._patch_align(window, mic)[1:-1, 1:-1]
 
             # check interrupt status
@@ -196,12 +196,12 @@ class LfpResampler(LfpMicroLenses):
                                         .5*np.mod(ly+hex_odd, 2)
                         interp_stack[:, y, x, p] = np.interp(interp_coords, range(self._LENS_X_MAX), patch_stack[:, y, x, p])
 
-            self._lfp_out[ly*self._M:ly*self._M+self._M, :] = \
-                np.concatenate(interp_stack, axis=1).reshape((self._M, hex_stretch * self._M, self._DIMS[2]))
+            self._lfp_out[ly*self._M:(ly+1)*self._M, :] = \
+                np.concatenate(interp_stack, axis=1).reshape((self._M, hex_stretch*self._M, self._DIMS[2]))
 
             # check interrupt status
             if self.sta.interrupt:
                 return False
 
             # print progress status
-            self.sta.progress((ly + 1) / self._LENS_Y_MAX * 100, self.cfg.params[self.cfg.opt_prnt])
+            self.sta.progress((ly+1) / self._LENS_Y_MAX * 100, self.cfg.params[self.cfg.opt_prnt])
