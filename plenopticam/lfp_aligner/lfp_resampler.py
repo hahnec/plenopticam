@@ -21,6 +21,7 @@ class LfpResampler(LfpMicroLenses):
         method = method if method in ['nearest', 'linear', 'cubic', 'quintic'] else None
         method = 'cubic' if method == 'quintic' and self._M < 5 else method
         interp2d_method = functools.partial(interp2d, kind=method) if method is not None else interp2d
+        self._flip = True if 'flip' in kwargs else False
 
         if method is None:
             self._interpol_method = RectBivariateSpline
@@ -92,9 +93,8 @@ class LfpResampler(LfpMicroLenses):
             self.sta.status_msg('Warning: chosen micro image size exceeds light-field borders')
             return np.zeros((self._M+2,)*2+(window.shape[2],))
 
-        # treatment of interpolated values being below or above original extrema
-        #patch[patch < window.min()] = window.min()
-        #patch[patch > window.max()] = window.max()
+        # flip patch to compensate for micro lens rotation
+        patch = np.flip(patch, axis=(0, 1)) if self._flip else patch
 
         return patch
 
