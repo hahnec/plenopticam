@@ -63,4 +63,4 @@ class LfpCropper(LfpMicroLenses):
 
     @property
     def lfp_img_align(self):
-        return self.new_lfp_img.copy()
+        return self.new_lfp_img.copy() if self.new_lfp_img is not None else None

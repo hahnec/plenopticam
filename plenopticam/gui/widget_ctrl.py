@@ -251,6 +251,8 @@ class CtrlWidget(tk.Frame):
             self.lfp_img_align = pickle.load(open(fp, 'rb'))
         except EOFError:
             os.remove(fp)
+        except FileNotFoundError:
+            return False
 
         # load LFP metadata settings (for Lytro files only)
         fp = join(self.cfg.exp_path, splitext(basename(self.cfg.params[self.cfg.lfp_path]))[0]+'.json')

@@ -112,7 +112,7 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
         self._M = self.vp_img_arr.shape[0] if self.vp_img_arr is not None else self._M
         self.reset_indices()
         if self.vp_img_arr is not None:
-            r = self.cfg.params[self.cfg.ptc_leng]//2
+            r = int(self.cfg.params[self.cfg.ptc_leng]//2)
             self.move_coords = self.get_move_coords(arr_dims=self.vp_img_arr.shape[:2], pattern='circle', r=r)
 
         # initialize member variables

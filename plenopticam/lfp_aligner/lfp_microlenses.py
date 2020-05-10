@@ -66,7 +66,7 @@ class LfpMicroLenses(object):
             algn_pitch = 0
 
         # evaluate pitch size while considering that provided by user
-        self._Mn = self.safe_pitch_eval(mean_pitch=mean_pitch, user_pitch=self.cfg.params[self.cfg.ptc_leng])
+        self._Mn = self.safe_pitch_eval(mean_pitch=mean_pitch, user_pitch=int(self.cfg.params[self.cfg.ptc_leng]))
 
         # validate chosen micro image size in lfp is large enough
         if 0 < algn_pitch < self._Mn:
@@ -88,10 +88,6 @@ class LfpMicroLenses(object):
         except IndexError:
             self.sta.status_msg('Incompatible image dimensions: Please either use KxLx3 or KxLx1 array dimensions')
             self.sta.error = True
-
-    @property
-    def lfp_img(self):
-        return self._lfp_img.copy() if self._lfp_img is not None else False
 
     def proc_lens_iter(self, fun, **kwargs):
         ''' process light-field based on provided function handle and argument data '''
@@ -130,7 +126,7 @@ class LfpMicroLenses(object):
 
         return mic[0], mic[1]
 
-    def safe_pitch_eval(self, mean_pitch, user_pitch):
+    def safe_pitch_eval(self, mean_pitch: float, user_pitch: int) -> int:
         """ provide odd pitch size that is safe to use """
 
         # ensure patch size and mean patch size are odd
@@ -153,7 +149,7 @@ class LfpMicroLenses(object):
             self.sta.status_msg('Micro image dimensions are too small for light field computation.', True)
             self.sta.interrupt = True
 
-        return safe_pitch
+        return int(safe_pitch)
 
     @staticmethod
     def centroid_avg_pitch(centroids: (list, np.ndarray)) -> int:
@@ -207,3 +203,11 @@ class LfpMicroLenses(object):
                     break
 
         return res
+
+    @property
+    def lfp_img(self):
+        return self._lfp_img.copy() if self._lfp_img is not None else False
+
+    @property
+    def lfp_img_align(self):
+        return self._lfp_img_align.copy() if self._lfp_img_align is not None else None
