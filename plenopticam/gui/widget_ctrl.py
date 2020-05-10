@@ -354,8 +354,8 @@ class CtrlWidget(tk.Frame):
     def view(self):
         """ open viewer """
 
-        # disable button activity
-        #self.toggle_btn_state(self.cmd_wid.btn_list[2])
+        # disable button activity (prevent a sequence of clicks to create several view windows)
+        self.toggle_btn_state(self.cmd_wid.btn_list[2])
 
         view_thread = PropagatingThread(target=self.instantiate_viewer, args=[self.cmd_wid.btn_list[2]], cfg=self.cfg, sta=self.sta)
         view_thread.start()
