@@ -60,38 +60,33 @@ class CnfgWidget(object):
             if PROPERTIES[key][1] == 'str':
                 self.tk_vars[key] = tk.StringVar(value=self.cfg.params[key])
                 obj_ent = tk.Entry(self.frame, textvariable=self.tk_vars[key], width=2*PX)
-                obj_ent.grid(row=i, column=1, sticky='W')
-                obj_ent.xview_moveto(1.0)  # display text from most right
 
             elif PROPERTIES[key][1] == 'int':
                 self.tk_vars[key] = tk.IntVar(value=int(self.cfg.params[key]))
                 obj_ent = tk.Entry(self.frame, textvariable=self.tk_vars[key], width=PX)
-                obj_ent.grid(row=i, column=1, sticky='W')
-                obj_ent.xview_moveto(1.0)  # display text from most right
 
             elif PROPERTIES[key][1] == 'list':
                 self.tk_vars[key] = tk.StringVar(value=str(self.cfg.params[key]))
                 obj_ent = tk.Entry(self.frame, textvariable=self.tk_vars[key], width=PX)
-                obj_ent.grid(row=i, column=1, sticky='W')
-                obj_ent.xview_moveto(1.0)  # display text from most right
 
             elif PROPERTIES[key][1] == 'ran':
                 self.tk_vars[key] = TwoStringVars(values=self.cfg.params[key])
                 obj_ent = DoubleSpinbox(self.frame, textvariable=self.tk_vars[key], width=PX)
-                obj_ent.grid(row=i, column=1, sticky='W')
-                obj_ent.xview_moveto(1.0)  # display text from most right
 
             elif PROPERTIES[key][1] == 'sel':
                 self.tk_vars[key] = tk.StringVar(value=self.cfg.params[key])
-                obj_ent = tk.Spinbox(self.frame, values=c.PFLU_VALS, textvariable=self.tk_vars[key], width=PX, command=self.refi)
+                obj_ent = tk.Spinbox(self.frame, values=c.PTCH_SIZE, textvariable=self.tk_vars[key], width=PX//2)
                 self.tk_vars[key].set(value=self.cfg.params[key])   # set to default necessary for tkinter's spinbox
-                obj_ent.grid(row=i, column=1, sticky='W')
-                obj_ent.xview_moveto(1.0)  # display text from most right
 
             elif PROPERTIES[key][1] == 'bool':
                 self.tk_vars[key] = tk.BooleanVar(value=bool(self.cfg.params[key]))
                 obj_ent = tk.Checkbutton(self.frame, variable=self.tk_vars[key])
-                obj_ent.grid(row=i, column=1, sticky='W')
+
+            # place entry
+            obj_ent.grid(row=i, column=1, sticky='W')
+
+            # display text from most right
+            obj_ent.xview_moveto(1.0) if PROPERTIES[key][1] != 'bool' else None
 
             self.obj_ents[key] = obj_ent
 

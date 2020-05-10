@@ -62,7 +62,7 @@ PARAMS_TYPE = (
     'str',
     'str',
     # integers
-    'int',
+    'sel',
     # lists
     'ran',
     # booleans
@@ -120,4 +120,6 @@ CALIBS_KEYS = (
    'mic_list'
 )
 
+# value ranges
 PFLU_VALS = ('vertical', 'horizontal', 'skew up', 'skew down')
+PTCH_SIZE = list(range(1, 99, 2))
