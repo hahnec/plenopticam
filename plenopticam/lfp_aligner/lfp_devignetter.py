@@ -49,8 +49,7 @@ class LfpDevignetter(LfpMicroLenses):
         # white balance
         if len(self._wht_img.shape) == 3:
             # balance RGB channels in white image
-            #self._wht_img = misc.eq_channels(self._wht_img)
-            self._wht_img = rgb2gry(self._wht_img)[..., np.newaxis]
+            self._wht_img = rgb2gry(self._wht_img) if self._wht_img.shape[2] == 3 else self._wht_img
 
         # check for same dimensionality
         self._wht_img = self._wht_img if len(self._wht_img.shape) == len(self._lfp_img.shape) else rgb2gry(self._wht_img)
@@ -76,26 +75,7 @@ class LfpDevignetter(LfpMicroLenses):
             # perform raw white image division (low noise)
             self.wht_img_divide()
 
-        ## identify pixels requiring treatment from significantly large intensity variations
-        #self._lfp_div[self._lfp_div > self._lfp_img.max()] = self._lfp_img.max()
-        #lfp_vgn = self._lfp_div - self._lfp_img
-        #lfp_vgn[lfp_vgn < 0] = 0
-        ##lfp_vgn = self._lfp_div
-##
-        ##import os
-        ##misc.save_img_file(self._lfp_img, file_path=os.path.join(os.getcwd(), 'lfp_img.bmp'))
-        ##misc.save_img_file(lfp_vgn, file_path=os.path.join(os.getcwd(), 'lfp_vgn.bmp'))
-##
-        #thresh = np.mean(lfp_vgn) - np.std(lfp_vgn)
-        #lfp_vgn[lfp_vgn < thresh] = 0
-##
-        ## add selected pixels to light-field image
-        #self._lfp_img += lfp_vgn*.5
-
-        #self._lfp_img = self._lfp_div#misc.Normalizer(self._lfp_div).uint16_norm()
-
-        #misc.save_img_file(lfp_vgn, file_path=os.path.join(os.getcwd(), 'lfp_vgn_thresh.bmp'))
-        #misc.save_img_file(self._lfp_img, file_path=os.path.join(os.getcwd(), 'lfp_out.bmp'))
+        return True
 
     def wht_img_divide(self, th=None):
 
@@ -113,13 +93,6 @@ class LfpDevignetter(LfpMicroLenses):
 
         # status
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
-
-        # adjust output histogram
-        #q = 0.001
-        #upper_lim = np.percentile(self._lfp_div, (1-q)*100)
-        #lower_lim = np.percentile(self._lfp_img, q*100)
-        #self._lfp_div[self._lfp_div > upper_lim] = upper_lim
-        #self._lfp_div[self._lfp_div < lower_lim] = lower_lim
 
         return True
 
@@ -147,7 +120,7 @@ class LfpDevignetter(LfpMicroLenses):
 
         A = self.compose_vandermonde_2d(X, Y, deg=3)
 
-        # Solve for a least squares estimate via pseudo inverse and coefficients in beta
+        # solve for a least squares estimate via pseudo inverse and coefficients in b
         coeffs = np.dot(np.linalg.pinv(A), b)
 
         # create weighting window
@@ -206,7 +179,7 @@ class LfpDevignetter(LfpMicroLenses):
         return win
 
     def _estimate_noise_level(self):
-        ''' estimate white image noise level '''
+        """ estimate white image noise level """
 
         # print status
         self.sta.status_msg('Estimate white image noise level', self.cfg.params[self.cfg.opt_prnt])
