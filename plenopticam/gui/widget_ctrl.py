@@ -27,12 +27,11 @@ except ImportError:
 
 import sys
 import pickle
-from os.path import join, dirname, splitext, basename
+from os.path import join, splitext, basename
 import threading
 import queue
 import types
 import os
-import traceback
 
 # local python files
 from plenopticam.gui.constants import PX, PY
