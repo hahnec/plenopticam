@@ -57,12 +57,6 @@ class PlenoptiCamTesterCustom(PlenoptiCamTester):
         self.cfg.params[self.cfg.opt_vign] = False
         self.cfg.params[self.cfg.opt_sat_] = True
 
-    def runTest(self):
-
-        self.test_custom_cal()
-        self.test_custom_lfp()
-        #self.test_viewer()
-
     def test_custom_cal(self):
 
         for fn_lfp, fn_wht in zip(self.fnames_lfp_opex, self.fnames_wht_opex):
@@ -128,25 +122,25 @@ class PlenoptiCamTesterCustom(PlenoptiCamTester):
             # assertion
             self.assertEqual(True, ret_val)
 
-    def test_viewer(self):
-
-        try:
-            import tkinter as tk
-        except ImportError:
-            import Tkinter as tk
-
-        # dummy button with state key
-        btn = {'state': 'normal'}
-
-        # instantiate viewer
-        self.view_frame = tk.Toplevel(padx=PX, pady=PY)  # open window
-        self.view_frame.resizable(width=0, height=0)  # make window not resizable
-        ViewWidget(self.view_frame, cfg=self.cfg, sta=self.sta, btn=btn).pack(expand="no", fill="both")
-
-        # close frame
-        self.view_frame.destroy()
-
-        return True
+#    def test_viewer(self):
+#
+#        try:
+#            import tkinter as tk
+#        except ImportError:
+#            import Tkinter as tk
+#
+#        # dummy button with state key
+#        btn = {'state': 'normal'}
+#
+#        # instantiate viewer
+#        self.view_frame = tk.Toplevel(padx=PX, pady=PY)  # open window
+#        self.view_frame.resizable(width=0, height=0)  # make window not resizable
+#        ViewWidget(self.view_frame, cfg=self.cfg, sta=self.sta, btn=btn).pack(expand="no", fill="both")
+#
+#        # close frame
+#        self.view_frame.destroy()
+#
+#        return True
 
 
 if __name__ == '__main__':
