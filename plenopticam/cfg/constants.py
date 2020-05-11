@@ -122,4 +122,4 @@ CALIBS_KEYS = (
 
 # value ranges
 PFLU_VALS = ('vertical', 'horizontal', 'skew up', 'skew down')
-PTCH_SIZE = list(range(1, 99, 2))
+PTCH_SIZE = list(range(3, 99, 2))
