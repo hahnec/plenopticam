@@ -32,51 +32,9 @@ import glob
 import numpy as np
 
 from plenopticam.lfp_extractor import LfpViewpoints
-from plenopticam.gui.constants import GENERIC_EXTS
-from plenopticam.misc import Normalizer, load_img_file
+from plenopticam.misc.os_ops import get_img_list
 from plenopticam import __version__
 from plenopticam.gui.constants import PX, PY
-
-
-def idx_str_sort(s, mode=0):
-    '''  '''
-
-    if mode:
-        return [int(s.split('.')[0].split('_')[0]),
-                int(s.split('.')[0].split('_')[1])]
-    else:
-        return int(s.split('.')[0])
-
-
-def get_img_list(img_dir, vp=1):
-    ''' obtain list of images from provided directory path '''
-
-    dir_list = os.listdir(img_dir)
-    dir_list.sort()
-    img_list = []
-    for i in dir_list:
-        img_path = os.path.join(img_dir, i)
-        ext = img_path.split('.')[::-1][0].lower()
-        if ext in GENERIC_EXTS:
-
-            # load image
-            img = load_img_file(img_path)
-
-            # convert to uint8 if necessary
-            img = Normalizer(img).uint8_norm() if str(img.dtype) != 'uint8' else img
-
-            # append to image list
-            img_list.append((i, img))
-
-    # sort image list by indices in file names
-    img_tuples = sorted(img_list, key=lambda k: idx_str_sort(k[0], 1 if vp else 0))
-    _, img_list = zip(*img_tuples)
-
-    if vp:
-        vp_dim = int(np.sqrt(len(img_list)))
-        img_list = np.reshape(img_list, newshape=(vp_dim, vp_dim) + img_list[0].shape, order='C')
-
-    return img_list
 
 
 class ViewWidget(tk.Canvas, LfpViewpoints):

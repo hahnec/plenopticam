@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+import os
+
+import numpy as np
+
+from plenopticam.gui.constants import GENERIC_EXTS
+from plenopticam.misc import load_img_file, Normalizer
 
 __author__ = "Christopher Hahne"
 __email__ = "info@christopherhahne.de"
@@ -53,7 +59,7 @@ def rmdir_p(path, print_opt=False):
 
 
 def remove_readonly(func, path, _):
-    "Clear the readonly bit and reattempt the removal"
+    """ clear the readonly bit and reattempt the removal """
 
     import stat
     chmod(path, stat.S_IWRITE)
@@ -72,17 +78,17 @@ def rm_file(path, print_opt=False):
 
 
 def select_file(init_dir=None, title=''):
-    ''' get filepath from tkinter dialog '''
+    """ get file path from tkinter dialog """
 
     # consider initial directory if provided
     init_dir = expanduser('~/') if not init_dir else init_dir
 
     # import tkinter while considering Python version
     try:
-        if (sys.version_info > (3, 0)):
+        if sys.version_info > (3, 0):
             from tkinter import Tk
             from tkinter.filedialog import askopenfilename
-        elif (sys.version_info > (2, 0)):
+        else:
             from Tkinter import Tk
             from tkFileDialog import askopenfilename
     except ImportError:
@@ -96,3 +102,44 @@ def select_file(init_dir=None, title=''):
     root.update()
 
     return file_path if file_path else None
+
+def get_img_list(img_dir, vp=1):
+    """ obtain list of images from provided directory path """
+
+    dir_list = os.listdir(img_dir)
+    dir_list.sort()
+    img_list = []
+    for i in dir_list:
+        img_path = os.path.join(img_dir, i)
+        ext = img_path.split('.')[::-1][0].lower()
+        if ext in GENERIC_EXTS:
+
+            # load image
+            img = load_img_file(img_path)
+
+            # convert to uint8 if necessary
+            img = Normalizer(img).uint8_norm() if str(img.dtype) != 'uint8' else img
+
+            # append to image list
+            img_list.append((i, img))
+
+    # sort image list by indices in file names
+    img_tuples = sorted(img_list, key=lambda k: idx_str_sort(k[0], 1 if vp else 0))
+    _, img_list = zip(*img_tuples)
+
+    if vp:
+        vp_dim = int(np.sqrt(len(img_list)))
+        img_list = np.reshape(img_list, newshape=(vp_dim, vp_dim) + img_list[0].shape, order='C')
+
+    return img_list
+
+def idx_str_sort(s, mode=0):
+    """ criteria for sort in lambda function calls """
+
+    if mode:
+        # viewpoint mode
+        return [int(s.split('.')[0].split('_')[0]),
+                int(s.split('.')[0].split('_')[1])]
+    else:
+        # refocus mode
+        return int(s.split('.')[0])
