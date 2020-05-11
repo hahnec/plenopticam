@@ -1,10 +1,4 @@
 #!/usr/bin/env python
-import os
-
-import numpy as np
-
-from plenopticam.gui.constants import GENERIC_EXTS
-from plenopticam.misc import load_img_file, Normalizer
 
 __author__ = "Christopher Hahne"
 __email__ = "info@christopherhahne.de"
@@ -26,10 +20,14 @@ __license__ = """
 
 """
 
-
+import numpy as np
 import sys, errno
-from os import makedirs, remove, chmod
-from os.path import isdir, isfile, expanduser
+from os import makedirs, remove, chmod, listdir
+from os.path import isdir, isfile, expanduser, join
+
+from plenopticam.gui.constants import GENERIC_EXTS
+from plenopticam.misc.file_rw import load_img_file
+from plenopticam.misc.normalizer import Normalizer
 
 
 def mkdir_p(path, print_opt=False):
@@ -106,11 +104,11 @@ def select_file(init_dir=None, title=''):
 def get_img_list(img_dir, vp=1):
     """ obtain list of images from provided directory path """
 
-    dir_list = os.listdir(img_dir)
+    dir_list = listdir(img_dir)
     dir_list.sort()
     img_list = []
     for i in dir_list:
-        img_path = os.path.join(img_dir, i)
+        img_path = join(img_dir, i)
         ext = img_path.split('.')[::-1][0].lower()
         if ext in GENERIC_EXTS:
 

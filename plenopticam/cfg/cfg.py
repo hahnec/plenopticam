@@ -21,7 +21,9 @@ __license__ = """
 """
 
 # local imports
-from plenopticam.misc import mkdir_p, PlenopticamStatus, PlenopticamError
+from plenopticam.misc.status import PlenopticamStatus
+from plenopticam.misc.errors import PlenopticamError
+from plenopticam.misc.os_ops import mkdir_p
 from plenopticam.misc.type_checks import *
 from plenopticam.cfg.constants import PARAMS_KEYS, PARAMS_VALS, CALIBS_KEYS
 
