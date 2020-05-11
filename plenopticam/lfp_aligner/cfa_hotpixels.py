@@ -41,7 +41,7 @@ class CfaHotPixels(object):
     def rectify_candidates_bayer(self, bay_img=None, n=2, sig_lev=4):
 
         # status message
-        self.sta.status_msg('Hot pixel removal', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.status_msg('Hot pixel detection', self.cfg.params[self.cfg.opt_prnt])
 
         bay_img = self._bay_img.copy() if bay_img is None else bay_img
         cum_img = np.zeros(bay_img[0::2, 0::2].shape)
@@ -90,8 +90,6 @@ class CfaHotPixels(object):
         m_val = np.mean(ref_img)
         s_val = np.std(ref_img)
         candidate_idxs = np.where(ref_img > m_val + s_val * sig_lev)
-        #candidate_idxs = np.where((ref_img < m_val - s_val * sig_lev) | (ref_img > m_val + s_val * sig_lev))
-        #candidates = list(zip(candidate_idxs[0], candidate_idxs[1]))
 
         ref_img = np.zeros_like(channel)
         ref_img[candidate_idxs[0], candidate_idxs[1]] = channel[candidate_idxs[0], candidate_idxs[1]]
@@ -111,18 +109,6 @@ class CfaHotPixels(object):
                         (candidate_idxs[1] > i-n**2) & (candidate_idxs[1] < i+n**2)
 
             if np.count_nonzero(adj_cands) < n:
-
-                # intensities from adjacents
-                #idxs = np.array(candidates)[adj_cands]
-                #if np.count_nonzero(idxs) != 0:
-                #    loc_mean = np.mean(channel[idxs[:, 0], idxs[:, 1]])
-                #    loc_std = np.std(channel[idxs[:, 0], idxs[:, 1]])
-                #else:
-                #    loc_mean = 0
-                #    loc_std = 0
-
-                #sig_lev = .25
-                #if loc_mean+loc_std*sig_lev < channel[j, i] or loc_mean-loc_std*sig_lev > channel[j, i]:
 
                 if n < j < ref_img.shape[0]-n and n < i < ref_img.shape[1]-n:
                     win = channel[j-n:j+n+1, i-n:i+n+1]
