@@ -26,10 +26,9 @@ except ImportError:
     import Tkinter as tk
 
 from PIL import Image, ImageTk, ImageFont, ImageDraw
-import os
+import os, sys
 from functools import partial
 import glob
-import numpy as np
 
 from plenopticam.lfp_extractor import LfpViewpoints
 from plenopticam.misc.os_ops import get_img_list
@@ -60,8 +59,8 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
             self.load_data()
 
         # window settings
-        self['bg'] = "white"
         self.master.title("PlenoptiCam Viewer")
+        self.set_ascii_symbols()
         self.shape = self.vp_img_arr.shape[2:] if self.vp_img_arr is not None else (250, 250, 1)
         self._ht = self.shape[0]*2 + PY*11
         self._wd = self.shape[1]*2 + PX*15
@@ -189,7 +188,7 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
 
         # auto-play button
         self._btn_auto_text = tk.StringVar()
-        self._btn_auto_text.set('↻')
+        self._btn_auto_text.set(self._loop_symbol)
         self.btn_auto = tk.Button(self, textvariable=self._btn_auto_text, command=self.auto_play, height=1, width=2)
         self.btn_auto.place(x=PX, y=PY/2, anchor=tk.NW)
 
@@ -201,7 +200,7 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
         self.btn_arrows = list()
         btn_pos = [[self.shape[1]+PX*4.5, PX*2, self._wd/4, self._wd/4],
                    [self._ht/4, self._ht/4, PY/2, self.shape[0]+PY*3.5]]
-        for i, text in enumerate([' ▶ ', ' ◀ ', ' ▲ ', ' ▼ ']):
+        for i, text in enumerate(self._arrow_symbols):
             next_frame_arg = partial(self.show_next_frame, i)
             self.btn_arrows.append(tk.Button(self, text=text, command=next_frame_arg, height=1, width=1))
             self.btn_arrows[i].place(x=btn_pos[0][i], y=btn_pos[1][i], anchor=tk.NW)
@@ -228,16 +227,42 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
         self.show_next_frame()
 
     def reset_indices(self):
+        """ reset light-field indices to default """
+
         self._u, self._v, self._a, self._k, self._h = (self._M // 2 + 1, self._M // 2 + 1, -1, 0, 1)
+
+    def set_ascii_symbols(self):
+        """ load individual ASCII symbols for buttons as they appear different on each OS """
+
+        if sys.platform.startswith('dar'):
+            # macOS
+            self._pause_symbol = '❙❙'
+            self._loop_symbol = '↻'
+            self._arrow_symbols = [' ▶ ', ' ◀ ', ' ▲ ', ' ▼ ']
+        elif sys.platform.startswith('lin'):
+            # UNIX
+            self._pause_symbol = '❙❙'
+            self._loop_symbol = '↻'
+            self._arrow_symbols = [' ▶ ', ' ◀ ', ' ▲ ', ' ▼ ']
+        elif sys.platform.startswith('win'):
+            # Windows
+            self._pause_symbol = '⏸'
+            self._loop_symbol = '⏯'
+            self._arrow_symbols = [' ⏵ ', ' ⏴ ', ' ⏶ ', ' ⏷ ']
+        else:
+            # better than nothing
+            self._pause_symbol = '⏸'
+            self._loop_symbol = '⏯'
+            self._arrow_symbols = [' ⏵ ', ' ⏴ ', ' ⏶ ', ' ⏷ ']
 
     def auto_play(self):
 
         self.auto_mode = not self.auto_mode
 
         if self.auto_mode:
-            self._btn_auto_text.set('❙❙')
+            self._btn_auto_text.set(self._pause_symbol)
         else:
-            self._btn_auto_text.set('↻')
+            self._btn_auto_text.set(self._loop_symbol)
 
         self.auto_loop()
 
@@ -268,7 +293,7 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
             self._k += 1
 
     def destroy(self):
-        ''' override close window event '''
+        """ close window event which gets overridden """
 
         # prevent loop iteration from running after window closure
         self.auto_mode = False
@@ -278,15 +303,15 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
 
     @property
     def get_dummy(self):
-        ''' create notification image '''
+        """ notification image about data availability """
 
         # disable auto play mode
         self.auto_mode = False
-        self._btn_auto_text.set('↻')
+        self._btn_auto_text.set(self._loop_symbol)
 
         # create notification image
         text = "No valid %s image data found" % ('viewpoint' if self.vp_mode else 'refocused')
-        font = ImageFont.truetype("Arial.ttf", 12)
+        font = ImageFont.load_default()
         img = Image.new("RGBA", self.shape[:2][::-1], color=(0, 0, 0, 0))
         draw = ImageDraw.Draw(img)
         w, h = draw.textsize(text, font)

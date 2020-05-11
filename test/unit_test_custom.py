@@ -30,6 +30,7 @@ from plenopticam.lfp_refocuser import LfpRefocuser
 from plenopticam.cfg.cfg import PlenopticamConfig
 from plenopticam.misc import PlenopticamStatus, mkdir_p, load_img_file
 from test.unit_test_baseclass import PlenoptiCamTester
+from plenopticam.gui.widget_view import ViewWidget, PX, PY
 
 
 class PlenoptiCamTesterCustom(PlenoptiCamTester):
@@ -47,21 +48,23 @@ class PlenoptiCamTesterCustom(PlenoptiCamTester):
         self.fnames_lfp_opex = ['f197with4m11pxFinal.bmp', 'f197Inf9pxFinalShift12.7cm.bmp']
         self.extract_archive(os.path.join(self.fp, os.path.basename(url)), self.fnames_wht_opex+self.fnames_lfp_opex)
 
+        # set config for unit test purposes
+        self.sta = PlenopticamStatus()
+        self.cfg = PlenopticamConfig()
+        self.cfg.reset_values()
+        self.cfg.params[self.cfg.opt_dbug] = False
+        self.cfg.params[self.cfg.opt_prnt] = False    # prevent Travis CI to terminate after reaching 4MB logfile size
+        self.cfg.params[self.cfg.opt_vign] = False
+        self.cfg.params[self.cfg.opt_sat_] = True
+
     def runTest(self):
 
         self.test_custom_cal()
         self.test_custom_lfp()
+        self.test_viewer()
 
     def test_custom_cal(self):
 
-        # set config for unit test purposes
-        sta = PlenopticamStatus()
-        cfg = PlenopticamConfig()
-        cfg.reset_values()
-        cfg.params[cfg.opt_dbug] = False
-        cfg.params[cfg.opt_prnt] = False    # prevent Travis CI from terminating due to reaching 4MB logfile size
-        cfg.params[cfg.opt_vign] = False
-        cfg.params[cfg.opt_sat_] = True
 
         for fn_lfp, fn_wht in zip(self.fnames_lfp_opex, self.fnames_wht_opex):
 
@@ -69,15 +72,15 @@ class PlenoptiCamTesterCustom(PlenoptiCamTester):
             print(fn_wht)
 
             # update file paths and calibration data in config
-            cfg.params[cfg.lfp_path] = os.path.join(self.fp, fn_lfp)
-            cfg.params[cfg.cal_path] = os.path.join(self.fp, fn_wht)
+            self.cfg.params[self.cfg.lfp_path] = os.path.join(self.fp, fn_lfp)
+            self.cfg.params[self.cfg.cal_path] = os.path.join(self.fp, fn_wht)
 
             # create folder (if it doesn't already exist)
-            mkdir_p(os.path.splitext(cfg.params[cfg.lfp_path])[0])
+            mkdir_p(os.path.splitext(self.cfg.params[self.cfg.lfp_path])[0])
 
             # test light field calibration
-            wht_img = load_img_file(cfg.params[cfg.cal_path])
-            cal_obj = LfpCalibrator(wht_img=wht_img, cfg=cfg, sta=sta)
+            wht_img = load_img_file(self.cfg.params[self.cfg.cal_path])
+            cal_obj = LfpCalibrator(wht_img=wht_img, cfg=self.cfg, sta=self.sta)
             ret_val = cal_obj.main()
             del cal_obj
 
@@ -86,30 +89,23 @@ class PlenoptiCamTesterCustom(PlenoptiCamTester):
 
     def test_custom_lfp(self):
 
-        # set config for unit test purposes
-        sta = PlenopticamStatus()
-        cfg = PlenopticamConfig()
-        cfg.reset_values()
-        cfg.params[cfg.opt_dbug] = False
-        cfg.params[cfg.opt_prnt] = False    # prevent Travis CI to terminate after reaching 4MB logfile size
-
         for fn_lfp, fn_wht in zip(self.fnames_lfp_opex, self.fnames_wht_opex):
 
             # generate console output to prevent abort in Travis CI
             print(fn_lfp)
 
             # update file paths and calibration data in config
-            cfg.params[cfg.lfp_path] = os.path.join(self.fp, fn_lfp)
-            cfg.params[cfg.cal_path] = os.path.join(self.fp, fn_wht)
-            cfg.params[cfg.cal_meta] = os.path.splitext(cfg.params[cfg.cal_path])[0]+'.json'
-            cfg.load_cal_data()
+            self.cfg.params[self.cfg.lfp_path] = os.path.join(self.fp, fn_lfp)
+            self.cfg.params[self.cfg.cal_path] = os.path.join(self.fp, fn_wht)
+            self.cfg.params[self.cfg.cal_meta] = os.path.splitext(self.cfg.params[self.cfg.cal_path])[0]+'.json'
+            self.cfg.load_cal_data()
 
             # create folder (if it doesn't already exist)
-            mkdir_p(os.path.splitext(cfg.params[cfg.lfp_path])[0])
+            mkdir_p(os.path.splitext(self.cfg.params[self.cfg.lfp_path])[0])
 
             # test light field alignment
-            lfp_img = load_img_file(cfg.params[cfg.lfp_path])
-            lfp_obj = LfpAligner(lfp_img=lfp_img, cfg=cfg, sta=sta)
+            lfp_img = load_img_file(self.cfg.params[self.cfg.lfp_path])
+            lfp_obj = LfpAligner(lfp_img=lfp_img, cfg=self.cfg, sta=self.sta)
             ret_val = lfp_obj.main()
             lfp_img = lfp_obj.lfp_img
             del lfp_obj
@@ -118,7 +114,7 @@ class PlenoptiCamTesterCustom(PlenoptiCamTester):
             self.assertEqual(True, ret_val)
 
             # test light field extraction
-            lfp_obj = LfpExtractor(lfp_img_align=lfp_img, cfg=cfg, sta=sta)
+            lfp_obj = LfpExtractor(lfp_img_align=lfp_img, cfg=self.cfg, sta=self.sta)
             ret_val = lfp_obj.main()
             vp_img_arr = lfp_obj.vp_img_arr
             del lfp_obj
@@ -126,12 +122,32 @@ class PlenoptiCamTesterCustom(PlenoptiCamTester):
             # assertion
             self.assertEqual(True, ret_val)
 
-            lfp_obj = LfpRefocuser(vp_img_arr=vp_img_arr, cfg=cfg, sta=sta)
+            lfp_obj = LfpRefocuser(vp_img_arr=vp_img_arr, cfg=self.cfg, sta=self.sta)
             ret_val = lfp_obj.main()
             del lfp_obj
 
             # assertion
             self.assertEqual(True, ret_val)
+
+    def test_viewer(self):
+
+        try:
+            import tkinter as tk
+        except ImportError:
+            import Tkinter as tk
+
+        # dummy button with state key
+        btn = {'state': 'normal'}
+
+        # instantiate viewer
+        self.view_frame = tk.Toplevel(padx=PX, pady=PY)  # open window
+        self.view_frame.resizable(width=0, height=0)  # make window not resizable
+        ViewWidget(self.view_frame, cfg=self.cfg, sta=self.sta, btn=btn).pack(expand="no", fill="both")
+
+        # close frame
+        self.view_frame.destroy()
+
+        return True
 
 
 if __name__ == '__main__':
