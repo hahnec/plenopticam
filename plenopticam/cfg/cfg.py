@@ -210,7 +210,7 @@ class PlenopticamConfig(object):
             # write file
             with open(fp, 'wt') as f:
                 json.dump(json_dict, f, sort_keys=True, indent=4)
-        except:
+        except TypeError:
             return False
 
         return True
