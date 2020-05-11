@@ -129,19 +129,19 @@ class PlenopticamConfig(object):
         self.params[self.opt_cont] = False
         self.params[self.opt_lier] = False
 
-    def load_cal_data(self):
+    def load_cal_data(self, fp=None):
 
         # construct file path
-        fp = self.get_file_path()
+        fp = self.get_file_path() if fp is None else fp
 
         self.calibs = self.load_json(fp=fp)
 
         return True
 
-    def save_cal_data(self, **kwargs):
+    def save_cal_data(self, fp=None, **kwargs):
 
         # construct file path
-        fp = self.get_file_path()
+        fp = self.get_file_path() if fp is None else fp
 
         self.save_json(fp=fp, **kwargs)
 
