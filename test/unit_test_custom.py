@@ -59,9 +59,9 @@ class PlenoptiCamTesterCustom(PlenoptiCamTester):
 
     def runTest(self):
 
-        #self.test_custom_cal()
-        #self.test_custom_lfp()
-        self.test_viewer()
+        self.test_custom_cal()
+        self.test_custom_lfp()
+        #self.test_viewer()
 
     def test_custom_cal(self):
 
@@ -129,11 +129,6 @@ class PlenoptiCamTesterCustom(PlenoptiCamTester):
             self.assertEqual(True, ret_val)
 
     def test_viewer(self):
-
-        import matplotlib as mpl
-        if os.environ.get('DISPLAY', '') == '':
-            print('Display not found. Using non-interactive Agg backend.')
-            mpl.use('Agg')
 
         try:
             import tkinter as tk
