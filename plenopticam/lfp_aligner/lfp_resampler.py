@@ -34,7 +34,7 @@ class LfpResampler(LfpMicroLenses):
         self._lfp_out = np.zeros(self._lfp_img.shape) if self._lfp_img is not None else None
 
     def main(self):
-        ''' cropping micro images to square shape while interpolating around their detected center (MIC) '''
+        """ cropping micro images to square shape while interpolating around their detected center (MIC) """
 
         # check interrupt status
         if self.sta.interrupt:
@@ -175,3 +175,7 @@ class LfpResampler(LfpMicroLenses):
 
             # print progress status
             self.sta.progress((ly+1) / self._LENS_Y_MAX * 100, self.cfg.params[self.cfg.opt_prnt])
+
+    @property
+    def lfp_out(self):
+        return self._lfp_out.copy()
