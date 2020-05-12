@@ -204,6 +204,32 @@ class LfpMicroLenses(object):
 
         return res
 
+    @staticmethod
+    def get_hex_direction(centroids: np.ndarray) -> bool:
+        """ check if lower neighbor of upper left micro image center is shifted to left or right in hex grid
+
+        :param centroids: phased array data
+        :return: True if shifted to right
+        """
+
+        # get upper left MIC
+        first_mic = centroids[(centroids[:, 2] == 0) & (centroids[:, 3] == 0), [0, 1]]
+
+        # retrieve horizontal micro image shift (to determine search range borders)
+        central_row_idx = int(centroids[:, 3].max()/2)
+        mean_pitch = np.mean(np.diff(centroids[centroids[:, 3] == central_row_idx, 0]))
+
+        # try to find MIC in lower left range (considering hexagonal order)
+        found_mic = centroids[(centroids[:, 0] > first_mic[0]+mean_pitch/2) &
+                              (centroids[:, 0] < first_mic[0]+3*mean_pitch/2) &
+                              (centroids[:, 1] < first_mic[1]) &
+                              (centroids[:, 1] > first_mic[1]-3*mean_pitch/4)].ravel()
+
+        # true if MIC of next row lies on the right (false otherwise)
+        hex_odd = True if found_mic.size == 0 else False
+
+        return hex_odd
+
     @property
     def lfp_img(self):
         return self._lfp_img.copy() if self._lfp_img is not None else False
