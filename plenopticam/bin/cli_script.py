@@ -34,7 +34,7 @@ from plenopticam.lfp_reader.top_level import SUPP_FILE_EXT
 from plenopticam import misc
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam import __version__
-from plenopticam.gui import PlenopticamApp
+from plenopticam.gui.top_level import PlenopticamApp
 
 
 def usage():
