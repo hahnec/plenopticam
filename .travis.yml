@@ -14,6 +14,7 @@ jobs:
       language: shell       # 'language: python' is an error on Travis CI macOS
       before_install:
         - python3 --version
+        - brew install python@3.8 --with-tcl-tk
         - python3 -c "exec(\"import tkinter\\nprint(tkinter.TkVersion)\")"
     - name: "Windows"
       os: windows           # Windows 10.0.17134 N/A Build 17134
