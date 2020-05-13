@@ -61,7 +61,7 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
         # window settings
         self.master.title("PlenoptiCam Viewer")
         self.set_ascii_symbols()
-        self.shape = self.vp_img_arr.shape[2:] if self.vp_img_arr is not None else (250, 250, 1)
+        self.shape = self.vp_img_arr.shape[2:] if self.vp_img_arr is not None else (PY*30, PX*40, 1)
         self._ht = self.shape[0]*2 + PY*16
         self._wd = self.shape[1]*2 + PX*16
 
