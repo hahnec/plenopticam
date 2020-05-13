@@ -15,7 +15,7 @@ jobs:
       before_install:
         - brew install python@3.8
         - brew info python@3.8
-        - echo 'export PATH="/usr/local/opt/python@3.8/bin:$PATH"' >> ~/.bash_profile
+        - echo 'export PATH="/usr/local/opt/python@3.8/bin:$PATH"' >> ~/.zshrc
         - python3 --version
         - python3 -c "exec(\"import tkinter\\nprint(tkinter.TkVersion)\")"
     - name: "Windows"
