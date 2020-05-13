@@ -180,8 +180,8 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
 
     def window_settings(self):
 
-        self['width'] = self._wd/2
-        self['height'] = self._ht/2
+        self['width'] = int(self._wd/2)
+        self['height'] = int(self._ht/2)
 
         return True
 
