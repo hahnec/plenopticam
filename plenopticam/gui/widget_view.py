@@ -69,7 +69,7 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
         self.vp_mode = True
         self.auto_mode = False
         self._mode_text = tk.StringVar()
-        self._mode_text.set('VP' if self.vp_mode else 'RF')
+        self._mode_text.set('V' if self.vp_mode else 'R')
         self.all_function_trigger()
 
         # display initial image
@@ -189,11 +189,11 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
         # auto-play button
         self._btn_auto_text = tk.StringVar()
         self._btn_auto_text.set(self._loop_symbol)
-        self.btn_auto = tk.Button(self, textvariable=self._btn_auto_text, command=self.auto_play, height=1, width=2)
+        self.btn_auto = tk.Button(self, textvariable=self._btn_auto_text, command=self.auto_play, height=1, width=1)
         self.btn_auto.place(x=PX, y=PY, anchor=tk.NW)
 
         # mode button
-        self.btn_mode = tk.Button(self, textvariable=self._mode_text, command=self.switch_mode, height=1, width=2)
+        self.btn_mode = tk.Button(self, textvariable=self._mode_text, command=self.switch_mode, height=1, width=1)
         self.btn_mode.place(x=PX, y=PY*4, anchor=tk.NW)
 
         # instantiate button objects for light-field
@@ -202,7 +202,7 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
                    [self._ht/4, self._ht/4, PY, self.shape[0]+PY*4.5]]
         for i, text in enumerate(self._arrow_symbols):
             next_frame_arg = partial(self.show_image, i)
-            self.btn_arrows.append(tk.Button(self, text=text, command=next_frame_arg, height=1, width=2))
+            self.btn_arrows.append(tk.Button(self, text=text, command=next_frame_arg, height=1, width=1))
             self.btn_arrows[i].place(x=btn_pos[0][i], y=btn_pos[1][i], anchor=tk.NW)
 
         return True
@@ -217,7 +217,7 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
             self.btn_arrows[idx]['state'] = tk.NORMAL if tk.DISABLED else tk.DISABLED
 
         # alternate button text
-        self._mode_text.set('VP' if self.vp_mode else 'RF')
+        self._mode_text.set('V' if self.vp_mode else 'R')
         self.btn_mode.config(textvariable=self._mode_text)
 
         # reset indices
