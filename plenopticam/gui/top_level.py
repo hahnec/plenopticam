@@ -91,5 +91,9 @@ class PlenopticamApp(tk.Tk):
 
 if __name__ == "__main__":
 
+    # instantiate object
     MainWin = PlenopticamApp(None)
+    # make not resizable
+    MainWin.resizable(width=0, height=0)
+    # run
     MainWin.mainloop()
