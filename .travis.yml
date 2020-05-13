@@ -28,6 +28,7 @@ install:
   - sudo pip3 install -r requirements.txt || pip3 install -r requirements.txt
   - python3 setup.py install || python setup.py install
   - pip3 install sphinx
+  - python -c "exec(\"import tkinter\\nprint(tkinter.TkVersion)\")" # print TK version
 
 # commands to run tests
 script:
