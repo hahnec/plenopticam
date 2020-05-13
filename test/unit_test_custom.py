@@ -122,26 +122,5 @@ class PlenoptiCamTesterCustom(PlenoptiCamTester):
             # assertion
             self.assertEqual(True, ret_val)
 
-#    def test_viewer(self):
-#
-#        try:
-#            import tkinter as tk
-#        except ImportError:
-#            import Tkinter as tk
-#
-#        # dummy button with state key
-#        btn = {'state': 'normal'}
-#
-#        # instantiate viewer
-#        self.view_frame = tk.Toplevel(padx=PX, pady=PY)  # open window
-#        self.view_frame.resizable(width=0, height=0)  # make window not resizable
-#        ViewWidget(self.view_frame, cfg=self.cfg, sta=self.sta, btn=btn).pack(expand="no", fill="both")
-#
-#        # close frame
-#        self.view_frame.destroy()
-#
-#        return True
-
-
 if __name__ == '__main__':
     unittest.main()
