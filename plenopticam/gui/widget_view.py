@@ -62,15 +62,8 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
         self.master.title("PlenoptiCam Viewer")
         self.set_ascii_symbols()
         self.shape = self.vp_img_arr.shape[2:] if self.vp_img_arr is not None else (250, 250, 1)
-        self._ht = self.shape[0]*2 + PY*11
-        self._wd = self.shape[1]*2 + PX*15
-
-        # light-field related data
-        self._M = self.vp_img_arr.shape[0] if self.vp_img_arr is not None else self._M
-        self.reset_indices()
-        if self.vp_img_arr is not None:
-            r = int(self.cfg.params[self.cfg.ptc_leng]//2)
-            self.move_coords = self.get_move_coords(arr_dims=self.vp_img_arr.shape[:2], pattern='circle', r=r)
+        self._ht = self.shape[0]*2 + PY*16
+        self._wd = self.shape[1]*2 + PX*16
 
         # initialize member variables
         self.vp_mode = True
@@ -80,13 +73,13 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
         self.all_function_trigger()
 
         # display initial image
-        self.show_next_frame()
+        self.show_image()
 
         # start with auto play mode
         self.auto_play()
 
     def load_data(self):
-        ''' automatically look for output folders and load light field content '''
+        """ automatically look for output folders and load light field content """
 
         # load list of potential directories
         vp_dirs = glob.glob(os.path.join(self.cfg.exp_path, 'viewpoints_*px'))
@@ -99,6 +92,20 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
         # load data
         self.vp_img_arr = self.select_from_dir(vp_dirs, vp=1)
         self.refo_stack = self.select_from_dir(rf_dirs, vp=0)
+
+        # obtain micro image size of loaded data
+        self._M = self.vp_img_arr.shape[0] if self.vp_img_arr is not None else self._M
+
+        # set images to None if desired micro image size is bigger than in loaded data
+        if self._M < self.cfg.params[self.cfg.ptc_leng]:
+            self.vp_img_arr = None
+            self.refo_stack = None
+
+        # light-field related data
+        self.reset_indices()
+        if self.vp_img_arr is not None:
+            r = int(self.cfg.params[self.cfg.ptc_leng]//2)
+            self.move_coords = self.get_move_coords(arr_dims=self.vp_img_arr.shape[:2], pattern='circle', r=r)
 
         return True
 
@@ -120,7 +127,11 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
 
         return ret_val
 
-    def show_image(self):
+    def show_image(self, arg=None):
+
+        # compute new light-field positions depending on pressed button
+        self._adapt_coords(arg)
+
 
         # set new frame considering view/refo mode
         if self.vp_mode and self.vp_img_arr is not None:
@@ -135,7 +146,7 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
         self.tk_frame = ImageTk.PhotoImage(next_frame)
 
         self.delete(self.find_withtag("bacl"))
-        self.allready = self.create_image(PX*4, PY*3, image=self.tk_frame, anchor=tk.NW, tag="bacl")
+        self.allready = self.create_image(PX*4, PY*4, image=self.tk_frame, anchor=tk.NW, tag="bacl")
         self.find_withtag("bacl")
 
     def _adapt_coords(self, arg=None):
@@ -160,16 +171,6 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
 
         return True
 
-    def show_next_frame(self, arg=None):
-
-        # compute new light-field positions depending on pressed button
-        self._adapt_coords(arg)
-
-        # display new frame
-        self.show_image()
-
-        return True
-
     def all_function_trigger(self):
 
         self.create_buttons()
@@ -190,19 +191,19 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
         self._btn_auto_text = tk.StringVar()
         self._btn_auto_text.set(self._loop_symbol)
         self.btn_auto = tk.Button(self, textvariable=self._btn_auto_text, command=self.auto_play, height=1, width=2)
-        self.btn_auto.place(x=PX, y=PY/2, anchor=tk.NW)
+        self.btn_auto.place(x=PX, y=PY, anchor=tk.NW)
 
         # mode button
         self.btn_mode = tk.Button(self, textvariable=self._mode_text, command=self.switch_mode, height=1, width=2)
-        self.btn_mode.place(x=PX, y=PY*3, anchor=tk.NW)
+        self.btn_mode.place(x=PX, y=PY*4, anchor=tk.NW)
 
         # instantiate button objects for light-field
         self.btn_arrows = list()
-        btn_pos = [[self.shape[1]+PX*4.5, PX*2, self._wd/4, self._wd/4],
-                   [self._ht/4, self._ht/4, PY/2, self.shape[0]+PY*3.5]]
+        btn_pos = [[self.shape[1]+PX*4.5, PX, self._wd/4, self._wd/4],
+                   [self._ht/4, self._ht/4, PY, self.shape[0]+PY*4.5]]
         for i, text in enumerate(self._arrow_symbols):
-            next_frame_arg = partial(self.show_next_frame, i)
-            self.btn_arrows.append(tk.Button(self, text=text, command=next_frame_arg, height=1, width=1))
+            next_frame_arg = partial(self.show_image, i)
+            self.btn_arrows.append(tk.Button(self, text=text, command=next_frame_arg, height=1, width=2))
             self.btn_arrows[i].place(x=btn_pos[0][i], y=btn_pos[1][i], anchor=tk.NW)
 
         return True
@@ -224,7 +225,7 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
         self.reset_indices()
 
         # load image
-        self.show_next_frame()
+        self.show_image()
 
     def reset_indices(self):
         """ reset light-field indices to default """
