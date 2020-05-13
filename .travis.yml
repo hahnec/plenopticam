@@ -12,6 +12,8 @@ jobs:
       os: osx
       osx_image: xcode11.4
       language: shell       # 'language: python' is an error on Travis CI macOS
+      env:
+        - PY_VERSION_=3.8
       before_install:
         - python3 --version
         - brew install tcl-tk
