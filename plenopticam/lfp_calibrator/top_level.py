@@ -86,6 +86,15 @@ class LfpCalibrator(object):
         mic_list, pattern, pitch = obj.mic_list, obj.pattern, obj.pitch
         del obj
 
+        # fit grid of MICs using least-squares method to obtain accurate MICs from line intersections
+        if not self.sta.interrupt and None:
+            from plenopticam.lfp_calibrator import GridFitter
+            self.cfg.calibs[self.cfg.pat_type] = pattern
+            obj = GridFitter(coords_list=mic_list, cfg=self.cfg, sta=self.sta)
+            obj.main()
+            mic_list = obj.grid_fit
+            del obj
+
         # save calibration metadata
         self.sta.status_msg('Save calibration data', opt=self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, opt=self.cfg.params[self.cfg.opt_prnt])
