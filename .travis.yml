@@ -10,7 +10,7 @@ jobs:
         - python3 -c "exec(\"import tkinter\\nprint(tkinter.TkVersion)\")"
     - name: "Python 3.7.4 on macOS"
       os: osx
-      osx_image: xcode11.3
+      osx_image: xcode11.4
       language: shell       # 'language: python' is an error on Travis CI macOS
       before_install:
         - python3 --version
