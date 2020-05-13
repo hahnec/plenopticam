@@ -132,7 +132,6 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
         # compute new light-field positions depending on pressed button
         self._adapt_coords(arg)
 
-
         # set new frame considering view/refo mode
         if self.vp_mode and self.vp_img_arr is not None:
             next_frame = Image.fromarray(self.vp_img_arr[self._v, self._u, ...])
