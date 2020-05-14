@@ -10,14 +10,15 @@ sudo rm -rf dist/
 
 # run pyinstaller with provided options
 pyinstaller plenopticam/gui/top_level.py \
-    --onefile \
+  --onefile \
 	--noconsole \
 	--noconfirm \
 	--add-data=/home/travis/virtualenv/python3.8.0/lib/python3.8/site-packages/imageio/:./imageio \
 	--name=plenopticam \
 	--icon=plenopticam/gui/icns/1055104.gif \
 	--add-data=docs/build/html/:./docs/build/html/ \
-	--add-data=plenopticam/gui/icns/1055104.gif:./icns/
+	--add-data=plenopticam/gui/icns/1055104.gif:./icns/ \
+	--hidden-import='PIL._tkinter_finder'
 
 # change distribution folder ownership to user
 #sudo chown -R chris: ./dist
