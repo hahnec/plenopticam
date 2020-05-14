@@ -21,8 +21,8 @@ pyinstaller plenopticam/gui/top_level.py \
 #	 --add-data=/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/imageio/:./imageio \
 #    --add-binary='/System/Library/Frameworks/Tk.framework/Tk':'tk' \
 #    --add-binary='/System/Library/Frameworks/Tcl.framework/Tcl':'tcl' \
-#    --add-binary='/Library/Frameworks/Python.framework/Versions/3.6/lib/libtk8.6.dylib':'tk' \     # dylibs copy works
-#    --add-binary='/Library/Frameworks/Python.framework/Versions/3.6/lib/libtcl8.6.dylib':'tcl' \   # dylibs copy works
+#    --add-binary='/usr/local/Cellar/python/3.7.7/Frameworks/Python.framework/Versions/3.7/lib/libtk8.6.dylib':'tk' \
+#    --add-binary='/usr/local/Cellar/python/3.7.7/Frameworks/Python.framework/Versions/3.7/lib/libtcl8.6.dylib':'tcl' \
 #    --add-data='./plenopticam/cfg/cfg.json':'Resources/cfg' \
 
 # extract version number from python file
