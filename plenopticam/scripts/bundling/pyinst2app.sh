@@ -14,13 +14,13 @@ pyinstaller plenopticam/gui/top_level.py \
 	--add-data=./docs/build/html/:./docs/build/html/ \
     --exclude-module=matplotlib \
     --osx-bundle-identifier='org.pythonmac.unspecified.plenopticam' \
-    --add-binary='/System/Library/Frameworks/Tk.framework/Tk':'tk' \
-    --add-binary='/System/Library/Frameworks/Tcl.framework/Tcl':'tcl' \
+    --add-binary='/usr/local/Cellar/python/3.7.7/Frameworks/Python.framework/Versions/3.7/lib/libtk8.6.dylib':'tk' \
+    --add-binary='/usr/local/Cellar/python/3.7.7/Frameworks/Python.framework/Versions/3.7/lib/libtcl8.6.dylib':'tcl' \
     --hidden-import pkg_resources.py2_warn \
     --add-data=plenopticam/cfg/cfg.json:cfg
 #	 --add-data=/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/imageio/:./imageio \
-#    --add-binary='/usr/local/Cellar/python/3.7.7/Frameworks/Python.framework/Versions/3.7/lib/libtk8.6.dylib':'tk' \
-#    --add-binary='/usr/local/Cellar/python/3.7.7/Frameworks/Python.framework/Versions/3.7/lib/libtcl8.6.dylib':'tcl' \
+#    --add-binary='/System/Library/Frameworks/Tk.framework/Tk':'tk' \
+#    --add-binary='/System/Library/Frameworks/Tcl.framework/Tcl':'tcl' \
 #    --add-binary='/Library/Frameworks/Python.framework/Versions/3.6/lib/libtk8.6.dylib':'tk' \     # dylibs copy works
 #    --add-binary='/Library/Frameworks/Python.framework/Versions/3.6/lib/libtcl8.6.dylib':'tcl' \   # dylibs copy works
 #    --add-data='./plenopticam/cfg/cfg.json':'Resources/cfg' \
