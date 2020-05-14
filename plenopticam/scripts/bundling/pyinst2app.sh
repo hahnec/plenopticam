@@ -14,8 +14,8 @@ pyinstaller plenopticam/gui/top_level.py \
 	--add-data=./docs/build/html/:./docs/build/html/ \
     --exclude-module=matplotlib \
     --osx-bundle-identifier='org.pythonmac.unspecified.plenopticam' \
-    --add-binary='/usr/local/Cellar/tcl-tk/8.6.10/libtk8.6.dylib':'tk' \
-    --add-binary='/usr/local/Cellar/tcl-tk/8.6.10/libtcl8.6.dylib':'tcl' \
+    --add-binary='/usr/local/Cellar/tcl-tk/8.6.10/lib/libtk8.6.dylib':'tk' \
+    --add-binary='/usr/local/Cellar/tcl-tk/8.6.10/lib/libtcl8.6.dylib':'tcl' \
     --hidden-import pkg_resources.py2_warn \
     --add-data=plenopticam/cfg/cfg.json:cfg
 #	 --add-data=/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/imageio/:./imageio \
