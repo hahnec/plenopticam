@@ -33,6 +33,7 @@ install:
   - sudo pip3 install -r requirements.txt || pip3 install -r requirements.txt
   - python3 setup.py install || python setup.py install
   - pip3 install sphinx
+  - pip3 install codecov
 
 # commands to run tests
 script:
@@ -42,8 +43,8 @@ script:
   - cd docs
   - make html
   - cd ..
-  # trigger unit tests (time critical travis osx due to 10min limit and output suppression in setUp function)
-  - python3 -m test.unit_test_custom || python -m test.unit_test_custom
+  # trigger unit tests (time critical travis osx due to 10min limit and output suppression due to > 4MB size)
+  - python3 -m coverage run test/unit_test_gui.py || python -m coverage run test/unit_test_gui.py
 
 #before_deploy:
   - pip3 install pyinstaller
