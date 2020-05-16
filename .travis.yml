@@ -44,7 +44,8 @@ script:
   - make html
   - cd ..
   # trigger unit tests (time critical travis osx due to 10min limit and output suppression due to > 4MB size)
-  - python3 -m coverage run test/unit_test_gui.py || python -m coverage run test/unit_test_gui.py
+  - python3 -m coverage run test/unit_test_custom.py || python -m coverage run test/unit_test_custom.py
+  - coveralls
 
 #before_deploy:
   - pip3 install pyinstaller
