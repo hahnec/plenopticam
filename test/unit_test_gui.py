@@ -23,7 +23,7 @@ __license__ = """
 import unittest
 
 from plenopticam.cfg.cfg import PlenopticamConfig
-from plenopticam.misc import PlenopticamStatus, mkdir_p, load_img_file
+from plenopticam.misc import PlenopticamStatus
 from test.unit_test_baseclass import PlenoptiCamTester
 from plenopticam.gui.widget_view import ViewWidget, PX, PY
 

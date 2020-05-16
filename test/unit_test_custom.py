@@ -30,7 +30,6 @@ from plenopticam.lfp_refocuser import LfpRefocuser
 from plenopticam.cfg.cfg import PlenopticamConfig
 from plenopticam.misc import PlenopticamStatus, mkdir_p, load_img_file
 from test.unit_test_baseclass import PlenoptiCamTester
-from plenopticam.gui.widget_view import ViewWidget, PX, PY
 
 
 class PlenoptiCamTesterCustom(PlenoptiCamTester):
@@ -121,6 +120,7 @@ class PlenoptiCamTesterCustom(PlenoptiCamTester):
 
             # assertion
             self.assertEqual(True, ret_val)
+
 
 if __name__ == '__main__':
     unittest.main()
