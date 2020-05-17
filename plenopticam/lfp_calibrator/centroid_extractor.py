@@ -24,7 +24,6 @@ __license__ = """
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc.status import PlenopticamStatus
 from plenopticam.lfp_calibrator.non_max_supp import NonMaxSuppression
-from plenopticam.lfp_calibrator.centroid_refiner import CentroidRefiner
 from plenopticam.lfp_calibrator.centroid_drawer import CentroidDrawer
 from plenopticam.misc import create_gauss_kernel
 
@@ -37,14 +36,13 @@ DR = 2  # down-sample rate
 
 class CentroidExtractor(object):
 
-    def __init__(self, img, cfg, sta=None, M=None, method=None):
+    def __init__(self, img, cfg, sta=None, M=None):
 
         # input variables
         self._img = img
         self.cfg = cfg if cfg is not None else PlenopticamConfig()
         self.sta = sta if sta is not None else PlenopticamStatus()
         self._M = M if M is not None else 9
-        self._method = method if method is not None else 'area'
 
         # private variables
         self._peak_img = self._img.copy()
@@ -62,27 +60,16 @@ class CentroidExtractor(object):
         # find micro image centers
         self.compute_centroids()
 
+        # write centroids image to hard drive (if option set)
         if self.cfg.params[self.cfg.opt_dbug] and not self.sta.interrupt:
             draw_obj = CentroidDrawer(self._peak_img, self._centroids, self.cfg)
             draw_obj.write_centroids_img(fn='wht_img+mics_nms.png')
             del draw_obj
 
-        if self._method is not None:
-            # refine centroids with sub-pixel precision using provided method
-            ref_obj = CentroidRefiner(self._peak_img, self._centroids, self.cfg, self.sta, self._M, method=self._method)
-            ref_obj.main()
-            self._centroids = ref_obj.centroids_refined
-            del ref_obj
-
-            if self.cfg.params[self.cfg.opt_dbug] and not self.sta.interrupt:
-                draw_obj = CentroidDrawer(self._img, self._centroids, self.cfg)
-                draw_obj.write_centroids_img(fn='wht_img+mics_refi.png')
-                del draw_obj
-
         return True
 
     def compute_log(self):
-        ''' compute Laplacian of Gaussian (LoG) '''
+        """ compute Laplacian of Gaussian (LoG) """
 
         # print status
         self.sta.status_msg('Compute LoG', self.cfg.params[self.cfg.opt_prnt])
@@ -102,7 +89,7 @@ class CentroidExtractor(object):
         return True
 
     def compute_centroids(self):
-        ''' find coordinates of micro image centers '''
+        """ find coordinates of micro image centers """
 
         # compute local maxima with non-maximum suppression (NMS) using Down-sampling Rate (DR)
         nms_obj = NonMaxSuppression(self._peak_img[::DR, ::DR], self.cfg, self.sta)
@@ -121,3 +108,7 @@ class CentroidExtractor(object):
     @property
     def centroids(self):
         return self._centroids
+
+    @property
+    def peak_img(self):
+        return self._peak_img

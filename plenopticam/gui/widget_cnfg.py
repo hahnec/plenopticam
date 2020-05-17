@@ -74,9 +74,14 @@ class CnfgWidget(object):
                 obj_ent = DoubleSpinbox(self.frame, textvariable=self.tk_vars[key], width=PX)
 
             elif PROPERTIES[key][1] == 'sel':
-                self.tk_vars[key] = tk.StringVar(value=self.cfg.params[key])
-                obj_ent = tk.Spinbox(self.frame, values=c.PTCH_SIZE, textvariable=self.tk_vars[key], width=PX//2)
-                self.tk_vars[key].set(value=self.cfg.params[key])   # set to default necessary for tkinter's spinbox
+                # load value range
+                if key == 'cal_meth':
+                    value_ran, default = (c.CALI_METH, c.CALI_METH[0])
+                elif key == 'ptc_leng':
+                    value_ran, default = (c.PTCH_SIZE, c.PTCH_SIZE[2])
+                self.tk_vars[key] = tk.StringVar(value=default)
+                obj_ent = tk.Spinbox(self.frame, values=value_ran, textvariable=self.tk_vars[key], width=PX//2)
+                self.tk_vars[key].set(value=default)   # set to default necessary for tkinter's spinbox
 
             elif PROPERTIES[key][1] == 'bool':
                 self.tk_vars[key] = tk.BooleanVar(value=bool(self.cfg.params[key]))
@@ -123,7 +128,7 @@ class CnfgWidget(object):
         self.cfg.read_params()
 
     def close(self):
-        ''' close about window '''
+        """ close about window """
 
         # save configuration settings
         self.save_cfg()
@@ -178,7 +183,7 @@ class DoubleSpinbox(tk.Frame):
         self._spinbox_two.grid(row=0, column=1, sticky='NSE')
 
     def xview_moveto(self, val):
-        ''' display text from most right '''
+        """ display text from most right """
 
         self._spinbox_one.xview_moveto(val)
         self._spinbox_two.xview_moveto(val)
