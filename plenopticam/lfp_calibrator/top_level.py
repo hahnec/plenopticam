@@ -27,22 +27,26 @@ from color_space_converter import rgb2gry
 # local imports
 from plenopticam.lfp_calibrator.pitch_estimator import PitchEstimator
 from plenopticam.lfp_calibrator.centroid_extractor import CentroidExtractor
+from plenopticam.lfp_calibrator.centroid_refiner import CentroidRefiner
 from plenopticam.lfp_calibrator.centroid_sorter import CentroidSorter
 from plenopticam.lfp_calibrator.centroid_drawer import CentroidDrawer
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc.status import PlenopticamStatus
 from plenopticam.lfp_aligner.cfa_processor import CfaProcessor
+from plenopticam.cfg import constants as c
 
 
 class LfpCalibrator(object):
 
-    def __init__(self, wht_img, cfg=None, sta=None, M=None):
+    def __init__(self, wht_img, cfg=None, sta=None):
 
         # input variables
         self._wht_img = wht_img
         self.cfg = cfg if cfg is not None else PlenopticamConfig()
         self.sta = sta if sta is not None else PlenopticamStatus()
-        self._M = M
+
+        # private
+        self._M = None
 
     def main(self):
 
@@ -65,20 +69,21 @@ class LfpCalibrator(object):
         # estimate micro image diameter
         obj = PitchEstimator(self._wht_img, self.cfg, self.sta)
         obj.main()
-        self._M = obj.M if not self._M else self._M
+        self._M = obj.M if self._M is None else self._M
         del obj
 
         # compute all centroids of micro images
-        obj = CentroidExtractor(self._wht_img, self.cfg, self.sta, self._M, method='area')
+        obj = CentroidExtractor(self._wht_img, self.cfg, self.sta, self._M)
         obj.main()
         centroids = obj.centroids
+        peak_img = obj.peak_img
         del obj
 
-        # write micro image center image to hard drive if debug option is set
-        if self.cfg.params[self.cfg.opt_dbug]:
-            draw_obj = CentroidDrawer(self._wht_img, centroids, self.cfg, self.sta)
-            draw_obj.write_centroids_img(fn='wht_img+mics_unsorted.png')
-            del draw_obj
+        # refine centroids with sub-pixel precision using provided method
+        ref_obj = CentroidRefiner(peak_img, centroids, self.cfg, self.sta, self._M, self.cfg.params[self.cfg.cal_meth])
+        ref_obj.main()
+        centroids = ref_obj.centroids_refined
+        del ref_obj
 
         # reorder MICs and assign indices based on the detected MLA pattern
         obj = CentroidSorter(centroids, self.cfg, self.sta)
@@ -87,7 +92,7 @@ class LfpCalibrator(object):
         del obj
 
         # fit grid of MICs using least-squares method to obtain accurate MICs from line intersections
-        if not self.sta.interrupt and None:
+        if self.cfg.params[self.cfg.cal_meth] == c.CALI_METH[2] and not self.sta.interrupt:
             from plenopticam.lfp_calibrator import GridFitter
             self.cfg.calibs[self.cfg.pat_type] = pattern
             obj = GridFitter(coords_list=mic_list, cfg=self.cfg, sta=self.sta)

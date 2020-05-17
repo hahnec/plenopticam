@@ -36,7 +36,7 @@ from os import remove, stat, chmod
 class PlenopticamConfig(object):
 
     # static class variables for key parameters
-    lfp_path, cal_path, cal_meta, \
+    lfp_path, cal_path, cal_meta, cal_meth, \
     ptc_leng, \
     ran_refo, \
     opt_cali, opt_vign, opt_lier, opt_cont, opt_colo, opt_awb_, opt_sat_, opt_view, opt_refo, opt_refi, opt_pflu, \

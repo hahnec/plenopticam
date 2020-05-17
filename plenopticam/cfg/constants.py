@@ -4,6 +4,7 @@ PARAMS_KEYS = (
     'lfp_path',
     'cal_path',
     'cal_meta',
+    'cal_meth',
     # integers
     'ptc_leng',
     # lists
@@ -30,6 +31,7 @@ PARAMS_KEYS = (
 # dictionary values for configuration parameters in json file
 PARAMS_VALS = (
     # strings
+    '',
     '',
     '',
     '',
@@ -61,6 +63,7 @@ PARAMS_TYPE = (
     'str',
     'str',
     'str',
+    'sel',
     # integers
     'sel',
     # lists
@@ -89,12 +92,13 @@ PARAMS_NAME = (
     'Light field image path',
     'Calibration source path',
     'Metadata file path',
+    'Calibration method',
     # integers
     'Micro image patch size',
     # lists
     'Refocusing range',
     # booleans
-    'Force re-calibration',
+    'Redo calibration',
     'De-Vignetting',
     'Pixel outlier removal',
     'Contrast automation',
@@ -123,3 +127,4 @@ CALIBS_KEYS = (
 # value ranges
 PFLU_VALS = ('vertical', 'horizontal', 'skew up', 'skew down')
 PTCH_SIZE = list(range(3, 99, 2))
+CALI_METH = ('area', 'peak', 'grid fit')

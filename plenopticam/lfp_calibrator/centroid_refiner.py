@@ -25,6 +25,7 @@ import numpy as np
 
 # local imports
 from plenopticam.misc.status import PlenopticamStatus
+from plenopticam.lfp_calibrator.centroid_drawer import CentroidDrawer
 
 DR = 1
 
@@ -82,6 +83,12 @@ class CentroidRefiner(object):
 
         # coordinate upsampling to compensate for downsampling
         self._centroids_refined = [(x*DR, y*DR) for x, y in self._centroids_refined] if DR > 1 else self._centroids_refined
+
+        # write centroids image to hard drive (if option set)
+        if self.cfg.params[self.cfg.opt_dbug] and not self.sta.interrupt:
+            draw_obj = CentroidDrawer(self._img, self._centroids, self.cfg)
+            draw_obj.write_centroids_img(fn='wht_img+mics_refi.png')
+            del draw_obj
 
         return True
 
