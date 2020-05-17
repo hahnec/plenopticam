@@ -80,10 +80,10 @@ class LfpCalibrator(object):
         del obj
 
         # refine centroids with sub-pixel precision using provided method
-        ref_obj = CentroidRefiner(peak_img, centroids, self.cfg, self.sta, self._M, self.cfg.params[self.cfg.cal_meth])
-        ref_obj.main()
-        centroids = ref_obj.centroids_refined
-        del ref_obj
+        obj = CentroidRefiner(peak_img, centroids, self.cfg, self.sta, self._M, self.cfg.params[self.cfg.cal_meth])
+        obj.main()
+        centroids = obj.centroids_refined
+        del obj
 
         # reorder MICs and assign indices based on the detected MLA pattern
         obj = CentroidSorter(centroids, self.cfg, self.sta)
