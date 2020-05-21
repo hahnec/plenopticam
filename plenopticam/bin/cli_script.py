@@ -33,11 +33,13 @@ from plenopticam import lfp_refocuser
 from plenopticam.lfp_reader.top_level import SUPP_FILE_EXT
 from plenopticam import misc
 from plenopticam.cfg import PlenopticamConfig
+from plenopticam.cfg.constants import CALI_METH
 from plenopticam import __version__
 from plenopticam.gui.top_level import PlenopticamApp
 
 
 def usage():
+    """ prints help message """
 
     print("Usage: plenopticam <options>\n")
     print("Options:")
@@ -46,6 +48,8 @@ def usage():
     print("-c <calipath>, --cali=<calipath>  Specify calibration file to process")
     print("-p <number>,   --patch=<number>   Patch size")
     print("-r <list>,     --refo=[0, 2]      Refocusing range")
+    print("-m <str>,      --meth='area'      Calibration method, e.g.:")
+    print("                                  "+', '.join(['"'+m+'"' for m in CALI_METH]))
     print("-h,            --help             Print this help message")
     print("")
     # boolean options
@@ -61,11 +65,12 @@ def usage():
 
 
 def parse_options(argv, cfg):
+    """ set config dictionary according to command line user arguments """
 
     try:
-        opts, args = getopt.getopt(argv, "ghf:c:p:r:",
-                                        ["gui", "help", "file=", "cali=", "patch=", "refo=", "dbug", "refi",
-                                         "vgn", "awb", "con", "hot", "sat", "art", "rm"])
+        opts, args = getopt.getopt(argv, "ghf:c:p:r:m:",
+                                        ["gui", "help", "file=", "cali=", "patch=", "refo=", "meth="
+                                         "dbug", "refi", "vgn", "awb", "con", "hot", "sat", "art", "rm"])
     except getopt.GetoptError as e:
         print(e)
         sys.exit(2)
@@ -87,6 +92,8 @@ def parse_options(argv, cfg):
             if opt in ("-r", "--refo"):
                 refo_range = misc.str2list(arg)
                 cfg.params[cfg.ran_refo] = refo_range if isinstance(refo_range, list) else [0, 2]
+            if opt in ("-m", "--meth"):
+                cfg.params[cfg.cal_meth] = arg if arg in CALI_METH else CALI_METH[0]
             if opt == "--dbug":
                 cfg.params[cfg.opt_dbug] = True
             if opt == "--refi":
@@ -105,7 +112,7 @@ def parse_options(argv, cfg):
                 cfg.params[cfg.opt_arti] = True
             if opt == "--rm":
                 cfg.params[cfg.dir_remo] = True
-    # create dictionary containing all parameters for the light field
+
     return cfg
 
 
