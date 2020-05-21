@@ -127,4 +127,4 @@ CALIBS_KEYS = (
 # value ranges
 PFLU_VALS = ('vertical', 'horizontal', 'skew up', 'skew down')
 PTCH_SIZE = list(range(3, 99, 2))
-CALI_METH = ('area', 'peak', 'grid fit')
+CALI_METH = ('area', 'peak', 'grid-fit')
