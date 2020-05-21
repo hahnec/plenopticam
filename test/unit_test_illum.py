@@ -57,6 +57,9 @@ class PlenoptiCamTesterIllum(PlenoptiCamTester):
         cfg.default_values()
         sta = PlenopticamStatus()
 
+        # compute 3x3 viewpoints only (to reduce computation time)
+        cfg.params[cfg.ptc_leng] = 3
+
         # skip progress prints (prevent Travis from terminating due to reaching 4MB logfile size)
         sta.prog_opt = False
 
@@ -71,8 +74,8 @@ class PlenoptiCamTesterIllum(PlenoptiCamTester):
 
         for lfp_file in lfp_list:
 
-            print('Compute image %s' % os.path.basename(cfg.params[cfg.lfp_path]))
             cfg.params[cfg.lfp_path] = os.path.join(self.fp, lfp_file)
+            print('\nCompute image %s' % os.path.basename(cfg.params[cfg.lfp_path]))
 
             # decode light field image
             lfp_obj = LfpReader(cfg, sta)
