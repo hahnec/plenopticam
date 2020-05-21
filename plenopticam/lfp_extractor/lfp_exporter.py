@@ -28,6 +28,7 @@ from plenopticam.lfp_extractor.lfp_viewpoints import LfpViewpoints
 # external libs
 import os
 import numpy as np
+from color_space_converter import rgb2gry
 
 
 class LfpExporter(LfpViewpoints):
@@ -100,6 +101,7 @@ class LfpExporter(LfpViewpoints):
         return True
 
     def export_vp_stack(self, type='png', downscale=None):
+        """ write viewpoint images stitched to together in a single image """
 
         # print status
         self.sta.status_msg('Write viewpoint image stack', self.cfg.params[self.cfg.opt_prnt])
@@ -111,8 +113,8 @@ class LfpExporter(LfpViewpoints):
             if downscale else self.views_stacked_img.copy()
 
         # normalization
-        p_lo = np.percentile(misc.rgb2gray(self.central_view), 0.05)
-        p_hi = np.percentile(misc.rgb2gray(self.central_view), 99.995)
+        p_lo = np.percentile(rgb2gry(self.central_view), 0.05)
+        p_hi = np.percentile(rgb2gry(self.central_view), 99.995)
         views_stacked_img = misc.Normalizer(views_stacked_img, min=p_lo, max=p_hi).uint8_norm()
 
         # export all viewpoints in single image
