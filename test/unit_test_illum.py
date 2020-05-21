@@ -57,8 +57,11 @@ class PlenoptiCamTesterIllum(PlenoptiCamTester):
         cfg.default_values()
         sta = PlenopticamStatus()
 
-        # skip concole output message (prevent Travis from terminating due to reaching 4MB logfile size)
-        cfg.params[cfg.opt_prnt] = False
+        # skip progress prints (prevent Travis from terminating due to reaching 4MB logfile size)
+        sta.prog_opt = False
+
+        # print current process message (to prevent Travis from stopping after 10 mins)
+        cfg.params[cfg.opt_prnt] = True
 
         # use pre-loaded calibration dataset
         wht_list = [file for file in os.listdir(self.fp) if file.startswith('caldata')]

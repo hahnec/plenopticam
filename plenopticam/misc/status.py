@@ -1,7 +1,5 @@
 from __future__ import print_function
 
-#!/usr/bin/env python
-
 __author__ = "Christopher Hahne"
 __email__ = "info@christopherhahne.de"
 __license__ = """
@@ -43,6 +41,7 @@ class PlenopticamStatus(object):
 
         # public instance variables
         self.prog_var = 0
+        self.prog_opt = True
         self.stat_var = ''
         self.interrupt = False
         self.error = False
@@ -58,7 +57,7 @@ class PlenopticamStatus(object):
                     self.prog_var = 'Finished'
 
             # console print (if option set)
-            if opt:
+            if opt and self.prog_opt:
                 print('\r Progress: {:2.0f}%'.format(float(x)), end='')
 
                 if x == 100:
