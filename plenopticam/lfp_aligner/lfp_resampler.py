@@ -80,7 +80,7 @@ class LfpResampler(LfpMicroLenses):
         # initialize patch
         patch = np.zeros(window.shape)
 
-        # wrong window shapes cause crashes which is why we
+        # verify patch shapes as wrong shapes cause crashes
         if window.shape[0] == self._M+2 and window.shape[1] == self._M+2:
             # iterate through color channels
             for p in range(self._DIMS[2]):
