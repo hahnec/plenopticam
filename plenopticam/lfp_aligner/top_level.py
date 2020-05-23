@@ -50,7 +50,7 @@ class LfpAligner(object):
 
         if self.cfg.params[self.cfg.opt_vign] and self._wht_img is not None:
             # apply de-vignetting
-            obj = LfpDevignetter(lfp_img=self._lfp_img, wht_img=self._wht_img, cfg=self.cfg, sta=self.sta, noise_lev=0)
+            obj = LfpDevignetter(lfp_img=self._lfp_img, wht_img=self._wht_img, cfg=self.cfg, sta=self.sta)
             obj.main()
             self._lfp_img = obj.lfp_img
             self._wht_img = obj.wht_img
