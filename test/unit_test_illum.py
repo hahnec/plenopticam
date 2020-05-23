@@ -80,7 +80,11 @@ class PlenoptiCamTesterIllum(PlenoptiCamTester):
             # decode light field image
             lfp_obj = LfpReader(cfg, sta)
             ret_val = lfp_obj.main()
-            lfp_img = lfp_obj.lfp_img
+
+            # use third of original image size (to prevent Travis from stopping due to memory error)
+            crop_h, crop_w = lfp_obj.lfp_img.shape[0] // 3, lfp_obj.lfp_img.shape[1] // 3
+            crop_h, crop_w = crop_h + crop_h % 2, crop_w + crop_w % 2   # use even number for correct Bayer arrangement
+            lfp_img = lfp_obj.lfp_img[crop_h:-crop_h, crop_w:-crop_w]
             del lfp_obj
 
             self.assertEqual(True, ret_val)
@@ -92,7 +96,7 @@ class PlenoptiCamTesterIllum(PlenoptiCamTester):
                 # automatic calibration data selection
                 obj = CaliFinder(cfg, sta)
                 ret_val = obj.main()
-                wht_img = obj.wht_bay
+                wht_img = obj.wht_bay[crop_h:-crop_h, crop_w:-crop_w] if obj.wht_bay is not None else obj.wht_bay
                 del obj
 
                 self.assertEqual(True, ret_val)
