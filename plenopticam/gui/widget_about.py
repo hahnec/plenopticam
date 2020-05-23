@@ -56,7 +56,7 @@ class AbtWidget(object):
         btn.grid(row=3, padx=PX, pady=PY)
 
     def close(self):
-        ''' close about window '''
+        """ close about window """
 
         self.abt_widget.destroy()
 

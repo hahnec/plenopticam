@@ -68,7 +68,7 @@ class MenuWidget(tk.Frame):
         return True
 
     def open_docs(self):
-        ''' open documentation in webbrowser '''
+        """ open documentation in webbrowser """
 
         # relative path for html documentation
         REL_PATH = "docs/build/html/index.html"
@@ -99,7 +99,7 @@ class MenuWidget(tk.Frame):
             print(url)
 
 class MenuBtns(tk.Menu):
-    ''' child of menu class that supports "state" as key for disabling menu buttons '''
+    """ child of menu class that supports "state" as key for disabling menu buttons """
 
     def __init__(self, *args, **kwargs):
         super(MenuBtns, self).__init__(*args, **kwargs)

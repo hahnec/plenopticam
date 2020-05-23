@@ -217,7 +217,7 @@ class PlenopticamConfig(object):
 
     @property
     def exp_path(self):
-        ''' export directory path '''
+        """ export directory path """
         return splitext(self.params[self.lfp_path])[0]
 
     def cond_load_limg(self, img=None):

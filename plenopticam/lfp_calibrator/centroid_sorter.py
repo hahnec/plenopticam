@@ -69,7 +69,7 @@ class CentroidSorter(object):
         return True
 
     def _init_var(self):
-        ''' find most up-left and most bottom-right micro image centers '''
+        """ find most up-left and most bottom-right micro image centers """
 
         # iterate through all micro image centers and add up x and y coordinates
         sum_mic = sum([self._centroids[:, 0].astype(float, copy=False), self._centroids[:, 1].astype(float, copy=False)])
@@ -86,7 +86,7 @@ class CentroidSorter(object):
         return True
 
     def _mla_dims(self):
-        ''' search for complete rows and columns and count number of lenses in each direction '''
+        """ search for complete rows and columns and count number of lenses in each direction """
 
         # set max top and upper right
         x_max_t, upper_r, self._upper_l = self._get_lens_max(self._upper_l, 1)
@@ -178,11 +178,11 @@ class CentroidSorter(object):
         return True
 
     def _calc_pattern(self, pitch):
-        ''' This function determines whether the geometric arrangement of micro lenses is rectangular or hexagonal.
+        """ This function determines whether the geometric arrangement of micro lenses is rectangular or hexagonal.
 
         :param pitch: scalar of type int or float representing the spacing between micro image centers
         :return: True
-        '''
+        """
 
         # pick random micro image center in middle of centroid list
         point = self._centroids[int(len(self._centroids)/2)]

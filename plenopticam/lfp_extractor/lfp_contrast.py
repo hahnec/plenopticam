@@ -173,7 +173,7 @@ class LfpContrast(LfpViewpoints):
         return True
 
     def set_stretch(self, ref_ch, val_lim=None):
-        ''' according to https://stackoverflow.com/questions/9744255/instagram-lux-effect/9761841#9761841 '''
+        """ according to https://stackoverflow.com/questions/9744255/instagram-lux-effect/9761841#9761841 """
 
         # estimate contrast und brightness parameters (by default: first channel only)
         val_lim = 2**16-1 if not val_lim else val_lim
@@ -207,7 +207,7 @@ class LfpContrast(LfpViewpoints):
         return found_y
 
     def apply_stretch(self, img=None, ch=None):
-        ''' contrast and brightness rectification For provided RGB image '''
+        """ contrast and brightness rectification for provided RGB image """
 
         img = img if img is not None else self.vp_img_arr
         ch = ch if ch is not None else 0

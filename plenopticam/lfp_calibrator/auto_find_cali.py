@@ -118,7 +118,7 @@ class CaliFinder(object):
         return True
 
     def _raw2img(self):
-        ''' decode raw data to obtain bayer image and settings data '''
+        """ decode raw data to obtain bayer image and settings data """
 
         # skip if calibrated json file already exists, otherwise perform centroid calibration
         if self._raw_data:
@@ -156,7 +156,7 @@ class CaliFinder(object):
         return True
 
     def _match_georef(self, json_dict):
-        ''' compare georef hash value with that in provided json dictionary '''
+        """ compare georef hash value with that in provided json dictionary """
 
         # use JSON keys according to LFR type
         key1, key2 = ('calibrationFiles', 'hash') if self._cam_model.startswith(('B', 'I')) else ('frame', 'imageRef')#('derivationArray', 0) #('files', 'dataRef')
@@ -171,7 +171,7 @@ class CaliFinder(object):
         return True
 
     def _search_cal_dirs(self):
-        ''' look for geo data in calibration folders '''
+        """ look for geo data in calibration folders """
 
         # skip if file already found or if provided path is not a directory
         if not self._file_found:
@@ -220,7 +220,7 @@ class CaliFinder(object):
         return True
 
     def _search_cal_file(self):
-        ''' look for geo data in calibration tar-files '''
+        """ look for geo data in calibration tar-files """
 
         # skip if file already found
         if not self._file_found:

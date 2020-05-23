@@ -140,7 +140,7 @@ class CfaProcessor(object):
         return self._rgb_img.copy()
 
     def apply_awb(self, img_arr=None, bay_pat=None, gains=None):
-        ''' white balance from gains '''
+        """ white balance from gains """
 
         img_arr = self._bay_img if img_arr is None else img_arr
         bay_pat = self._bay_pat if bay_pat is None else bay_pat
@@ -169,7 +169,7 @@ class CfaProcessor(object):
         return img_arr
 
     def _correct_bayer_highlights(self, gains=None):
-        ''' inspired by CLIM_VSENSE highlight correction '''
+        """ inspired by CLIM_VSENSE highlight correction """
 
         self._gains = self._gains if gains is None else gains
 
@@ -223,7 +223,7 @@ class CfaProcessor(object):
 
     @staticmethod
     def correct_color(img, ccm_mat=np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])):
-        ''' color correction according to http://www.imatest.com/docs/colormatrix/ using Case 1 '''
+        """ color correction according to http://www.imatest.com/docs/colormatrix/ using Case 1 """
 
         # perform color correction
         img_ccm = np.dot(np.vstack(img), ccm_mat).reshape(img.shape)

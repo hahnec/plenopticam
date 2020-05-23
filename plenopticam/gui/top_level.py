@@ -65,7 +65,7 @@ class PlenopticamApp(tk.Tk):
         self.pbar_wid.pack(fill='both', expand=True, side='bottom', padx=PX, pady=PY)
 
     def icon_handling(self):
-        ''' use OS temp folder if present or current working directory '''
+        """ use OS temp folder if present or current working directory """
 
         # icon path for app bundle (tmp) or non-bundled package (cwd)
         cwd = os.path.join(os.path.dirname(os.path.realpath(__file__)), self.REL_PATH)

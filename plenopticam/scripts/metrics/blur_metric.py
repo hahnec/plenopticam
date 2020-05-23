@@ -6,7 +6,7 @@ from plenopticam import misc
 import platform
 
 def blur_metric(img_tile):
-    ''' img_tile : cropped image '''
+    """ img_tile : cropped image """
 
     img = rgb2gray(img_tile) if len(img_tile.shape) == 3 else img_tile
     y, x = img.shape
@@ -29,7 +29,7 @@ def blur_metric(img_tile):
 
 
 def michelson_contrast(img_tile):
-    ''' https://colorusage.arc.nasa.gov/luminance_cont.php '''
+    """ https://colorusage.arc.nasa.gov/luminance_cont.php """
 
     lum_tile = misc.yuv_conv(img_tile)[..., 0]
 
