@@ -1,14 +1,15 @@
-from plenopticam.misc import rgb2gray
+from color_space_converter import rgb2gry
 
 import numpy as np
 import os
 from plenopticam import misc
 import platform
 
+
 def blur_metric(img_tile):
     """ img_tile : cropped image """
 
-    img = rgb2gray(img_tile) if len(img_tile.shape) == 3 else img_tile
+    img = rgb2gry(img_tile) if len(img_tile.shape) == 3 else img_tile
     y, x = img.shape
 
     magnitude = abs(np.fft.fft2(img))
