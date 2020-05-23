@@ -57,6 +57,13 @@ class PlenoptiCamTesterIllum(PlenoptiCamTester):
         cfg.default_values()
         sta = PlenopticamStatus()
 
+        # enable options in config to test more algorithms
+        cfg.params[cfg.cal_meth] = 2
+        cfg.params[cfg.opt_vign] = True
+        cfg.params[cfg.opt_rota] = True
+        cfg.params[cfg.opt_refi] = True
+        cfg.params[cfg.opt_pflu] = True
+
         # compute 3x3 viewpoints only (to reduce computation time)
         cfg.params[cfg.ptc_leng] = 3
 
