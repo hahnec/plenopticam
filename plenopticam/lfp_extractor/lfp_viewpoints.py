@@ -81,7 +81,7 @@ class LfpViewpoints(object):
         iter_tot = kwargs['iter_tot'] if 'iter_tot' in kwargs else 1
 
         # status message handling
-        self.sta.progress(0, self.cfg.params[self.cfg.opt_prnt])
+        self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
         if iter_num == 0:
             msg = kwargs['msg'] if 'msg' in kwargs else 'Viewpoint process'
             self.sta.status_msg(msg, self.cfg.params[self.cfg.opt_prnt])
