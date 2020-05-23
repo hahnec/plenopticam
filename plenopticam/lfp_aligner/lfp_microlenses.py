@@ -90,9 +90,11 @@ class LfpMicroLenses(object):
 
         # status message handling
         msg = kwargs['msg'] if 'msg' in kwargs else 'Light-field alignment process'
-        self.sta.status_msg(msg, self.cfg.params[self.cfg.opt_prnt])
+        usr_prnt = kwargs['prnt'] if 'prnt' in kwargs else True
+        if usr_prnt:
+            self.sta.status_msg(msg, self.cfg.params[self.cfg.opt_prnt])
 
-        args = [kwargs[key] for key in kwargs.keys() if key not in ('cfg', 'sta', 'msg')]
+        args = [kwargs[key] for key in kwargs.keys() if key not in ('cfg', 'sta', 'msg', 'prnt')]
 
         try:
             # iterate over each MIC
