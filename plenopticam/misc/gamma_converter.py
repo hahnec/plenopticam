@@ -10,7 +10,7 @@ class GammaConverter(object):
         self._prf = profile
 
     def correct_gamma(self, img=None, gamma=None, profile=None):
-        ''' perform gamma correction on image array '''
+        """ perform gamma correction on image array """
 
         img = self._img if img is None else np.asarray(img, dtype='float64')
         gam = self._gam if gamma is None else gamma

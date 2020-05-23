@@ -86,7 +86,7 @@ class LfpMicroLenses(object):
             self.sta.error = True
 
     def proc_lens_iter(self, fun, **kwargs):
-        ''' process light-field based on provided function handle and argument data '''
+        """ process light-field based on provided function handle and argument data """
 
         # status message handling
         msg = kwargs['msg'] if 'msg' in kwargs else 'Light-field alignment process'

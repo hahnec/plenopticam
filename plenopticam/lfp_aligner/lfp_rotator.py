@@ -101,7 +101,7 @@ class LfpRotator(object):
 
     @staticmethod
     def _regress_method(mid_row, mid_col):
-        ''' get slopes via ordinary least-squares linear regression '''
+        """ get slopes via ordinary least-squares linear regression """
 
         # horizontal slope
         A = np.vstack([np.ones(len(mid_row[:, 1])), mid_row[:, 1]]).T
@@ -119,7 +119,7 @@ class LfpRotator(object):
 
     @staticmethod
     def _gradient_method(mid_row, mid_col):
-        ''' get slopes for rotation using mean gradient '''
+        """ get slopes for rotation using mean gradient """
 
         slope_row = np.mean(np.diff(mid_row[:, 0])/np.diff(mid_row[:, 1]))     # mean(diff(y)/diff(x))
         slope_col = np.mean(np.diff(mid_col[:, 1])/np.diff(mid_col[:, 0]))
@@ -145,7 +145,7 @@ class LfpRotator(object):
         return True
 
     def _rotate_centroids(self):
-        ''' transformation of centroids via translation and rotation '''
+        """ transformation of centroids via translation and rotation """
 
         # status update
         self.sta.status_msg('Rotate centroids', self.cfg.params[self.cfg.opt_prnt])
@@ -181,7 +181,7 @@ class LfpRotator(object):
         return self._centroids.tolist()
 
     def _rota_plot(self, slope):
-        ''' plots for debug purposes only '''
+        """ plots for debug purposes only """
 
         import matplotlib.pyplot as plt
         plt.figure()

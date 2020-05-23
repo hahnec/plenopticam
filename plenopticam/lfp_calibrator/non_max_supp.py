@@ -57,7 +57,7 @@ class NonMaxSuppression(object):
         self._map[self._map < 0] = 0
 
     def _non_max_suppression(self):
-        ''' adaption of non-maximum suppression by Tuan Q. Pham '''
+        """ adaption of non-maximum suppression by Tuan Q. Pham """
 
         # print status
         self.sta.status_msg('Select maxima', self.cfg.params[self.cfg.opt_prnt])

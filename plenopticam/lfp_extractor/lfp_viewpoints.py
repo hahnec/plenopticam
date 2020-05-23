@@ -74,7 +74,7 @@ class LfpViewpoints(object):
         return output
 
     def proc_vp_arr(self, fun, **kwargs):
-        ''' process viewpoint images based on provided function handle and argument data '''
+        """ process viewpoint images based on provided function handle and argument data """
 
         # percentage indices for tasks having sub-processes
         iter_num = kwargs['iter_num'] if 'iter_num' in kwargs else 0
@@ -156,7 +156,7 @@ class LfpViewpoints(object):
         return vp_img_set
 
     def proc_ax_propagate_1d(self, fun, idx=None, axis=None, **kwargs):
-        ''' apply provided function along axis direction '''
+        """ apply provided function along axis direction """
 
         # status message handling
         if 'msg' in kwargs:
@@ -190,7 +190,7 @@ class LfpViewpoints(object):
         return True
 
     def proc_ax_propagate_2d(self, fun, **kwargs):
-        ''' apply provided function along axes '''
+        """ apply provided function along axes """
 
         # percentage indices for tasks having sub-processes
         iter_num = kwargs['iter_num'] if 'iter_num' in kwargs else 0
@@ -223,7 +223,7 @@ class LfpViewpoints(object):
 
     @property
     def views_stacked_img(self):
-        ''' concatenation of all sub-aperture images for single image representation '''
+        """ concatenation of all sub-aperture images for single image representation """
         return np.moveaxis(np.concatenate(np.moveaxis(np.concatenate(np.moveaxis(self.vp_img_arr, 1, 2)), 0, 2)), 0, 1)
 
     def circular_view_aperture(self, offset=None, ellipse=None):

@@ -55,7 +55,7 @@ def safe_get(dict, *keys):
 
 
 def img_resize(img, x_scale=1, y_scale=None, method=None):
-    ''' perform image interpolation based on scipy lib '''
+    """ perform image interpolation based on scipy lib """
 
     if not y_scale:
         y_scale = x_scale
@@ -79,7 +79,7 @@ def img_resize(img, x_scale=1, y_scale=None, method=None):
 
 
 def eq_channels(img):
-    ''' equalize channels of RGB image (make channels of even power) '''
+    """ equalize channels of RGB image (make channels of even power) """
 
     chs = np.ones(img.shape[2]) if len(img.shape) == 3 else 1
     ch_max = np.argmax(img.sum(axis=0).sum(axis=0))
@@ -91,7 +91,7 @@ def eq_channels(img):
 
 
 def robust_awb(img, t=0.3, max_iter=1000):
-    ''' inspired by Jun-yan Huo et al. and http://web.stanford.edu/~sujason/ColorBalancing/Code/robustAWB.m '''
+    """ inspired by Jun-yan Huo et al. and http://web.stanford.edu/~sujason/ColorBalancing/Code/robustAWB.m """
 
     img = Normalizer(img).type_norm(new_min=0, new_max=1.0)
     ref_pixel = img[0, 0, :].copy()

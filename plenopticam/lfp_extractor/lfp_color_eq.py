@@ -111,6 +111,6 @@ class LfpColorEqualizer(LfpViewpoints):
         return True
 
     def _exclude_crosstalk_views(self):
-        ''' function wrapper to exclude Lytro Illum views that suffer from cross-talk '''
+        """ function wrapper to exclude Lytro Illum views that suffer from cross-talk """
 
         self.circular_view_aperture(offset=2, ellipse=True)
