@@ -19,7 +19,7 @@ def brisque_metric(img_tile):
 def blur_metric(img_tile):
     """ img_tile : cropped image """
 
-    img = rgb2gry(img_tile) if len(img_tile.shape) == 3 else img_tile
+    img = rgb2gry(img_tile)[..., 0] if len(img_tile.shape) == 3 else img_tile
     y, x = img.shape
 
     magnitude = np.abs(fftpack.fft2(img))
@@ -51,7 +51,7 @@ def michelson_contrast(img_tile):
     """ https://colorusage.arc.nasa.gov/luminance_cont.php """
 
     #lum_tile = misc.yuv_conv(img_tile)[..., 0]
-    lum_tile = rgb2gry(img_tile)
+    lum_tile = rgb2gry(img_tile)[..., 0]
 
     c_m = (lum_tile.max() - lum_tile.min()) / (lum_tile.max() + lum_tile.min())
 

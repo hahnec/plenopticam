@@ -35,7 +35,8 @@ class CentroidDrawer(object):
     def __init__(self, img, centroids, cfg=None, sta=None):
 
         # input variables
-        self._img = Normalizer(rgb2gry(img.copy())).uint8_norm()
+        self._img = rgb2gry(img.copy())[..., 0] if len(img.shape) == 3 else img.copy()
+        self._img = Normalizer(self._img).uint8_norm()
         self._centroids = np.asarray(centroids)
         self.cfg = cfg if cfg is not None else PlenopticamConfig()
         self.sta = sta if sta is not None else PlenopticamStatus()

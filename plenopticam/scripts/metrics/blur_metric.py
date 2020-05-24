@@ -9,7 +9,7 @@ import platform
 def blur_metric(img_tile):
     """ img_tile : cropped image """
 
-    img = rgb2gry(img_tile) if len(img_tile.shape) == 3 else img_tile
+    img = rgb2gry(img_tile)[..., 0] if len(img_tile.shape) == 3 else img_tile
     y, x = img.shape
 
     magnitude = abs(np.fft.fft2(img))
