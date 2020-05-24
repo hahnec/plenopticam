@@ -39,7 +39,7 @@ class HexCorrector(LfpViewpoints):
 
         if self.cfg.calibs[self.cfg.mic_list] is not None:
             # analyse
-            self.hex_odd = LfpResampler().get_hex_direction(np.asarray(self.cfg.calibs[self.cfg.mic_list]))
+            self.hex_odd = LfpResampler.get_hex_direction(np.asarray(self.cfg.calibs[self.cfg.mic_list]))
         else:
             # reset pattern type to skip hex correction process
             self.cfg.calibs[self.cfg.pat_type] = 'rec'
