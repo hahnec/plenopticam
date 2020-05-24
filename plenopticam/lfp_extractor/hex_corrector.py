@@ -86,14 +86,16 @@ class HexCorrector(LfpViewpoints):
         # j for shifted and i represents truth (unshifted)
         i, j = [1, 0] if self.hex_odd else [0, 1]
 
-        # vertically interpolate pixels to get reference
-        #phi = np.zeros((img[i::2, ...].shape[0], img.shape[1], img.shape[2]))
-        #for p in range(ch):
-        #    fun = interp2d(range(img[i::2, ...].shape[1]), range(img[i::2, ...].shape[0]), img[i::2, :, p], kind=self.method)
-        #    phi[..., p] = fun(np.arange(img.shape[1]), np.linspace(0, img[i::2, ...].shape[0]+.5, img[i::2, ...].shape[0]))
-
         # gradient between shifted and unshifted (responsive to hex artifacts)
-        dif = img[j::2, ...]-img[i::2, ...] if img[i::2, ...].shape[0] == img[j::2, ...].shape[0] else img[j::2, ...]-img[i::2, ...][:-1]
+        if img[i::2, ...].shape[0] == img[j::2, ...].shape[0]:
+            dif = img[j::2, ...]-img[i::2, ...]
+        elif img[j::2, ...].shape[0] == img[i::2, ...].shape[0]+1:
+            dif = img[j::2, ...][:-1]-img[i::2, ...]
+        elif img[j::2, ...].shape[0]+1 == img[i::2, ...].shape[0]:
+            dif = img[j::2, ...] - img[i::2, ...][:-1]
+        else:
+            self.sta.error('Image dimension mismatch')
+            return False
 
         # gradient between unshifted (responsive to real object edges)
         edg = img[i::2, ...][:-1]-img[i+2::2, ...]
@@ -115,25 +117,12 @@ class HexCorrector(LfpViewpoints):
             misc.save_img_file(karr, os.path.join(self.cfg.exp_path, 'karr.png'))
 
         # replicate mask to 3 color channels
-        arr = np.zeros(karr.shape+(3,)) #if karr.shape[0] == dif.shape[0] else np.zeros_like(dif[:-1, ...])
+        arr = np.zeros(karr.shape+(3,))
         for p in range(ch):
             arr[..., p] = karr
 
-        # form long col vector as we are only interested in vertical direction
-        arr_vec = arr.copy().T.ravel()
-
-        # remove spikes (fast peaks in vertical direction)
-        #arr_med = medfilt(arr_vec, 3)
-
-        # 1-D low pass to eliminate hi freq noise
-        #gauss = misc.create_gauss_kernel(10, sig=1)[:, 3]
-        #arr_gau = np.convolve(arr_med, gauss, 'same')
-
-        arr_res = arr_vec.reshape(arr.T.shape).T
-        #rat_res = rat_gau.reshape(rat.T.shape).T
-
         # threshold values with insufficient difference
-        mask = np.divide(arr_res, arr_res.max(), out=np.zeros_like(arr_res), where=arr_res != 0)
+        mask = np.divide(arr, arr.max(), out=np.zeros_like(arr), where=arr != 0)
         th = 0.1
         mask[mask < th] = 0
         mask[mask >= th] = 1
@@ -167,12 +156,8 @@ class HexCorrector(LfpViewpoints):
         idxs_vals = list(zip(idxs[0][valid_idx], idxs[1][valid_idx], idxs[2][valid_idx]))
 
         res = img.copy()
-        arr_res = np.divide(arr_res, arr_res.max(), out=np.zeros_like(arr_res), where=arr_res != 0)
         for idx in idxs_vals:
-            #f = arr_res[idx[0], idx[1], idx[2]]
-            #new_val = res[j::2, ...][idx[0], idx[1], idx[2]] * (1-f) + phi[idx[0], idx[1], idx[2]] * f #shi[j::2, ...][idx[0], idx[1]]#np.mean(img[i::2, ...][idx[0]:idx[0]+2, idx[1]], axis=0)
             new_val = np.mean(img[i::2, ...][idx[0]:idx[0]+2, idx[1], idx[2]], axis=0)
-            #new_val = np.mean(img[i::2, ...][idx[0]:idx[0]+2, idx[1]-1:idx[1]+2, idx[2]], axis=(0, 1))
             res[j::2, ...][idx[0], idx[1], idx[2]] = new_val
 
         if self.cfg.params[self.cfg.opt_dbug]:
