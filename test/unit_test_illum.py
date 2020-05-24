@@ -27,7 +27,7 @@ import pickle
 import os
 
 from plenopticam.lfp_reader import LfpReader
-from plenopticam.lfp_calibrator import LfpCalibrator, CaliFinder
+from plenopticam.lfp_calibrator import LfpCalibrator, CaliFinder, CentroidDrawer
 from plenopticam.lfp_aligner import LfpAligner
 from plenopticam.lfp_extractor import LfpExtractor
 from plenopticam.lfp_refocuser import LfpRefocuser
@@ -126,6 +126,14 @@ class PlenoptiCamTesterIllum(PlenoptiCamTester):
 
             # load calibration data
             cfg.load_cal_data()
+
+            # write centroids as png file
+            if wht_img is not None:
+                obj = CentroidDrawer(wht_img, cfg.calibs[cfg.mic_list], cfg)
+                ret = obj.write_centroids_img(fn=os.path.join(cfg.exp_path, 'wht_img+mics.png'))
+                del obj
+
+                self.assertEqual(True, ret)
 
             #  check if light field alignment has been done before
             if cfg.cond_lfp_align():
