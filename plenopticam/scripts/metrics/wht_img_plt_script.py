@@ -101,7 +101,7 @@ if __name__ == "__main__":
             del cfa_obj
 
     # ensure white image is monochromatic
-    #wht_img = misc.rgb2gray(wht_img) if len(wht_img.shape) is 3 else wht_img
+    #wht_img = misc.rgb2gry(wht_img)[..., 0] if len(wht_img.shape) is 3 else wht_img
 
     # load calibration data
     cfg.load_cal_data()
