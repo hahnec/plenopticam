@@ -1,12 +1,10 @@
 import numpy as np
 
-from plenopticam.lfp_aligner.lfp_microlenses import LfpMicroLenses
-
 
 class GridFitter(object):
 
     def __init__(self, *args, **kwargs):
-        super(GridFitter, self).__init__()  #*args, **kwargs
+        super(GridFitter, self).__init__()
 
         # use config and status if passed
         self.cfg = kwargs['cfg'] if 'cfg' in kwargs else None
@@ -38,11 +36,8 @@ class GridFitter(object):
         # print status
         self.sta.status_msg('Grid fitting', self.cfg.params[self.cfg.opt_prnt])
 
-        # coordinate list index
-        i = 0
-
-        # hexagonal shift direction
-        odd = LfpMicroLenses.get_hex_direction(centroids=self._coords_list) if self._pat_type == 'hex' else 0
+        i = 0       # coordinate list index
+        odd = 0     # hexagonal shift direction
 
         # iterate through rows
         for ly in range(self._MAX_Y):
