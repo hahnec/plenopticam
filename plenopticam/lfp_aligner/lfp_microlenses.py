@@ -133,17 +133,17 @@ class LfpMicroLenses(object):
         safe_pitch = 3
 
         # comparison of patch size and mean size
-        if 3 < user_pitch <= mean_pitch+2:  # allow user pitch to be slightly bigger than estimate
+        if safe_pitch <= user_pitch <= mean_pitch+2:  # allow user pitch to be slightly bigger than estimate
             safe_pitch = user_pitch
         elif user_pitch > mean_pitch:
             safe_pitch = mean_pitch
             msg_str = 'Patch size ({0} px) is larger than micro image size and reduced to {1} pixels.'
             self.sta.status_msg(msg_str.format(user_pitch, mean_pitch), self.cfg.params[self.cfg.opt_prnt])
-        elif user_pitch < 3 < mean_pitch:
+        elif user_pitch < safe_pitch < mean_pitch:
             safe_pitch = mean_pitch
             msg_str = 'Patch size ({0} px) is too small and increased to {1} pixels.'
             self.sta.status_msg(msg_str.format(user_pitch, mean_pitch), self.cfg.params[self.cfg.opt_prnt])
-        elif user_pitch < 3 and mean_pitch < 3:
+        elif user_pitch < safe_pitch and mean_pitch < safe_pitch:
             self.sta.status_msg('Micro image dimensions are too small for light field computation.', True)
             self.sta.interrupt = True
 
