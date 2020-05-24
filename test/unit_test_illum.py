@@ -31,7 +31,7 @@ from plenopticam.lfp_calibrator import LfpCalibrator, CaliFinder
 from plenopticam.lfp_aligner import LfpAligner
 from plenopticam.lfp_extractor import LfpExtractor
 from plenopticam.lfp_refocuser import LfpRefocuser
-from plenopticam.cfg.cfg import PlenopticamConfig
+from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc import PlenopticamStatus, mkdir_p
 from test.unit_test_baseclass import PlenoptiCamTester
 
@@ -58,7 +58,7 @@ class PlenoptiCamTesterIllum(PlenoptiCamTester):
         sta = PlenopticamStatus()
 
         # enable options in config to test more algorithms
-        cfg.params[cfg.cal_meth] = 2
+        cfg.params[cfg.cal_meth] = 'grid-fit'
         cfg.params[cfg.opt_vign] = True
         cfg.params[cfg.opt_rota] = True
         cfg.params[cfg.opt_refi] = True
@@ -91,16 +91,16 @@ class PlenoptiCamTesterIllum(PlenoptiCamTester):
             print('\nCompute image %s' % os.path.basename(cfg.params[cfg.lfp_path]))
 
             # decode light field image
-            lfp_obj = LfpReader(cfg, sta)
-            ret_val = lfp_obj.main()
+            obj = LfpReader(cfg, sta)
+            ret = obj.main()
 
             # use third of original image size (to prevent Travis from stopping due to memory error)
-            crop_h, crop_w = lfp_obj.lfp_img.shape[0] // 3, lfp_obj.lfp_img.shape[1] // 3
+            crop_h, crop_w = obj.lfp_img.shape[0] // 3, obj.lfp_img.shape[1] // 3
             crop_h, crop_w = crop_h + crop_h % 2, crop_w + crop_w % 2   # use even number for correct Bayer arrangement
-            lfp_img = lfp_obj.lfp_img[crop_h:-crop_h, crop_w:-crop_w]
-            del lfp_obj
+            lfp_img = obj.lfp_img[crop_h:-crop_h, crop_w:-crop_w]
+            del obj
 
-            self.assertEqual(True, ret_val)
+            self.assertEqual(True, ret)
 
             # create output data folder
             mkdir_p(cfg.exp_path, cfg.params[cfg.opt_prnt])
@@ -108,21 +108,21 @@ class PlenoptiCamTesterIllum(PlenoptiCamTester):
             if not cfg.cond_meta_file():
                 # automatic calibration data selection
                 obj = CaliFinder(cfg, sta)
-                ret_val = obj.main()
+                ret = obj.main()
                 wht_img = obj.wht_bay[crop_h:-crop_h, crop_w:-crop_w] if obj.wht_bay is not None else obj.wht_bay
                 del obj
 
-                self.assertEqual(True, ret_val)
+                self.assertEqual(True, ret)
 
             meta_cond = not (os.path.exists(cfg.params[cfg.cal_meta]) and cfg.params[cfg.cal_meta].lower().endswith('json'))
             if meta_cond or cfg.params[cfg.opt_cali]:
                 # perform centroid calibration
-                cal_obj = LfpCalibrator(wht_img, cfg, sta)
-                ret_val = cal_obj.main()
-                cfg = cal_obj.cfg
-                del cal_obj
+                obj = LfpCalibrator(wht_img, cfg, sta)
+                ret = obj.main()
+                cfg = obj.cfg
+                del obj
 
-                self.assertEqual(True, ret_val)
+                self.assertEqual(True, ret)
 
             # load calibration data
             cfg.load_cal_data()
@@ -130,12 +130,11 @@ class PlenoptiCamTesterIllum(PlenoptiCamTester):
             #  check if light field alignment has been done before
             if cfg.cond_lfp_align():
                 # align light field
-                lfp_obj = LfpAligner(lfp_img, cfg, sta, wht_img)
-                ret_val = lfp_obj.main()
-                lfp_obj = lfp_obj.lfp_img
-                del lfp_obj
+                obj = LfpAligner(lfp_img, cfg, sta, wht_img)
+                ret = obj.main()
+                del obj
 
-                self.assertEqual(True, ret_val)
+                self.assertEqual(True, ret)
 
             # load previously computed light field alignment
             with open(os.path.join(cfg.exp_path, 'lfp_img_align.pkl'), 'rb') as f:
@@ -144,19 +143,19 @@ class PlenoptiCamTesterIllum(PlenoptiCamTester):
             # extract viewpoint data
             CaliFinder(cfg).main()
             obj = LfpExtractor(lfp_img_align, cfg=cfg, sta=sta)
-            ret_val = obj.main()
+            ret = obj.main()
             vp_img_arr = obj.vp_img_arr
             del obj
 
-            self.assertEqual(True, ret_val)
+            self.assertEqual(True, ret)
 
             # do refocusing
             if cfg.params[cfg.opt_refo]:
                 obj = LfpRefocuser(vp_img_arr, cfg=cfg, sta=sta)
-                ret_val = obj.main()
+                ret = obj.main()
                 del obj
 
-            self.assertEqual(True, ret_val)
+            self.assertEqual(True, ret)
 
         return True
 
