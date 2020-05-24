@@ -63,6 +63,12 @@ class PlenoptiCamTesterIllum(PlenoptiCamTester):
         cfg.params[cfg.opt_rota] = True
         cfg.params[cfg.opt_refi] = True
         cfg.params[cfg.opt_pflu] = True
+        cfg.params[cfg.opt_arti] = True
+        cfg.params[cfg.opt_lier] = True
+        cfg.params[cfg.opt_cont] = True
+        cfg.params[cfg.opt_awb_] = True
+        cfg.params[cfg.opt_sat_] = True
+        cfg.params[cfg.ran_refo] = [0, 1]
 
         # compute 3x3 viewpoints only (to reduce computation time)
         cfg.params[cfg.ptc_leng] = 3
