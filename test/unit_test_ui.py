@@ -20,18 +20,22 @@ __license__ = """
 
 """
 
+import sys
 import unittest
+from ddt import ddt, idata, unpack
 
+from test.unit_test_baseclass import PlenoptiCamTester
+from plenopticam.bin.cli_script import main
 from plenopticam.cfg.cfg import PlenopticamConfig
 from plenopticam.misc import PlenopticamStatus
-from test.unit_test_baseclass import PlenoptiCamTester
 from plenopticam.gui.widget_view import ViewWidget, PX, PY
 
 
-class PlenoptiCamTesterCustom(PlenoptiCamTester):
+@ddt
+class PlenoptiCamTesterUI(PlenoptiCamTester):
 
     def __init__(self, *args, **kwargs):
-        super(PlenoptiCamTesterCustom, self).__init__(*args, **kwargs)
+        super(PlenoptiCamTesterUI, self).__init__(*args, **kwargs)
 
     def setUp(self):
 
@@ -39,10 +43,21 @@ class PlenoptiCamTesterCustom(PlenoptiCamTester):
         self.sta = PlenopticamStatus()
         self.cfg = PlenopticamConfig()
         self.cfg.reset_values()
-        self.cfg.params[self.cfg.opt_dbug] = False
-        self.cfg.params[self.cfg.opt_prnt] = False    # prevent Travis CI to terminate after reaching 4MB logfile size
-        self.cfg.params[self.cfg.opt_vign] = False
-        self.cfg.params[self.cfg.opt_sat_] = True
+        self.cfg.params[self.cfg.opt_dbug] = True
+        self.cfg.params[self.cfg.opt_prnt] = True
+
+    @idata(([kw] for kw in ['-h', '--help']))
+    @unpack
+    def test_cli_help(self, kw):
+
+        # print help message
+        sys.argv.append(kw)
+        try:
+            ret = main()
+        except SystemExit:
+            ret = True
+
+        self.assertEqual(True, ret)
 
     def test_viewer(self):
 
