@@ -22,7 +22,6 @@ __license__ = """
 
 import sys
 import unittest
-from ddt import ddt, idata, unpack
 
 from test.unit_test_baseclass import PlenoptiCamTester
 from plenopticam.bin.cli_script import main
@@ -31,7 +30,6 @@ from plenopticam.misc import PlenopticamStatus
 from plenopticam.gui.widget_view import ViewWidget, PX, PY
 
 
-@ddt
 class PlenoptiCamTesterUI(PlenoptiCamTester):
 
     def __init__(self, *args, **kwargs):
@@ -46,18 +44,17 @@ class PlenoptiCamTesterUI(PlenoptiCamTester):
         self.cfg.params[self.cfg.opt_dbug] = True
         self.cfg.params[self.cfg.opt_prnt] = True
 
-    @idata(([kw] for kw in ['-h', '--help']))
-    @unpack
-    def test_cli_help(self, kw):
+    def test_cli_help(self):
 
-        # print help message
-        sys.argv.append(kw)
-        try:
-            ret = main()
-        except SystemExit:
-            ret = True
+        for kw in ['-h', '--help']:
+            # print help message
+            sys.argv.append(kw)
+            try:
+                ret = main()
+            except SystemExit:
+                ret = True
 
-        self.assertEqual(True, ret)
+            self.assertEqual(True, ret)
 
     def test_viewer(self):
 
