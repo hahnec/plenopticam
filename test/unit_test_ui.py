@@ -56,6 +56,38 @@ class PlenoptiCamTesterUI(PlenoptiCamTester):
 
             self.assertEqual(True, ret)
 
+    def test_cli_cmd_opts(self):
+
+        from plenopticam.bin.cli_script import parse_options
+        from plenopticam.cfg import PlenopticamConfig
+        from plenopticam.cfg.constants import PARAMS_KEYS
+
+        cfg = PlenopticamConfig()
+
+        exp_vals = ['dummy.ext', 'wht.ext', None, 'grid-fit', 9, [0, 3], None] + [True, ] * 3 + [None, True, True, None,
+                                                                                                 None, True, None,
+                                                                                                 True, ] + [None, ] * 4
+        usr_cmds = ["--file=", "--cali=", "--meta=", "--meth=", "--patch=", "--refo=", "--copt", "--vgn",
+                    "--hot", "--con", "--col", "--awb", "--sat", "--view", "--refo", "--refi", "--pflu",
+                    "--art", "--rot", "--dbg", "--prt", "--rem"
+                    ]
+
+        for cmd, kw, exp_val in zip(usr_cmds, PARAMS_KEYS, exp_vals):
+
+            # pass CLI argument to
+            exp_str = '"' + exp_val + '"' if isinstance(exp_val, str) else exp_val
+            cli_str = cmd + str(exp_str) if type(exp_val) in (str, int, list) else cmd
+            sys.argv.append(cli_str)
+            print(cli_str)
+            try:
+                cfg = parse_options(sys.argv[1:], cfg)
+                val = cfg.params[kw]
+            except SystemExit:
+                val = None
+            sys.argv.pop()
+
+            self.assertEqual(exp_val, val)
+
     def test_viewer(self):
 
         try:
