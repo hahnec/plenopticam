@@ -69,7 +69,7 @@ def parse_options(argv, cfg):
 
     try:
         opts, args = getopt.getopt(argv, "ghf:c:p:r:m:",
-                                        ["gui", "help", "file=", "cali=", "patch=", "refo=", "meth="
+                                        ["gui", "help", "file=", "cali=", "patch=", "refo=", "meth=",
                                          "dbug", "refi", "vgn", "awb", "con", "hot", "sat", "art", "rm"])
     except getopt.GetoptError as e:
         print(e)
