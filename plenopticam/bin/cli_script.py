@@ -93,7 +93,7 @@ def parse_options(argv, cfg):
                 refo_range = misc.str2list(arg)
                 cfg.params[cfg.ran_refo] = refo_range if isinstance(refo_range, list) else [0, 2]
             if opt in ("-m", "--meth"):
-                cfg.params[cfg.cal_meth] = arg if arg in CALI_METH else CALI_METH[0]
+                cfg.params[cfg.cal_meth] = arg.strip(" \"\'") if arg.strip(" \"\'") in CALI_METH else CALI_METH[0]
             if opt == "--dbug":
                 cfg.params[cfg.opt_dbug] = True
             if opt == "--refi":
