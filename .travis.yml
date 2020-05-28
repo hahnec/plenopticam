@@ -1,5 +1,6 @@
 notifications:
   email: false
+  webhooks: https://coveralls.io/webhook?repo_token=COVERALLS_REPO_TOKEN
 
 language: python            # this works for Linux but is an error on macOS or Windows
 jobs:
@@ -47,7 +48,6 @@ script:
   # trigger unit tests (time critical and output print limitation due to > 4MB size)
   - travis_wait 30 sleep 1800 &
   - python3 -m coverage run test/unit_test_all.py || python -m coverage run test/unit_test_all.py
-  - coveralls
 
 #before_deploy:
   - pip3 install pyinstaller
@@ -79,6 +79,9 @@ script:
         plenopticam/scripts/bundling/msi_auto-gen.bat;
         export RELEASE_PKG_FILE=$(ls dist/*.msi);
     fi
+
+after_success:
+  - coveralls
 
 before_deploy:
   - echo "deploying $RELEASE_PKG_FILE to GitHub releases"
