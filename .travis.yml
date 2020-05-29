@@ -39,9 +39,7 @@ install:
 
 # commands to run tests
 script:
-  # open app from CLI
-  - plenopticam -h
-  # compile docs
+  # compile docs (that will be distributed with bundle)
   - cd docs
   - make html
   - cd ..
