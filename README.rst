@@ -25,6 +25,20 @@ Results
    * - plenoptic camera built at Univ. of Bedfordshire
      - Lytro Illum camera image from raw capture
 
+.. list-table::
+   :widths: 8 8 8 8
+   :header-rows: 1
+   :stub-columns: 1
+
+   * -
+     - Source
+     - Target
+     - Result
+   * - Light-field color correction
+     - |src_lfp|
+     - |ref_lfp|
+     - |res_lfp|
+
 .. * |Stanford|_
 
 Installation
@@ -205,6 +219,18 @@ Further information
 .. |pypi| image:: https://img.shields.io/pypi/dm/plenopticam?label=PyPI%20downloads&style=flat-square
     :target: https://pypi.org/project/plenopticam/
     :alt: PyPI Downloads
+
+.. |src_lfp| raw:: html
+
+    <img src="https://raw.githubusercontent.com/hahnec/color-matcher/master/test/data/view_animation_7px.gif" width="200px" max-width:"100%">
+
+.. |ref_lfp| raw:: html
+
+    <img src="https://raw.githubusercontent.com/hahnec/color-matcher/master/test/data/bee_2.png" width="200px" max-width:"100%">
+
+.. |res_lfp| raw:: html
+
+    <img src="https://raw.githubusercontent.com/hahnec/color-matcher/master/test/data/view_animation_7px_hm-mkl-hm.gif" width="200px" max-width:"100%">
 
 .. |spiderman| raw:: html
 
