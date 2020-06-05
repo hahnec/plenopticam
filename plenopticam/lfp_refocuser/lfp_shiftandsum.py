@@ -127,7 +127,7 @@ class LfpShiftAndSum(LfpViewpoints):
             if self.cfg.params[self.cfg.opt_refi]:
                 upscale_img = LfpContrast().auto_hist_align(final_img.copy(), ref_img=final_img, opt=True)
                 upscale_img = GammaConverter().srgb_conv(img=upscale_img)
-                LfpExporter(cfg=self.cfg, sta=self.sta).save_refo_slice(a=a, refo_img=upscale_img, string='upscale_')
+                LfpExporter(cfg=self.cfg, sta=self.sta).save_refo_slice(a/patch_len, upscale_img, string='upscale_')
                 del upscale_img
 
             # spatially downscale image to original resolution (less memory required)
