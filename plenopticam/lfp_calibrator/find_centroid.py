@@ -21,57 +21,35 @@ __license__ = """
 """
 
 
-def find_centroid(centroids, ref_point, pitch, axis, pattern='hex', odd=True):
+def find_centroid(centroids, ref_point, pitch, axis, pattern='hex', odd=True, e=3):
 
     # set indices for horizontal or vertical search respectively
     i, j = [1, 0] if axis == 1 else [0, 1]
 
-    # find centroid given the pattern (note that "hexagonal shift alternation" is expected along vertical axis=0)
-    if pattern == 'rec' or axis == 1:
-        found_centroid = centroids[(centroids[:, i] > ref_point[i] + pitch[i]/2) &
-                                   (centroids[:, i] < ref_point[i]+3*pitch[i]/2) &
-                                   (centroids[:, j] > ref_point[j] - pitch[j]/2) &
-                                   (centroids[:, j] < ref_point[j] + pitch[j]/2)].ravel()
-    elif pattern == 'hex':
-        if odd:
-            found_centroid = centroids[(centroids[:, i] > ref_point[i] + pitch[i]/2) &
-                                       (centroids[:, i] < ref_point[i]+3*pitch[i]/2) &
-                                       (centroids[:, j] > ref_point[j]) &
-                                       (centroids[:, j] < ref_point[j]+3*pitch[j]/4)].ravel()
-        else:
-            found_centroid = centroids[(centroids[:, i] > ref_point[i] + pitch[i]/2) &
-                                       (centroids[:, i] < ref_point[i]+3*pitch[i]/2) &
-                                       (centroids[:, j] < ref_point[j]) &
-                                       (centroids[:, j] > ref_point[j]-3*pitch[j]/4)].ravel()
-    else:
-        raise Exception('pattern type not recognized.')
+    # consider hexagonal shift alternation which is expected along vertical axis=0
+    h, g = [1, 1] if pattern == 'rec' or axis == 1 else [0, e/2] if odd else [e/2, 0]
+
+    # find centroid given the pattern
+    found_centroid = centroids[(centroids[:, i] > ref_point[i] + pitch[i]/2) &
+                               (centroids[:, i] < ref_point[i]+e*pitch[i]/2) &
+                               (centroids[:, j] > ref_point[j]-h*pitch[j]/2) &
+                               (centroids[:, j] < ref_point[j]+g*pitch[j]/2)].ravel()
 
     return found_centroid
 
 
-def find_centroid_backwards(centroids, ref_point, pitch, axis, pattern='hex', odd=True):
+def find_centroid_backwards(centroids, ref_point, pitch, axis, pattern='hex', odd=True, e=3):
 
     # set indices for horizontal or vertical search respectively
     i, j = [1, 0] if axis == 1 else [0, 1]
 
+    # consider hexagonal shift alternation which is expected along vertical axis=0
+    h, g = [1, 1] if pattern == 'rec' or axis == 1 else [0, e/2] if odd else [e/2, 0]
+
     # find centroid given the pattern (note that "hexagonal shift alternation" is expected along vertical axis=0)
-    if pattern == 'rec' or axis == 1:
-        found_centroid = centroids[(centroids[:, i] < ref_point[i] - pitch[i]/2) &
-                                   (centroids[:, i] > ref_point[i]-3*pitch[i]/2) &
-                                   (centroids[:, j] > ref_point[j] - pitch[j]/2) &
-                                   (centroids[:, j] < ref_point[j] + pitch[j]/2)].ravel()
-    elif pattern == 'hex':
-        if odd:
-            found_centroid = centroids[(centroids[:, i] < ref_point[i] - pitch[i]/2) &
-                                       (centroids[:, i] > ref_point[i]-3*pitch[i]/2) &
-                                       (centroids[:, j] > ref_point[j]) &
-                                       (centroids[:, j] < ref_point[j]+3*pitch[j]/4)].ravel()
-        else:
-            found_centroid = centroids[(centroids[:, i] < ref_point[i] - pitch[i]/2) &
-                                       (centroids[:, i] > ref_point[i]-3*pitch[i]/2) &
-                                       (centroids[:, j] < ref_point[j]) &
-                                       (centroids[:, j] > ref_point[j]-3*pitch[j]/4)].ravel()
-    else:
-        raise Exception('pattern type not recognized.')
+    found_centroid = centroids[(centroids[:, i] < ref_point[i] - pitch[i]/2) &
+                               (centroids[:, i] > ref_point[i]-e*pitch[i]/2) &
+                               (centroids[:, j] > ref_point[j]-h*pitch[j]/2) &
+                               (centroids[:, j] < ref_point[j]+g*pitch[j]/2)].ravel()
 
     return found_centroid
