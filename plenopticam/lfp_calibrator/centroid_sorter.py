@@ -260,7 +260,7 @@ class CentroidSorter(object):
         return lens_max, cur_mic, start_mic
 
     def estimate_odd(self, cur_mic, axis):
-        return True if find_centroid(self._centroids, cur_mic, self._pitch, axis, 'hex', False).size == 0 else False
+        return find_centroid(self._centroids, cur_mic, self._pitch, axis, 'hex', odd=False).size == 0
 
     @property
     def mic_list(self):
