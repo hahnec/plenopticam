@@ -24,9 +24,9 @@ class GridFitter(object):
             self._grid_fit = self._coords_list.copy()
             self._pat_type = self.cfg.calibs[self.cfg.pat_type] if self.cfg.pat_type in self.cfg.calibs else 'rec'
 
-    def main(self):
+    def main(self, deg=1):
 
-        self.comp_grid_fit(deg=1)
+        self.comp_grid_fit(deg=deg)
 
         return True
 
@@ -47,27 +47,27 @@ class GridFitter(object):
                 return False
 
             # fit line of all coordinates in current row
-            coords_row = self._coords_list[self._coords_list[:, 2] == ly]
-            coeffs_hor = self.line_fitter(coords_row, deg=deg)
+            coords_row = self._coords_list[self._coords_list[:, 2] == ly][:, :2]
+            coeffs_hor = self.line_fitter(coords_row, axis=1, deg=deg)
 
             # iterate through column
             for lx in range(self._MAX_X):
 
                 # select coordinates
-                coords_col = self._coords_list[self._coords_list[:, 3] == lx]
+                coords_col = self._coords_list[self._coords_list[:, 3] == lx][:, :2]
 
                 # consider hexagonal pattern
                 if self._pat_type == 'hex':
 
                     # fit line of current column coordinates (omit every other coordinate pair)
-                    coeffs_ver = self.line_fitter(coords_col[odd::2], deg=deg)
+                    coeffs_ver = self.line_fitter(coords_col[odd::2], axis=1, deg=deg)
 
                 else:
                     # fit line of current column coordinates
-                    coeffs_ver = self.line_fitter(coords_col, deg=deg)
+                    coeffs_ver = self.line_fitter(coords_col, axis=1, deg=deg)
 
                 # compute intersection of row and column line and put result to new coordinate list
-                self._grid_fit[i][:2] = self.line_intersect(coeffs_hor, coeffs_ver)
+                self._grid_fit[i][:2] = self.line_intersect(coeffs_hor, coeffs_ver)[:2]
                 i += 1
 
             # switch hexagonal shift direction
@@ -79,14 +79,15 @@ class GridFitter(object):
 
         return self._grid_fit
 
-    def line_intersect(self, coeffs_hor, coeffs_ver):
+    @staticmethod
+    def line_intersect(coeffs_hor, coeffs_ver):
         """ compute line intersection based on Vandermonde algebra """
 
         deg = len(coeffs_hor)-1 if len(coeffs_hor) == len(coeffs_ver) else 0
 
-        if deg == 1:
+        if deg < 3:
             # intersection of linear functions
-            matrix = np.array([[1, -coeffs_hor[1]], [1, -coeffs_ver[1]]])
+            matrix = np.array([[1, *-coeffs_hor[1:]], [1, *-coeffs_ver[1:]]])
             vector = np.array([coeffs_hor[0], coeffs_ver[0]])
         else:
             # intersection of non-linear functions
@@ -94,19 +95,20 @@ class GridFitter(object):
 
         return np.dot(np.linalg.pinv(matrix), vector)
 
-    def line_fitter(self, coords, deg=1):
+    def line_fitter(self, coords, axis=0, deg=1):
         """ estimate equation fit of 2-D coordinates belonging to the same row or column via least squares method """
 
         # feed into system of equations
-        A = self.compose_vandermonde_1d(coords[:, 1], deg=deg)
-        b = coords[:, 0]
+        A = self.compose_vandermonde_1d(coords[:, axis], deg=deg)
+        b = coords[:, 1-axis]
 
         # solve for a least squares estimate via pseudo inverse and coefficients in b
         coeffs = np.dot(np.linalg.pinv(A), b)
 
         return coeffs
 
-    def compose_vandermonde_1d(self, x, deg=1):
+    @staticmethod
+    def compose_vandermonde_1d(x, deg=1):
         if deg == 1:
             return np.array([np.ones(len(x)), x]).T
         elif deg == 2:
