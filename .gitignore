@@ -167,3 +167,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# result files in script folders
+plenopticam/scripts/**/*.json
+plenopticam/scripts/**/*.png
+plenopticam/scripts/**/*.jpg
+plenopticam/scripts/**/*.txt
+plenopticam/scripts/**/*.pdf
