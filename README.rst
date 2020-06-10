@@ -53,7 +53,7 @@ Installation
 |
 
 * via pip:
-    1. install with ``$ pip3 install plenopticam``
+    1. install with ``$ python3 -m pip install plenopticam``
     2. type ``$ plenopticam -g`` to the command line once installation finished
 
 |
@@ -62,7 +62,7 @@ Installation
     1. install Python from https://www.python.org/
     2. download the source_ using ``$ git clone https://github.com/hahnec/plenopticam.git``
     3. go to the root directory ``$ cd plenopticam``
-    4. load other packages ``$ pip3 install -r requirements.txt``
+    4. load other packages ``$ python3 -m pip install -r requirements.txt``
     5. install with ``$ sudo python3 setup.py install`` from root directory
     6. if installation ran smoothly, enter ``$ sudo plenopticam -g`` to the command line
 
