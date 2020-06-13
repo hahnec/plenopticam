@@ -310,7 +310,7 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
         self._btn_auto_text.set(self._loop_symbol)
 
         # create notification image
-        text = "No valid %s image data found" % ('viewpoint' if self.vp_mode else 'refocused')
+        text = "%s image data not found" % ('Viewpoint' if self.vp_mode else 'Refocused')
         font = ImageFont.load_default()
         img = Image.new("RGBA", self.shape[:2][::-1], color=(0, 0, 0, 0))
         draw = ImageDraw.Draw(img)
