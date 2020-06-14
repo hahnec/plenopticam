@@ -259,9 +259,9 @@ Further information
 .. Hyperlink aliases
 
 .. _source: https://github.com/hahnec/plenopticam/archive/master.zip
-.. _macOS: https://github.com/hahnec/plenopticam/releases/download/v0.4.5-beta/plenopticam_0.4.5.dmg
-.. _Win: https://github.com/hahnec/plenopticam/releases/download/v0.4.5-beta/plenopticam_0.4.5.msi
-.. _Linux: https://github.com/hahnec/plenopticam/releases/download/v0.4.5-beta/plenopticam_0.4.5.tar.gz
+.. _macOS: https://github.com/hahnec/plenopticam/releases/download/v0.4.6-beta/plenopticam_0.4.6.dmg
+.. _Win: https://github.com/hahnec/plenopticam/releases/download/v0.4.6-beta/plenopticam_0.4.6.msi
+.. _Linux: https://github.com/hahnec/plenopticam/releases/download/v0.4.6-beta/plenopticam_0.4.6.tar.gz
 .. _PlenoptiSign: https://github.com/hahnec/plenoptisign/
 .. _apps: https://github.com/hahnec/plenopticam/releases/
 
