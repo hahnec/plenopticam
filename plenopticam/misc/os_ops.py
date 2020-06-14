@@ -101,6 +101,7 @@ def select_file(init_dir=None, title=''):
 
     return file_path if file_path else None
 
+
 def get_img_list(img_dir, vp=1):
     """ obtain list of images from provided directory path """
 
@@ -130,6 +131,7 @@ def get_img_list(img_dir, vp=1):
         img_list = np.reshape(img_list, newshape=(vp_dim, vp_dim) + img_list[0].shape, order='C')
 
     return img_list
+
 
 def idx_str_sort(s, mode=0):
     """ criteria for sort in lambda function calls """
