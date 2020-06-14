@@ -34,6 +34,8 @@ from test.unit_test_baseclass import PlenoptiCamTester
 
 class PlenoptiCamTesterCustom(PlenoptiCamTester):
 
+    CEA_PATH = r'../plenopticam/scripts/metrics/calibration/centroid_error_analysis/'
+
     def __init__(self, *args, **kwargs):
         super(PlenoptiCamTesterCustom, self).__init__(*args, **kwargs)
 
@@ -120,6 +122,21 @@ class PlenoptiCamTesterCustom(PlenoptiCamTester):
 
             # assertion
             self.assertEqual(True, ret_val)
+
+    @unittest.skipUnless(condition=exists(join(CEA_PATH, 'a.png')), reason='Test data for PitchEstimator not found')
+    def test_pitch_estimator(self):
+
+        from plenopticam.lfp_calibrator import PitchEstimator
+
+        fns = [join(self.CEA_PATH, fn+'.png') for fn in ['a', 'b', 'c', 'd']]
+        ref_sizes = [141, 50, 10, 6]
+
+        for fn, ref_size in zip(fns, ref_sizes):
+            img = load_img_file(fn)
+            obj = PitchEstimator(img=img, cfg=self.cfg)
+            obj.main()
+
+            self.assertEqual(ref_size, obj.M)
 
 
 if __name__ == '__main__':
