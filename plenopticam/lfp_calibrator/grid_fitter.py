@@ -10,6 +10,8 @@ class GridFitter(object):
         self.cfg = kwargs['cfg'] if 'cfg' in kwargs else None
         self.sta = kwargs['sta'] if 'sta' in kwargs else None
 
+        self._grid_fit = list()
+
         # take coordinates as input argument
         if 'coords_list' in kwargs:
             self._coords_list = np.asarray(kwargs['coords_list'])
@@ -21,12 +23,16 @@ class GridFitter(object):
         if hasattr(self, '_coords_list'):
             self._MAX_Y = int(max(self._coords_list[:, 2])+1)   # add one to compensate for index zero
             self._MAX_X = int(max(self._coords_list[:, 3])+1)   # add one to compensate for index zero
-            self._grid_fit = self._coords_list.copy()
             self._pat_type = self.cfg.calibs[self.cfg.pat_type] if self.cfg.pat_type in self.cfg.calibs else 'rec'
 
     def main(self, deg=1):
 
-        self.comp_grid_fit(deg=deg)
+        #
+        if self._pat_type == 'rec' and self._MAX_Y > 3 and self._MAX_X > 3 or self._MAX_Y > 5 and self._MAX_X > 5:
+            self.comp_grid_fit(deg=deg)
+        else:
+            print('Skip grid fitting as number of micro lens number too little')
+            self._grid_fit = np.array(self._coords_list)
 
         return True
 
@@ -36,7 +42,6 @@ class GridFitter(object):
         # print status
         self.sta.status_msg('Grid fitting', self.cfg.params[self.cfg.opt_prnt])
 
-        i = 0       # coordinate list index
         odd = 0     # hexagonal shift direction
 
         # iterate through rows
@@ -58,7 +63,6 @@ class GridFitter(object):
 
                 # consider hexagonal pattern
                 if self._pat_type == 'hex':
-
                     # fit line of current column coordinates (omit every other coordinate pair)
                     coeffs_ver = self.line_fitter(coords_col[odd::2], axis=1, deg=deg)
 
@@ -66,9 +70,14 @@ class GridFitter(object):
                     # fit line of current column coordinates
                     coeffs_ver = self.line_fitter(coords_col, axis=1, deg=deg)
 
-                # compute intersection of row and column line and put result to new coordinate list
-                self._grid_fit[i][:2] = self.line_intersect(coeffs_hor, coeffs_ver)[:2]
-                i += 1
+                # compute intersection of row and column line
+                new_coords = list(self.line_intersect(coeffs_hor, coeffs_ver))
+
+                # original reference coordinate
+                ref_coords = self._coords_list[(self._coords_list[:, 2] == ly) & (self._coords_list[:, 3] == lx)]
+
+                # put result to new coordinate list (if reference exists)
+                self._grid_fit.append(new_coords + [ly, lx]) if ref_coords.size != 0 else None
 
             # switch hexagonal shift direction
             odd = not odd if self._pat_type == 'hex' else odd
@@ -76,6 +85,8 @@ class GridFitter(object):
             # print progress status
             percentage = (ly + 1) / self._MAX_Y * 100
             self.sta.progress(percentage, opt=self.cfg.params[self.cfg.opt_prnt]) if self.sta else None
+
+        self._grid_fit = np.array(self._grid_fit)
 
         return self._grid_fit
 

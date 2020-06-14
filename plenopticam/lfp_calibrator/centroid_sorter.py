@@ -30,12 +30,13 @@ import numpy as np
 
 class CentroidSorter(object):
 
-    def __init__(self, centroids, cfg, sta=None):
+    def __init__(self, centroids, cfg, sta=None, bbox=None):
 
         # input variables
         self._centroids = np.asarray(centroids)     # list of unsorted maxima
         self.cfg = cfg                              # config file
         self.sta = sta if sta is not None else PlenopticamStatus()
+        self._bbox = bbox if bbox is not None and len(bbox) == 2 else None
 
         # internal variables
         self._lens_x_max = None  # maximum number of "complete" micro image centers in a row
@@ -81,7 +82,7 @@ class CentroidSorter(object):
         self._lower_r = self._centroids[np.where(sum_mic == sum_mic.max())[0][0]]
 
         # set bounding box of micro image center field
-        self._bounding_box = (self._lower_r-self._upper_l).astype('int')
+        self._bbox = (self._lower_r - self._upper_l).astype('int') if not self._bbox else self._bbox
 
         return True
 
@@ -123,6 +124,7 @@ class CentroidSorter(object):
         self._mic_list.append([last_neighbor[0], last_neighbor[1], 0, 0])
         j = 0
         odd = self.estimate_odd(self._upper_l, axis=0)
+        row_len_odd = True
 
         # print status
         self.sta.status_msg('Sort micro image centers', self.cfg.params[self.cfg.opt_prnt])
@@ -130,7 +132,7 @@ class CentroidSorter(object):
         # jump to the next row
         for ly in range(self._lens_y_max):
             # find all centers in one row
-            for lx in range(self._lens_x_max-1):
+            for lx in range(self._lens_x_max-1):    # -1 to account for first row center which is already found
                 # get adjacent MIC
                 found_center = find_centroid(self._centroids, last_neighbor, self._pitch, 1, 'rec', None)
                 # retrieve single MIC
@@ -139,6 +141,9 @@ class CentroidSorter(object):
                         # average of found centroids
                         found_center = np.mean(found_center.reshape(-1, 2), axis=0)
                     else:
+                        # skip when looking for last MIC with unequal row length
+                        if (lx == self._lens_x_max-1 and row_len_odd) or self._pattern == 'rec':
+                            break
                         # create missing centroid
                         found_center = self._mic_list[j][:2]+np.array([0, self._pitch[1]])
                 j += 1
@@ -181,10 +186,10 @@ class CentroidSorter(object):
         """ This function determines whether the geometric arrangement of micro lenses is rectangular or hexagonal.
 
         :param pitch: scalar of type int or float representing the spacing between micro image centers
-        :return: True
+        :return: pattern, e.g. 'hex' or 'rec'
         """
 
-        # pick random micro image center in middle of centroid list
+        # pick arbitrary micro image center in middle of centroid list
         point = self._centroids[int(len(self._centroids)/2)]
 
         diff_vertical = []
@@ -201,28 +206,37 @@ class CentroidSorter(object):
         # store detected pattern type
         self._pattern = pattern_list[np.array(diff_vertical).argmin()]
 
-        return True
+        return self._pattern
 
     def _get_mla_pitch(self):
 
         # get aspect ratio of bounding box
-        aspect_ratio = self._bounding_box[1] / self._bounding_box[0]
+        aspect_ratio = self._bbox[1] / self._bbox[0]
 
         # get micro lens array dimensions
         J = np.sqrt(len(self._centroids) * aspect_ratio)
         H = np.sqrt(len(self._centroids) * aspect_ratio**-1)
 
         # get horizontal spacing estimate (pitch in px)
-        pitch_x = self._bounding_box[1] / J
+        if len(self._centroids) > 30**2:
+            # use aspect ratio for "many" micro images
+            pitch_x = self._bbox[1] / J
+        else:
+            # for fewer micro images use average pitch analysis
+            pitch_diff = np.diff(self._centroids[:, 1])
+            pitch_diff = pitch_diff[pitch_diff > 0]
+            sig = 1
+            pitch_x = np.mean(pitch_diff[(pitch_diff < np.mean(pitch_diff) + sig*np.std(pitch_diff)) &
+                                         (pitch_diff > np.mean(pitch_diff) - sig*np.std(pitch_diff))])
 
         # estimate MLA packing geometry
         self._calc_pattern(pitch_x)
 
         # get vertical spacing estimate (pitch in px) under consideration of packing type
         if self._pattern == 'rec':
-            pitch_y = self._bounding_box[0] / H
+            pitch_y = pitch_x
         elif self._pattern == 'hex':
-            pitch_y = self._bounding_box[0] / H * np.sqrt(3)/2
+            pitch_y = pitch_x * np.sqrt(3)/2
         else:
             pitch_y = pitch_x
 
@@ -233,28 +247,28 @@ class CentroidSorter(object):
 
     def _get_lens_max(self, start_mic, axis=0):
 
-        lens_max = 0
         cur_mic = start_mic
+        lens_max = 1    # start with 1 to account for upper left centroid
         odd = self.estimate_odd(start_mic, axis)
 
         # check if column of upper left is complete
-        while cur_mic[axis] < self._lower_r[axis]:
+        while cur_mic[axis] < self._lower_r[axis] + self._pitch[axis]/2:
             # get adjacent MIC
             found_center = find_centroid(self._centroids, cur_mic, self._pitch, axis, self._pattern, odd)
             odd = not odd
-            lens_max += 1
             if len(found_center) != 2:
                 if len(found_center) > 2:
                     # average of found centroids
                     found_center = np.mean(found_center.reshape(-1, 2), axis=0)
                 else:
-                    if cur_mic[axis] > (self._bounding_box[axis] - self._pitch[axis]):
+                    if cur_mic[axis] > (self._bbox[axis] - self._pitch[axis]/2):
                         break
                     else:
                         odd = self.estimate_odd(start_mic, axis)
                         start_mic = find_centroid(self._centroids, start_mic, self._pitch, not axis, self._pattern, not odd)
                         found_center = start_mic
                         lens_max = 0
+            lens_max += 1
             cur_mic = found_center
 
         return lens_max, cur_mic, start_mic

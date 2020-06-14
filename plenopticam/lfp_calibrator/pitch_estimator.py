@@ -31,7 +31,7 @@ import scipy
 
 class PitchEstimator(object):
 
-    def __init__(self, img, cfg, sta=None, scale_val=1.625, CR=10):
+    def __init__(self, img, cfg, sta=None, scale_val=1.625, CR=3):
 
         # input variables
         self._img = img
@@ -60,10 +60,10 @@ class PitchEstimator(object):
         self._crop_img(CR=self._CR)
 
         # create scale space
-        self._create_scale_space()
+        self.create_scale_space()
 
         # find first maximum in scale space
-        self._find_scale_max()
+        self.find_scale_max()
 
         # print "Progress: Done!"
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
@@ -81,7 +81,7 @@ class PitchEstimator(object):
 
         return True
 
-    def _create_scale_space(self):
+    def create_scale_space(self):
 
         # create Gaussian kernels with sigma=1 and sigma=sqrt(2)
         sig_one_kernel = create_gauss_kernel(l=9, sig=1.)
@@ -115,21 +115,34 @@ class PitchEstimator(object):
 
         return True
 
-    def _find_scale_max(self, precision=.1):
+    def get_maxima(self):
+        """ compute list of maxima in scale space """
 
-        # compute list of spatial maxima in scale space
-        maxima = np.array(list(map(lambda x: np.max(x), self._scale_space)))
+        return list(map(lambda x: np.max(x), self._scale_space))
+
+    def find_scale_max(self, precision=.1):
+        """ determine dominant scale size by analyzing maximum over scale space """
+
+        maxima = np.array(self.get_maxima())
 
         if len(maxima) > 2:
             # find scale maximum (with sub-scale precision using interpolation)
-            if precision != 1:
-                x_new = np.arange(0, len(maxima)-1, precision)
-                i_fun = scipy.interpolate.interp1d(range(0, len(maxima)), maxima, kind='cubic')
-                y_new = i_fun(x_new)
-                start = int(1./precision) # exclude scale maxima values below 1
-                scale_max = x_new[min(scipy.signal.argrelmax(y_new[start:])[0])+start]
-            else:
-                scale_max = min(scipy.signal.argrelmax(maxima)[0])
+            x_new = np.arange(0, len(maxima)-1, precision)
+            i_fun = scipy.interpolate.interp1d(range(0, len(maxima)), maxima, kind='cubic')
+            y_new = i_fun(x_new)
+            y_new /= y_new.max()
+
+            # start looking from first positive gradient to exclude early maxima on falling curve (false large scales)
+            start = np.argmax(np.sign(np.gradient(y_new, int(1./precision))))
+
+            # compute global and relative maxima in scale space
+            val_max, arg_max = np.max(y_new[start:]), x_new[np.argmax(y_new[start:])+start]
+            rel_max, arg_rel_max = y_new[min(scipy.signal.argrelmax(y_new[start:])[0])+start], \
+                                   x_new[min(scipy.signal.argrelmax(y_new[start:])[0])+start]
+
+            # use global maximum only if its y/x ratio is larger than that of relative to penalize "weak late maxima"
+            scale_max = arg_max if val_max/arg_max > rel_max/arg_rel_max else arg_rel_max
+
         elif len(maxima) > 0:
             scale_max = max(maxima)
         else:

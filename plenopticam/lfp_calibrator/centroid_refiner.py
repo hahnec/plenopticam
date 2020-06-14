@@ -24,6 +24,7 @@ __license__ = """
 import numpy as np
 
 # local imports
+from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc.status import PlenopticamStatus
 from plenopticam.lfp_calibrator.centroid_drawer import CentroidDrawer
 
@@ -33,11 +34,22 @@ DR = 1
 class CentroidRefiner(object):
 
     def __init__(self, img, centroids, cfg, sta=None, M=None, method=None):
+        """
+
+        This class takes a list of integer coordinates as centroids and an intensity map as inputs and re-computes
+
+        :param img: image used as basis for coordinate refinement calculation
+        :param centroids: iterable (list or np.ndarray) with coordinates of integer type
+        :param cfg: PlenoptiCam configuration object
+        :param sta: PlenoptiCam status object
+        :param M: micro image size
+        :param method: 'area' or 'peak'
+        """
 
         # input variables
         self._img = img
-        self._centroids = centroids
-        self.cfg = cfg
+        self._centroids = centroids #np.round(centroids).astype('uint64')
+        self.cfg = cfg if cfg is not None else PlenopticamConfig()
         self.sta = sta if sta is not None else PlenopticamStatus()
         self._M = M
         self._method = method if method is not None else 'area'
@@ -75,7 +87,7 @@ class CentroidRefiner(object):
                 return False
 
             # compute refined coordinates based on given method
-            fun(img_scale[m[0]-r:m[0]+r+1, m[1]-r:m[1]+r+1], m)
+            fun(img_scale[int(m[0])-r:int(m[0])+r+1, int(m[1])-r:int(m[1])+r+1], m)
             self._centroids_refined.append(self._get_coords())
 
             # print status
@@ -83,6 +95,9 @@ class CentroidRefiner(object):
 
         # coordinate upsampling to compensate for downsampling
         self._centroids_refined = [(x*DR, y*DR) for x, y in self._centroids_refined] if DR > 1 else self._centroids_refined
+
+        # remove centroids at image boundaries
+        self.exclude_marginal_centroids()
 
         # write centroids image to hard drive (if option set)
         if self.cfg.params[self.cfg.opt_dbug] and not self.sta.interrupt:
@@ -127,6 +142,24 @@ class CentroidRefiner(object):
                 self._s += (j+p[1]-r)*weight_win[i, j]
 
         #plt.plot(s-(x-r), t-(y-r), 'xb') # for validation
+        return True
+
+    def exclude_marginal_centroids(self):
+        """ remove centroids being closer to image border than half the micro image size M """
+
+        h, w = self._img.shape[:2]
+        r = self._M//2+1
+
+        if isinstance(np.version.version, str):
+            # use numpy vectorization
+            self._centroids_refined = np.array(self._centroids_refined)
+            valid_idx = (r < self._centroids_refined[:, 0]) & (self._centroids_refined[:, 0] < h - r) & \
+                        (r < self._centroids_refined[:, 1]) & (self._centroids_refined[:, 1] < w - r)
+            self._centroids_refined = list(self._centroids_refined[valid_idx])
+        else:
+            # inline for loop
+            self._centroids_refined = [c for c in self._centroids_refined if r < c[0] < h-r and r < c[1] < w-r]
+
         return True
 
     def _get_coords(self):

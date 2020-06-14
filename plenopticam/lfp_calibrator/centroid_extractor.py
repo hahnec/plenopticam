@@ -42,7 +42,7 @@ class CentroidExtractor(object):
         self._img = img
         self.cfg = cfg if cfg is not None else PlenopticamConfig()
         self.sta = sta if sta is not None else PlenopticamStatus()
-        self._M = M if M is not None else 9
+        self._M = M if M is not None else self.cfg.params[self.cfg.ptc_leng]
 
         # private variables
         self._peak_img = self._img.copy()
@@ -102,6 +102,11 @@ class CentroidExtractor(object):
         r = int(self._M/2)-1  # pixel distance from image border telling which maxima are excluded
         valid_idx = np.where((max_idx[0] > r) & (max_idx[1] > r) & (h-max_idx[0] > r) & (w-max_idx[1] > r))[0]
         self._centroids = list(zip(max_idx[0][valid_idx], max_idx[1][valid_idx]))
+
+        # remove centroids that lie below threshold
+        thresh = np.mean(self._peak_img)
+        valid_idx = self._peak_img[np.asarray(self._centroids)[:, 0], np.asarray(self._centroids)[:, 1]] > thresh
+        self._centroids = list(np.array(self._centroids)[valid_idx])
 
         return True
 
