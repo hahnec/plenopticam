@@ -21,7 +21,7 @@ __license__ = """
 """
 
 import unittest
-import os
+from os.path import exists, join, basename, splitext
 
 from plenopticam.lfp_calibrator import LfpCalibrator
 from plenopticam.lfp_aligner import LfpAligner
@@ -41,11 +41,11 @@ class PlenoptiCamTesterCustom(PlenoptiCamTester):
 
         # retrieve OpEx data from Hahne et al.
         url = 'https://ndownloader.figshare.com/files/5201452'
-        archive_fn = os.path.join(self.fp, os.path.basename(url))
-        self.download_data(url) if not os.path.exists(archive_fn) else None
+        archive_fn = join(self.fp, basename(url))
+        self.download_data(url) if not exists(archive_fn) else None
         self.fnames_wht_opex = ['f197with4m11pxf16Final.bmp', 'f197Inf9pxFinalShift12.7cmf22.bmp']
         self.fnames_lfp_opex = ['f197with4m11pxFinal.bmp', 'f197Inf9pxFinalShift12.7cm.bmp']
-        self.extract_archive(os.path.join(self.fp, os.path.basename(url)), self.fnames_wht_opex+self.fnames_lfp_opex)
+        self.extract_archive(join(self.fp, basename(url)), self.fnames_wht_opex+self.fnames_lfp_opex)
 
         # set config for unit test purposes
         self.sta = PlenopticamStatus()
@@ -64,11 +64,11 @@ class PlenoptiCamTesterCustom(PlenoptiCamTester):
             print(fn_wht)
 
             # update file paths and calibration data in config
-            self.cfg.params[self.cfg.lfp_path] = os.path.join(self.fp, fn_lfp)
-            self.cfg.params[self.cfg.cal_path] = os.path.join(self.fp, fn_wht)
+            self.cfg.params[self.cfg.lfp_path] = join(self.fp, fn_lfp)
+            self.cfg.params[self.cfg.cal_path] = join(self.fp, fn_wht)
 
             # create folder (if it doesn't already exist)
-            mkdir_p(os.path.splitext(self.cfg.params[self.cfg.lfp_path])[0])
+            mkdir_p(splitext(self.cfg.params[self.cfg.lfp_path])[0])
 
             # test light field calibration
             wht_img = load_img_file(self.cfg.params[self.cfg.cal_path])
@@ -87,13 +87,13 @@ class PlenoptiCamTesterCustom(PlenoptiCamTester):
             print(fn_lfp)
 
             # update file paths and calibration data in config
-            self.cfg.params[self.cfg.lfp_path] = os.path.join(self.fp, fn_lfp)
-            self.cfg.params[self.cfg.cal_path] = os.path.join(self.fp, fn_wht)
-            self.cfg.params[self.cfg.cal_meta] = os.path.splitext(self.cfg.params[self.cfg.cal_path])[0]+'.json'
+            self.cfg.params[self.cfg.lfp_path] = join(self.fp, fn_lfp)
+            self.cfg.params[self.cfg.cal_path] = join(self.fp, fn_wht)
+            self.cfg.params[self.cfg.cal_meta] = splitext(self.cfg.params[self.cfg.cal_path])[0]+'.json'
             self.cfg.load_cal_data()
 
             # create folder (if it doesn't already exist)
-            mkdir_p(os.path.splitext(self.cfg.params[self.cfg.lfp_path])[0])
+            mkdir_p(splitext(self.cfg.params[self.cfg.lfp_path])[0])
 
             # test light field alignment
             lfp_img = load_img_file(self.cfg.params[self.cfg.lfp_path])
