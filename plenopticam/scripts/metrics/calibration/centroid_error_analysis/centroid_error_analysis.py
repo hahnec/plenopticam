@@ -18,7 +18,7 @@ cfg = PlenopticamConfig()
 sta = PlenopticamStatus()
 
 # file settings
-fname = './b'
+fname = './c'
 cfg.params[cfg.cal_path] = fname + '.png'
 cfg.params[cfg.cal_meth] = constants.CALI_METH[2]   #'peak'   #
 wht_img = load_img_file(cfg.params[cfg.cal_path])
@@ -107,10 +107,16 @@ c_lists = [('CentroidExtractor', raw_centroids), ('CentroidRefiner', ref_centroi
            ('CentroidSorter', srt_mics[:, :2]), ('GridFitter', fit_mics[:, :2])]
 for name, c_list in c_lists:
     c_errs = list()
-    grnd_candidates = list(spots_grnd_trth)
+    grnd_trth = spots_grnd_trth.copy()
+    # iterate through all centers
     for cn in c_list:
-        closest = [sum(x) for x in (np.array(grnd_candidates) - cn)**2] if len(grnd_candidates) > 0 else [sum(cn**2)]
+        # absolute pixel deviations from euclidean distance
+        closest = [sum(x**2)**.5 for x in (grnd_trth-cn)] if len(grnd_trth) > 0 else [sum(cn**2)]
+        # pick minimum deviation to identify matching center in unsorted set of ground-truths
         closest, idx = min(closest), np.argmin(closest)
-        c_errs.append(np.sqrt(closest))
-        #grnd_candidates.pop(idx) if len(grnd_candidates) > 0 else None
+        # remove picked ground-truth center from list
+        np.delete(grnd_trth, idx, axis=0)
+        # store deviation of center
+        c_errs.append(closest)
+    # print mean deviation of all centers
     print(name+': '+str(np.mean(np.asarray(c_errs))))
