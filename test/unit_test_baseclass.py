@@ -38,7 +38,7 @@ class PlenoptiCamTester(unittest.TestCase):
         mkdir_p(self.fp) if not os.path.exists(self.fp) else None
 
     def download_data(self, url):
-        ''' download plenoptic image data '''
+        """ download plenoptic image data """
 
         print('Downloading file %s' % os.path.basename(url))
 
@@ -57,7 +57,7 @@ class PlenoptiCamTester(unittest.TestCase):
 
     @staticmethod
     def extract_archive(archive_fn, fname_list):
-        ''' extract content from downloaded data '''
+        """ extract content from downloaded data """
 
         with ZipFile(archive_fn) as z:
             for fn in z.namelist():
