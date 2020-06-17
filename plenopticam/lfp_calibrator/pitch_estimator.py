@@ -77,15 +77,15 @@ class PitchEstimator(object):
         self._top_img = self._img[S-S//CR:S+S//CR-1, S-S//CR:S+S//CR-1].copy().astype(np.float64)
 
         # darken image edges to exclude micro images at border
-        self._top_img *= create_gauss_kernel(l=S//CR*2-1, sig=S//CR//2)
+        self._top_img *= create_gauss_kernel(len=S // CR * 2 - 1, sig=S // CR // 2)
 
         return True
 
     def create_scale_space(self):
 
         # create Gaussian kernels with sigma=1 and sigma=sqrt(2)
-        sig_one_kernel = create_gauss_kernel(l=9, sig=1.)
-        sig_sqrt_kernel = 1 * create_gauss_kernel(l=9, sig=np.sqrt(2))
+        sig_one_kernel = create_gauss_kernel(len=9, sig=1.)
+        sig_sqrt_kernel = 1 * create_gauss_kernel(len=9, sig=np.sqrt(2))
 
         # initialize scale space variables
         self._scale_space = []
