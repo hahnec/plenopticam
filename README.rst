@@ -146,10 +146,8 @@ Depending on provided files and settings, your results folder may contain the fo
     - refocused images (see *refo_xxx* folder) and refocus animation given as gif
     - raw image file given as tiff
     - aligned light field as pkl (pickle) file
-    - light field metadata as json file (in case of Lytro image file)
-    - scheimpflug focus file
-
-Exemplary view animations can be seen above (image quality due to lower resolution and limited gif colours)
+    - light field metadata as json file (for Lytro files only)
+    - scheimpflug focus files
 
 Credits
 -------
