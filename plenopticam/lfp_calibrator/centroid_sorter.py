@@ -61,8 +61,12 @@ class CentroidSorter(object):
         # estimate micro image pitch lengths and pattern type
         self._get_mla_pitch()
 
-        # get maximum number of micro images in horizontal and vertical direction
-        self._mla_dims()
+        try:
+            # get maximum number of micro images in horizontal and vertical direction
+            self._mla_dims()
+        except IndexError:
+            self.sta.status_msg("Error in MLA dimension estimation indicating arbitrarily spaced centroids")
+            self.sta.error = True
 
         # sort MICs and assign 2-D indices to them
         self._assign_mic_idx()
