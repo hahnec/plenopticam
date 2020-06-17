@@ -29,7 +29,7 @@ import os
 from scipy.signal import medfilt
 
 
-class CfaHotPixels(object):
+class CfaOutliers(object):
 
     def __init__(self, *args, **kwargs):
 
@@ -47,11 +47,17 @@ class CfaHotPixels(object):
         cum_img = np.zeros(bay_img[0::2, 0::2].shape)
 
         for c in range(4):
-            i, j = c//2, c % 2
+
+            # check interrupt status
+            if self.sta.interrupt:
+                return False
 
             # progress update
             percent = c / 4
             self.sta.progress(percent*100, self.cfg.params[self.cfg.opt_prnt])
+
+            # Bayer channel index
+            i, j = c//2, c % 2
 
             # deduct median filtered image
             med_img = medfilt(bay_img[i::2, j::2].copy(), kernel_size=(3, 3))
@@ -64,10 +70,6 @@ class CfaHotPixels(object):
             cum_img[diff_img != 0] = 1
 
             bay_img[i::2, j::2] = new_img
-
-            # check interrupt status
-            if self.sta.interrupt:
-                return False
 
         # export hot-pixel map
         if self.cfg.params[self.cfg.opt_dbug]:

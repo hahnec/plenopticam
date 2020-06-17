@@ -24,7 +24,7 @@ __license__ = """
 from plenopticam import misc
 from plenopticam.lfp_aligner.lfp_resampler import LfpResampler
 from plenopticam.lfp_aligner.lfp_rotator import LfpRotator
-from plenopticam.lfp_aligner.cfa_hotpixels import CfaHotPixels
+from plenopticam.lfp_aligner.cfa_outliers import CfaOutliers
 from plenopticam.lfp_aligner.cfa_processor import CfaProcessor
 from plenopticam.lfp_aligner.lfp_devignetter import LfpDevignetter
 
@@ -43,7 +43,7 @@ class LfpAligner(object):
 
         if self.cfg.lfpimg:
             # hot pixel correction
-            obj = CfaHotPixels(bay_img=self._lfp_img, cfg=self.cfg, sta=self.sta)
+            obj = CfaOutliers(bay_img=self._lfp_img, cfg=self.cfg, sta=self.sta)
             obj.rectify_candidates_bayer(n=9, sig_lev=2.5)
             self._lfp_img = obj.bay_img
             del obj
