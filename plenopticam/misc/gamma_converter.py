@@ -1,4 +1,5 @@
 import numpy as np
+from color_space_converter import rgb2gry
 
 
 class GammaConverter(object):
@@ -45,12 +46,8 @@ class GammaConverter(object):
 
         img = self._img if img is None else np.asarray(img, dtype='float64')
 
-        # try extract luminance
-        try:
-            from plenopticam import misc
-            lum = misc.rgb2gray(img)
-        except ImportError:
-            lum = img
+        # extract luminance
+        lum = rgb2gry(img)
 
         # normalize
         lum /= lum.max()
