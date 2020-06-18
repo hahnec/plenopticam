@@ -28,30 +28,30 @@ from color_space_converter import yuv_conv
 from plenopticam.misc.normalizer import Normalizer
 
 
-def create_gauss_kernel(len=25, sig=1.):
+def create_gauss_kernel(length=25, sigma=1.):
     
     # ensure length is odd
-    len = int((len - 1) / 2) + int((len + 1) / 2)
+    length = int((length - 1) / 2) + int((length + 1) / 2)
     
     # compute Gaussian kernel
-    ax = np.arange(-len // 2 + 1., len // 2 + 1.)
+    ax = np.arange(-length // 2 + 1., length // 2 + 1.)
     xx, yy = np.meshgrid(ax, ax)
-    kernel = np.exp(-(xx**2 + yy**2) / (2. * sig**2))
+    kernel = np.exp(-(xx**2 + yy**2) / (2. * sigma ** 2))
     kernel /= kernel.sum()
     
     return kernel
 
 
-def safe_get(dict, *keys):
+def safe_get(any_dict, *keys):
 
-    if dict:
+    if any_dict:
         for key in keys:
             try:
-                dict = dict[key]
+                any_dict = any_dict[key]
             except KeyError:
                 return None
 
-    return dict
+    return any_dict
 
 
 def img_resize(img, x_scale=1, y_scale=None, method=None):
