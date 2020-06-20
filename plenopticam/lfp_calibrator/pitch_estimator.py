@@ -149,7 +149,7 @@ class PitchEstimator(object):
             scale_max = 0
 
         # compute corresponding DoG and Laplacian sigmas
-        dog_sig = 2**(int(int(scale_max)/2)) * np.sqrt(2**np.mod(scale_max, 2))
+        dog_sig = 2**(int(scale_max)//2) * np.sqrt(2**np.mod(scale_max, 2))
         lap_sig = dog_sig * 1.18
 
         # scale to get micro image size
