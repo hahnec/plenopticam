@@ -250,7 +250,7 @@ Further information
 
 .. |Hahne| raw:: html
 
-    <img src="http://www.christopherhahne.de/images/about.jpg" width="15%">
+    <img src="http://www.christopherhahne.de/images/about_alt.jpg" width="15%">
 
 .. |br| raw:: html
 
