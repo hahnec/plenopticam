@@ -75,7 +75,7 @@ class LfpShiftAndSum(LfpViewpoints):
         return True
 
     def refo_from_vp(self):
-        ''' computational refocusing based on viewpoint shift and integration '''
+        """ computational refocusing based on viewpoint shift and integration """
 
         # print status
         self.sta.progress(0, self.cfg.params[self.cfg.opt_prnt])
@@ -139,7 +139,7 @@ class LfpShiftAndSum(LfpViewpoints):
         return True
 
     def refo_from_scratch(self):
-        ''' computational refocusing from aligned light field image '''
+        """ computational refocusing from aligned light field image """
 
         # print status
         self.sta.progress(0, self.cfg.params[self.cfg.opt_prnt])
