@@ -4,7 +4,7 @@ PlenoptiCam
 .. A light field photography application (macOS_ or Win_) for computational change of perspective view and synthetic focus based on a Standard Plenoptic Camera (SPC).
 
 Description
------------
+===========
 
 *PlenoptiCam* is an open-source software (macOS_, Win_ or Linux_) for scientific light field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
 Raw exposures from a plenoptic camera require four-dimensional image alignment in order to be decoded as a light field. Provided software addresses this by its ability to calibrate an image taken by a plenoptic camera and extract sub-aperture images or synthetically focused photographs.
@@ -13,7 +13,10 @@ This application is meant for researchers, developers, beginners and other fiddl
 |release| |license| |build| |coverage| |downloads| |pypi|
 
 Results
--------
+=======
+
+Camera types
+------------
 
 .. list-table::
    :widths: 8 8
@@ -25,24 +28,23 @@ Results
    * - plenoptic camera built at Univ. of Bedfordshire
      - Lytro Illum camera image from raw capture
 
+Color equalization
+------------------
+
 .. list-table::
-   :widths: 8 8 8 8
+   :widths: 8 8 8
    :header-rows: 1
    :stub-columns: 1
 
-   * -
-     - Source
+   * - Before
      - Target
-     - Result
-   * - Light-field color correction
-     - |src_lfp|
+     - After
+   * - |src_lfp|
      - |ref_lfp|
      - |res_lfp|
 
-.. * |Stanford|_
-
 Installation
-------------
+============
 
 * executable:
     1. download bundled apps_ for macOS_, Win_ or Linux_
@@ -67,10 +69,10 @@ Installation
     6. if installation ran smoothly, enter ``$ sudo plenopticam -g`` to the command line
 
 Usage
------
+=====
 
 Application
-===========
+-----------
 
 |gui|
 
@@ -125,7 +127,7 @@ Application
 |
 
 Command Line
-============
+------------
 
 For computing a stack of light-field images, it may be convenient to iterate through them. This can be done by:
 
@@ -150,17 +152,17 @@ Depending on provided files and settings, your results folder may contain the fo
     - scheimpflug focus files
 
 Credits
--------
+=======
 
 Contributors
-============
+------------
 
 |Hahne|
 
 `Christopher Hahne <http://www.christopherhahne.de/>`__
 
 Sponsors
-========
+--------
 |
 
 
