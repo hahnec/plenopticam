@@ -77,11 +77,13 @@ class CnfgWidget(object):
                 # load value range
                 if key == 'cal_meth':
                     value_ran, default = (c.CALI_METH, c.CALI_METH[0])
+                    value_sel = self.cfg.params[self.cfg.cal_meth] if self.cfg.cal_meth in self.cfg.params else default
                 elif key == 'ptc_leng':
                     value_ran, default = (c.PTCH_SIZE, c.PTCH_SIZE[2])
-                self.tk_vars[key] = tk.StringVar(value=default)
+                    value_sel = self.cfg.params[self.cfg.ptc_leng] if self.cfg.ptc_leng in self.cfg.params else default
+                self.tk_vars[key] = tk.StringVar(value=value_sel)
                 obj_ent = tk.Spinbox(self.frame, values=value_ran, textvariable=self.tk_vars[key], width=PX//2)
-                self.tk_vars[key].set(value=default)   # set to default necessary for tkinter's spinbox
+                self.tk_vars[key].set(value=value_sel)   # set to default necessary for tkinter's spinbox
 
             elif PROPERTIES[key][1] == 'bool':
                 self.tk_vars[key] = tk.BooleanVar(value=bool(self.cfg.params[key]))
