@@ -165,7 +165,7 @@ class LfpDevignetter(LfpMicroLenses):
         M = np.mean(self.cfg.calibs[self.cfg.ptc_mean])
         lp_kernel = misc.create_gauss_kernel(length=M)
         if len(self._wht_img.shape) == 3:
-            bw_img = rgb2gry(self._wht_img)[..., 0] if self._wht_img.shape[2] == 3 else self._wht_img
+            bw_img = rgb2gry(self._wht_img)[..., 0] if self._wht_img.shape[2] == 3 else self._wht_img[..., 0]
         else:
             bw_img = self._wht_img
         flt_img = convolve2d(bw_img, lp_kernel, 'same')
