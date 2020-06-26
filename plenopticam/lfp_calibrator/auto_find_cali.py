@@ -226,11 +226,11 @@ class CaliFinder(object):
         if not self._file_found:
             onlyfiles = [f for f in listdir(self._path) if f.lower().endswith('.tar')]
             tarstring = 'caldata-'+str(self._serial)+'.tar'
-            tarnames = [tarstring] if onlyfiles.count(tarstring) else onlyfiles
+            fnames = [tarstring] if onlyfiles.count(tarstring) else onlyfiles
 
             # iterate through tar-files
-            for tarname in tarnames:
-                self._search_tar_file(tarname)
+            for fname in fnames:
+                self._search_tar_file(join(self._path, fname))
                 break
 
         return True
@@ -239,7 +239,7 @@ class CaliFinder(object):
 
         # read mla_calibration JSON file from tar archive
         try:
-            with tarfile.open(join(self._path, tarname), mode='r') as tar_obj:
+            with tarfile.open(tarname, mode='r') as tar_obj:
                 cal_manifest = tar_obj.extractfile('unitdata/cal_file_manifest.json')
                 json_dict = json.loads(cal_manifest.read().decode('utf-8'))
                 self._match_georef(json_dict)
