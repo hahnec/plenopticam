@@ -147,7 +147,7 @@ class CentroidSorter(object):
                         found_center = np.mean(found_center.reshape(-1, 2), axis=0)
                     else:
                         # skip when looking for last MIC with unequal row length
-                        if (lx == self._lens_x_max-1 and row_len_odd) or self._pattern == 'rec':
+                        if lx == self._lens_x_max-1 and (row_len_odd or self._pattern == 'rec'):
                             break
                         # create missing centroid
                         found_center = self._mic_list[j][:2]+np.array([0, self._pitch[1]])
