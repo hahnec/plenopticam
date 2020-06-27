@@ -79,6 +79,7 @@ class LfpReader(object):
             except TypeError:
                 self.sta.status_msg('File type not recognized')
                 self.sta.error = True
+                return False
 
             try:
                 # try to load json file (if present)
