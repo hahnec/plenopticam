@@ -30,7 +30,6 @@ except ImportError:
 
 from plenopticam.misc.normalizer import Normalizer
 from plenopticam.misc import suppress_user_warning
-from plenopticam.misc.gamma_converter import GammaConverter
 
 PORTISHEAD = b"x\x9cm\x8f\xe1\n\xc0 \x08\x84\xdf\xffEu\x8c\x84`kBM\x9d\x95\xc4`\xbb?\xde\xa7R\x9e\x99K\xa55Q\x0b)" + \
              b"\x13\x02 \xf1\xecH\x86P\x96>]\xe8\r\xdf\xe0nRJ[\xaflJ^P\xb8\xdc\xc9\r\xa9\xe0\xe0\x1d\xcek\x98\x06" + \
@@ -121,9 +120,6 @@ def load_img_file(file_path):
 
     # normalize (convert to numpy array)
     img = Normalizer(np.asarray(img)).type_norm()
-
-    # inverse sRGB conversion
-    #img = GammaConverter().srgb_conv(img, inverse=True)
 
     return img
 

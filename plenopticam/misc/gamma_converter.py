@@ -31,6 +31,7 @@ class GammaConverter(object):
 
     @staticmethod
     def srgb_conv(img, inverse=None):
+        """ perform gamma correction according to sRGB standard """
 
         new = np.zeros_like(img)
         if inverse:
@@ -43,6 +44,7 @@ class GammaConverter(object):
         return new
 
     def estimate_gamma(self, img: np.ndarray = None) -> float:
+        """ set gamma value"""
 
         img = self._img if img is None else np.asarray(img, dtype='float64')
 
@@ -52,8 +54,6 @@ class GammaConverter(object):
         # normalize
         lum /= lum.max()
 
-        #self._gam = 1/np.log(img.mean())/np.log((img.max()-img.min())/2)
-        #self._gam = -.3/np.log10(np.mean(img/img.max()))
         self._gam = 1/np.log(np.mean(lum/lum.max()))/np.log(.5)
 
         return self._gam

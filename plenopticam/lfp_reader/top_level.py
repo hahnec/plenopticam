@@ -26,6 +26,7 @@ from plenopticam import misc
 from plenopticam.misc.errors import LfpTypeError, PlenopticamError
 from plenopticam.lfp_reader.lfp_decoder import LfpDecoder
 from plenopticam.lfp_reader.constants import SUPP_FILE_EXT
+from plenopticam.misc.gamma_converter import GammaConverter
 
 import os
 
@@ -76,6 +77,8 @@ class LfpReader(object):
             try:
                 # read and decode generic image file type
                 self._lfp_img = misc.load_img_file(self._lfp_path)
+                # inverse sRGB conversion
+                self._lfp_img = GammaConverter().srgb_conv(self._lfp_img, inverse=True)
             except TypeError:
                 self.sta.status_msg('File type not recognized')
                 self.sta.error = True
