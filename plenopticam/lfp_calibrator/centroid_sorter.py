@@ -67,6 +67,7 @@ class CentroidSorter(object):
         except IndexError:
             self.sta.status_msg("Error in MLA dimension estimation indicating arbitrarily spaced centroids")
             self.sta.error = True
+            return False
 
         # sort MICs and assign 2-D indices to them
         self._assign_mic_idx()
