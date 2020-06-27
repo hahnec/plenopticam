@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>1. PlenoptiCam &#8212; PlenoptiCam 0.4.5 documentation</title>
+    <title>1. PlenoptiCam &#8212; PlenoptiCam 0.5.0 documentation</title>
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -29,7 +29,7 @@
         <li class="right" >
           <a href="index.html" title="PlenoptiCam’s Reference Document"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.4.5 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.5.0 documentation</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -38,7 +38,11 @@
   <ul>
 <li><a class="reference internal" href="#">1. PlenoptiCam</a><ul>
 <li><a class="reference internal" href="#description">1.1. Description</a></li>
-<li><a class="reference internal" href="#results">1.2. Results</a></li>
+<li><a class="reference internal" href="#results">1.2. Results</a><ul>
+<li><a class="reference internal" href="#camera-types">1.2.1. Camera types</a></li>
+<li><a class="reference internal" href="#color-equalization">1.2.2. Color equalization</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#installation">1.3. Installation</a></li>
 <li><a class="reference internal" href="#usage">1.4. Usage</a><ul>
 <li><a class="reference internal" href="#application">1.4.1. Application</a></li>
@@ -48,10 +52,10 @@
 <li><a class="reference internal" href="#credits">1.5. Credits</a><ul>
 <li><a class="reference internal" href="#contributors">1.5.1. Contributors</a></li>
 <li><a class="reference internal" href="#sponsors">1.5.2. Sponsors</a></li>
+<li><a class="reference internal" href="#citation">1.5.3. Citation</a></li>
+<li><a class="reference internal" href="#further-information">1.5.4. Further information</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#citation">1.6. Citation</a></li>
-<li><a class="reference internal" href="#further-information">1.7. Further information</a></li>
 </ul>
 </li>
 </ul>
@@ -91,13 +95,15 @@
 <h1><span class="section-number">1. </span>PlenoptiCam<a class="headerlink" href="#plenopticam" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="description">
 <h2><span class="section-number">1.1. </span>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p><em>PlenoptiCam</em> is an open-source software (<a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.4.4-beta/plenopticam_0.4.4.dmg">macOS</a>, <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.4.4-beta/plenopticam_0.4.4.msi">Win</a> or <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.4.4-beta/plenopticam_0.4.4.tar.gz">Linux</a>) for scientific light field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
+<p><em>PlenoptiCam</em> is an open-source software (<a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.5.0-beta/plenopticam_0.5.0.dmg">macOS</a>, <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.5.0-beta/plenopticam_0.5.0.msi">Win</a> or <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.5.0-beta/plenopticam_0.5.0.tar.gz">Linux</a>) for scientific light field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
 Raw exposures from a plenoptic camera require four-dimensional image alignment in order to be decoded as a light field. Provided software addresses this by its ability to calibrate an image taken by a plenoptic camera and extract sub-aperture images or synthetically focused photographs.
 This application is meant for researchers, developers, beginners and other fiddlers who like to experiment with light field technology. Its scope comprises custom-types of plenoptic cameras and is thus not limited to Lytro’s image data.</p>
-<p><a class="reference external" href="https://github.com/hahnec/plenopticam/releases/"><img alt="release" src="https://img.shields.io/github/release/hahnec/plenopticam.svg?style=flat-square" /></a> <a class="reference external" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img alt="License" src="https://img.shields.io/badge/License-GPL%20v3.0-orange.svg?style=flat-square" /></a> <a class="reference external" href="https://travis-ci.com/github/hahnec/plenopticam"><img alt="build" src="https://img.shields.io/travis/com/hahnec/plenopticam?style=flat-square" /></a> <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/"><img alt="Release Downloads" src="https://img.shields.io/github/downloads/hahnec/plenopticam/total?label=Release%20downloads&amp;style=flat-square" /></a> <a class="reference external" href="https://pypi.org/project/plenopticam/"><img alt="PyPI Downloads" src="https://img.shields.io/pypi/dm/plenopticam?label=PyPI%20downloads&amp;style=flat-square" /></a></p>
+<p><a class="reference external" href="https://github.com/hahnec/plenopticam/releases/"><img alt="release" src="https://img.shields.io/github/release/hahnec/plenopticam.svg?style=flat-square" /></a> <a class="reference external" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img alt="License" src="https://img.shields.io/badge/License-GPL%20v3.0-orange.svg?style=flat-square" /></a> <a class="reference external" href="https://travis-ci.com/github/hahnec/plenopticam"><img alt="build" src="https://img.shields.io/travis/com/hahnec/plenopticam?style=flat-square" /></a> <a class="reference external" href="https://coveralls.io/github/hahnec/plenopticam"><img alt="coverage" src="https://img.shields.io/coveralls/github/hahnec/plenopticam?style=flat-square" /></a> <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/"><img alt="Release Downloads" src="https://img.shields.io/github/downloads/hahnec/plenopticam/total?label=Release%20downloads&amp;style=flat-square" /></a> <a class="reference external" href="https://pypi.org/project/plenopticam/"><img alt="PyPI Downloads" src="https://img.shields.io/pypi/dm/plenopticam?label=PyPI%20downloads&amp;style=flat-square" /></a></p>
 </div>
 <div class="section" id="results">
 <h2><span class="section-number">1.2. </span>Results<a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="camera-types">
+<h3><span class="section-number">1.2.1. </span>Camera types<a class="headerlink" href="#camera-types" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-default">
 <colgroup>
 <col style="width: 50%" />
@@ -116,12 +122,35 @@ This application is meant for researchers, developers, beginners and other fiddl
 </tbody>
 </table>
 </div>
+<div class="section" id="color-equalization">
+<h3><span class="section-number">1.2.2. </span>Color equalization<a class="headerlink" href="#color-equalization" title="Permalink to this headline">¶</a></h3>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Before</p></th>
+<th class="head"><p>Target</p></th>
+<th class="head"><p>After</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p><img src="https://raw.githubusercontent.com/hahnec/color-matcher/master/test/data/view_animation_7px.gif" width="200px" max-width:"100%"></p></th>
+<td><p><img src="https://raw.githubusercontent.com/hahnec/color-matcher/master/test/data/bee_2.png" width="200px" max-width:"100%"></p></td>
+<td><p><img src="https://raw.githubusercontent.com/hahnec/color-matcher/master/test/data/view_animation_7px_hm-mkl-hm.gif" width="200px" max-width:"100%"></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="section" id="installation">
 <h2><span class="section-number">1.3. </span>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><dl class="simple">
 <dt>executable:</dt><dd><ol class="arabic simple">
-<li><p>download bundled <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/">apps</a> for <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.4.4-beta/plenopticam_0.4.4.dmg">macOS</a>, <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.4.4-beta/plenopticam_0.4.4.msi">Win</a> or <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.4.4-beta/plenopticam_0.4.4.tar.gz">Linux</a></p></li>
+<li><p>download bundled <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/">apps</a> for <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.5.0-beta/plenopticam_0.5.0.dmg">macOS</a>, <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.5.0-beta/plenopticam_0.5.0.msi">Win</a> or <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.5.0-beta/plenopticam_0.5.0.tar.gz">Linux</a></p></li>
 <li><p>extract archive</p></li>
 <li><p>run executable (may take a while on first start-up)</p></li>
 <li><p>user interface will show up (see below)</p></li>
@@ -136,7 +165,7 @@ This application is meant for researchers, developers, beginners and other fiddl
 <ul class="simple">
 <li><dl class="simple">
 <dt>via pip:</dt><dd><ol class="arabic simple">
-<li><p>install with <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">plenopticam</span></code></p></li>
+<li><p>install with <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">plenopticam</span></code></p></li>
 <li><p>type <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">plenopticam</span> <span class="pre">-g</span></code> to the command line once installation finished</p></li>
 </ol>
 </dd>
@@ -152,7 +181,7 @@ This application is meant for researchers, developers, beginners and other fiddl
 <li><p>install Python from <a class="reference external" href="https://www.python.org/">https://www.python.org/</a></p></li>
 <li><p>download the <a class="reference external" href="https://github.com/hahnec/plenopticam/archive/master.zip">source</a> using <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/hahnec/plenopticam.git</span></code></p></li>
 <li><p>go to the root directory <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">cd</span> <span class="pre">plenopticam</span></code></p></li>
-<li><p>load other packages <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code></p></li>
+<li><p>load other packages <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code></p></li>
 <li><p>install with <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">sudo</span> <span class="pre">python3</span> <span class="pre">setup.py</span> <span class="pre">install</span></code> from root directory</p></li>
 <li><p>if installation ran smoothly, enter <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">sudo</span> <span class="pre">plenopticam</span> <span class="pre">-g</span></code> to the command line</p></li>
 </ol>
@@ -262,18 +291,17 @@ Depending on provided files and settings, your results folder may contain the fo
 <li><p>refocused images (see <em>refo_xxx</em> folder) and refocus animation given as gif</p></li>
 <li><p>raw image file given as tiff</p></li>
 <li><p>aligned light field as pkl (pickle) file</p></li>
-<li><p>light field metadata as json file (in case of Lytro image file)</p></li>
-<li><p>scheimpflug focus file</p></li>
+<li><p>light field metadata as json file (for Lytro files only)</p></li>
+<li><p>scheimpflug focus files</p></li>
 </ul>
 </div></blockquote>
-<p>Exemplary view animations can be seen above (image quality due to lower resolution and limited gif colours)</p>
 </div>
 </div>
 <div class="section" id="credits">
 <h2><span class="section-number">1.5. </span>Credits<a class="headerlink" href="#credits" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="contributors">
 <h3><span class="section-number">1.5.1. </span>Contributors<a class="headerlink" href="#contributors" title="Permalink to this headline">¶</a></h3>
-<p><img src="http://www.christopherhahne.de/images/about.jpg" width="15%"></p>
+<p><img src="http://www.christopherhahne.de/images/about_alt.jpg" width="15%"></p>
 <p><a class="reference external" href="http://www.christopherhahne.de/">Christopher Hahne</a></p>
 </div>
 <div class="section" id="sponsors">
@@ -296,9 +324,8 @@ Depending on provided files and settings, your results folder may contain the fo
 </tbody>
 </table>
 </div>
-</div>
 <div class="section" id="citation">
-<h2><span class="section-number">1.6. </span>Citation<a class="headerlink" href="#citation" title="Permalink to this headline">¶</a></h2>
+<h3><span class="section-number">1.5.3. </span>Citation<a class="headerlink" href="#citation" title="Permalink to this headline">¶</a></h3>
 <p>If you find this work helpful for your research, please cite as appropriate:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://doi.org/10.1364/OE.24.021521">Refocusing distance of a standard plenoptic camera</a>, <em>OpticsExpress</em>, <a class="reference external" href="http://www.plenoptic.info/bibtex/HAHNE-OPEX.2016.bib">[BibTeX]</a></p></li>
@@ -306,11 +333,12 @@ Depending on provided files and settings, your results folder may contain the fo
 </ul>
 </div>
 <div class="section" id="further-information">
-<h2><span class="section-number">1.7. </span>Further information<a class="headerlink" href="#further-information" title="Permalink to this headline">¶</a></h2>
+<h3><span class="section-number">1.5.4. </span>Further information<a class="headerlink" href="#further-information" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>check out PlenoptiCam’s partner project <a class="reference external" href="https://github.com/hahnec/plenoptisign/">PlenoptiSign</a> capable of estimating metric light field geometries</p></li>
 <li><p>visit <a class="reference external" href="http://www.plenoptic.info">plenoptic.info</a> for technical details, animated figures and theoretical background</p></li>
 </ul>
+</div>
 </div>
 </div>
 
@@ -332,7 +360,7 @@ Depending on provided files and settings, your results folder may contain the fo
         <li class="right" >
           <a href="index.html" title="PlenoptiCam’s Reference Document"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.4.5 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.5.0 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
