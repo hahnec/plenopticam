@@ -6,3 +6,4 @@ from plenopticam.misc.status import PlenopticamStatus
 from plenopticam.misc.type_checks import *
 from plenopticam.misc.errors import *
 from plenopticam.misc.gamma_converter import GammaConverter
+from plenopticam.misc.data_downloader import DataDownloader
