@@ -31,6 +31,7 @@ from plenopticam.cfg.constants import PARAMS_KEYS, PARAMS_VALS, CALIBS_KEYS
 import json
 from os.path import join, abspath, dirname, basename, splitext, isdir, isfile, exists
 from os import remove, stat, chmod
+import warnings
 
 
 class PlenopticamConfig(object):
@@ -65,7 +66,7 @@ class PlenopticamConfig(object):
             # number of values in loaded config is supposed to equal config constants specified in the tool
             if not len(self.params.keys()) == len(PARAMS_KEYS):
                 raise PlenopticamError('Config file corrupted')
-        except Exception:
+        except PlenopticamError:
             self.default_values()
             self.save_params()
 
@@ -103,7 +104,7 @@ class PlenopticamConfig(object):
             with open(fp, 'w+') as f:
                 json.dump(self.params, f, sort_keys=True, indent=4, cls=NumpyTypeEncoder)
         except PermissionError:
-            raise PlenopticamError('\n\nGrant permission to write to the config file '+fp)
+            warnings.warn('\n\nGrant permission to write to the config file '+fp, UserWarning)
 
         return True
 
