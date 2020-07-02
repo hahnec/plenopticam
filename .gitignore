@@ -15,7 +15,7 @@
 
 # plenopticam folders
 releases/
-test/data/
+examples/data/
 docs/build/doctrees/
 
 # Python egg metadata, regenerated from source files by setuptools

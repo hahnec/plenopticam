@@ -22,9 +22,9 @@ __license__ = """
 
 import unittest
 
-from zipfile import ZipFile
 import pickle
-import os
+from os.path import join, exists, basename
+from os import listdir
 
 from plenopticam.lfp_reader import LfpReader
 from plenopticam.lfp_calibrator import LfpCalibrator, CaliFinder, CentroidDrawer
@@ -33,10 +33,10 @@ from plenopticam.lfp_extractor import LfpExtractor
 from plenopticam.lfp_refocuser import LfpRefocuser
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc import PlenopticamStatus, mkdir_p
-from test.unit_test_baseclass import PlenoptiCamTester
+from plenopticam.misc.data_downloader import DataDownloader
 
 
-class PlenoptiCamTesterIllum(PlenoptiCamTester):
+class PlenoptiCamTesterIllum(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
         super(PlenoptiCamTesterIllum, self).__init__(*args, **kwargs)
@@ -44,11 +44,11 @@ class PlenoptiCamTesterIllum(PlenoptiCamTester):
     def setUp(self):
 
         # retrieve Lytro Illum data
-        url = 'http://wp12283669.server-he.de/Xchange/illum_test_data.zip'
-        archive_fn = os.path.join(self.fp, os.path.basename(url))
-        self.download_data(url) if not os.path.exists(archive_fn) else None
-        fnames_illum = [file for file in ZipFile(archive_fn).namelist() if file.startswith('caldata') or file.endswith('lfr')]
-        self.extract_archive(os.path.join(self.fp, os.path.basename(url)), fnames_illum)
+        self.loader = DataDownloader()
+        self.fp = join('..', 'examples', 'data')
+        archive_fn = join(self.fp, basename(self.loader.host_eu_url))
+        self.loader.download_data(self.loader.host_eu_url) if not exists(archive_fn) else None
+        self.loader.extract_archive(join(self.fp, basename(self.loader.host_eu_url)))
 
     def test_illum(self):
 
@@ -57,7 +57,7 @@ class PlenoptiCamTesterIllum(PlenoptiCamTester):
         cfg.default_values()
         sta = PlenopticamStatus()
 
-        # enable options in config to test more algorithms
+        # enable options in config to cover more algorithms in tests
         cfg.params[cfg.cal_meth] = 'grid-fit'
         cfg.params[cfg.opt_vign] = True
         cfg.params[cfg.opt_rota] = True
@@ -80,15 +80,15 @@ class PlenoptiCamTesterIllum(PlenoptiCamTester):
         cfg.params[cfg.opt_prnt] = True
 
         # use pre-loaded calibration dataset
-        wht_list = [file for file in os.listdir(self.fp) if file.startswith('caldata')]
-        lfp_list = [file for file in os.listdir(self.fp) if file.endswith(('lfr', 'lfp'))]
+        wht_list = [file for file in listdir(self.fp) if file.startswith('caldata')]
+        lfp_list = [file for file in listdir(self.fp) if file.endswith(('lfr', 'lfp'))]
 
-        cfg.params[cfg.cal_path] = os.path.join(self.fp, wht_list[0])
+        cfg.params[cfg.cal_path] = join(self.fp, wht_list[0])
 
         for lfp_file in lfp_list:
 
-            cfg.params[cfg.lfp_path] = os.path.join(self.fp, lfp_file)
-            print('\nCompute image %s' % os.path.basename(cfg.params[cfg.lfp_path]))
+            cfg.params[cfg.lfp_path] = join(self.fp, lfp_file)
+            print('\nCompute image %s' % basename(cfg.params[cfg.lfp_path]))
 
             # decode light field image
             obj = LfpReader(cfg, sta)
@@ -114,7 +114,7 @@ class PlenoptiCamTesterIllum(PlenoptiCamTester):
 
                 self.assertEqual(True, ret)
 
-            meta_cond = not (os.path.exists(cfg.params[cfg.cal_meta]) and cfg.params[cfg.cal_meta].lower().endswith('json'))
+            meta_cond = not (exists(cfg.params[cfg.cal_meta]) and cfg.params[cfg.cal_meta].lower().endswith('json'))
             if meta_cond or cfg.params[cfg.opt_cali]:
                 # perform centroid calibration
                 obj = LfpCalibrator(wht_img, cfg, sta)
@@ -130,7 +130,7 @@ class PlenoptiCamTesterIllum(PlenoptiCamTester):
             # write centroids as png file
             if wht_img is not None:
                 obj = CentroidDrawer(wht_img, cfg.calibs[cfg.mic_list], cfg)
-                ret = obj.write_centroids_img(fn=os.path.join(cfg.exp_path, 'wht_img+mics.png'))
+                ret = obj.write_centroids_img(fn='testcase_wht_img+mics.png')
                 del obj
 
                 self.assertEqual(True, ret)
@@ -145,14 +145,14 @@ class PlenoptiCamTesterIllum(PlenoptiCamTester):
                 self.assertEqual(True, ret)
 
             # load previously computed light field alignment
-            with open(os.path.join(cfg.exp_path, 'lfp_img_align.pkl'), 'rb') as f:
+            with open(join(cfg.exp_path, 'lfp_img_align.pkl'), 'rb') as f:
                 lfp_img_align = pickle.load(f)
 
             # extract viewpoint data
             CaliFinder(cfg).main()
             obj = LfpExtractor(lfp_img_align, cfg=cfg, sta=sta)
             ret = obj.main()
-            vp_img_arr = obj.vp_img_arr
+            vp_img_arr = obj.vp_img_linear
             del obj
 
             self.assertEqual(True, ret)

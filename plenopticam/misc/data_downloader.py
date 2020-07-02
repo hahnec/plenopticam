@@ -97,7 +97,7 @@ class DataDownloader(object):
                 for fn in z.namelist():
                     if fn in fname_list and not os.path.exists(os.path.join(self.fp, fn)):
                         z.extract(fn, os.path.dirname(archive_fn))
-                        print('File %s extracted' % fn)
+                        print('Extracted file %s' % fn)
 
     @staticmethod
     def find_archive_fnames(archive_fn):

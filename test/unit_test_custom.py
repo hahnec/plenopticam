@@ -29,10 +29,10 @@ from plenopticam.lfp_extractor import LfpExtractor
 from plenopticam.lfp_refocuser import LfpRefocuser
 from plenopticam.cfg.cfg import PlenopticamConfig
 from plenopticam.misc import PlenopticamStatus, mkdir_p, load_img_file
-from test.unit_test_baseclass import PlenoptiCamTester
+from plenopticam.misc.data_downloader import DataDownloader
 
 
-class PlenoptiCamTesterCustom(PlenoptiCamTester):
+class PlenoptiCamTesterCustom(unittest.TestCase):
 
     CEA_PATH = r'../plenopticam/scripts/metrics/calibration/centroid_error_analysis/'
 
@@ -42,12 +42,12 @@ class PlenoptiCamTesterCustom(PlenoptiCamTester):
     def setUp(self):
 
         # retrieve OpEx data from Hahne et al.
-        url = 'https://ndownloader.figshare.com/files/5201452'
-        archive_fn = join(self.fp, basename(url))
-        self.download_data(url) if not exists(archive_fn) else None
-        self.fnames_wht_opex = ['f197with4m11pxf16Final.bmp', 'f197Inf9pxFinalShift12.7cmf22.bmp']
-        self.fnames_lfp_opex = ['f197with4m11pxFinal.bmp', 'f197Inf9pxFinalShift12.7cm.bmp']
-        self.extract_archive(join(self.fp, basename(url)), self.fnames_wht_opex+self.fnames_lfp_opex)
+        self.loader = DataDownloader()
+        self.fp = join('..', 'examples', 'data')
+        archive_fn = join(self.fp, basename(self.loader.opex_url))
+        self.loader.download_data(self.loader.opex_url, fp=self.fp) if not exists(archive_fn) else None
+        self.loader.extract_archive(join(self.fp, basename(self.loader.opex_url)),
+                                    self.loader.opex_fnames_wht + self.loader.opex_fnames_lfp)
 
         # set config for unit test purposes
         self.sta = PlenopticamStatus()
@@ -60,7 +60,7 @@ class PlenoptiCamTesterCustom(PlenoptiCamTester):
 
     def test_custom_cal(self):
 
-        for fn_lfp, fn_wht in zip(self.fnames_lfp_opex, self.fnames_wht_opex):
+        for fn_lfp, fn_wht in zip(self.loader.opex_fnames_lfp, self.loader.opex_fnames_wht):
 
             # generate console output to prevent abort in Travis CI
             print(fn_wht)
@@ -83,7 +83,7 @@ class PlenoptiCamTesterCustom(PlenoptiCamTester):
 
     def test_custom_lfp(self):
 
-        for fn_lfp, fn_wht in zip(self.fnames_lfp_opex, self.fnames_wht_opex):
+        for fn_lfp, fn_wht in zip(self.loader.opex_fnames_lfp, self.loader.opex_fnames_wht):
 
             # generate console output to prevent abort in Travis CI
             print(fn_lfp)
