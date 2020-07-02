@@ -265,7 +265,7 @@ class CtrlWidget(tk.Frame):
         # export light field data
         exp_obj = lfp_extractor.LfpExtractor(self.lfp_img_align, self.cfg, self.sta)
         exp_obj.main()
-        self.vp_img_arr = exp_obj.vp_img_arr
+        self.vp_img_arr = exp_obj.vp_img_linear
         del exp_obj
 
     def cal(self):

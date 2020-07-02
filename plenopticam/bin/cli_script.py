@@ -224,7 +224,7 @@ def main():
         lfp_calibrator.CaliFinder(cfg).main()
         obj = lfp_extractor.LfpExtractor(lfp_img_align, cfg=cfg, sta=sta)
         obj.main()
-        vp_img_arr = obj.vp_img_arr
+        vp_img_arr = obj.vp_img_linear
         del obj
 
         # do refocusing
