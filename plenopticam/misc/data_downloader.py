@@ -21,6 +21,7 @@ __license__ = """
 """
 
 import os, sys
+from os.path import abspath, dirname, basename
 import requests
 from zipfile import ZipFile
 
@@ -34,6 +35,7 @@ class DataDownloader(object):
         # path handling: refer to folder where data will be stored
         path = kwargs['path'] if 'path' in kwargs else os.path.dirname(os.path.abspath(__file__))
         self._fp = os.path.join(path, 'data')
+        self.root_path = dirname(abspath('.')) if basename((abspath('.'))) == 'tests' else abspath('.')
 
         # data urls
         self.host_eu_url = 'http://wp12283669.server-he.de/Xchange/illum_test_data.zip'
