@@ -23,7 +23,7 @@ __license__ = """
 import unittest
 
 import pickle
-from os.path import join, exists, basename
+from os.path import join, exists, basename, abspath, dirname
 from os import listdir
 
 from plenopticam.lfp_reader import LfpReader
@@ -45,7 +45,8 @@ class PlenoptiCamTesterIllum(unittest.TestCase):
 
         # retrieve Lytro Illum data
         self.loader = DataDownloader()
-        self.fp = join('..', 'examples', 'data')
+        self.root_path = dirname(abspath('.')) if basename((abspath('.'))) == 'tests' else abspath('.')
+        self.fp = join(self.root_path, 'examples', 'data')
         archive_fn = join(self.fp, basename(self.loader.host_eu_url))
         self.loader.download_data(self.loader.host_eu_url) if not exists(archive_fn) else None
         self.loader.extract_archive(join(self.fp, basename(self.loader.host_eu_url)))

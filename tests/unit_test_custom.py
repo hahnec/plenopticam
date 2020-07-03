@@ -21,7 +21,7 @@ __license__ = """
 """
 
 import unittest
-from os.path import exists, join, basename, splitext
+from os.path import exists, join, basename, splitext, abspath, dirname
 
 from plenopticam.lfp_calibrator import LfpCalibrator
 from plenopticam.lfp_aligner import LfpAligner
@@ -43,11 +43,11 @@ class PlenoptiCamTesterCustom(unittest.TestCase):
 
         # retrieve OpEx data from Hahne et al.
         self.loader = DataDownloader()
-        self.fp = join('..', 'examples', 'data')
+        self.root_path = dirname(abspath('.')) if basename((abspath('.'))) == 'tests' else abspath('.')
+        self.fp = join(self.root_path, 'examples', 'data')
         archive_fn = join(self.fp, basename(self.loader.opex_url))
         self.loader.download_data(self.loader.opex_url, fp=self.fp) if not exists(archive_fn) else None
-        self.loader.extract_archive(join(self.fp, basename(self.loader.opex_url)),
-                                    self.loader.opex_fnames_wht + self.loader.opex_fnames_lfp)
+        self.loader.extract_archive(archive_fn, self.loader.opex_fnames_wht + self.loader.opex_fnames_lfp)
 
         # set config for unit test purposes
         self.sta = PlenopticamStatus()
