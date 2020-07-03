@@ -47,11 +47,11 @@ class DataDownloader(object):
         """ download data form provided url string """
 
         # path handling
-        self.fp = os.path.join(fp, 'data') if fp is not None else self.fp
+        self.fp = fp if fp is not None else self.fp
         mkdir_p(self.fp) if not os.path.exists(self.fp) else None
 
         # skip download if file exists
-        if os.path.exists(os.path.join('.', 'data', os.path.basename(url))):
+        if os.path.exists(os.path.join(self.fp, os.path.basename(url))):
             print('Download skipped as %s already exists' % os.path.basename(url))
             return None
 
@@ -83,7 +83,7 @@ class DataDownloader(object):
         """ extract content from downloaded data """
 
         # look for archives in file path
-        self.fp = os.path.join(fp, 'data') if fp is not None else self.fp
+        self.fp = fp if fp is not None else self.fp
         if archive_fn is None and fp:
             archive_fns = [os.path.join(self.fp, f) for f in os.listdir(self.fp) if f.endswith('zip')]
         else:
