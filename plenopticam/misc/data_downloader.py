@@ -60,7 +60,7 @@ class DataDownloader(object):
             print('Download skipped as %s already exists' % os.path.basename(url))
             return None
 
-        print('Downloading file %s to %s' % os.path.basename(url), self.fp)
+        print('Downloading file %s to %s' % (os.path.basename(url), self.fp))
 
         with open(os.path.join(self.fp, os.path.basename(url)), 'wb') as f:
             # establish internet connection for data download
