@@ -43,8 +43,35 @@ class PlenoptiCamTesterIllum(unittest.TestCase):
 
     def setUp(self):
 
+        # instantiate config and status objects
+        self.cfg = PlenopticamConfig()
+        self.cfg.default_values()
+        self.sta = PlenopticamStatus()
+
+        # enable options in config to cover more algorithms in tests
+        self.cfg.params[self.cfg.cal_meth] = 'grid-fit'
+        self.cfg.params[self.cfg.opt_vign] = True
+        self.cfg.params[self.cfg.opt_rota] = True
+        self.cfg.params[self.cfg.opt_refi] = True
+        self.cfg.params[self.cfg.opt_pflu] = True
+        self.cfg.params[self.cfg.opt_arti] = True
+        self.cfg.params[self.cfg.opt_lier] = True
+        self.cfg.params[self.cfg.opt_cont] = True
+        self.cfg.params[self.cfg.opt_awb_] = True
+        self.cfg.params[self.cfg.opt_sat_] = True
+        self.cfg.params[self.cfg.ran_refo] = [0, 1]
+
+        # compute 3x3 viewpoints only (to reduce computation time)
+        self.cfg.params[self.cfg.ptc_leng] = 3
+
+        # skip progress prints (prevent Travis from terminating due to reaching 4MB logfile size)
+        self.sta.prog_opt = False
+
+        # print current process message (to prevent Travis from stopping after 10 mins)
+        self.cfg.params[self.cfg.opt_prnt] = True
+
         # retrieve Lytro Illum data
-        self.loader = DataDownloader()
+        self.loader = DataDownloader(cfg=self.cfg, sta=self.sta)
         self.fp = join(self.loader.root_path, 'examples', 'data')
         archive_fn = join(self.fp, basename(self.loader.host_eu_url))
         self.loader.download_data(self.loader.host_eu_url) if not exists(archive_fn) else None
@@ -52,46 +79,19 @@ class PlenoptiCamTesterIllum(unittest.TestCase):
 
     def test_illum(self):
 
-        # instantiate config and status objects
-        cfg = PlenopticamConfig()
-        cfg.default_values()
-        sta = PlenopticamStatus()
-
-        # enable options in config to cover more algorithms in tests
-        cfg.params[cfg.cal_meth] = 'grid-fit'
-        cfg.params[cfg.opt_vign] = True
-        cfg.params[cfg.opt_rota] = True
-        cfg.params[cfg.opt_refi] = True
-        cfg.params[cfg.opt_pflu] = True
-        cfg.params[cfg.opt_arti] = True
-        cfg.params[cfg.opt_lier] = True
-        cfg.params[cfg.opt_cont] = True
-        cfg.params[cfg.opt_awb_] = True
-        cfg.params[cfg.opt_sat_] = True
-        cfg.params[cfg.ran_refo] = [0, 1]
-
-        # compute 3x3 viewpoints only (to reduce computation time)
-        cfg.params[cfg.ptc_leng] = 3
-
-        # skip progress prints (prevent Travis from terminating due to reaching 4MB logfile size)
-        sta.prog_opt = False
-
-        # print current process message (to prevent Travis from stopping after 10 mins)
-        cfg.params[cfg.opt_prnt] = True
-
         # use pre-loaded calibration dataset
         wht_list = [file for file in listdir(self.fp) if file.startswith('caldata')]
         lfp_list = [file for file in listdir(self.fp) if file.endswith(('lfr', 'lfp'))]
 
-        cfg.params[cfg.cal_path] = join(self.fp, wht_list[0])
+        self.cfg.params[self.cfg.cal_path] = join(self.fp, wht_list[0])
 
         for lfp_file in lfp_list:
 
-            cfg.params[cfg.lfp_path] = join(self.fp, lfp_file)
-            print('\nCompute image %s' % basename(cfg.params[cfg.lfp_path]))
+            self.cfg.params[self.cfg.lfp_path] = join(self.fp, lfp_file)
+            print('\nCompute image %s' % basename(self.cfg.params[self.cfg.lfp_path]))
 
             # decode light field image
-            obj = LfpReader(cfg, sta)
+            obj = LfpReader(self.cfg, self.sta)
             ret = obj.main()
 
             # use third of original image size (to prevent Travis from stopping due to memory error)
@@ -103,54 +103,54 @@ class PlenoptiCamTesterIllum(unittest.TestCase):
             self.assertEqual(True, ret)
 
             # create output data folder
-            mkdir_p(cfg.exp_path, cfg.params[cfg.opt_prnt])
+            mkdir_p(self.cfg.exp_path, self.cfg.params[self.cfg.opt_prnt])
 
-            if not cfg.cond_meta_file():
+            if not self.cfg.cond_meta_file():
                 # automatic calibration data selection
-                obj = CaliFinder(cfg, sta)
+                obj = CaliFinder(self.cfg, self.sta)
                 ret = obj.main()
                 wht_img = obj.wht_bay[crop_h:-crop_h, crop_w:-crop_w] if obj.wht_bay is not None else obj.wht_bay
                 del obj
 
                 self.assertEqual(True, ret)
 
-            meta_cond = not (exists(cfg.params[cfg.cal_meta]) and cfg.params[cfg.cal_meta].lower().endswith('json'))
-            if meta_cond or cfg.params[cfg.opt_cali]:
+            meta_cond = not (exists(self.cfg.params[self.cfg.cal_meta]) and self.cfg.params[self.cfg.cal_meta].lower().endswith('json'))
+            if meta_cond or self.cfg.params[self.cfg.opt_cali]:
                 # perform centroid calibration
-                obj = LfpCalibrator(wht_img, cfg, sta)
+                obj = LfpCalibrator(wht_img, self.cfg, self.sta)
                 ret = obj.main()
-                cfg = obj.cfg
+                self.cfg = obj.cfg
                 del obj
 
                 self.assertEqual(True, ret)
 
             # load calibration data
-            cfg.load_cal_data()
+            self.cfg.load_cal_data()
 
             # write centroids as png file
             if wht_img is not None:
-                obj = CentroidDrawer(wht_img, cfg.calibs[cfg.mic_list], cfg)
+                obj = CentroidDrawer(wht_img, self.cfg.calibs[self.cfg.mic_list], self.cfg)
                 ret = obj.write_centroids_img(fn='testcase_wht_img+mics.png')
                 del obj
 
                 self.assertEqual(True, ret)
 
             #  check if light field alignment has been done before
-            if cfg.cond_lfp_align():
+            if self.cfg.cond_lfp_align():
                 # align light field
-                obj = LfpAligner(lfp_img, cfg, sta, wht_img)
+                obj = LfpAligner(lfp_img, self.cfg, self.sta, wht_img)
                 ret = obj.main()
                 del obj
 
                 self.assertEqual(True, ret)
 
             # load previously computed light field alignment
-            with open(join(cfg.exp_path, 'lfp_img_align.pkl'), 'rb') as f:
+            with open(join(self.cfg.exp_path, 'lfp_img_align.pkl'), 'rb') as f:
                 lfp_img_align = pickle.load(f)
 
             # extract viewpoint data
-            CaliFinder(cfg).main()
-            obj = LfpExtractor(lfp_img_align, cfg=cfg, sta=sta)
+            CaliFinder(self.cfg).main()
+            obj = LfpExtractor(lfp_img_align, cfg=self.cfg, sta=self.sta)
             ret = obj.main()
             vp_img_arr = obj.vp_img_linear
             del obj
@@ -158,8 +158,8 @@ class PlenoptiCamTesterIllum(unittest.TestCase):
             self.assertEqual(True, ret)
 
             # do refocusing
-            if cfg.params[cfg.opt_refo]:
-                obj = LfpRefocuser(vp_img_arr, cfg=cfg, sta=sta)
+            if self.cfg.params[self.cfg.opt_refo]:
+                obj = LfpRefocuser(vp_img_arr, cfg=self.cfg, sta=self.sta)
                 ret = obj.main()
                 del obj
 

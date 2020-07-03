@@ -41,13 +41,6 @@ class PlenoptiCamTesterCustom(unittest.TestCase):
 
     def setUp(self):
 
-        # retrieve OpEx data from Hahne et al.
-        self.loader = DataDownloader()
-        self.fp = join(self.loader.root_path, 'examples', 'data')
-        archive_fn = join(self.fp, basename(self.loader.opex_url))
-        self.loader.download_data(self.loader.opex_url, fp=self.fp) if not exists(archive_fn) else None
-        self.loader.extract_archive(archive_fn, self.loader.opex_fnames_wht + self.loader.opex_fnames_lfp)
-
         # set config for unit test purposes
         self.sta = PlenopticamStatus()
         self.cfg = PlenopticamConfig()
@@ -56,6 +49,13 @@ class PlenoptiCamTesterCustom(unittest.TestCase):
         self.cfg.params[self.cfg.opt_prnt] = False    # prevent Travis CI to terminate after reaching 4MB logfile size
         self.cfg.params[self.cfg.opt_vign] = True
         self.cfg.params[self.cfg.opt_sat_] = True
+
+        # retrieve OpEx data from Hahne et al.
+        self.loader = DataDownloader(cfg=self.cfg, sta=self.sta)
+        self.fp = join(self.loader.root_path, 'examples', 'data')
+        archive_fn = join(self.fp, basename(self.loader.opex_url))
+        self.loader.download_data(self.loader.opex_url, fp=self.fp) if not exists(archive_fn) else None
+        self.loader.extract_archive(archive_fn, self.loader.opex_fnames_wht + self.loader.opex_fnames_lfp)
 
     def test_custom_cal(self):
 

@@ -20,17 +20,22 @@ __license__ = """
 
 """
 
-import os, sys
+import os
 from os.path import abspath, dirname, basename
 import requests
 from zipfile import ZipFile
 
-from plenopticam.misc import mkdir_p
+from plenopticam.misc import mkdir_p, PlenopticamStatus
+from plenopticam.cfg import PlenopticamConfig
 
 
 class DataDownloader(object):
 
     def __init__(self, *args, **kwargs):
+
+        # instantiate config and status objects
+        self.cfg = kwargs['cfg'] if 'cfg' in kwargs else PlenopticamConfig()
+        self.sta = kwargs['sta'] if 'sta' in kwargs else PlenopticamStatus()
 
         # path handling: refer to folder where data will be stored
         path = kwargs['path'] if 'path' in kwargs else os.path.dirname(os.path.abspath(__file__))
@@ -55,7 +60,7 @@ class DataDownloader(object):
             print('Download skipped as %s already exists' % os.path.basename(url))
             return None
 
-        print('Downloading file %s' % os.path.basename(url))
+        print('Downloading file %s to %s' % os.path.basename(url), self.fp)
 
         with open(os.path.join(self.fp, os.path.basename(url)), 'wb') as f:
             # establish internet connection for data download
@@ -73,9 +78,7 @@ class DataDownloader(object):
                 for data in r.iter_content(chunk_size=4096):
                     dl += len(data)
                     f.write(data)
-                    done = int(50 * dl / total_length)
-                    sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50 - done)))
-                    sys.stdout.flush()
+                    self.sta.progress(dl//total_length * 100, self.cfg.params[self.cfg.opt_prnt])
 
         print('\n Finished download of %s' % os.path.basename(url))
 
