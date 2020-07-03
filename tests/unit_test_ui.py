@@ -23,7 +23,7 @@ __license__ = """
 import sys
 import unittest
 
-from test.unit_test_baseclass import PlenoptiCamTester
+from tests.unit_test_baseclass import PlenoptiCamTester
 from plenopticam.bin.cli_script import main
 from plenopticam.cfg.cfg import PlenopticamConfig
 from plenopticam.misc import PlenopticamStatus
