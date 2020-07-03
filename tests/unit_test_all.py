@@ -1,6 +1,6 @@
-from test.unit_test_custom import PlenoptiCamTesterCustom
-from test.unit_test_illum import PlenoptiCamTesterIllum
-from test.unit_test_ui import PlenoptiCamTesterUI
+from tests.unit_test_custom import PlenoptiCamTesterCustom
+from tests.unit_test_illum import PlenoptiCamTesterIllum
+from tests.unit_test_ui import PlenoptiCamTesterUI
 
 # test custom data
 obj = PlenoptiCamTesterCustom()
