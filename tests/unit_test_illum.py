@@ -74,8 +74,8 @@ class PlenoptiCamTesterIllum(unittest.TestCase):
         self.loader = DataDownloader(cfg=self.cfg, sta=self.sta)
         self.fp = join(self.loader.root_path, 'examples', 'data')
         archive_fn = join(self.fp, basename(self.loader.host_eu_url))
-        self.loader.download_data(self.loader.host_eu_url) if not exists(archive_fn) else None
-        self.loader.extract_archive(join(self.fp, basename(self.loader.host_eu_url)))
+        self.loader.download_data(self.loader.host_eu_url, fp=self.fp) if not exists(archive_fn) else None
+        self.loader.extract_archive(archive_fn)
 
     def test_illum(self):
 
