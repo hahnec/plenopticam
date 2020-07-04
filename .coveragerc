@@ -5,6 +5,7 @@ omit =
     */site-packages/*
     */distutils/*
     tests/*
+    examples/*.ipynb
     plenopticam/scripts/*
 
 [report]
