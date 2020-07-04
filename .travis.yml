@@ -44,7 +44,7 @@ script:
   - make html
   - cd ..
   # trigger unit tests (time critical and output print limitation due to > 4MB size)
-  - travis_wait 30 sleep 1800 &
+  - travis_wait 20 sleep 1200 &
   - python3 -m coverage run tests/unit_test_all.py || python -m coverage run tests/unit_test_all.py
 
 #before_deploy:
