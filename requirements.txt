@@ -8,3 +8,4 @@ imageio
 docutils
 Pillow
 requests
+matplotlib
