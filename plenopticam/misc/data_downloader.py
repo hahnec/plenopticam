@@ -78,7 +78,7 @@ class DataDownloader(object):
                 for data in r.iter_content(chunk_size=4096):
                     dl += len(data)
                     f.write(data)
-                    self.sta.progress(dl//total_length * 100, self.cfg.params[self.cfg.opt_prnt])
+                    self.sta.progress(dl/total_length * 100, self.cfg.params[self.cfg.opt_prnt])
 
         print('\n Finished download of %s' % os.path.basename(url))
 
