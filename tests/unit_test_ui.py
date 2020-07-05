@@ -77,11 +77,11 @@ class PlenoptiCamTesterUI(unittest.TestCase):
             exp_str = '"' + exp_val + '"' if isinstance(exp_val, str) else exp_val
             cli_str = cmd + str(exp_str) if type(exp_val) in (str, int, list) else cmd
             sys.argv.append(cli_str)
-            print(cli_str)
+            print(kw, cli_str)
             try:
                 cfg = parse_options(sys.argv[1:], cfg)
-            except SystemExit:
-                pass
+            except SystemExit as e:
+                print(e)
             val = cfg.params[kw]
             sys.argv.pop()
 
