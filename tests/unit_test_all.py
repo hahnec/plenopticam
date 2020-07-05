@@ -18,5 +18,5 @@ del obj
 # test user interface
 obj = PlenoptiCamTesterUI()
 obj.setUp()
-obj.test_cli_help()
+obj.test_all()
 del obj

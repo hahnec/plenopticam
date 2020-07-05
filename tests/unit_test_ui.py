@@ -107,6 +107,12 @@ class PlenoptiCamTesterUI(unittest.TestCase):
 
         return True
 
+    def test_all(self):
+
+        self.test_cli_help()
+        self.test_cli_cmd_opts()
+        self.test_viewer()
+
 
 if __name__ == '__main__':
     unittest.main()
