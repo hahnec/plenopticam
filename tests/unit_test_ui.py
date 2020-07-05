@@ -23,8 +23,8 @@ __license__ = """
 import sys
 import unittest
 
-from plenopticam.bin.cli_script import main
-from plenopticam.cfg.cfg import PlenopticamConfig
+from plenopticam.bin.cli_script import main, parse_options
+from plenopticam.cfg import PlenopticamConfig, PARAMS_KEYS
 from plenopticam.misc import PlenopticamStatus
 from plenopticam.gui.widget_view import ViewWidget, PX, PY
 
@@ -58,17 +58,13 @@ class PlenoptiCamTesterUI(unittest.TestCase):
 
     def test_cli_cmd_opts(self):
 
-        from plenopticam.bin.cli_script import parse_options
-        from plenopticam.cfg.constants import PARAMS_KEYS
-
         # get rid of potential arguments from previous usage
         sys.argv = sys.argv[:1]
 
-        exp_vals = ['dummy.ext', 'wht.ext', '', 'grid-fit', 9, [0, 3], False] + [True, ] * 11 +\
-                   [False, True, True, False]
+        exp_vals = ['dummy.ext', 'wht.ext', '', 'grid-fit', 9, [0, 3], False] + [True, ] * 15
         usr_cmds = ["--file=", "--cali=", "--meta=", "--meth=", "--patch=", "--refo=", "--copt", "--vgn",
                     "--hot", "--con", "--col", "--awb", "--sat", "--view", "--refo", "--refi", "--pflu",
-                    "--art", "--rot", "--dbg", "--prt", "--rem"
+                    "--art", "--rota", "--dbug", "--prnt", "--rm"
                     ]
 
         for cmd, kw, exp_val in zip(usr_cmds, PARAMS_KEYS, exp_vals):
@@ -80,8 +76,8 @@ class PlenoptiCamTesterUI(unittest.TestCase):
             print(kw, cli_str)
             try:
                 self.cfg = parse_options(sys.argv[1:], self.cfg)
-            except SystemExit as e:
-                print(e)
+            except SystemExit:
+                pass
             val = self.cfg.params[kw]
             sys.argv.pop()
 

@@ -71,7 +71,8 @@ def parse_options(argv, cfg):
     try:
         opts, args = getopt.getopt(argv, "ghf:c:p:r:m:",
                                         ["gui", "help", "file=", "cali=", "patch=", "refo=", "meth=",
-                                         "dbug", "refi", "pflu", "vgn", "awb", "con", "hot", "sat", "art", "rm"])
+                                         "dbug", "refi", "pflu", "rota",
+                                         "vgn", "awb", "con", "hot", "sat", "art", "rm"])
     except getopt.GetoptError as e:
         print(e)
         sys.exit(2)
@@ -101,6 +102,8 @@ def parse_options(argv, cfg):
                 cfg.params[cfg.opt_refi] = True
             if opt == "--pflu":
                 cfg.params[cfg.opt_pflu] = True
+            if opt == "--rota":
+                cfg.params[cfg.opt_rota] = True
             if opt == "--vgn":
                 cfg.params[cfg.opt_vign] = True
             if opt == "--awb":
