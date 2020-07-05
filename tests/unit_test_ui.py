@@ -62,10 +62,10 @@ class PlenoptiCamTesterUI(unittest.TestCase):
         from plenopticam.cfg.constants import PARAMS_KEYS
 
         cfg = PlenopticamConfig()
+        cfg.default_values()
 
-        exp_vals = ['dummy.ext', 'wht.ext', None, 'grid-fit', 9, [0, 3], None] + [True, ] * 3 + [None, True, True, None,
-                                                                                                 None, True, True,
-                                                                                                 True, ] + [None, ] * 4
+        exp_vals = ['dummy.ext', 'wht.ext', '', 'grid-fit', 9, [0, 3], False] + [True, ] * 11 + [False, ] * 2 +\
+                   [True, False]
         usr_cmds = ["--file=", "--cali=", "--meta=", "--meth=", "--patch=", "--refo=", "--copt", "--vgn",
                     "--hot", "--con", "--col", "--awb", "--sat", "--view", "--refo", "--refi", "--pflu",
                     "--art", "--rot", "--dbg", "--prt", "--rem"
@@ -80,9 +80,9 @@ class PlenoptiCamTesterUI(unittest.TestCase):
             print(cli_str)
             try:
                 cfg = parse_options(sys.argv[1:], cfg)
-                val = cfg.params[kw]
             except SystemExit:
-                val = 'false'
+                pass
+            val = cfg.params[kw]
             sys.argv.pop()
 
             self.assertEqual(exp_val, val)
