@@ -1,2 +1,3 @@
 jupyterlab>=1.0
 matplotlib
+plenopticam>=0.5.2
