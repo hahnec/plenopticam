@@ -1,5 +1,7 @@
 name: Binder
-on: #[push]
+on:
+  pull_request:
+    types: [opened, reopened]
 
 jobs:
   Create-Binder-Badge:
@@ -9,4 +11,19 @@ jobs:
       uses: machine-learning-apps/repo2docker-action@0.2
       with:
         NO_PUSH: true
-        MYBINDERORG_TAG: ${{ github.event.ref }} # This builds the container on mybinder.org with the branch that was pushed on.
+        MYBINDERORG_TAG: ${{ github.event.pull_request.head.ref }}
+
+    - name: comment on PR with Binder link
+      uses: actions/github-script@v1
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          var BRANCH_NAME = process.env.BRANCH_NAME;
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/${context.repo.owner}/${context.repo.repo}/${BRANCH_NAME}) :point_left: Launch a binder notebook on this branch`
+          })
+      env:
+        BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
