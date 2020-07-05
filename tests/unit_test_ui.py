@@ -52,20 +52,20 @@ class PlenoptiCamTesterUI(unittest.TestCase):
                 ret = main()
             except SystemExit:
                 ret = True
+            sys.argv.pop()
 
             self.assertEqual(True, ret)
 
     def test_cli_cmd_opts(self):
 
         from plenopticam.bin.cli_script import parse_options
-        from plenopticam.cfg import PlenopticamConfig
         from plenopticam.cfg.constants import PARAMS_KEYS
 
-        cfg = PlenopticamConfig()
-        cfg.default_values()
+        # get rid of potential arguments from previous usage
+        sys.argv = sys.argv[:1]
 
-        exp_vals = ['dummy.ext', 'wht.ext', '', 'grid-fit', 9, [0, 3], False] + [True, ] * 11 + [False, ] * 2 +\
-                   [True, False]
+        exp_vals = ['dummy.ext', 'wht.ext', '', 'grid-fit', 9, [0, 3], False] + [True, ] * 11 +\
+                   [False, True, True, False]
         usr_cmds = ["--file=", "--cali=", "--meta=", "--meth=", "--patch=", "--refo=", "--copt", "--vgn",
                     "--hot", "--con", "--col", "--awb", "--sat", "--view", "--refo", "--refi", "--pflu",
                     "--art", "--rot", "--dbg", "--prt", "--rem"
@@ -79,10 +79,10 @@ class PlenoptiCamTesterUI(unittest.TestCase):
             sys.argv.append(cli_str)
             print(kw, cli_str)
             try:
-                cfg = parse_options(sys.argv[1:], cfg)
+                self.cfg = parse_options(sys.argv[1:], self.cfg)
             except SystemExit as e:
                 print(e)
-            val = cfg.params[kw]
+            val = self.cfg.params[kw]
             sys.argv.pop()
 
             self.assertEqual(exp_val, val)
