@@ -82,7 +82,7 @@ class PlenoptiCamTesterUI(unittest.TestCase):
                 cfg = parse_options(sys.argv[1:], cfg)
                 val = cfg.params[kw]
             except SystemExit:
-                val = None
+                val = 'false'
             sys.argv.pop()
 
             self.assertEqual(exp_val, val)
