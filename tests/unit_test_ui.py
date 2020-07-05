@@ -64,7 +64,7 @@ class PlenoptiCamTesterUI(unittest.TestCase):
         cfg = PlenopticamConfig()
 
         exp_vals = ['dummy.ext', 'wht.ext', None, 'grid-fit', 9, [0, 3], None] + [True, ] * 3 + [None, True, True, None,
-                                                                                                 None, True, None,
+                                                                                                 None, True, True,
                                                                                                  True, ] + [None, ] * 4
         usr_cmds = ["--file=", "--cali=", "--meta=", "--meth=", "--patch=", "--refo=", "--copt", "--vgn",
                     "--hot", "--con", "--col", "--awb", "--sat", "--view", "--refo", "--refi", "--pflu",
