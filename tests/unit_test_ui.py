@@ -73,7 +73,7 @@ class PlenoptiCamTesterUI(unittest.TestCase):
 
         for cmd, kw, exp_val in zip(usr_cmds, PARAMS_KEYS, exp_vals):
 
-            # pass CLI argument to
+            # pass CLI argument
             exp_str = '"' + exp_val + '"' if isinstance(exp_val, str) else exp_val
             cli_str = cmd + str(exp_str) if type(exp_val) in (str, int, list) else cmd
             sys.argv.append(cli_str)
