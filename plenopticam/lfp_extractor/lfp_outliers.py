@@ -20,8 +20,8 @@ __license__ = """
 
 """
 
-from plenopticam import misc
 from plenopticam.lfp_extractor import LfpViewpoints
+from color_space_converter import yuv_conv
 
 from scipy.signal import medfilt
 import numpy as np
@@ -67,7 +67,7 @@ class LfpOutliers(LfpViewpoints):
     def correct_luma_outliers(self, img, n=2, perc=.2):
 
         # luma channel conversion
-        luma = misc.clr_spc_conv.yuv_conv(img.copy())[..., 0]
+        luma = yuv_conv(img.copy())[..., 0]
 
         for j in range(n, luma.shape[0]-n):
             for i in range(n, luma.shape[1]-n):
