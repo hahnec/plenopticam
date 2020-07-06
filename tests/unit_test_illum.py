@@ -59,6 +59,7 @@ class PlenoptiCamTesterIllum(unittest.TestCase):
         self.cfg.params[self.cfg.opt_cont] = True
         self.cfg.params[self.cfg.opt_awb_] = True
         self.cfg.params[self.cfg.opt_sat_] = True
+        self.cfg.params[self.cfg.opt_dbug] = True
         self.cfg.params[self.cfg.ran_refo] = [0, 1]
 
         # compute 3x3 viewpoints only (to reduce computation time)
