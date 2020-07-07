@@ -107,23 +107,25 @@ class LfpExtractor(object):
         return True
 
     def load_pickle_file(self):
+        """ load previously computed light field alignment """
 
         # file path
         fp = os.path.join(self.cfg.exp_path, 'lfp_img_align.pkl')
 
         try:
-            # load previously computed light field alignment
             self._lfp_img_align = pickle.load(open(fp, 'rb'))
         except EOFError:
             os.remove(fp)
         except FileNotFoundError:
             return False
 
-    def load_lfp_metadata(self):
+        return True
 
-        # load LFP metadata settings (for Lytro files only)
-        fp = os.path.join(self.cfg.exp_path,
-                          os.path.splitext(os.path.basename(self.cfg.params[self.cfg.lfp_path]))[0]+'.json')
+    def load_lfp_metadata(self):
+        """ load LFP metadata settings (for Lytro files only) """
+
+        fname = os.path.splitext(os.path.basename(self.cfg.params[self.cfg.lfp_path]))[0]+'.json'
+        fp = os.path.join(self.cfg.exp_path, fname)
         if os.path.isfile(fp):
             json_dict = self.cfg.load_json(fp=fp, sta=None)
             from plenopticam.lfp_reader.lfp_decoder import LfpDecoder
