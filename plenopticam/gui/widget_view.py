@@ -293,7 +293,7 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
             self._k += 1
 
     def destroy(self):
-        """ close window event which gets overridden """
+        """ reset button state for close window event """
 
         # prevent loop iteration from running after window closure
         self.auto_mode = False
