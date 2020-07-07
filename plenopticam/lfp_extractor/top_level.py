@@ -31,6 +31,9 @@ from plenopticam.lfp_extractor.lfp_outliers import LfpOutliers
 from plenopticam.lfp_extractor.lfp_color_eq import LfpColorEqualizer
 from plenopticam.lfp_extractor.hex_corrector import HexCorrector
 
+import pickle
+import os
+
 
 class LfpExtractor(object):
 
@@ -47,7 +50,10 @@ class LfpExtractor(object):
 
     def main(self):
 
+        # load previously calculated calibration and aligned data
         self.cfg.load_cal_data()
+        self.load_pickle_file()
+        self.load_lfp_metadata()
 
         # micro image crop
         lfp_obj = LfpCropper(lfp_img_align=self._lfp_img_align, cfg=self.cfg, sta=self.sta)
@@ -97,5 +103,30 @@ class LfpExtractor(object):
             obj = LfpExporter(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
             obj.write_viewpoint_data()
             del obj
+
+        return True
+
+    def load_pickle_file(self):
+
+        # file path
+        fp = os.path.join(self.cfg.exp_path, 'lfp_img_align.pkl')
+
+        try:
+            # load previously computed light field alignment
+            self._lfp_img_align = pickle.load(open(fp, 'rb'))
+        except EOFError:
+            os.remove(fp)
+        except FileNotFoundError:
+            return False
+
+    def load_lfp_metadata(self):
+
+        # load LFP metadata settings (for Lytro files only)
+        fp = os.path.join(self.cfg.exp_path,
+                          os.path.splitext(os.path.basename(self.cfg.params[self.cfg.lfp_path]))[0]+'.json')
+        if os.path.isfile(fp):
+            json_dict = self.cfg.load_json(fp=fp, sta=None)
+            from plenopticam.lfp_reader.lfp_decoder import LfpDecoder
+            self.cfg.lfpimg = LfpDecoder().filter_lfp_json(json_dict, settings=self.cfg.lfpimg)
 
         return True

@@ -26,7 +26,6 @@ except ImportError:
     import Tkinter as tk
 
 import sys
-import pickle
 from os.path import join, splitext, basename
 import threading
 import queue
@@ -200,7 +199,6 @@ class CtrlWidget(tk.Frame):
                          (self.cal, self.cfg.cond_perf_cali),
                          (self.cfg.load_cal_data, self.cfg.cond_lfp_align),
                          (self.lfp_align, self.cfg.cond_lfp_align),
-                         (self.load_pickle_file, True),
                          (self.lfp_extract, True),
                          (self.lfp_refo, self.cfg.params[self.cfg.opt_refo]),
                          (self.finish, True)
@@ -239,26 +237,6 @@ class CtrlWidget(tk.Frame):
         lfp_obj.main()
         self.lfp_img_align = lfp_obj.lfp_img
         del lfp_obj
-
-    def load_pickle_file(self):
-
-        # file path
-        fp = join(self.cfg.exp_path, 'lfp_img_align.pkl')
-
-        try:
-            # load previously computed light field alignment
-            self.lfp_img_align = pickle.load(open(fp, 'rb'))
-        except EOFError:
-            os.remove(fp)
-        except FileNotFoundError:
-            return False
-
-        # load LFP metadata settings (for Lytro files only)
-        fp = join(self.cfg.exp_path, splitext(basename(self.cfg.params[self.cfg.lfp_path]))[0]+'.json')
-        if os.path.isfile(fp):
-            json_dict = self.cfg.load_json(fp=fp, sta=None)
-            from plenopticam.lfp_reader.lfp_decoder import LfpDecoder
-            self.cfg.lfpimg = LfpDecoder().filter_lfp_json(json_dict, settings=self.cfg.lfpimg)
 
     def lfp_extract(self):
 
