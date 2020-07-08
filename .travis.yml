@@ -50,24 +50,24 @@ script:
 
 #before_deploy:
   - pip3 install pyinstaller
-  # osx bundling
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-        npm install --global create-dmg;
-        bash plenopticam/scripts/bundling/pyinst2app.sh;
-        sleep 1;
-        open dist/plenopticam.app;
-        export RELEASE_PKG_FILE=$(ls dist/*.dmg);
-    fi
   # linux bundling (with wheel upload to pypi)
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
         bash plenopticam/scripts/bundling/py2bin.sh;
-        dist/plenopticam;
+        #dist/plenopticam;
         export RELEASE_PKG_FILE=$(ls dist/*.tar.gz);
         pip3 install --upgrade twine;
         python3 setup.py sdist bdist_wheel;
         python3 -m twine upload --repository https://test.pypi.org/legacy/ dist/* -u __token__ -p $TEST_PYPI;
         python3 -m pip install --index-url https://test.pypi.org/legacy/ plenopticam;
         export RELEASE_WHL_FILE=$(ls dist/*.whl);
+    fi
+  # osx bundling
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+        npm install --global create-dmg;
+        bash plenopticam/scripts/bundling/pyinst2app.sh;
+        sleep 1;
+        #open dist/plenopticam.app;
+        export RELEASE_PKG_FILE=$(ls dist/*.dmg);
     fi
   # win bundling
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
@@ -80,6 +80,7 @@ script:
     fi
 
 after_success:
+  - python3 tests/unit_test_exe.py || python tests/unit_test_exe.py     # open up executable file
   - coveralls
 
 before_deploy:
