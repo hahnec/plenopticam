@@ -3,7 +3,7 @@
 __author__ = "Christopher Hahne"
 __email__ = "inbox@christopherhahne.de"
 __license__ = """
-    Copyright (c) 2019 Christopher Hahne <inbox@christopherhahne.de>
+    Copyright (c) 2020 Christopher Hahne <inbox@christopherhahne.de>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ __license__ = """
 
 """
 
-import sys, os
+import os
 import unittest
 
 from plenopticam.misc import PlenopticamError
