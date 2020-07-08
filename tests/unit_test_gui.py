@@ -147,27 +147,23 @@ class PlenoptiCamTesterGui(TKinterTestCase):
         # dummy button with state key
         btn = {'state': 'normal'}
 
-        try:
-            wid = ViewWidget(self.root, cfg=self.cfg, sta=self.sta, btn=btn)
-            wid.pack(expand="no", fill="both")
+        wid = ViewWidget(self.root, cfg=self.cfg, sta=self.sta, btn=btn)
+        wid.pack(expand="no", fill="both")
 
-            # verify view button has been disabled after view widget instantiation
-            self.assertEqual(btn['state'], 'disabled')
+        # verify view button has been disabled after view widget instantiation
+        self.assertEqual(btn['state'], 'disabled')
 
-            self.pump_events()
-            wid.btn_mode.focus_set()
-            wid.btn_auto.event_generate('<Return>')
-            wid.btn_auto.focus_set()
-            wid.btn_auto.event_generate('<Return>')
-            self.pump_events()
+        self.pump_events()
+        wid.btn_mode.focus_set()
+        wid.btn_auto.event_generate('<Return>')
+        wid.btn_auto.focus_set()
+        wid.btn_auto.event_generate('<Return>')
+        self.pump_events()
 
-            wid.destroy()
+        wid.destroy()
 
-            # verify view button has been enabled
-            self.assertEqual(btn['state'], 'normal')
-
-        except tk.TclError:
-            print('Caught TclError which is expected on travis\' linux due to lack of display connections')
+        # verify view button has been enabled
+        self.assertEqual(btn['state'], 'normal')
 
     def test_all(self):
 
