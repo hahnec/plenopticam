@@ -53,7 +53,6 @@ script:
   # linux bundling (with wheel upload to pypi)
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
         bash plenopticam/scripts/bundling/py2bin.sh;
-        #dist/plenopticam;
         export RELEASE_PKG_FILE=$(ls dist/*.tar.gz);
         pip3 install --upgrade twine;
         python3 setup.py sdist bdist_wheel;
@@ -66,7 +65,6 @@ script:
         npm install --global create-dmg;
         bash plenopticam/scripts/bundling/pyinst2app.sh;
         sleep 1;
-        #open dist/plenopticam.app;
         export RELEASE_PKG_FILE=$(ls dist/*.dmg);
     fi
   # win bundling
