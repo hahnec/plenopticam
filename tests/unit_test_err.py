@@ -40,12 +40,6 @@ class PlenoptiCamErrorTester(unittest.TestCase):
         self.cfg = PlenopticamConfig()
         self.sta = PlenopticamStatus()
 
-    def tearDown(self):
-
-        # remove dummy data after test
-        rm_file(self.cfg.params[self.cfg.lfp_path])
-        rmdir_p(self.cfg.exp_path)
-
     def test_read_error(self):
 
         # folder and path handling
@@ -62,6 +56,10 @@ class PlenoptiCamErrorTester(unittest.TestCase):
             reader.main()
 
         self.assertEqual("'dict' object has no attribute 'startswith'", str(exc.exception))
+
+        # remove dummy data after test
+        rm_file(self.cfg.params[self.cfg.lfp_path])
+        rmdir_p(self.cfg.exp_path)
 
     def test_all(self):
 
