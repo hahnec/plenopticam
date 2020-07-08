@@ -137,9 +137,6 @@ def main():
     # instantiate status object
     sta = misc.PlenopticamStatus()
 
-    # trigger sys.exit() for interrupt in GUI mode
-    #sta.bind_to_interrupt(sys.exit)
-
     # force relative paths to be absolute
     cfg.params[cfg.lfp_path] = os.path.abspath(cfg.params[cfg.lfp_path])
     cfg.params[cfg.cal_path] = os.path.abspath(cfg.params[cfg.cal_path])
@@ -182,7 +179,7 @@ def main():
             aligner.main()
             lfp_img = aligner.lfp_img
         except Exception as e:
-            misc.PlenopticamError(e)
+            misc.PlenopticamError(e, cfg=cfg, sta=sta)
             continue
         # create output data folder
         misc.mkdir_p(cfg.exp_path, cfg.params[cfg.opt_prnt])

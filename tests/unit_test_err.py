@@ -1,0 +1,62 @@
+#!/usr/bin/env python
+
+__author__ = "Christopher Hahne"
+__email__ = "inbox@christopherhahne.de"
+__license__ = """
+    Copyright (c) 2019 Christopher Hahne <inbox@christopherhahne.de>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""
+
+import sys, os
+import unittest
+
+from plenopticam.misc import PlenopticamError
+from plenopticam.misc import PlenopticamStatus
+from plenopticam.cfg import PlenopticamConfig
+from plenopticam.lfp_reader import LfpReader
+
+
+class PlenoptiCamErrorTester(unittest.TestCase):
+
+    def __init__(self, *args, **kwargs):
+        super(PlenoptiCamErrorTester, self).__init__(*args, **kwargs)
+
+    def setUp(self):
+
+        self.cfg = PlenopticamConfig()
+        self.sta = PlenopticamStatus()
+
+    def test_read_error(self):
+
+        # create dummy file with wrong file format
+        fp = os.path.join(os.path.dirname(os.getcwd()), 'examples', 'data')
+        self.cfg.params[self.cfg.lfp_path] = os.path.join(fp, 'test_dummy.lfp')
+        with open(self.cfg.params[self.cfg.lfp_path], 'a'):
+            os.utime(self.cfg.params[self.cfg.lfp_path], None)
+
+        with self.assertRaises(PlenopticamError) as exc:
+            reader = LfpReader(cfg=self.cfg, sta=self.sta)
+            reader.main()
+
+        self.assertEqual("'dict' object has no attribute 'startswith'", str(exc.exception))
+
+    def test_all(self):
+
+        self.test_read_error()
+
+
+if __name__ == '__main__':
+    unittest.main()

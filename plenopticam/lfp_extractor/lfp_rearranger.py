@@ -42,7 +42,8 @@ class LfpRearranger(LfpViewpoints):
         elif len(self._lfp_img_align.shape) == 2:
             m, n, p = self._lfp_img_align.shape[:2] + (1,)
         else:
-            raise PlenopticamError('Dimensions %s of provided light-field not supported', self._lfp_img_align.shape)
+            raise PlenopticamError('Dimensions %s of provided light-field not supported', self._lfp_img_align.shape,
+                                   cfg=self.cfg, sta=self.sta)
 
         self._vp_img_arr = np.zeros([int(self._M), int(self._M), int(m/self._M), int(n/self._M), p], dtype=self._dtype)
 
@@ -54,7 +55,8 @@ class LfpRearranger(LfpViewpoints):
         elif len(self._vp_img_arr.shape) == 4:
             m, n, p = self._vp_img_arr.shape[2:] + (1,)
         else:
-            raise PlenopticamError('Dimensions %s of provided light-field not supported', self._vp_img_arr.shape)
+            raise PlenopticamError('Dimensions %s of provided light-field not supported', self._vp_img_arr.shape,
+                                   cfg=self.cfg, sta=self.sta)
 
         m *= self._vp_img_arr.shape[0]
         n *= self._vp_img_arr.shape[1]

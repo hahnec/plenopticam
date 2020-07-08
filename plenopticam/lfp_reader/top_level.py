@@ -70,9 +70,9 @@ class LfpReader(object):
             except Exception as e:
                 # unrecognized LFP file type
                 if not self._json_dict:
-                    raise LfpTypeError(e)
+                    raise LfpTypeError(e, cfg=self.cfg)
                 else:
-                    raise PlenopticamError(e)
+                    raise PlenopticamError(e, cfg=self.cfg, sta=self.sta)
         else:
             try:
                 # read and decode generic image file type

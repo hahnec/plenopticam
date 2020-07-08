@@ -43,22 +43,21 @@ class PlenopticamError(Exception):
 
     def write_log(self):
 
-        if self.cfg:
-            if self.cfg.params[self.cfg.lfp_path]:
-                fp = self.cfg.params[self.cfg.lfp_path].split('.')[0]   # export folder path
-                fn = os.path.join(fp, 'err_log.txt')                    # absolute log file name
-                self.sta.status_msg('Error! See log file in %s.' %
-                                    os.path.join(os.pardir, os.path.basename(fp), 'err_log.txt'))
-            else:
-                fp, fn = None, None
-                self.sta.status_msg(*self.args)
+        # log file name
+        fn = 'err_log.txt'
 
-            if fn and os.path.exists(fp):
-                with open(fn, 'a') as f:
-                    f.writelines(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'))
-                    f.writelines('\nOpen issue at %s and paste below traceback.\n\n' % self.URL_ISSUE)
-                    f.writelines(self.args.__str__())
-                    f.writelines('\n\n\n')
+        # export folder path
+        fp = self.cfg.exp_path if hasattr(self.cfg, 'exp_path') else os.getcwd()
+
+        # send status to user while referring to log file
+        self.sta.status_msg('Error! See log file in %s.' % os.path.join(os.pardir, os.path.basename(fp), fn))
+
+        # write error to log file
+        with open(os.path.join(fp, fn), 'a') as f:
+            f.writelines(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'))
+            f.writelines('\nOpen issue at %s and paste below traceback.\n\n' % self.URL_ISSUE)
+            f.writelines(self.args.__str__())
+            f.writelines('\n\n\n')
 
 
 class LfpTypeError(PlenopticamError):
