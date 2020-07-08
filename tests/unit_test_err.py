@@ -41,8 +41,11 @@ class PlenoptiCamErrorTester(unittest.TestCase):
 
     def test_read_error(self):
 
-        # create dummy file with wrong file format
+        # folder and path handling
         fp = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'examples', 'data')
+        os.makedirs(fp) if not os.path.exists(fp) else None
+
+        # create dummy file with wrong file format
         self.cfg.params[self.cfg.lfp_path] = os.path.join(fp, 'test_dummy.lfp')
         with open(self.cfg.params[self.cfg.lfp_path], 'a'):
             os.utime(self.cfg.params[self.cfg.lfp_path], None)
