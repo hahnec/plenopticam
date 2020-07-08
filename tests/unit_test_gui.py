@@ -148,7 +148,6 @@ class PlenoptiCamTesterGui(TKinterTestCase):
         btn = {'state': 'normal'}
 
         wid = ViewWidget(self.root, cfg=self.cfg, sta=self.sta, btn=btn)
-        wid.pack(expand="no", fill="both")
 
         # verify view button has been disabled after view widget instantiation
         self.assertEqual(btn['state'], 'disabled')
