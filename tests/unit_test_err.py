@@ -54,6 +54,9 @@ class PlenoptiCamErrorTester(unittest.TestCase):
             reader = LfpReader(cfg=self.cfg, sta=self.sta)
             reader.main()
 
+        # remove dummy file after test
+        os.remove(self.cfg.params[self.cfg.lfp_path])
+
         self.assertEqual("'dict' object has no attribute 'startswith'", str(exc.exception))
 
     def test_all(self):
