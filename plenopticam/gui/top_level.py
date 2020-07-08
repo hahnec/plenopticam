@@ -41,11 +41,10 @@ class PlenopticamApp(tk.Tk):
 
     REL_PATH = os.path.join('icns', '1055104.gif')
 
-    def __init__(self, parent):
+    def __init__(self):
 
         # inheritance
-        tk.Tk.__init__(self, parent)
-        self.parent = parent
+        tk.Tk.__init__(self)
 
         # window title
         self.wm_title("PlenoptiCam-v"+__version__)
@@ -92,7 +91,7 @@ class PlenopticamApp(tk.Tk):
 if __name__ == "__main__":
 
     # instantiate object
-    MainWin = PlenopticamApp(None)
+    MainWin = PlenopticamApp()
     # make not resizable
     MainWin.resizable(width=0, height=0)
     # run

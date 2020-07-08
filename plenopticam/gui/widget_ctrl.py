@@ -26,11 +26,10 @@ except ImportError:
     import Tkinter as tk
 
 import sys
-from os.path import join, splitext, basename
+from os.path import join
 import threading
 import queue
 import types
-import os
 
 # local python files
 from plenopticam.gui.constants import PX, PY
@@ -53,7 +52,7 @@ POLLING_RATE = 100  # millisecs
 
 
 class CtrlWidget(tk.Frame):
-    ''' Control widget class '''
+    """ Control widget class """
 
     def __init__(self, parent):
 
@@ -299,7 +298,7 @@ class CtrlWidget(tk.Frame):
         self.toggle_btn_list(self.cmd_wid.btn_list[:2])
 
         # create settings frame
-        CnfgWidget(self.cfg)
+        CnfgWidget(self)
 
         # enable buttons
         self.toggle_btn_list(self.cmd_wid.btn_list[:2])

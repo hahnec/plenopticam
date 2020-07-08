@@ -80,7 +80,7 @@ def parse_options(argv, cfg):
     if opts:
         for (opt, arg) in opts:
             if opt in ("-g", "--gui"):
-                PlenopticamApp(None).mainloop()
+                PlenopticamApp().mainloop()
                 sys.exit()
             if opt in ("-h", "--help"):
                 usage()
@@ -136,7 +136,9 @@ def main():
 
     # instantiate status object
     sta = misc.PlenopticamStatus()
-    sta.bind_to_interrupt(sys.exit)     # set interrupt
+
+    # trigger sys.exit() for interrupt in GUI mode
+    #sta.bind_to_interrupt(sys.exit)
 
     # force relative paths to be absolute
     cfg.params[cfg.lfp_path] = os.path.abspath(cfg.params[cfg.lfp_path])
@@ -176,10 +178,9 @@ def main():
 
         try:
             # decode light field image
-            lfp_obj = lfp_reader.LfpReader(cfg, sta)
-            lfp_obj.main()
-            lfp_img = lfp_obj.lfp_img
-            del lfp_obj
+            aligner = lfp_reader.LfpReader(cfg, sta)
+            aligner.main()
+            lfp_img = aligner.lfp_img
         except Exception as e:
             misc.PlenopticamError(e)
             continue
@@ -188,11 +189,9 @@ def main():
 
         if cfg.cond_auto_find():
             # automatic calibration data selection
-            obj = lfp_calibrator.CaliFinder(cfg, sta)
-            obj.main()
-            wht_img = obj.wht_bay
-            del obj
-
+            extractor = lfp_calibrator.CaliFinder(cfg, sta)
+            extractor.main()
+            wht_img = extractor.wht_bay
         else:
             # load white image calibration file
             wht_img = misc.load_img_file(cfg.params[cfg.cal_path])
@@ -203,10 +202,9 @@ def main():
         meta_cond = not (os.path.exists(cfg.params[cfg.cal_meta]) and cfg.params[cfg.cal_meta].lower().endswith('json'))
         if meta_cond or cfg.params[cfg.opt_cali]:
             # perform centroid calibration
-            cal_obj = lfp_calibrator.LfpCalibrator(wht_img, cfg, sta)
-            cal_obj.main()
-            cfg = cal_obj.cfg
-            del cal_obj
+            calibrator = lfp_calibrator.LfpCalibrator(wht_img, cfg, sta)
+            calibrator.main()
+            cfg = calibrator.cfg
 
         # load calibration data
         cfg.load_cal_data()
@@ -214,27 +212,21 @@ def main():
         #  check if light field alignment has been done before
         if cfg.cond_lfp_align():
             # align light field
-            lfp_obj = lfp_aligner.LfpAligner(lfp_img, cfg, sta, wht_img)
-            lfp_obj.main()
-            lfp_obj = lfp_obj.lfp_img
-            del lfp_obj
-
-        # load previously computed light field alignment
-        with open(os.path.join(cfg.exp_path, 'lfp_img_align.pkl'), 'rb') as f:
-            lfp_img_align = pickle.load(f)
+            aligner = lfp_aligner.LfpAligner(lfp_img, cfg, sta, wht_img)
+            aligner.main()
+            lfp_img_align = aligner.lfp_img
+        else:
+            lfp_img_align = None
 
         # extract viewpoint data
         lfp_calibrator.CaliFinder(cfg).main()
-        obj = lfp_extractor.LfpExtractor(lfp_img_align, cfg=cfg, sta=sta)
-        obj.main()
-        vp_img_arr = obj.vp_img_linear
-        del obj
+        extractor = lfp_extractor.LfpExtractor(lfp_img_align, cfg=cfg, sta=sta)
+        extractor.main()
 
         # do refocusing
         if cfg.params[cfg.opt_refo]:
-            obj = lfp_refocuser.LfpRefocuser(vp_img_arr, cfg=cfg, sta=sta)
-            obj.main()
-            del obj
+            extractor = lfp_refocuser.LfpRefocuser(extractor.vp_img_linear, cfg=cfg, sta=sta)
+            extractor.main()
 
     return True
 

@@ -26,13 +26,12 @@ import unittest
 from plenopticam.bin.cli_script import main, parse_options
 from plenopticam.cfg import PlenopticamConfig, PARAMS_KEYS
 from plenopticam.misc import PlenopticamStatus
-from plenopticam.gui.widget_view import ViewWidget, PX, PY
 
 
-class PlenoptiCamTesterUI(unittest.TestCase):
+class PlenoptiCamTesterCli(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
-        super(PlenoptiCamTesterUI, self).__init__(*args, **kwargs)
+        super(PlenoptiCamTesterCli, self).__init__(*args, **kwargs)
 
     def setUp(self):
 
@@ -83,32 +82,10 @@ class PlenoptiCamTesterUI(unittest.TestCase):
 
             self.assertEqual(exp_val, val)
 
-    def test_viewer(self):
-
-        try:
-            import tkinter as tk
-        except ImportError:
-            import Tkinter as tk
-
-        # dummy button with state key
-        btn = {'state': 'normal'}
-
-        # instantiate viewer
-        try:
-            self.view_frame = tk.Toplevel(padx=PX, pady=PY)  # open window
-            self.view_frame.resizable(width=0, height=0)  # make window not resizable
-            ViewWidget(self.view_frame, cfg=self.cfg, sta=self.sta, btn=btn).pack(expand="no", fill="both")
-            self.view_frame.destroy()   # close frame
-        except tk.TclError:
-            print('Caught TclError which is expected on Linux tests')
-
-        return True
-
     def test_all(self):
 
         self.test_cli_help()
         self.test_cli_cmd_opts()
-        self.test_viewer()
 
 
 if __name__ == '__main__':

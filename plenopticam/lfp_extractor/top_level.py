@@ -37,7 +37,7 @@ import os
 
 class LfpExtractor(object):
 
-    def __init__(self, lfp_img_align, cfg=None, sta=None):
+    def __init__(self, lfp_img_align=None, cfg=None, sta=None):
 
         # input variables
         self._lfp_img_align = lfp_img_align
@@ -52,8 +52,9 @@ class LfpExtractor(object):
 
         # load previously calculated calibration and aligned data
         self.cfg.load_cal_data()
-        self.load_pickle_file()
-        self.load_lfp_metadata()
+        if self._lfp_img_align is None:
+            self.load_pickle_file()
+            self.load_lfp_metadata()
 
         # micro image crop
         lfp_obj = LfpCropper(lfp_img_align=self._lfp_img_align, cfg=self.cfg, sta=self.sta)

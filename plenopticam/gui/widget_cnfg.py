@@ -29,16 +29,17 @@ from plenopticam.gui.constants import PX, PY, BTN_W
 from plenopticam.cfg import constants as c
 
 
-class CnfgWidget(object):
+class CnfgWidget(tk.Toplevel):
 
-    def __init__(self, cfg):
+    def __init__(self, parent):
 
-        # inherit cfg object
-        self.cfg = cfg
+        # inheritance
+        tk.Toplevel.__init__(self, parent)
+        self.cfg = parent.cfg
 
         # open window
-        self.frame = tk.Toplevel(padx=PX, pady=PY)
-        self.frame.wm_title("Configuration")
+        #self.frame = tk.Toplevel(padx=PX, pady=PY)
+        self.wm_title("Configuration")
 
         # tk variables init
         self.tk_vars = {}
@@ -55,23 +56,23 @@ class CnfgWidget(object):
 
         # place properties in tk frame
         for i, key in enumerate(self.gui_keys):
-            tk.Label(self.frame, text=PROPERTIES[key][0]).grid(row=i, column=0, sticky='W')
+            tk.Label(self, text=PROPERTIES[key][0]).grid(row=i, column=0, sticky='W')
             obj_ent = None
             if PROPERTIES[key][1] == 'str':
                 self.tk_vars[key] = tk.StringVar(value=self.cfg.params[key])
-                obj_ent = tk.Entry(self.frame, textvariable=self.tk_vars[key], width=2*PX)
+                obj_ent = tk.Entry(self, textvariable=self.tk_vars[key], width=2*PX)
 
             elif PROPERTIES[key][1] == 'int':
                 self.tk_vars[key] = tk.IntVar(value=int(self.cfg.params[key]))
-                obj_ent = tk.Entry(self.frame, textvariable=self.tk_vars[key], width=PX)
+                obj_ent = tk.Entry(self, textvariable=self.tk_vars[key], width=PX)
 
             elif PROPERTIES[key][1] == 'list':
                 self.tk_vars[key] = tk.StringVar(value=str(self.cfg.params[key]))
-                obj_ent = tk.Entry(self.frame, textvariable=self.tk_vars[key], width=PX)
+                obj_ent = tk.Entry(self, textvariable=self.tk_vars[key], width=PX)
 
             elif PROPERTIES[key][1] == 'ran':
                 self.tk_vars[key] = TwoStringVars(values=self.cfg.params[key])
-                obj_ent = DoubleSpinbox(self.frame, textvariable=self.tk_vars[key], width=PX)
+                obj_ent = DoubleSpinbox(self, textvariable=self.tk_vars[key], width=PX)
 
             elif PROPERTIES[key][1] == 'sel':
                 # load value range
@@ -82,12 +83,12 @@ class CnfgWidget(object):
                     value_ran, default = (c.PTCH_SIZE, c.PTCH_SIZE[2])
                     value_sel = self.cfg.params[self.cfg.ptc_leng] if self.cfg.ptc_leng in self.cfg.params else default
                 self.tk_vars[key] = tk.StringVar(value=value_sel)
-                obj_ent = tk.Spinbox(self.frame, values=value_ran, textvariable=self.tk_vars[key], width=PX//2)
+                obj_ent = tk.Spinbox(self, values=value_ran, textvariable=self.tk_vars[key], width=PX//2)
                 self.tk_vars[key].set(value=value_sel)   # set to default necessary for tkinter's spinbox
 
             elif PROPERTIES[key][1] == 'bool':
                 self.tk_vars[key] = tk.BooleanVar(value=bool(self.cfg.params[key]))
-                obj_ent = tk.Checkbutton(self.frame, variable=self.tk_vars[key])
+                obj_ent = tk.Checkbutton(self, variable=self.tk_vars[key])
 
             # place entry
             obj_ent.grid(row=i, column=1, sticky='W')
@@ -97,14 +98,14 @@ class CnfgWidget(object):
 
             self.obj_ents[key] = obj_ent
 
-        btn = tk.Button(self.frame, text="Save & Close", width=BTN_W*2, command=self.close)
-        btn.grid(row=len(self.gui_keys)+1, columnspan=2, padx=PX, pady=PY)
+        self.btn = tk.Button(self, text="Save & Close", width=BTN_W*2, command=self.close)
+        self.btn.grid(row=len(self.gui_keys)+1, columnspan=2, padx=PX, pady=PY)
 
         # makes sure no mouse or keyboard events are sent to other windows (avoid multiple simultaneous instances)
-        self.frame.grab_set()
+        self.grab_set()
 
         # stop all processes until this widget is closed (e.g. self.frame is destroyed)
-        self.frame.wait_window()
+        #self.wait_window()
 
     def refi(self):
 
@@ -136,7 +137,7 @@ class CnfgWidget(object):
         self.save_cfg()
 
         # destruct frame object
-        self.frame.destroy()
+        self.destroy()
 
         return True
 

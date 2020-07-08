@@ -1,9 +1,16 @@
 from tests.unit_test_custom import PlenoptiCamTesterCustom
 from tests.unit_test_illum import PlenoptiCamTesterIllum
-from tests.unit_test_ui import PlenoptiCamTesterUI
+from tests.unit_test_cli import PlenoptiCamTesterCli
+from tests.unit_test_gui import PlenoptiCamTesterGui
 
 # test user interface
-obj = PlenoptiCamTesterUI()
+obj = PlenoptiCamTesterCli()
+obj.setUp()
+obj.test_all()
+del obj
+
+# test user interface
+obj = PlenoptiCamTesterGui()
 obj.setUp()
 obj.test_all()
 del obj
