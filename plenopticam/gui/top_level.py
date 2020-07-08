@@ -64,16 +64,17 @@ class PlenopticamApp(tk.Tk):
         self.pbar_wid.pack(fill='both', expand=True, side='bottom', padx=PX, pady=PY)
 
     def icon_handling(self):
-        """ use OS temp folder if present or current working directory """
+        """ load icon with OS temp folder if present or current working directory instead """
 
         # icon path for app bundle (tmp) or non-bundled package (cwd)
         cwd = os.path.join(os.path.dirname(os.path.realpath(__file__)), self.REL_PATH)
-        fp = os.path.join(sys._MEIPASS, self.REL_PATH) if hasattr(sys, '_MEIPASS') else cwd
+        tmp = os.path.join(sys._MEIPASS, self.REL_PATH) if hasattr(sys, '_MEIPASS') else None
+        fp = cwd if tmp is None else tmp
 
         if sys.platform == 'linux':
             # load icon on linux
-            logo = tk.PhotoImage(file=fp)
-            self.call('wm', 'iconphoto', self._w, logo)
+            logo = tk.PhotoImage(master=self, file=fp)
+            self.wm_iconphoto(True, logo)
 
         elif sys.platform == 'win32':
             # generate blank window icon
@@ -83,7 +84,7 @@ class PlenopticamApp(tk.Tk):
 
             # load icon on Windows
             fp = fp.replace('gif', 'ico')
-            fp = ICON_PATH if not os.path.exists(fp) else fp
+            fp = fp if os.path.exists(fp) else ICON_PATH
             self.iconbitmap(fp)
             self.wm_iconbitmap(default=fp)
 
