@@ -45,9 +45,13 @@ class ExecutableTester(unittest.TestCase):
         else:
             cmd = 'dist/plenopticam'
 
-        process = subprocess.Popen([cmd], shell=True)
-        time.sleep(10)
+        process = subprocess.Popen("exec " + cmd, stdout=subprocess.PIPE, shell=True)   # , preexec_fn=os.setsid
+        time.sleep(20)
         process.kill()
+
+        result, error = process.communicate()
+        self.assertEqual(b'', result)
+        self.assertEqual(None, error)
 
     def test_all(self):
 
