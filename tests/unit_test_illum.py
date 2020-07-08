@@ -168,6 +168,10 @@ class PlenoptiCamTesterIllum(unittest.TestCase):
 
         return True
 
+    def test_all(self):
+
+        self.test_illum()
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -137,6 +137,11 @@ class PlenoptiCamTesterCustom(unittest.TestCase):
 
             self.assertEqual(ref_size, obj.M)
 
+    def test_all(self):
+
+        self.test_custom_cal()
+        self.test_custom_lfp()
+
 
 if __name__ == '__main__':
     unittest.main()
