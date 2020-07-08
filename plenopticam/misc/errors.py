@@ -29,7 +29,7 @@ class PlenopticamError(Exception):
     URL_ISSUE = 'https://github.com/hahnec/plenopticam/issues/new'
 
     def __init__(self, *args, **kwargs):
-        Exception.__init__(self, *args)
+        super(PlenopticamError, self).__init__(*args)
 
         self.cfg = kwargs['cfg'] if 'cfg' in kwargs else None
         self.sta = kwargs['sta'] if 'sta' in kwargs else PlenopticamStatus()
@@ -59,6 +59,16 @@ class PlenopticamError(Exception):
                     f.writelines('\nOpen issue at %s and paste below traceback.\n\n' % self.URL_ISSUE)
                     f.writelines(self.args.__str__())
                     f.writelines('\n\n\n')
+
+
+class LfpTypeError(PlenopticamError):
+    def __init__(self, *args, **kwargs):
+        super(LfpTypeError, self).__init__(*args, **kwargs)
+
+
+class LfpAttributeError(PlenopticamError):
+    def __init__(self, *args, **kwargs):
+        super(LfpAttributeError, self).__init__(*args, **kwargs)
 
 #from requests import session
 #from bs4 import BeautifulSoup as bs
@@ -128,13 +138,3 @@ class PlenopticamError(Exception):
 #
 #        # close session
 #        self.s.close()
-
-
-class LfpTypeError(PlenopticamError):
-    def __init__(self, *args, **kwargs):
-        Exception.__init__(self, *args, **kwargs)
-
-
-class LfpAttributeError(PlenopticamError):
-    def __init__(self, *args, **kwargs):
-        Exception.__init__(self, *args, **kwargs)
