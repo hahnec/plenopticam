@@ -27,6 +27,7 @@ from plenopticam.misc import PlenopticamError
 from plenopticam.misc import PlenopticamStatus
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam.lfp_reader import LfpReader
+from plenopticam.misc import rm_file, rmdir_p
 
 
 class PlenoptiCamErrorTester(unittest.TestCase):
@@ -38,6 +39,12 @@ class PlenoptiCamErrorTester(unittest.TestCase):
 
         self.cfg = PlenopticamConfig()
         self.sta = PlenopticamStatus()
+
+    def tearDown(self):
+
+        # remove dummy data after test
+        rm_file(self.cfg.params[self.cfg.lfp_path])
+        rmdir_p(self.cfg.exp_path)
 
     def test_read_error(self):
 
@@ -53,9 +60,6 @@ class PlenoptiCamErrorTester(unittest.TestCase):
         with self.assertRaises(PlenopticamError) as exc:
             reader = LfpReader(cfg=self.cfg, sta=self.sta)
             reader.main()
-
-        # remove dummy file after test
-        os.remove(self.cfg.params[self.cfg.lfp_path])
 
         self.assertEqual("'dict' object has no attribute 'startswith'", str(exc.exception))
 
