@@ -79,7 +79,7 @@ script:
     fi
 
 after_success:
-  - python3 tests/unit_test_exe.py || python tests/unit_test_exe.py     # open up executable file
+  #- python3 tests/unit_test_exe.py || python tests/unit_test_exe.py     # open up executable file
   - coveralls
 
 before_deploy:
