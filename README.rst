@@ -23,7 +23,7 @@ Camera types
 .. list-table::
    :widths: 8 8
    :header-rows: 1
-   :stub-columns: 1
+   :stub-columns: 2
 
    * - |OpEx|_
      - |INRIA|_
@@ -40,7 +40,7 @@ Color equalization
 .. list-table::
    :widths: 8 8 8
    :header-rows: 1
-   :stub-columns: 1
+   :stub-columns: 3
 
    * - Before
      - Target
