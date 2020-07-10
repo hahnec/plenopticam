@@ -113,7 +113,7 @@ class LfpScheimpflug(object):
 
         return True
 
-    def scheimpflug_from_scratch(self):
+    def scheimpflug_from_scratch(self):     # pragma: no cover
 
         patch_len = self.cfg.params[self.cfg.ptc_leng]
         a_start, a_stop = self.cfg.params[self.cfg.ran_refo]

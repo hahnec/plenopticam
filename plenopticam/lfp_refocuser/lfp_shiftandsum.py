@@ -138,7 +138,7 @@ class LfpShiftAndSum(LfpViewpoints):
 
         return True
 
-    def refo_from_scratch(self):
+    def refo_from_scratch(self):    # pragma: no cover
         """ computational refocusing from aligned light field image """
 
         # print status
@@ -220,7 +220,7 @@ class LfpShiftAndSum(LfpViewpoints):
 
         return True
 
-    def refo_from_scratch_upsample(self):
+    def refo_from_scratch_upsample(self):   # pragma: no cover
 
         # print status
         self.sta.progress(0, self.cfg.params[self.cfg.opt_prnt])
