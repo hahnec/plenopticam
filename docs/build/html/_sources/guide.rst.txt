@@ -35,7 +35,7 @@ Once PlenoptiCam is ready for use (whether from source_ or as an app_), you will
    * - *Force re-calibration*
      - Redo calibration process
    * - *Automatic white balance*
-     - Implementation based on least-squares fit
+     - Apply channel normalization
    * - *Refocus refinement*
      - Enable sub-pixel precise refocusing
    * - *Scheimpflug focus*
