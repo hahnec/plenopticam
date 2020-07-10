@@ -21,6 +21,8 @@ __license__ = """
 """
 
 import unittest
+from os.path import join, dirname, abspath, exists
+from os import makedirs, utime
 
 try:
     import tkinter as tk
@@ -29,6 +31,7 @@ except ImportError:
 
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc import PlenopticamStatus
+from plenopticam.misc import rmdir_p, rm_file
 
 from plenopticam.gui.widget_about import AbtWidget
 from plenopticam.gui.widget_cmnd import CmndWidget
@@ -53,7 +56,29 @@ class TKinterTestCase(unittest.TestCase):
         self.sta = PlenopticamStatus()
         self.root.cfg = self.cfg
         self.root.sta = self.sta
+        self.set_file_path()
         self.pump_events()
+
+    def set_file_path(self):
+
+        # folder and path handling
+        self.fp = join(dirname(dirname(abspath(__file__))), 'examples', 'data')
+        makedirs(self.fp) if not exists(self.fp) else None
+        self.dummy_fn = 'test_dummy.lfp'
+        self.dummy_path = join(self.fp, self.dummy_fn)
+
+    def create_dummy_file(self):
+        """ create a dummy file for tests """
+
+        # create dummy file with wrong file format
+        with open(self.cfg.params[self.cfg.lfp_path], 'a'):
+            utime(self.cfg.params[self.cfg.lfp_path], None)
+
+    def remove_dummy_file(self):
+        """ remove dummy data after test """
+
+        rm_file(self.cfg.params[self.cfg.lfp_path])
+        rmdir_p(self.cfg.exp_path)
 
     def tearDown(self):
         if self.root:
@@ -97,6 +122,18 @@ class PlenoptiCamTesterGui(TKinterTestCase):
     def test_ctrl_widget(self):
 
         wid = CtrlWidget(self.root)
+
+        # test path fetching
+        wid.fil_wid.lfp_wid.ent.delete(0, "end")
+        wid.fil_wid.cal_wid.ent.delete(0, "end")
+        wid.fil_wid.lfp_wid.ent.insert(0, self.dummy_path)
+        wid.fil_wid.cal_wid.ent.insert(0, self.dummy_path)
+        self.cfg.params[self.cfg.lfp_path] = ''
+        self.cfg.params[self.cfg.cal_path] = ''
+        wid.fetch_paths()
+        self.assertEqual(self.dummy_path, self.cfg.params[self.cfg.lfp_path])
+        self.assertEqual(self.dummy_path, self.cfg.params[self.cfg.cal_path])
+
         self.pump_events()
         wid.destroy()
 
@@ -110,11 +147,18 @@ class PlenoptiCamTesterGui(TKinterTestCase):
 
         wid = MenuWidget(CtrlWidget(self.root))
         self.pump_events()
+        wid.open_docs()
+        wid.open_about_dialog()
         wid.destroy()
 
     def test_path_widget(self):
 
         wid = PathWidget(self.root)
+
+        # test getter and setter
+        wid.path = self.dummy_path
+        self.assertEqual(self.dummy_path, wid.path)
+
         self.pump_events()
         wid.destroy()
 

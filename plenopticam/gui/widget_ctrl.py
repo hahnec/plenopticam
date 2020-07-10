@@ -65,7 +65,7 @@ class CtrlWidget(tk.Frame):
         self.sta.bind_to_interrupt(self.stop_thread)
 
         # instantiate config settings
-        self.cfg = PlenopticamConfig()
+        self.cfg = parent.cfg if hasattr(parent, 'cfg') else PlenopticamConfig()
 
         # instantiate menu widget
         self.men_wid = MenuWidget(self)
