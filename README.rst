@@ -247,11 +247,11 @@ Further information
 
 .. |spiderman| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/demo_custom.gif" width="300px" max-width:"100%">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/demo_custom.gif" height="187px" max-width:"100%">
 
 .. |fruits| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/demo_illum.gif" width="300px" max-width:"100%">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/demo_illum.gif" height="187px" max-width:"100%">
 
 .. |UoB| raw:: html
 
