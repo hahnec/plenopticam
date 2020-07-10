@@ -22,7 +22,7 @@ __license__ = """
 
 import unittest
 from os.path import join, dirname, abspath, exists
-from os import makedirs, utime
+from os import makedirs, utime, listdir
 
 try:
     import tkinter as tk
@@ -190,6 +190,10 @@ class PlenoptiCamTesterGui(TKinterTestCase):
 
         # dummy button with state key
         btn = {'state': 'normal'}
+
+        # provide path from previously computed data
+        lfp_list = [file for file in listdir(self.fp) if file.endswith(('lfr', 'lfp'))]
+        self.cfg.params[self.cfg.lfp_path] = join(self.fp, lfp_list[0])
 
         wid = ViewWidget(self.root, cfg=self.cfg, sta=self.sta, btn=btn)
 
