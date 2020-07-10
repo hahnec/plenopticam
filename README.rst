@@ -22,6 +22,8 @@ Camera types
 
 .. list-table::
    :widths: 8 8
+   :header-rows: 1
+   :stub-columns: 1
 
    * - |OpEx|_
      - |INRIA|_
