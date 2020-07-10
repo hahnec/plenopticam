@@ -230,7 +230,7 @@ Further information
     :target: https://mybinder.org/v2/gh/hahnec/plenopticam/develop?urlpath=lab
 
 .. |colab| image:: https://colab.research.google.com/assets/colab-badge.svg?style=flat-square
-    :target: https://colab.research.google.com/github/hahnec/plenopticam/blob/develop/examples/illum_demo.ipynb
+    :target: https://colab.research.google.com/github/hahnec/plenopticam/blob/develop/examples/04_illum_demo.ipynb
 
 
 .. |src_lfp| raw:: html
