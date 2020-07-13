@@ -39,6 +39,7 @@ class LfpMicroLenses(object):
         self.sta = kwargs['sta'] if 'sta' in kwargs else misc.PlenopticamStatus()
         self._M = 0
         self._C = 0
+        self._flip = kwargs['flip'] if 'flip' in kwargs else False
 
         # convert to float
         self._lfp_img = self._lfp_img.astype('float64') if self._lfp_img is not None else None

@@ -21,7 +21,6 @@ class LfpResampler(LfpMicroLenses):
         method = method if method in ['nearest', 'linear', 'cubic', 'quintic'] else None
         method = 'cubic' if method == 'quintic' and self._M < 5 else method
         interp2d_method = functools.partial(interp2d, kind=method) if method is not None else interp2d
-        self._flip = kwargs['flip'] if 'flip' in kwargs else False
 
         if method is None:
             self._interpol_method = RectBivariateSpline
