@@ -47,7 +47,7 @@ class PlenopticamError(Exception):
         fn = 'err_log.txt'
 
         # export folder path
-        fp = self.cfg.exp_path if hasattr(self.cfg, 'exp_path') else os.getcwd()
+        fp = self.cfg.exp_path if hasattr(self.cfg, 'exp_path') else os.path.expanduser("~")
 
         # send status to user while referring to log file
         self.sta.status_msg('Error! See log file in %s.' % os.path.join(os.pardir, os.path.basename(fp), fn))

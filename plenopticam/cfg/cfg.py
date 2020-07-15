@@ -29,7 +29,7 @@ from plenopticam.cfg.constants import PARAMS_KEYS, PARAMS_VALS, CALIBS_KEYS
 
 # external libs
 import json
-from os.path import join, abspath, dirname, basename, splitext, isdir, isfile, exists
+from os.path import join, abspath, dirname, basename, splitext, isdir, isfile, exists, expanduser
 from os import remove, stat, chmod
 import warnings
 
@@ -219,7 +219,7 @@ class PlenopticamConfig(object):
     @property
     def exp_path(self):
         """ export directory path """
-        return splitext(self.params[self.lfp_path])[0]
+        return splitext(self.params[self.lfp_path])[0] if self.params[self.lfp_path] else expanduser("~")
 
     def cond_load_limg(self, img=None):
         return exists(self.params[self.lfp_path]) and (img is None and self.cond_lfp_align() or self.cond_auto_find())
