@@ -54,7 +54,7 @@ def safe_get(any_dict, *keys):
     return any_dict
 
 
-def img_resize(img, x_scale=1, y_scale=None, method=None):
+def img_resize(img, x_scale=1, y_scale=None, method=None, new_shape=None):
     """ perform image interpolation based on scipy lib """
 
     if not y_scale:
@@ -70,10 +70,13 @@ def img_resize(img, x_scale=1, y_scale=None, method=None):
     else:
         raise NotImplementedError
 
-    new_img = np.zeros([int(n*y_scale), int(m*x_scale), P])
+    # construct new 2-D shape
+    y_len, x_len = (int(round(n*y_scale)), int(round(m*x_scale))) if x_scale != 1 or y_scale != 1 else new_shape
+
+    new_img = np.zeros([y_len, x_len, P])
     for p in range(P):
         f = interp2d(range(m), range(n), img[:, :, p], kind=method)
-        new_img[:, :, p] = f(np.linspace(0, m - 1, int(m*x_scale)), np.linspace(0, n - 1, int(n*y_scale)))
+        new_img[:, :, p] = f(np.linspace(0, m - 1, x_len), np.linspace(0, n - 1, y_len))
 
     return new_img
 
