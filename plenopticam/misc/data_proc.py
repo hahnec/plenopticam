@@ -28,15 +28,15 @@ from color_space_converter import yuv_conv
 from plenopticam.misc.normalizer import Normalizer
 
 
-def create_gauss_kernel(length=25, sigma=1.):
+def create_gauss_kernel(length: int = 7, sigma: float = 1) -> np.ndarray:
     
     # ensure length is odd
-    length = int((length - 1) / 2) + int((length + 1) / 2)
+    length = (length - 1)//2 + (length + 1)//2
     
     # compute Gaussian kernel
-    ax = np.arange(-length // 2 + 1., length // 2 + 1.)
-    xx, yy = np.meshgrid(ax, ax)
-    kernel = np.exp(-(xx**2 + yy**2) / (2. * sigma ** 2))
+    xs = np.arange(-length//2 + 1, length//2 + 1)
+    xx, yy = np.meshgrid(xs, xs)
+    kernel = np.exp(-(xx**2 + yy**2) / (2*sigma**2))
     kernel /= kernel.sum()
     
     return kernel
