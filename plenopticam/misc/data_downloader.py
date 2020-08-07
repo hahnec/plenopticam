@@ -39,7 +39,7 @@ class DataDownloader(object):
 
         # path handling: refer to folder where data will be stored
         path = kwargs['path'] if 'path' in kwargs else os.path.dirname(os.path.abspath(__file__))
-        self._fp = os.path.join(path, 'data')
+        self.fp = os.path.join(path, 'data')
         self.root_path = dirname(abspath('.')) if basename((abspath('.'))) == 'tests' else abspath('.')
 
         # data urls
@@ -115,4 +115,3 @@ class DataDownloader(object):
     @fp.setter
     def fp(self, fp):
         self._fp = fp
-        mkdir_p(self._fp) if not os.path.exists(self._fp) else None
