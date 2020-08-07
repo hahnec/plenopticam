@@ -68,7 +68,7 @@ class DataDownloader(object):
                 r = requests.get(url, stream=True)
                 total_length = r.headers.get('content-length')
             except requests.exceptions.ConnectionError:
-                raise (Exception('Check your internet connection, which is required for downloading test data.'))
+                raise Exception('Check your internet connection, which is required for downloading test data.')
 
             if total_length is None:  # no content length header
                 f.write(r.content)
