@@ -95,7 +95,7 @@ class DataDownloader(object):
         for archive_fn in archive_fns:
 
             # choose from filenames inside archive
-            fname_list = self.find_archive_fnames(archive_fn) if fname_list is None else fname_list
+            fname_list = self.find_archive_fnames(archive_fn, 'caldata', 'lfr') if fname_list is None else fname_list
 
             # extract chosen files
             with ZipFile(archive_fn) as z:
@@ -105,8 +105,8 @@ class DataDownloader(object):
                         print('Extracted file %s' % fn)
 
     @staticmethod
-    def find_archive_fnames(archive_fn):
-        return [f for f in ZipFile(archive_fn).namelist() if f.startswith('caldata') or f.endswith('lfr')]
+    def find_archive_fnames(archive_fn, head_str='', tail_str=''):
+        return [f for f in ZipFile(archive_fn).namelist() if f.startswith(head_str) or f.endswith(tail_str)]
 
     @property
     def fp(self):
