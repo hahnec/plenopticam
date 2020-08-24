@@ -120,20 +120,20 @@ class PitchEstimator(object):
 
         return list(map(lambda x: np.max(x), self._scale_space))
 
-    def find_scale_max(self, precision=.1):
+    def find_scale_max(self, precision=10):
         """ determine dominant scale size by analyzing maximum over scale space """
 
         maxima = np.array(self.get_maxima())
 
         if len(maxima) > 2:
             # find scale maximum (with sub-scale precision using interpolation)
-            x_new = np.arange(0, len(maxima)-1, precision)
+            x_new = np.arange(0, len(maxima)-1, 1./precision)
             i_fun = scipy.interpolate.interp1d(range(0, len(maxima)), maxima, kind='cubic')
             y_new = i_fun(x_new)
             y_new /= y_new.max()
 
             # start looking from first positive gradient to exclude early maxima on falling curve (false large scales)
-            start = np.argmax(np.sign(np.gradient(y_new, int(1./precision))))
+            start = np.argmax(np.sign(np.gradient(y_new, int(precision))))
 
             # compute global and relative maxima in scale space
             val_max, arg_max = np.max(y_new[start:]), x_new[np.argmax(y_new[start:])+start]
