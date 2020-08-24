@@ -57,8 +57,9 @@ script:
         export RELEASE_PKG_FILE=$(ls dist/*.tar.gz);
         pip3 install --upgrade twine;
         python3 setup.py sdist bdist_wheel;
-        python3 -m twine upload --repository https://test.pypi.org/legacy/ dist/* -u __token__ -p $TEST_PYPI;
-        python3 -m pip install --index-url https://test.pypi.org/legacy/ plenopticam;
+        pip3 twine upload -r testpypi dist/* -u __token__ -p $TEST_PYPI;
+        pip3 uninstall -y plenopticam;
+        pip3 install -i https://test.pypi.org/simple/ plenopticam;
         export RELEASE_WHL_FILE=$(ls dist/*.whl);
     fi
   # osx bundling
