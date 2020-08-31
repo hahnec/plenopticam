@@ -91,7 +91,7 @@ setup(
       entry_points={'console_scripts': ['plenopticam=plenopticam.bin.cli_script:main'], },
       packages=find_packages(),
       install_requires=['numpy', 'scipy==1.4.1', 'imageio', 'Pillow', 'docutils', 'requests',
-                        'colour-demosaicing', 'colour', 'color-matcher', 'color-space-converter'],
+                        'colour-demosaicing', 'colour', 'color-matcher', 'color-space-converter', 'depthy'],
       include_package_data=True,
       zip_safe=False,
       **extra_options

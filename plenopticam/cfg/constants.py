@@ -25,6 +25,7 @@ PARAMS_KEYS = (
     'opt_rota',
     'opt_dbug',
     'opt_prnt',
+    'opt_dpth',
     'dir_remo'
 )
 
@@ -55,6 +56,7 @@ PARAMS_VALS = (
     False,
     False,
     True,
+    True,
     False
 )
 
@@ -69,6 +71,7 @@ PARAMS_TYPE = (
     # lists
     'ran',
     # booleans
+    'bool',
     'bool',
     'bool',
     'bool',
@@ -113,6 +116,7 @@ PARAMS_NAME = (
     'Rotation of light field',
     'Debug option',
     'Status print option',
+    'Depth map computation',
     'Remove output folder'
 )
 

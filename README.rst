@@ -17,7 +17,7 @@ This application is meant for researchers, developers, beginners and other fiddl
 Results
 =======
 
-Camera types
+Camera input
 ------------
 
 .. list-table::
@@ -27,12 +27,33 @@ Camera types
 
    * - |OpEx|_
      - |INRIA|_
-   * - |spiderman|
-     - |fruits|
-   * - plenoptic camera built at Univ. of Bedfordshire
-     - Lytro Illum camera image from raw capture
+   * - |opex_demo|
+     - |inria_demo|
+   * - Custom-built plenoptic camera (``*``.png, ``*``.bmp files)
+     - Lytro Illum camera (``*``.lfp, ``*``.lfr, ``*``.tar files)
    * - |binder|
      - |colab|
+
+Data output
+-----------
+
+.. list-table::
+   :widths: 8 8 8 8
+   :header-rows: 1
+   :stub-columns: 0
+
+   * - Depth map
+     - Views
+     - Refocusing
+     - Scheimpflug
+   * - |depth_demo|
+     - |views_demo|
+     - |refoc_demo|
+     - |pflug_demo|
+   * - ``*``.plm or ``*``.ply files
+     - ``*``.png or ``*``.gif files
+     - ``*``.png or ``*``.gif files
+     - ``*``.png file
 
 Color equalization
 ------------------
@@ -232,6 +253,21 @@ Further information
 .. |colab| image:: https://colab.research.google.com/assets/colab-badge.svg?style=flat-square
     :target: https://colab.research.google.com/github/hahnec/plenopticam/blob/develop/examples/04_illum_demo.ipynb
 
+.. |depth_demo| raw:: html
+
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/depth_demo.png" height="187px" max-width:"100%">
+
+.. |pflug_demo| raw:: html
+
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/pflug_demo.gif" height="187px" max-width:"100%">
+
+.. |views_demo| raw:: html
+
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/views_demo.gif" height="187px" max-width:"100%">
+
+.. |refoc_demo| raw:: html
+
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/refoc_demo.gif" height="187px" max-width:"100%">
 
 .. |src_lfp| raw:: html
 
@@ -245,11 +281,11 @@ Further information
 
     <img src="https://raw.githubusercontent.com/hahnec/color-matcher/master/test/data/view_animation_7px_hm-mkl-hm.gif" width="200px" max-width:"100%">
 
-.. |spiderman| raw:: html
+.. |opex_demo| raw:: html
 
     <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/demo_custom.gif" height="187px" max-width:"100%">
 
-.. |fruits| raw:: html
+.. |inria_demo| raw:: html
 
     <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/demo_illum.gif" height="187px" max-width:"100%">
 

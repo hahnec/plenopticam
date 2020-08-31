@@ -30,6 +30,7 @@ from plenopticam.lfp_extractor.lfp_contrast import LfpContrast
 from plenopticam.lfp_extractor.lfp_outliers import LfpOutliers
 from plenopticam.lfp_extractor.lfp_color_eq import LfpColorEqualizer
 from plenopticam.lfp_extractor.hex_corrector import HexCorrector
+from plenopticam.lfp_extractor.lfp_depth import LfpDepth
 
 import pickle
 import os
@@ -103,6 +104,12 @@ class LfpExtractor(object):
         if self.cfg.params[self.cfg.opt_view]:
             obj = LfpExporter(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
             obj.write_viewpoint_data()
+            del obj
+
+        # compute and write depth data from epipolar analysis
+        if self.cfg.params[self.cfg.opt_dpth]:
+            obj = LfpDepth(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
+            obj.main()
             del obj
 
         return True

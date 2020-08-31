@@ -2,9 +2,10 @@ numpy
 scipy==1.4.1
 colour-demosaicing
 colour
-color-matcher
+color-matcher==0.3.0
 color-space-converter
 imageio
 docutils
 Pillow
 requests
+depthy>=0.2.1

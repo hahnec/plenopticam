@@ -60,10 +60,11 @@ class PlenoptiCamTesterIllum(unittest.TestCase):
         self.cfg.params[self.cfg.opt_awb_] = True
         self.cfg.params[self.cfg.opt_sat_] = True
         self.cfg.params[self.cfg.opt_dbug] = True
+        self.cfg.params[self.cfg.opt_dpth] = True
         self.cfg.params[self.cfg.ran_refo] = [0, 1]
 
         # compute 3x3 viewpoints only (to reduce computation time)
-        self.cfg.params[self.cfg.ptc_leng] = 3
+        self.cfg.params[self.cfg.ptc_leng] = 7
 
         # skip progress prints (prevent Travis from terminating due to reaching 4MB logfile size)
         self.sta.prog_opt = False
