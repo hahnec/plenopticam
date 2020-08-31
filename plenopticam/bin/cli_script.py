@@ -22,7 +22,6 @@ __license__ = """
 
 import getopt
 import sys, os
-import pickle
 
 # local imports
 from plenopticam import lfp_reader
