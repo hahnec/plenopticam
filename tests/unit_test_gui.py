@@ -47,8 +47,8 @@ from plenopticam.gui.constants import PX, PY
 
 
 class TKinterTestCase(unittest.TestCase):
-    """These methods are going to be the same for every GUI test,
-    so refactored them into a separate class
+    """
+    Following methods are the same for each GUI test, so they are combined to a dedicated class.
     """
     def setUp(self):
         self.root = tk.Tk()
