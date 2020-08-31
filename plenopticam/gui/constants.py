@@ -2,7 +2,7 @@ PX = 10
 PY = 10
 BTN_W = 10
 
-GENERIC_EXTS = ['bmp', 'png', 'tiff', 'tif', 'jpeg', 'jpg']
+GEN_IMG_EXTS = ['bmp', 'png', 'tiff', 'tif', 'jpeg', 'jpg']
 LYT_LFP_EXTS = ['lfp', 'lfr', 'raw']
 LYT_CAL_EXTS = ['tar', 'raw']
 ALL_EXTS = ['*.*']

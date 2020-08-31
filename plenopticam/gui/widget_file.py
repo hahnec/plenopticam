@@ -28,7 +28,7 @@ except ImportError:
 import os
 
 from plenopticam.gui.widget_path import PathWidget
-from plenopticam.gui.constants import PX, PY, GENERIC_EXTS, LYT_LFP_EXTS, LYT_CAL_EXTS, ALL_EXTS
+from plenopticam.gui.constants import PX, PY, GEN_IMG_EXTS, LYT_LFP_EXTS, LYT_CAL_EXTS, ALL_EXTS
 
 
 class FileWidget(tk.Frame):
@@ -41,18 +41,18 @@ class FileWidget(tk.Frame):
         self.cfg = parent.cfg
 
         # supported file extensions
-        generic_exts = ['*.'+ext for ext in GENERIC_EXTS]
+        gen_img_exts = ['*.'+ext for ext in GEN_IMG_EXTS]
         lyt_lfp_exts = ['*.'+ext for ext in LYT_LFP_EXTS]
         lyt_cal_exts = ['*.'+ext for ext in LYT_CAL_EXTS]
-        merge_lfp_exts = lyt_lfp_exts+generic_exts
-        merge_cal_exts = lyt_cal_exts+generic_exts
+        merge_lfp_exts = lyt_lfp_exts+gen_img_exts
+        merge_cal_exts = lyt_cal_exts+gen_img_exts
         LFP_EXTS = [('Supported files', ' '.join(merge_lfp_exts+[x.upper() for x in merge_lfp_exts])),
                     ('Lytro files', ' '.join(lyt_lfp_exts+[x.upper() for x in lyt_lfp_exts])),
-                    ('Generic image files', ' '.join(generic_exts+[x.upper() for x in generic_exts])),
+                    ('Generic image files', ' '.join(gen_img_exts+[x.upper() for x in gen_img_exts])),
                     ('All files', ' '.join(ALL_EXTS+[x.upper() for x in ALL_EXTS]))]
         CAL_EXTS = [('Supported files', ' '.join(merge_cal_exts+[x.upper() for x in merge_cal_exts])),
                     ('Lytro files', ' '.join(LYT_CAL_EXTS+[x.upper() for x in lyt_cal_exts])),
-                    ('Generic image files', ' '.join(generic_exts+[x.upper() for x in generic_exts])),
+                    ('Generic image files', ' '.join(gen_img_exts+[x.upper() for x in gen_img_exts])),
                     ('All files', ' '.join(ALL_EXTS+[x.upper() for x in ALL_EXTS]))]
 
         # instantiate light field path widget

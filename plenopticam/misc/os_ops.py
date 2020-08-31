@@ -25,7 +25,7 @@ import sys, errno
 from os import makedirs, remove, chmod, listdir
 from os.path import isdir, isfile, expanduser, join
 
-from plenopticam.gui.constants import GENERIC_EXTS
+from plenopticam.gui.constants import GEN_IMG_EXTS
 from plenopticam.misc.file_rw import load_img_file
 from plenopticam.misc.normalizer import Normalizer
 
@@ -111,7 +111,7 @@ def get_img_list(img_dir, vp=1):
     for i in dir_list:
         img_path = join(img_dir, i)
         ext = img_path.split('.')[::-1][0].lower()
-        if ext in GENERIC_EXTS:
+        if ext in GEN_IMG_EXTS:
 
             # load image
             img = load_img_file(img_path)
