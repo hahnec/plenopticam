@@ -93,7 +93,6 @@ def save_img_file(img, file_path=None, file_type=None, gamma=None, tag=None):
 def load_img_file(file_path):
 
     file_type = file_path.split('.')[-1]
-    img = None
 
     # try libtiff import or use png instead if import fails
     imageio, file_type = try_tiff_import(file_type)
@@ -113,9 +112,9 @@ def load_img_file(file_path):
             ImageFile.LOAD_TRUNCATED_IMAGES = True
             img = Image.open(file_path)
         except AttributeError:
-            raise TypeError()
+            raise TypeError('Filetype %s not recognized' % file_type)
 
-    elif not any(file_type in ext for ext in ('bmp', 'png', 'tiff', 'jpeg', 'jpg')):
+    else:
         raise TypeError('Filetype %s not recognized' % file_type)
 
     # normalize (convert to numpy array)
@@ -132,11 +131,11 @@ def save_gif(img_set, duration=.1, fp='', fn='default'):
         import imageio
         imageio.mimwrite(os.path.join(fp, fn), [place_dnp(img) for img in img_set], duration=duration, palettesize=2**8)
     except ImportError:
-        # only use pillow for gif animation if necessary as it yields poorer image quality
+        # only use pillow for gif animation if necessary as it yields poor image quality
         pil_arr = [Image.fromarray(place_dnp(img)) for img in img_set]
         pil_arr[0].save(os.path.join(fp, fn), save_all=True, append_images=pil_arr[1:], duration=duration, loop=0)
     except PermissionError:
-        pass#raise PlenopticamError(e)
+        pass
 
     return True
 

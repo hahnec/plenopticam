@@ -61,6 +61,7 @@ def img_resize(img, x_scale=1, y_scale=None, method=None, new_shape=None):
         y_scale = x_scale
 
     method = 'cubic' if method is None else method
+    dtype = img.dtype
 
     if len(img.shape) == 3:
         n, m, P = img.shape
@@ -78,7 +79,7 @@ def img_resize(img, x_scale=1, y_scale=None, method=None, new_shape=None):
         f = interp2d(range(m), range(n), img[:, :, p], kind=method)
         new_img[:, :, p] = f(np.linspace(0, m - 1, x_len), np.linspace(0, n - 1, y_len))
 
-    return new_img
+    return new_img.astype(dtype)
 
 
 def eq_channels(img):
