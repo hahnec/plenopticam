@@ -21,10 +21,17 @@ __license__ = """
 """
 
 from plenopticam.lfp_extractor import LfpViewpoints
+from plenopticam.misc import img_resize
 
 from depthy.lightfield import epi_depth
 from depthy.misc import disp2pts, save_ply, save_pfm, plot_point_cloud
 from os.path import join
+import warnings
+
+try:
+    from mpl_toolkits.mplot3d import Axes3D
+except ImportError as e:
+    warnings.warn('matplotlib is not installed')
 
 
 class LfpDepth(LfpViewpoints):
@@ -53,9 +60,18 @@ class LfpDepth(LfpViewpoints):
         save_pfm(self.depth_map, scale=1, file_path=join(self.cfg.exp_path, 'depth.pfm'))
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
 
-    def plot_point_cloud(self, down_scale: int = 4, view_angles: (int, int) = (50, 70)) -> None:
+    def plot_point_cloud(self, rgb_img=None, down_scale: int = 4, view_angles: (int, int) = (50, 70)) -> Axes3D:
+
+        rgb_img = self.central_view if rgb_img is None else rgb_img
+        ax = None
+
+        # downsample via interpolation
+        rgb_img = img_resize(rgb_img.copy(), x_scale=1./down_scale)
+        dpt_map = img_resize(self.depth_map.copy(), x_scale=1./down_scale)
 
         if self.depth_map is not None:
-            plot_point_cloud(self.depth_map, rgb_img=self.central_view, scale=down_scale, view_angles=view_angles)
+            ax = plot_point_cloud(dpt_map, rgb_img=rgb_img, down_scale=1, view_angles=view_angles)
         else:
             self.sta.status_msg(msg='Depth map variable is empty')
+
+        return ax
