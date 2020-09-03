@@ -30,6 +30,7 @@ import warnings
 
 try:
     from mpl_toolkits.mplot3d import Axes3D
+    import matplotlib.pyplot as plt
 except ImportError as e:
     warnings.warn('matplotlib is not installed')
 
@@ -63,7 +64,6 @@ class LfpDepth(LfpViewpoints):
     def plot_point_cloud(self, rgb_img=None, down_scale: int = 4, view_angles: (int, int) = (50, 70)) -> Axes3D:
 
         rgb_img = self.central_view if rgb_img is None else rgb_img
-        ax = None
 
         # downsample via interpolation
         rgb_img = img_resize(rgb_img.copy(), x_scale=1./down_scale)
@@ -73,5 +73,6 @@ class LfpDepth(LfpViewpoints):
             ax = plot_point_cloud(dpt_map, rgb_img=rgb_img, down_scale=1, view_angles=view_angles)
         else:
             self.sta.status_msg(msg='Depth map variable is empty')
+            ax = Axes3D(fig=plt.figure())
 
         return ax
