@@ -9,3 +9,4 @@ docutils
 Pillow
 requests
 depthy>=0.2.3
+certifi>=2020.06.20
