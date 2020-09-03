@@ -41,7 +41,7 @@ OPTIONS = {
     "compressed": True,
     "optimize": 2,
     "iconfile": 'plenopticam/gui/icns/1055104.icns',
-    "excludes": ['matplotlib'],
+    "excludes": [''],
     "plist": dict(NSHumanReadableCopyright='2020 Christopher Hahne'),
     "packages": ['numpy', 'scipy', 'imageio', 'docutils', 'PIL', 
                  'colour-demosaicing', 'colour', 'color-matcher', 'color-space-converter'],
