@@ -8,4 +8,4 @@ imageio
 docutils
 Pillow
 requests
-depthy>=0.2.1
+depthy>=0.2.3
