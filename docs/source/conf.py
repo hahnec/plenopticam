@@ -164,7 +164,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'PlenoptiCam', 'Plenoptiscam Documentation',
+    (master_doc, 'PlenoptiCam', 'PlenoptiCam Documentation',
      author, 'PlenoptiCam', 'One line description of project.',
      'Miscellaneous'),
 ]
