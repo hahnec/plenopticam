@@ -10,20 +10,20 @@ pyinstaller plenopticam/gui/top_level.py \
 	--noconfirm \
 	--name=plenopticam \
 	--icon=plenopticam/gui/icns/1055104.icns \
-    --add-data=/usr/local/lib/python3.7/site-packages/imageio/:./imageio \
-	--add-data=./docs/build/html/:./docs/build/html/ \
-    --exclude-module=matplotlib \
-    --osx-bundle-identifier='org.pythonmac.unspecified.plenopticam' \
-    --add-binary='/usr/local/Cellar/tcl-tk/8.6.10/lib/libtk8.6.dylib':'tk' \
-    --add-binary='/usr/local/Cellar/tcl-tk/8.6.10/lib/libtcl8.6.dylib':'tcl' \
-    --hidden-import pkg_resources.py2_warn \
-    --add-data=plenopticam/cfg/cfg.json:cfg
+  --add-data=/usr/local/lib/python3.7/site-packages/imageio/:./imageio \
+  --add-data=./docs/build/html/:./docs/build/html/ \
+  --exclude-module=matplotlib \
+  --osx-bundle-identifier='org.pythonmac.unspecified.plenopticam' \
+  --add-binary='/usr/local/Cellar/tcl-tk/8.6.10/lib/libtk8.6.dylib':'tk' \
+  --add-binary='/usr/local/Cellar/tcl-tk/8.6.10/lib/libtcl8.6.dylib':'tcl' \
+  --hidden-import pkg_resources.py2_warn \
+  --add-data=plenopticam/cfg/cfg.json:cfg
 #	 --add-data=/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/imageio/:./imageio \
-#    --add-binary='/System/Library/Frameworks/Tk.framework/Tk':'tk' \
-#    --add-binary='/System/Library/Frameworks/Tcl.framework/Tcl':'tcl' \
-#    --add-binary='/usr/local/Cellar/python/3.7.7/Frameworks/Python.framework/Versions/3.7/lib/libtk8.6.dylib':'tk' \
-#    --add-binary='/usr/local/Cellar/python/3.7.7/Frameworks/Python.framework/Versions/3.7/lib/libtcl8.6.dylib':'tcl' \
-#    --add-data='./plenopticam/cfg/cfg.json':'Resources/cfg' \
+#  --add-binary='/System/Library/Frameworks/Tk.framework/Tk':'tk' \
+#  --add-binary='/System/Library/Frameworks/Tcl.framework/Tcl':'tcl' \
+#  --add-binary='/usr/local/Cellar/python/3.7.7/Frameworks/Python.framework/Versions/3.7/lib/libtk8.6.dylib':'tk' \
+#  --add-binary='/usr/local/Cellar/python/3.7.7/Frameworks/Python.framework/Versions/3.7/lib/libtcl8.6.dylib':'tcl' \
+#  --add-data='./plenopticam/cfg/cfg.json':'Resources/cfg' \
 
 # extract version number from python file
 version=$(sed -ne 's@__version__ = \([^]]*\)@\1@gp' plenopticam/__init__.py)
