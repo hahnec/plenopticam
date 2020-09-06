@@ -33,6 +33,7 @@ try:
     import matplotlib.pyplot as plt
 except ImportError as e:
     warnings.warn('matplotlib is not installed')
+    Axes3D = None
 
 
 class LfpDepth(LfpViewpoints):
