@@ -10,7 +10,7 @@ pyinstaller plenopticam/gui/top_level.py \
 	--noconfirm \
 	--name=plenopticam \
 	--icon=plenopticam/gui/icns/1055104.icns \
-    --add-data=/usr/local/lib/python3.8/site-packages/imageio/:./imageio \
+    --add-data=/usr/local/lib/python3.7/site-packages/imageio/:./imageio \
 	--add-data=./docs/build/html/:./docs/build/html/ \
     --exclude-module=matplotlib \
     --osx-bundle-identifier='org.pythonmac.unspecified.plenopticam' \
