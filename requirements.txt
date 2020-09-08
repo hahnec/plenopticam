@@ -3,7 +3,7 @@ scipy==1.4.1
 colour-demosaicing
 colour
 color-matcher==0.3.0
-color-space-converter
+color-space-converter>=0.1.4
 imageio
 docutils
 Pillow
