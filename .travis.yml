@@ -39,7 +39,7 @@ install:
   - pip3 install codecov
   - pip3 install coveralls
   - pip3 install pyinstaller==3.6
-  - pip3 install matplotlib==3.2.2
+  - pip3 install -Iv matplotlib==3.2.2
 
 # commands to run tests
 script:
