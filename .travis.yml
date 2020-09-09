@@ -38,6 +38,7 @@ install:
   - pip3 install sphinx
   - pip3 install codecov
   - pip3 install coveralls
+  - pip3 install pyinstaller==3.6
 
 # commands to run tests
 script:
@@ -49,8 +50,6 @@ script:
   - travis_wait 20 sleep 1200 &
   - python3 -m coverage run tests/unit_test_all.py || python -m coverage run tests/unit_test_all.py
 
-#before_deploy:
-  - pip3 install pyinstaller
   # linux bundling (with wheel upload to pypi)
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
         bash plenopticam/scripts/bundling/py2bin.sh;
