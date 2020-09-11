@@ -39,8 +39,9 @@ install:
   - pip3 install codecov
   - pip3 install coveralls
   - pip3 install pyinstaller==3.6
+  # workaround for pyinstaller issue #5004
   - if [ "$TRAVIS_OS_NAME" != "osx" ]; then
-      pip3 install -Iv matplotlib==3.2.2  # workaround for pyinstaller issue #5004
+      pip3 install -Iv matplotlib==3.2.2;
     fi
 
 # commands to run tests
