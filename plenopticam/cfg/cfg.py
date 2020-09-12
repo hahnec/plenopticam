@@ -62,11 +62,11 @@ class PlenopticamConfig(object):
             self.read_params()
             # test if config parameters present
             if not self.params.keys():
-                raise PlenopticamError('Config file could not be loaded')
+                raise FileNotFoundError('Config file could not be loaded')
             # number of values in loaded config is supposed to equal config constants specified in the tool
             if not len(self.params.keys()) == len(PARAMS_KEYS):
                 raise PlenopticamError('Config file corrupted')
-        except PlenopticamError:
+        except (PlenopticamError, FileNotFoundError):
             self.default_values()
             self.save_params()
 
