@@ -42,17 +42,17 @@ Data output
    :header-rows: 1
    :stub-columns: 0
 
-   * - Depth map
-     - Views
+   * - Views
      - Refocusing
+     - Depth
      - Scheimpflug
-   * - |depth_demo|
-     - |views_demo|
+   * - |views_demo|
      - |refoc_demo|
+     - |depth_demo|
      - |pflug_demo|
-   * - ``*``.plm or ``*``.ply files
+   * - ``*``.png or ``*``.gif files
      - ``*``.png or ``*``.gif files
-     - ``*``.png or ``*``.gif files
+     - ``*``.plm or ``*``.ply files
      - ``*``.png file
 
 Color equalization
