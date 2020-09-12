@@ -38,7 +38,7 @@ Data output
 -----------
 
 .. list-table::
-   :widths: 12 12 12 12
+   :widths: 25 25 25 25
    :header-rows: 1
    :stub-columns: 0
 
