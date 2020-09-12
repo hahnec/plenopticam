@@ -259,7 +259,7 @@ Further information
 
 .. |pflug_demo| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/pflug_demo.gif" height="187px" max-width:"100%">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/pflug_demo.png" height="187px" max-width:"100%">
 
 .. |views_demo| raw:: html
 
