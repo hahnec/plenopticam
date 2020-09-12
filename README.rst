@@ -263,7 +263,7 @@ Further information
 
 .. |views_demo| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/views_demo.gif" height="187px" max-width:"100%">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/views_demo_lores.gif" height="187px" max-width:"100%">
 
 .. |refoc_demo| raw:: html
 
