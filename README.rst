@@ -255,19 +255,19 @@ Further information
 
 .. |depth_demo| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/depth_demo_lores.png" max-width:"100%">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/depth_demo_lores.png" max-width:"25%">
 
 .. |pflug_demo| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/pflug_demo_lores.png" max-width:"100%">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/pflug_demo_lores.png" max-width:"25%">
 
 .. |views_demo| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/views_demo_lores.gif" max-width:"100%">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/views_demo_lores.gif" max-width:"25%">
 
 .. |refoc_demo| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/refoc_demo_lores.gif" max-width:"100%">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/refoc_demo_lores.gif" max-width:"25%">
 
 .. |src_lfp| raw:: html
 
