@@ -50,10 +50,10 @@ Data output
      - |refoc_demo|
      - |depth_demo|
      - |pflug_demo|
-   * - ``*``.png or ``*``.gif files
-     - ``*``.png or ``*``.gif files
-     - ``*``.plm or ``*``.ply files
-     - ``*``.png file
+   * - png or gif files
+     - png or gif files
+     - plm or ply files
+     - png file
 
 Color equalization
 ------------------
@@ -255,19 +255,19 @@ Further information
 
 .. |depth_demo| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/depth_demo.png" height="187px" max-width:"100%">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/depth_demo.png" max-width:"100%">
 
 .. |pflug_demo| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/pflug_demo.png" height="187px" max-width:"100%">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/pflug_demo.png" max-width:"100%">
 
 .. |views_demo| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/views_demo_lores.gif" height="187px" max-width:"100%">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/views_demo_lores.gif" max-width:"100%">
 
 .. |refoc_demo| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/refoc_demo.gif" height="187px" max-width:"100%">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/refoc_demo.gif" max-width:"100%">
 
 .. |src_lfp| raw:: html
 
