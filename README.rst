@@ -29,8 +29,8 @@ Camera input
      - |INRIA|_
    * - |opex_demo|
      - |inria_demo|
-   * - Custom-built plenoptic camera (``*``.png, ``*``.bmp files)
-     - Lytro Illum camera (``*``.lfp, ``*``.lfr, ``*``.tar files)
+   * - Custom-built plenoptic camera (png, bmp files)
+     - Lytro Illum camera (lfp, lfr, tar files)
    * - |binder|
      - |colab|
 
