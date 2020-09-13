@@ -34,13 +34,6 @@ Camera input
    * - |binder|
      - |colab|
 
-Depth
------
-
-|depth_anim|
-
-pfm or ply files
-
 Color equalization
 ------------------
 
@@ -55,6 +48,20 @@ Color equalization
    * - |src_lfp|
      - |ref_lfp|
      - |res_lfp|
+
+Depth
+-----
+.. list-table::
+   :widths: 8 8
+   :header-rows: 1
+   :stub-columns: 0
+
+   * - 2-D depth map
+     - 3-D point cloud
+   * - |depth_demo|
+     - |depth_anim|
+   * - pfm file format
+     - ply file format
 
 Installation
 ============
@@ -245,7 +252,7 @@ Further information
 
 .. |depth_demo| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/master/docs/img/depth_demo_lores.png" max-width:"100%">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/develop/docs/img/depth_demo.png" max-width:"100%">
 
 .. |pflug_demo| raw:: html
 
