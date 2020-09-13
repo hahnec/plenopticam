@@ -48,6 +48,7 @@ class LfpExtractor(object):
         # variables for viewpoint arrays
         self.vp_img_arr = []        # gamma corrected
         self.vp_img_linear = []     # linear gamma (for further processing)
+        self.depth_map = None
 
     def main(self):
 
@@ -110,6 +111,7 @@ class LfpExtractor(object):
         if self.cfg.params[self.cfg.opt_dpth]:
             obj = LfpDepth(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
             obj.main()
+            self.depth_map = obj.depth_map
             del obj
 
         return True
