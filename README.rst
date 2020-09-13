@@ -252,7 +252,7 @@ Further information
 
 .. |depth_demo| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/develop/docs/img/depth_demo.png" max-width:"100%">
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/develop/docs/img/depth_demo_lores.png" max-width:"100%">
 
 .. |pflug_demo| raw:: html
 
