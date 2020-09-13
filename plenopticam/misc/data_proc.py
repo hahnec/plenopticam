@@ -60,13 +60,16 @@ def img_resize(img, x_scale=1, y_scale=None, method=None, new_shape=None):
     if not y_scale:
         y_scale = x_scale
 
+    if x_scale == 1 and y_scale == 1 and new_shape is None or x_scale <= 0 or y_scale <= 0:
+        return img
+
     method = 'cubic' if method is None else method
     dtype = img.dtype
 
     if len(img.shape) == 3:
-        n, m, P = img.shape
+        n, m, p = img.shape
     elif len(img.shape) == 2:
-        n, m, P = img.shape + (1,)
+        n, m, p = img.shape + (1,)
         img = img[..., np.newaxis]
     else:
         raise NotImplementedError
@@ -74,10 +77,17 @@ def img_resize(img, x_scale=1, y_scale=None, method=None, new_shape=None):
     # construct new 2-D shape
     y_len, x_len = (int(round(n*y_scale)), int(round(m*x_scale))) if x_scale != 1 or y_scale != 1 else new_shape
 
-    new_img = np.zeros([y_len, x_len, P])
-    for p in range(P):
+    # interpolate
+    new_img = np.zeros([y_len, x_len, p])
+    for p in range(p):
         f = interp2d(range(m), range(n), img[:, :, p], kind=method)
         new_img[:, :, p] = f(np.linspace(0, m - 1, x_len), np.linspace(0, n - 1, y_len))
+
+    # normalize to the 0-1 range
+    new_img = Normalizer(new_img).type_norm(new_min=0, new_max=1)
+
+    # remove added third axes in monochromatic image
+    new_img = new_img[..., 0] if new_img.shape[-1] == 1 else new_img
 
     return new_img.astype(dtype)
 

@@ -29,31 +29,17 @@ Camera input
      - |INRIA|_
    * - |opex_demo|
      - |inria_demo|
-   * - Custom-built plenoptic camera (png, bmp files)
-     - Lytro Illum camera (lfp, lfr, tar files)
+   * - Custom-built (png, jpg, bmp files)
+     - Lytro Illum (lfp, lfr, tar files)
    * - |binder|
      - |colab|
 
-Data output
------------
+Depth
+-----
 
-.. list-table::
-   :widths: 25 25 25 25
-   :header-rows: 1
-   :stub-columns: 0
+|depth_anim|
 
-   * - Views
-     - Refocusing
-     - Depth
-     - Scheimpflug
-   * - |views_demo|
-     - |refoc_demo|
-     - |depth_demo|
-     - |pflug_demo|
-   * - png or gif files
-     - png or gif files
-     - plm or ply files
-     - png file
+pfm or ply files
 
 Color equalization
 ------------------
@@ -252,6 +238,10 @@ Further information
 
 .. |colab| image:: https://colab.research.google.com/assets/colab-badge.svg?style=flat-square
     :target: https://colab.research.google.com/github/hahnec/plenopticam/blob/master/examples/04_illum_demo.ipynb
+
+.. |depth_anim| raw:: html
+
+    <img src="https://raw.githubusercontent.com/hahnec/plenopticam/develop/docs/img/depth_anim.gif">
 
 .. |depth_demo| raw:: html
 
