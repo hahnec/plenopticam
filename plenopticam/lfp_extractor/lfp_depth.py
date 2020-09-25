@@ -21,7 +21,7 @@ __license__ = """
 """
 
 from plenopticam.lfp_extractor import LfpViewpoints
-from plenopticam.misc import img_resize
+from plenopticam.misc import img_resize, Normalizer
 
 from depthy.lightfield import epi_depth
 from depthy.misc import disp2pts, save_ply, save_pfm, plot_point_cloud
@@ -61,7 +61,7 @@ class LfpDepth(LfpViewpoints):
         # export data
         self.sta.status_msg('Write depth data', self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
-        pts = disp2pts(self.depth_map)
+        pts = disp2pts(self.depth_map, rgb_img=Normalizer(self.central_view.copy()).uint8_norm())
         save_ply(pts, file_path=join(self.cfg.exp_path, 'depth.ply'))
         save_pfm(self.depth_map, scale=1, file_path=join(self.cfg.exp_path, 'depth.pfm'))
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
