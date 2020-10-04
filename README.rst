@@ -117,7 +117,6 @@ Application
 1. Choose your light field photograph using upper **Browse** button. Supported file types are:
     - *bmp*, *jpg* or *png* file from custom-built plenoptic camera
     - *lfr*, *lfp* and *raw* files from Lytro Illum
-    - Lytro 1st Generation (to come)
 
 |
 
@@ -125,10 +124,9 @@ Application
     - *bmp*, *jpg* or *png* file from custom-built plenoptic camera
     - *caldata-XXX.tar* archive or respective *raw* file from Lytro Illum
     - tick "Pick folder" and point to a directory containing all *tar* files or extracted folders (calibration file will be found automatically)
-    - Lytro 1st Generation (to come)
 
 .. note::
-    If you are `using your own Lytro Illum <https://hahnec.github.io/plenopticam/build/html/guide.html#using-your-own-lytro-illum>`__ camera, you first need to extract camera calibration data as a *tar* archive. To do so, please follow the `instructions guide <https://hahnec.github.io/plenopticam/build/html/guide.html>`__.
+    If you are `using your own Lytro Illum <https://hahnec.github.io/plenopticam/build/html/guide.html#using-your-own-lytro-illum>`__ camera, you first need to extract camera calibration data as a *tar*-archive. To do so, please follow the `instructions guide <https://hahnec.github.io/plenopticam/build/html/guide.html>`__.
 
 |
 
@@ -184,7 +182,6 @@ Contributors
 Sponsors
 --------
 |
-
 
 .. list-table::
    :widths: 8 8
