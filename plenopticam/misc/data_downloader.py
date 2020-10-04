@@ -43,7 +43,8 @@ class DataDownloader(object):
         self.root_path = dirname(abspath('.')) if basename((abspath('.'))) == 'tests' else abspath('.')
 
         # data urls
-        self.host_eu_url = 'http://wp12283669.server-he.de/Xchange/illum_test_data.zip'
+        self.host_eu_url = 'http://wp12283669.server-he.de/Xchange/Binder/illum_test_data.zip'
+        self.opex_prep_url = 'http://wp12283669.server-he.de/Xchange/Binder/OpEx_data_prepared.zip'
         self.opex_url = 'https://ndownloader.figshare.com/files/5201452'
         self.opex_fnames_wht = ['f197with4m11pxf16Final.bmp', 'f197Inf9pxFinalShift12.7cmf22.bmp']
         self.opex_fnames_lfp = ['f197with4m11pxFinal.bmp', 'f197Inf9pxFinalShift12.7cm.bmp']
@@ -95,7 +96,8 @@ class DataDownloader(object):
         for archive_fn in archive_fns:
 
             # choose from filenames inside archive
-            fname_list = self.find_archive_fnames(archive_fn, 'caldata', 'lfr') if fname_list is None else fname_list
+            fname_list = ZipFile(archive_fn).namelist() if fname_list is None else fname_list
+            fname_list = self.find_archive_fnames(archive_fn, 'caldata', 'lfr') if fname_list == 'lfr' else fname_list
 
             # extract chosen files
             with ZipFile(archive_fn) as z:
