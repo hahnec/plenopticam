@@ -87,8 +87,8 @@ class LfpReader(object):
             try:
                 # try to load json file (if present)
                 json_dict = self.cfg.load_json(self._lfp_path)
-                self.cfg.lfpimg = LfpDecoder.filter_lfp_json(json_dict, self.cfg.lfp_img)
-            except:
+                self.cfg.lfpimg = LfpDecoder.filter_lfp_json(json_dict, self.cfg.lfpimg)
+            except FileNotFoundError:
                 pass
 
         # write json file
