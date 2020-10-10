@@ -33,7 +33,7 @@ DR = 1
 
 class CentroidRefiner(object):
 
-    def __init__(self, img, centroids, cfg, sta=None, M=None, method=None):
+    def __init__(self, img, centroids, cfg=None, sta=None, M=None, method=None):
         """
 
         This class takes a list of integer coordinates as centroids and an intensity map as inputs and re-computes
@@ -48,7 +48,7 @@ class CentroidRefiner(object):
 
         # input variables
         self._img = img
-        self._centroids = centroids #np.round(centroids).astype('uint64')
+        self._centroids = centroids
         self.cfg = cfg if cfg is not None else PlenopticamConfig()
         self.sta = sta if sta is not None else PlenopticamStatus()
         self._M = M

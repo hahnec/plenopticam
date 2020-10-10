@@ -21,6 +21,7 @@ __license__ = """
 """
 
 # local imports
+from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc import create_gauss_kernel
 from plenopticam.misc.status import PlenopticamStatus
 
@@ -31,11 +32,11 @@ import scipy
 
 class PitchEstimator(object):
 
-    def __init__(self, img, cfg, sta=None, scale_val=1.625, CR=3):
+    def __init__(self, img, cfg=None, sta=None, scale_val=1.625, CR=3):
 
         # input variables
         self._img = img
-        self.cfg = cfg
+        self.cfg = cfg if cfg is not None else PlenopticamConfig()
         self.sta = sta if sta is not None else PlenopticamStatus()
         self._scale_val = scale_val
         self._CR = CR

@@ -20,18 +20,21 @@ __license__ = """
 
 """
 
+from plenopticam.cfg import PlenopticamConfig
+from plenopticam.misc import PlenopticamStatus
+
 # external libs
 import numpy as np
 
 
 class NonMaxSuppression(object):
 
-    def __init__(self, img, cfg, sta):
+    def __init__(self, img, cfg=None, sta=None):
 
         # input variables
         self._img = img
-        self.cfg = cfg
-        self.sta = sta
+        self.cfg = cfg if cfg is not None else PlenopticamConfig()
+        self.sta = sta if sta is not None else PlenopticamStatus()
 
         # internal variable
         self._map = np.zeros(self._img.shape, dtype=self._img.dtype)

@@ -36,7 +36,7 @@ DR = 2  # down-sample rate
 
 class CentroidExtractor(object):
 
-    def __init__(self, img, cfg, sta=None, M=None):
+    def __init__(self, img, cfg=None, sta=None, M=None):
 
         # input variables
         self._img = img

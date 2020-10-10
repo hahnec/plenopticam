@@ -22,6 +22,7 @@ __license__ = """
 
 # local imports
 from plenopticam.lfp_calibrator.find_centroid import find_centroid, find_centroid_backwards
+from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc.status import PlenopticamStatus
 
 # external libs
@@ -30,11 +31,11 @@ import numpy as np
 
 class CentroidSorter(object):
 
-    def __init__(self, centroids, cfg, sta=None, bbox=None):
+    def __init__(self, centroids, cfg=None, sta=None, bbox=None):
 
         # input variables
         self._centroids = np.asarray(centroids)     # list of unsorted maxima
-        self.cfg = cfg                              # config file
+        self.cfg = cfg if cfg is not None else PlenopticamConfig()
         self.sta = sta if sta is not None else PlenopticamStatus()
         self._bbox = bbox if bbox is not None and len(bbox) == 2 else None
 
