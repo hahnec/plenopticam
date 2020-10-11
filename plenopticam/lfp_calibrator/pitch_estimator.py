@@ -42,11 +42,11 @@ class PitchEstimator(object):
         self._CR = CR
 
         # internal variables
-        self._scale_space = []
         self._top_img = None
 
         # output variables
         self._M = None
+        self.scale_space = []
 
     def main(self):
 
@@ -57,17 +57,51 @@ class PitchEstimator(object):
         # print status
         self.sta.status_msg('Estimate micro image size', self.cfg.params[self.cfg.opt_prnt])
 
-        # take fractional central part of image
-        self._crop_img(CR=self._CR)
-
         # create scale space
         self.create_scale_space()
 
         # find first maximum in scale space
-        self.find_scale_max()
+        self.find_scale_max(rel_max_opt=True)
 
         # print "Progress: Done!"
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
+
+        return True
+
+    def create_scale_space(self):
+
+        # take fractional central part of image
+        self._crop_img(CR=self._CR)
+
+        # create Gaussian kernels with sigma=1 and sigma=sqrt(2)
+        sig_one_kernel = create_gauss_kernel(length=9, sigma=1.)
+        sig_sqrt_kernel = 1 * create_gauss_kernel(length=9, sigma=np.sqrt(2))
+
+        # initialize scale space variables
+        self.scale_space = []
+        img_scale = scipy.signal.convolve2d(self._top_img, sig_one_kernel, 'same')   # initial scale
+
+        # compute scale space by Gaussian filtering and down-sampling
+        while (img_scale.shape[0] or img_scale.shape[1]) >= 3:
+
+            # filter scaled image by Gaussian kernel with sigma=1
+            gauss_img_one = (scipy.signal.convolve2d(img_scale, sig_one_kernel, 'same'))
+
+            # append scaled image to pyramid
+            self.scale_space.append(-(gauss_img_one - img_scale))  # negative for maximum detection
+
+            # filter scaled image by Gaussian kernel with sigma=sqrt(2)
+            gauss_img_two = (scipy.signal.convolve2d(gauss_img_one, sig_sqrt_kernel, 'same'))
+
+            # append scaled image to pyramid
+            self.scale_space.append(-(gauss_img_two - gauss_img_one))  # negative for maximum detection
+
+            # down-sample to half the image resolution where Gaussian filters prevent from aliasing
+            img_scale = gauss_img_two[::2, ::2]
+
+            # check interrupt status
+            if self.sta.interrupt:
+                return False
 
         return True
 
@@ -82,46 +116,12 @@ class PitchEstimator(object):
 
         return True
 
-    def create_scale_space(self):
-
-        # create Gaussian kernels with sigma=1 and sigma=sqrt(2)
-        sig_one_kernel = create_gauss_kernel(length=9, sigma=1.)
-        sig_sqrt_kernel = 1 * create_gauss_kernel(length=9, sigma=np.sqrt(2))
-
-        # initialize scale space variables
-        self._scale_space = []
-        img_scale = scipy.signal.convolve2d(self._top_img, sig_one_kernel, 'same')   # initial scale
-
-        # compute scale space by Gaussian filtering and down-sampling
-        while (img_scale.shape[0] or img_scale.shape[1]) >= 3:
-
-            # filter scaled image by Gaussian kernel with sigma=1
-            gauss_img_one = (scipy.signal.convolve2d(img_scale, sig_one_kernel, 'same'))
-
-            # append scaled image to pyramid
-            self._scale_space.append(-(gauss_img_one-img_scale))  # negative for maximum detection
-
-            # filter scaled image by Gaussian kernel with sigma=sqrt(2)
-            gauss_img_two = (scipy.signal.convolve2d(gauss_img_one, sig_sqrt_kernel, 'same'))
-
-            # append scaled image to pyramid
-            self._scale_space.append(-(gauss_img_two-gauss_img_one))  # negative for maximum detection
-
-            # down-sample to half the image resolution where Gaussian filters prevent from aliasing
-            img_scale = gauss_img_two[::2, ::2]
-
-            # check interrupt status
-            if self.sta.interrupt:
-                return False
-
-        return True
-
     def get_maxima(self):
         """ compute list of maxima in scale space """
 
-        return list(map(lambda x: np.max(x), self._scale_space))
+        return list(map(lambda x: np.max(x), self.scale_space))
 
-    def find_scale_max(self, precision=10):
+    def find_scale_max(self, precision=10, rel_max_opt=False):
         """ determine dominant scale size by analyzing maximum over scale space """
 
         maxima = np.array(self.get_maxima())
@@ -141,8 +141,11 @@ class PitchEstimator(object):
             rel_max, arg_rel_max = y_new[min(scipy.signal.argrelmax(y_new[start:])[0])+start], \
                                    x_new[min(scipy.signal.argrelmax(y_new[start:])[0])+start]
 
-            # use global maximum only if its y/x ratio is larger than that of relative to penalize "weak late maxima"
-            scale_max = arg_max if val_max/arg_max > rel_max/arg_rel_max else arg_rel_max
+            if rel_max_opt:
+                # use global max only if its y/x ratio is larger than that of relative to penalize "weak late maxima"
+                scale_max = arg_max if val_max/arg_max > rel_max/arg_rel_max else arg_rel_max
+            else:
+                scale_max = arg_max
 
         elif len(maxima) > 0:
             scale_max = max(maxima)
@@ -156,7 +159,7 @@ class PitchEstimator(object):
         # scale to get micro image size
         self._M = int(np.round(lap_sig * 4))
 
-        return True
+        return self._M
 
     @property
     def M(self):
