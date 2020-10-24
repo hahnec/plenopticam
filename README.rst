@@ -12,6 +12,8 @@ This application is meant for researchers, developers, beginners and other fiddl
 
 |release| |license| |travis| |coverage| |downloads| |pypi|
 
+|paper|
+
 |binder|
 
 Results
@@ -169,38 +171,22 @@ Depending on provided files and settings, your results folder may contain the fo
     - light field metadata as json file (for Lytro files only)
     - scheimpflug focus files
 
-Credits
-=======
-
-Contributors
-------------
-
-|Hahne|
-
-`Christopher Hahne <http://www.christopherhahne.de/>`__
-
-Sponsors
---------
-|
-
-.. list-table::
-   :widths: 8 8
-
-   * - |EUFramework|
-     - |UoB|
-   * - `under Grant EU-FP7 ICT-2010-248420 <https://cordis.europa.eu/project/rcn/94148_en.html>`__
-     - `Institute for Research in Applicable Computing (IRAC) <https://www.beds.ac.uk/research-ref/irac/about>`__
-
 Citation
---------
-If you find this work helpful for your research, please cite as appropriate:
+========
 
-* `Refocusing distance of a standard plenoptic camera <https://doi.org/10.1364/OE.24.021521>`__, *OpticsExpress*, `[BibTeX] <http://www.plenoptic.info/bibtex/HAHNE-OPEX.2016.bib>`__
+.. code-block:: BibTeX
 
-* `Baseline and triangulation geometry in a standard plenoptic camera <http://www.plenoptic.info/files/IJCV_Hahne17_final.pdf>`__, *Int. J. of Comp. Vis.*, `[BibTeX] <http://plenoptic.info/bibtex/HAHNE-IJCV.2017.bib>`__
+    @misc{hahne2020plenopticam,
+          title={PlenoptiCam v1.0: A light-field imaging framework},
+          author={Christopher Hahne and Amar Aggoun},
+          year={2020},
+          eprint={2010.11687},
+          archivePrefix={arXiv},
+          primaryClass={eess.IV}
+    }
 
 Further information
--------------------
+===================
 
 * check out PlenoptiCam's partner project PlenoptiSign_ capable of estimating metric light field geometries
 * visit `plenoptic.info <http://www.plenoptic.info>`__ for technical details, animated figures and theoretical background
@@ -244,6 +230,10 @@ Further information
 .. |colab| image:: https://colab.research.google.com/assets/colab-badge.svg?style=flat-square
     :target: https://colab.research.google.com/github/hahnec/plenopticam/blob/master/examples/04_illum_demo.ipynb
     :width: 175
+
+.. |paper| image:: http://img.shields.io/badge/paper-arxiv.2010.11687-red.svg?style=flat-square
+    :target: https://arxiv.org/pdf/2010.11687.pdf
+    :alt: arXiv link
 
 .. |depth_anim| raw:: html
 
