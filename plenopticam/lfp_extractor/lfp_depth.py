@@ -61,7 +61,7 @@ class LfpDepth(LfpViewpoints):
         # export data
         self.sta.status_msg('Write depth data', self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
-        pts = disp2pts(self.depth_map, rgb_img=Normalizer(self.central_view.copy()).uint8_norm())
+        pts = disp2pts(self.depth_map, rgb_img=Normalizer(self.central_view.copy()).uint8_norm(), focus_dist_mm=200)
         save_ply(pts, file_path=join(self.cfg.exp_path, 'depth.ply'))
         save_pfm(self.depth_map, scale=1, file_path=join(self.cfg.exp_path, 'depth.pfm'))
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
