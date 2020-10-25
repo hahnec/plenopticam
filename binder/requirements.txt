@@ -1,2 +1,2 @@
 jupyterlab>=2.2.0
-plenopticam>=0.6.2
+plenopticam>=0.6.4
