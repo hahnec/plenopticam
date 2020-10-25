@@ -8,5 +8,5 @@ imageio
 docutils
 Pillow
 requests
-depthy>=0.2.8
+depthy>=0.3.0
 certifi>=2020.06.20
