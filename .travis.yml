@@ -51,8 +51,7 @@ script:
   - make html
   - cd ..
   # trigger unit tests (time critical and output print limitation due to > 4MB size)
-  - travis_wait 20 sleep 1200 &
-  - python3 -m coverage run tests/unit_test_all.py || python -m coverage run tests/unit_test_all.py
+  - travis_wait 20 python3 -m coverage run tests/unit_test_all.py || python -m coverage run tests/unit_test_all.py
 
   # linux bundling (with wheel upload to pypi)
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
