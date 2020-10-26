@@ -50,11 +50,10 @@ script:
   - cd docs
   - make html
   - cd ..
-  # trigger unit tests (time critical and output print limitation due to > 4MB size)
-  - travis_wait 20 python3 -m coverage run tests/unit_test_all.py || python -m coverage run tests/unit_test_all.py
 
   # linux bundling (with wheel upload to pypi)
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+        python3 -m coverage run tests/unit_test_all.py
         bash plenopticam/scripts/bundling/py2bin.sh;
         export RELEASE_PKG_FILE=$(ls dist/*.tar.gz);
         pip3 install --upgrade twine;
@@ -66,6 +65,7 @@ script:
     fi
   # osx bundling
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+        travis_wait 30 python3 -m coverage run tests/unit_test_all.py
         npm install --global create-dmg;
         bash plenopticam/scripts/bundling/pyinst2app.sh;
         sleep 1;
@@ -73,6 +73,7 @@ script:
     fi
   # win bundling
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then
+        travis_wait 30 python -m coverage run tests/unit_test_all.py
         pip3 install pypiwin32;
         pip3 install pyinstaller --upgrade;
         plenopticam/scripts/bundling/py2exe.bat;
