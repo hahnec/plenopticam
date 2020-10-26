@@ -11,7 +11,6 @@ jobs:
         - xvfb              # activate xvfb for tests that require a GUI
       before_install:
         - python3 -c "exec(\"import tkinter\\nprint(tkinter.TkVersion)\")"
-        - pip3 install twine
     - name: "macOS"
       os: osx
       osx_image: xcode11.4
@@ -62,7 +61,7 @@ script:
         export RELEASE_PKG_FILE=$(ls dist/*.tar.gz);
         pip3 install --upgrade twine;
         python3 setup.py sdist bdist_wheel;
-        pip3 twine upload -r testpypi dist/* -u __token__ -p $TEST_PYPI;
+        twine upload -r testpypi dist/* -u __token__ -p $TEST_PYPI;
         pip3 uninstall -y plenopticam;
         pip3 install -i https://test.pypi.org/simple/ plenopticam;
         export RELEASE_WHL_FILE=$(ls dist/*.whl);
