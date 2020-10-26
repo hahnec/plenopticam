@@ -4,7 +4,7 @@
 sudo rm -rf build dist
 
 # find python's site-packages path
-sp_path=$(python3 -m site --user-site)
+sp_path=$(python3 -c "import sysconfig; print(sysconfig.get_path('purelib'))")
 echo "$sp_path"/imageio/
 
 # run pyinstaller with provided options
