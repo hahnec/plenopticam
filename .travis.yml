@@ -16,7 +16,7 @@ jobs:
       osx_image: xcode11.4
       language: shell       # 'language: python' is an error on Travis CI macOS
       before_install:
-        - export HOMEBREW_NO_AUTO_UPDATE=1
+        - export HOMEBREW_NO_AUTO_UPDATE=1    # skip brew's time-consuming auto-update
         - brew install tcl-tk
         - python3 --version
         - python3 -c "exec(\"import tkinter\\nprint(tkinter.TkVersion)\")"
@@ -54,7 +54,7 @@ script:
 
   # linux bundling (with wheel upload to pypi)
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-        python3 -m coverage run tests/unit_test_all.py
+        travis_wait 20 python3 -m coverage run tests/unit_test_all.py
         bash plenopticam/scripts/bundling/py2bin.sh;
         export RELEASE_PKG_FILE=$(ls dist/*.tar.gz);
         pip3 install --upgrade twine;
