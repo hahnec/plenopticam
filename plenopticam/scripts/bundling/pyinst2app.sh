@@ -14,6 +14,7 @@ pyinstaller plenopticam/gui/top_level.py \
 	--noconfirm \
 	--name=plenopticam \
 	--icon=plenopticam/gui/icns/1055104.icns \
+	--paths="$sp_path" \
   --add-data="$sp_path"/imageio/:./imageio \
   --add-data=./docs/build/html/:./docs/build/html/ \
   --exclude-module=matplotlib \
