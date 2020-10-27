@@ -53,7 +53,7 @@ script:
   - cd docs
   - make html
   - cd ..
-  - travis_wait 30 sleep 1200 &
+  #- travis_wait 30 sleep 1200 &
 
   # linux bundling (with wheel upload to pypi)
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
