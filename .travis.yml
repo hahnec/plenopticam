@@ -17,7 +17,7 @@ jobs:
       language: shell       # 'language: python' is an error on Travis CI macOS
       before_install:
         - export HOMEBREW_NO_AUTO_UPDATE=1    # skip brew's time-consuming auto-update
-        - brew reinstall python@3.8.2
+        - brew reinstall python@3.8
         - echo 'export PATH="/usr/local/Cellar/python@3.8/3.8.2/bin:$PATH"' >> ~/.zshrc
         - brew install tcl-tk
         - python3 --version
