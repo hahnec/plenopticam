@@ -15,9 +15,14 @@ jobs:
       os: osx
       osx_image: xcode11.4
       language: shell       # 'language: python' is an error on Travis CI macOS
+      env:
+        - PY_VERSION=3
+        - PY_VERSION_=3.8
+        - MAKEFLAGS=-j8
+        - GITHUB_UPLOAD=yes
+        - UPLOAD_WHL_PYPI=yes
       before_install:
         - export HOMEBREW_NO_AUTO_UPDATE=1    # skip brew's time-consuming auto-update
-        - brew switch python 3.8
         - brew install tcl-tk
         - python3 --version
         - python3 -c "exec(\"import tkinter\\nprint(tkinter.TkVersion)\")"
