@@ -18,6 +18,7 @@ jobs:
       before_install:
         - export HOMEBREW_NO_AUTO_UPDATE=1    # skip brew's time-consuming auto-update
         - brew reinstall python@3.8
+        - echo 'export PATH="/usr/local/opt/python@3.8/bin:$PATH"' >> ~/.zshrc
         - brew install tcl-tk
         - python3 --version
         - python3 -c "exec(\"import tkinter\\nprint(tkinter.TkVersion)\")"
