@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1. PlenoptiCam &#8212; PlenoptiCam 0.6.2 documentation</title>
+    <title>1. PlenoptiCam &#8212; PlenoptiCam 0.6.4 documentation</title>
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -30,7 +30,7 @@
         <li class="right" >
           <a href="index.html" title="PlenoptiCam’s Reference Document"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.6.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.6.4 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>PlenoptiCam</a></li> 
       </ul>
     </div>  
@@ -44,10 +44,11 @@
 <h1><span class="section-number">1. </span>PlenoptiCam<a class="headerlink" href="#plenopticam" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="description">
 <h2><span class="section-number">1.1. </span>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p><em>PlenoptiCam</em> is an open-source software (<a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.6.2-beta/plenopticam_0.6.2.dmg">macOS</a>, <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.6.2-beta/plenopticam_0.6.2.msi">Win</a> or <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.6.2-beta/plenopticam_0.6.2.tar.gz">Linux</a>) for scientific light field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
+<p><em>PlenoptiCam</em> is an open-source software (<a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.6.4-beta/plenopticam_0.6.4.dmg">macOS</a>, <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.6.4-beta/plenopticam_0.6.4.msi">Win</a> or <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.6.4-beta/plenopticam_0.6.4.tar.gz">Linux</a>) for scientific light field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
 Raw exposures from a plenoptic camera require four-dimensional image alignment in order to be decoded as a light field. Provided software addresses this by its ability to calibrate an image taken by a plenoptic camera and extract sub-aperture images or synthetically focused photographs.
 This application is meant for researchers, developers, beginners and other fiddlers who like to experiment with light field technology. Its scope comprises custom-types of plenoptic cameras and is thus not limited to Lytro’s image data.</p>
 <p><a class="reference external" href="https://github.com/hahnec/plenopticam/releases/"><img alt="release" src="https://img.shields.io/github/release/hahnec/plenopticam.svg?style=flat-square" /></a> <a class="reference external" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img alt="License" src="https://img.shields.io/badge/License-GPL%20v3.0-orange.svg?style=flat-square" /></a> <a class="reference external" href="https://travis-ci.com/github/hahnec/plenopticam"><img alt="travis" src="https://img.shields.io/travis/com/hahnec/plenopticam/master?style=flat-square" /></a> <a class="reference external" href="https://coveralls.io/github/hahnec/plenopticam"><img alt="coverage" src="https://img.shields.io/coveralls/github/hahnec/plenopticam?style=flat-square" /></a> <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/"><img alt="Release Downloads" src="https://img.shields.io/github/downloads/hahnec/plenopticam/total?label=Release%20downloads&amp;style=flat-square" /></a> <a class="reference external" href="https://pypi.org/project/plenopticam/"><img alt="PyPI Downloads" src="https://img.shields.io/pypi/dm/plenopticam?label=PyPI%20downloads&amp;style=flat-square" /></a></p>
+<p><a class="reference external" href="https://arxiv.org/pdf/2010.11687.pdf"><img alt="arXiv link" src="http://img.shields.io/badge/paper-arxiv.2010.11687-red.svg?style=flat-square" /></a></p>
 <p><a class="reference external" href="https://mybinder.org/v2/gh/hahnec/plenopticam/master?urlpath=lab"><img alt="binder" src="https://img.shields.io/badge/launch-binder-E66581.svg?style=flat-square&amp;logo=data:image/png;base64,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" style="width: 175px;" /></a></p>
 </div>
 <div class="section" id="results">
@@ -92,9 +93,9 @@ This application is meant for researchers, developers, beginners and other fiddl
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><img src="https://raw.githubusercontent.com/hahnec/color-matcher/master/test/data/view_animation_7px.gif" width="200px" max-width:"100%"></p></td>
-<td><p><img src="https://raw.githubusercontent.com/hahnec/color-matcher/master/test/data/bee_2.png" width="200px" max-width:"100%"></p></td>
-<td><p><img src="https://raw.githubusercontent.com/hahnec/color-matcher/master/test/data/view_animation_7px_hm-mkl-hm.gif" width="200px" max-width:"100%"></p></td>
+<tr class="row-even"><td><p><img src="https://raw.githubusercontent.com/hahnec/color-matcher/master/tests/data/view_animation_7px.gif" width="200px" max-width:"100%"></p></td>
+<td><p><img src="https://raw.githubusercontent.com/hahnec/color-matcher/master/tests/data/bee_2.png" width="200px" max-width:"100%"></p></td>
+<td><p><img src="https://raw.githubusercontent.com/hahnec/color-matcher/master/tests/data/view_animation_7px_hm-mkl-hm.gif" width="200px" max-width:"100%"></p></td>
 </tr>
 </tbody>
 </table>
@@ -127,7 +128,7 @@ This application is meant for researchers, developers, beginners and other fiddl
 <ul class="simple">
 <li><dl class="simple">
 <dt>executable:</dt><dd><ol class="arabic simple">
-<li><p>download bundled <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/">apps</a> for <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.6.2-beta/plenopticam_0.6.2.dmg">macOS</a>, <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.6.2-beta/plenopticam_0.6.2.msi">Win</a> or <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.6.2-beta/plenopticam_0.6.2.tar.gz">Linux</a></p></li>
+<li><p>download bundled <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/">apps</a> for <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.6.4-beta/plenopticam_0.6.4.dmg">macOS</a>, <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.6.4-beta/plenopticam_0.6.4.msi">Win</a> or <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/download/v0.6.4-beta/plenopticam_0.6.4.tar.gz">Linux</a></p></li>
 <li><p>extract archive</p></li>
 <li><p>run executable (may take a while on first start-up)</p></li>
 <li><p>user interface will show up (see below)</p></li>
@@ -272,48 +273,25 @@ Depending on provided files and settings, your results folder may contain the fo
 </div></blockquote>
 </div>
 </div>
-<div class="section" id="credits">
-<h2><span class="section-number">1.5. </span>Credits<a class="headerlink" href="#credits" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="contributors">
-<h3><span class="section-number">1.5.1. </span>Contributors<a class="headerlink" href="#contributors" title="Permalink to this headline">¶</a></h3>
-<p><img src="http://www.christopherhahne.de/images/about_alt.jpg" width="15%"></p>
-<p><a class="reference external" href="http://www.christopherhahne.de/">Christopher Hahne</a></p>
-</div>
-<div class="section" id="sponsors">
-<h3><span class="section-number">1.5.2. </span>Sponsors<a class="headerlink" href="#sponsors" title="Permalink to this headline">¶</a></h3>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
-<table class="colwidths-given docutils align-default">
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><img src="http://www.gsa.europa.eu/sites/default/files/Seventh_Framework_Programme_logo.png" width="100px"></p></td>
-<td><p><img src="https://3tkh0x1zl0mb1ta92c2mrvv2-wpengine.netdna-ssl.com/wp-content/uploads/2015/12/LO_KukriGB_Universities_Bedfordshire.png" width="70px"></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference external" href="https://cordis.europa.eu/project/rcn/94148_en.html">under Grant EU-FP7 ICT-2010-248420</a></p></td>
-<td><p><a class="reference external" href="https://www.beds.ac.uk/research-ref/irac/about">Institute for Research in Applicable Computing (IRAC)</a></p></td>
-</tr>
-</tbody>
-</table>
-</div>
 <div class="section" id="citation">
-<h3><span class="section-number">1.5.3. </span>Citation<a class="headerlink" href="#citation" title="Permalink to this headline">¶</a></h3>
-<p>If you find this work helpful for your research, please cite as appropriate:</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://doi.org/10.1364/OE.24.021521">Refocusing distance of a standard plenoptic camera</a>, <em>OpticsExpress</em>, <a class="reference external" href="http://www.plenoptic.info/bibtex/HAHNE-OPEX.2016.bib">[BibTeX]</a></p></li>
-<li><p><a class="reference external" href="http://www.plenoptic.info/files/IJCV_Hahne17_final.pdf">Baseline and triangulation geometry in a standard plenoptic camera</a>, <em>Int. J. of Comp. Vis.</em>, <a class="reference external" href="http://plenoptic.info/bibtex/HAHNE-IJCV.2017.bib">[BibTeX]</a></p></li>
-</ul>
+<h2><span class="section-number">1.5. </span>Citation<a class="headerlink" href="#citation" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-BibTeX notranslate"><div class="highlight"><pre><span></span><span class="nc">@misc</span><span class="p">{</span><span class="nl">hahne2020plenopticam</span><span class="p">,</span>
+      <span class="na">title</span><span class="p">=</span><span class="s">{PlenoptiCam v1.0: A light-field imaging framework}</span><span class="p">,</span>
+      <span class="na">author</span><span class="p">=</span><span class="s">{Christopher Hahne and Amar Aggoun}</span><span class="p">,</span>
+      <span class="na">year</span><span class="p">=</span><span class="s">{2020}</span><span class="p">,</span>
+      <span class="na">eprint</span><span class="p">=</span><span class="s">{2010.11687}</span><span class="p">,</span>
+      <span class="na">archivePrefix</span><span class="p">=</span><span class="s">{arXiv}</span><span class="p">,</span>
+      <span class="na">primaryClass</span><span class="p">=</span><span class="s">{eess.IV}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="further-information">
-<h3><span class="section-number">1.5.4. </span>Further information<a class="headerlink" href="#further-information" title="Permalink to this headline">¶</a></h3>
+<h2><span class="section-number">1.6. </span>Further information<a class="headerlink" href="#further-information" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>check out PlenoptiCam’s partner project <a class="reference external" href="https://github.com/hahnec/plenoptisign/">PlenoptiSign</a> capable of estimating metric light field geometries</p></li>
 <li><p>visit <a class="reference external" href="http://www.plenoptic.info">plenoptic.info</a> for technical details, animated figures and theoretical background</p></li>
 </ul>
-</div>
 </div>
 </div>
 
@@ -340,13 +318,8 @@ Depending on provided files and settings, your results folder may contain the fo
 <li><a class="reference internal" href="#command-line">1.4.2. Command Line</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#credits">1.5. Credits</a><ul>
-<li><a class="reference internal" href="#contributors">1.5.1. Contributors</a></li>
-<li><a class="reference internal" href="#sponsors">1.5.2. Sponsors</a></li>
-<li><a class="reference internal" href="#citation">1.5.3. Citation</a></li>
-<li><a class="reference internal" href="#further-information">1.5.4. Further information</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#citation">1.5. Citation</a></li>
+<li><a class="reference internal" href="#further-information">1.6. Further information</a></li>
 </ul>
 </li>
 </ul>
@@ -390,7 +363,7 @@ Depending on provided files and settings, your results folder may contain the fo
         <li class="right" >
           <a href="index.html" title="PlenoptiCam’s Reference Document"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.6.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.6.4 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>PlenoptiCam</a></li> 
       </ul>
     </div>

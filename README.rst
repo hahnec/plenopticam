@@ -257,15 +257,15 @@ Further information
 
 .. |src_lfp| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/color-matcher/master/test/data/view_animation_7px.gif" width="200px" max-width:"100%">
+    <img src="https://raw.githubusercontent.com/hahnec/color-matcher/master/tests/data/view_animation_7px.gif" width="200px" max-width:"100%">
 
 .. |ref_lfp| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/color-matcher/master/test/data/bee_2.png" width="200px" max-width:"100%">
+    <img src="https://raw.githubusercontent.com/hahnec/color-matcher/master/tests/data/bee_2.png" width="200px" max-width:"100%">
 
 .. |res_lfp| raw:: html
 
-    <img src="https://raw.githubusercontent.com/hahnec/color-matcher/master/test/data/view_animation_7px_hm-mkl-hm.gif" width="200px" max-width:"100%">
+    <img src="https://raw.githubusercontent.com/hahnec/color-matcher/master/tests/data/view_animation_7px_hm-mkl-hm.gif" width="200px" max-width:"100%">
 
 .. |opex_demo| raw:: html
 
