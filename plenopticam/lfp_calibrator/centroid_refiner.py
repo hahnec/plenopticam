@@ -135,13 +135,14 @@ class CentroidRefiner(object):
         weight_win = input_win / input_win.sum()
         self._t = self._s = 0
 
-        # weighted centroid calculation in window
-        for i in range(weight_win.shape[0]):
-            for j in range(weight_win.shape[1]):
-                self._t += (i+p[0]-r)*weight_win[i, j]
-                self._s += (j+p[1]-r)*weight_win[i, j]
+        # generate coordinate indices
+        iss = np.tile(np.arange(weight_win.shape[0]), weight_win.shape[1])
+        jss = np.tile(np.arange(weight_win.shape[1]), weight_win.shape[0])
 
-        #plt.plot(s-(x-r), t-(y-r), 'xb') # for validation
+        # compute moment
+        self._t = sum((iss+p[0]-r) * weight_win.T.flatten())
+        self._s = sum((jss+p[1]-r) * weight_win.flatten())
+
         return True
 
     def exclude_marginal_centroids(self):
