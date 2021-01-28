@@ -21,7 +21,7 @@ __license__ = """
 """
 
 # local imports
-from plenopticam.lfp_calibrator.find_centroid import find_centroid, find_centroid_backwards
+from plenopticam.lfp_calibrator.find_centroid import find_centroid
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc.status import PlenopticamStatus
 
@@ -103,7 +103,7 @@ class CentroidSorter(object):
 
         # set max right
         for i in range(5):      # jump some columns left
-            new_centroid = find_centroid_backwards(self._centroids, upper_r, self._pitch, 1, 'rec')
+            new_centroid = find_centroid(self._centroids, upper_r, self._pitch, 1, 'rec', backwards=True)
             if new_centroid.size == 2:
                 upper_r = new_centroid
         y_max_r = self._get_lens_max(upper_r, 0)[0]
@@ -111,7 +111,7 @@ class CentroidSorter(object):
         # set max bottom
         odd = True
         for i in range(5):      # jump some rows up (even number for hex pattern?)
-            new_centroid = find_centroid_backwards(self._centroids, lower_l, self._pitch, 0, self._pattern, odd)
+            new_centroid = find_centroid(self._centroids, lower_l, self._pitch, 0, self._pattern, odd, backwards=True)
             if new_centroid.size == 2:
                 lower_l = new_centroid
                 odd = not odd
