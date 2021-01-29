@@ -86,6 +86,13 @@ plt.plot(srt_mics[:, 1], srt_mics[:, 0], 'g.', label=r'\textsc{CentroidSorter}')
 plt.plot(fit_mics[:, 1], fit_mics[:, 0], 'kx', label=r'\textsc{GridFitter}') if cfg.params[cfg.cal_meth] == c.CALI_METH[2] else None
 plt.legend(loc='upper right')
 
+# plot micro image indices
+if True:
+    str_list = list(zip(list(map(str, srt_mics[:, 2].astype('int'))), list(map(str, srt_mics[:, 3].astype('int')))))
+    labels = ['('+s1+', '+s2+')' for s1, s2 in str_list]
+    for x, y, s in zip(srt_mics[:, 1]-40, srt_mics[:, 0]-20, labels):
+        plt.text(x, y, s=s, fontsize=13, color='black')
+
 # remove all the ticks (both axes), and tick labels
 plt.tick_params(top=False, bottom=False, left=False, right=False, labelleft=False, labelbottom=False)
 
