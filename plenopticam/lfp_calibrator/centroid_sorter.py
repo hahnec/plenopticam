@@ -102,7 +102,7 @@ class CentroidSorter(object):
         y_max_l, lower_l, self._upper_l = self._get_lens_max(self._upper_l, 0)
 
         # set max right
-        for i in range(5):      # jump some columns left
+        for _ in range(5):      # jump some columns left
             new_centroid = find_centroid(self._centroids, upper_r, self._pitch, 1, 'rec', backwards=True)
             if new_centroid.size == 2:
                 upper_r = new_centroid
@@ -110,7 +110,7 @@ class CentroidSorter(object):
 
         # set max bottom
         odd = True
-        for i in range(5):      # jump some rows up (even number for hex pattern?)
+        for _ in range(5):      # jump some rows up
             new_centroid = find_centroid(self._centroids, lower_l, self._pitch, 0, self._pattern, odd, backwards=True)
             if new_centroid.size == 2:
                 lower_l = new_centroid
