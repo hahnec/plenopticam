@@ -166,6 +166,7 @@ Depending on provided files and settings, your results folder may contain the fo
 
     - sub-aperture images (see *viewpoints_xxx* folder) and view animation given as gif
     - refocused images (see *refo_xxx* folder) and refocus animation given as gif
+    - depth map given as pfm and ply file
     - raw image file given as tiff
     - aligned light field as pkl (pickle) file
     - light field metadata as json file (for Lytro files only)
