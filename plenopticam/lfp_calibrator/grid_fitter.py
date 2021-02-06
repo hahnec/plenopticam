@@ -45,7 +45,7 @@ class GridFitter(object):
         """ perform fitting for two dimensional grid coordinates """
 
         # print status
-        self.sta.status_msg('Grid fitting', self.cfg.params[self.cfg.opt_prnt])
+        self.sta.status_msg('Grid fitting', self.cfg.params[self.cfg.opt_prnt]) if self.sta else None
 
         # initials fit parameters
         cy_s, cx_s = self._arr_shape/2 if hasattr(self, '_arr_shape') else [0, 0]
@@ -57,6 +57,9 @@ class GridFitter(object):
 
         # obtain fitted grid
         self._grid_fit = self.adjust_grid(coeffs[0], coeffs[1], coeffs[2], coeffs[3], coeffs[4])
+
+        # print status
+        self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt]) if self.sta else None
 
         return np.array(self._grid_fit)
 
