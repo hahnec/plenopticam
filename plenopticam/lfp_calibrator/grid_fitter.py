@@ -53,9 +53,8 @@ class GridFitter(object):
         theta = 0
 
         # LMA fit: executes least-squares regression analysis to optimize initial parameters
-        coeffs, _ = leastsq(self.obj_fun, [cy_s, cx_s, sy_s, sx_s, theta], args=(self._coords_list),
-                            )#maxfev=5000, xtol=1e-19, gtol=1e-19, ftol=1e-19)
-        print(coeffs)
+        coeffs, _ = leastsq(self.obj_fun, [cy_s, cx_s, sy_s, sx_s, theta], args=(self._coords_list))
+
         # obtain fitted grid
         self._grid_fit = self.adjust_grid(coeffs[0], coeffs[1], coeffs[2], coeffs[3], coeffs[4])
 
