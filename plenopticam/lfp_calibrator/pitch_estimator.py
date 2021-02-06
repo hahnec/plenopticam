@@ -134,7 +134,7 @@ class PitchEstimator(object):
             y_new /= y_new.max()
 
             # start looking from first positive gradient to exclude early maxima on falling curve (false large scales)
-            start = np.argmax(np.sign(np.gradient(y_new, int(precision))))
+            start = np.argmax(-1*np.sign(np.gradient(y_new, int(precision))))
 
             # compute global and relative maxima in scale space
             val_max, arg_max = np.max(y_new[start:]), x_new[np.argmax(y_new[start:])+start]
