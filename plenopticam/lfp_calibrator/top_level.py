@@ -81,7 +81,7 @@ class LfpCalibrator(object):
         del obj
 
         # refine centroids with sub-pixel precision using provided method
-        obj = CentroidRefiner(peak_img, centroids, self.cfg, self.sta, self._M, self.cfg.params[self.cfg.cal_meth])
+        obj = CentroidRefiner(peak_img, centroids, self.cfg, self.sta, self._M)
         obj.main()
         centroids = obj.centroids_refined
         del obj

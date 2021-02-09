@@ -52,7 +52,7 @@ del obj
 raw_centroids = np.array(centroids)
 
 # refine centroids with sub-pixel precision using provided method
-obj = CentroidRefiner(peak_img, centroids, cfg, sta, M, cfg.params[cfg.cal_meth])
+obj = CentroidRefiner(peak_img, centroids, cfg, sta, M)
 obj.main()
 centroids = obj.centroids_refined
 del obj
