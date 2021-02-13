@@ -144,7 +144,11 @@ class PlenopticamConfig(object):
         # construct file path
         fp = self.get_file_path() if fp is None else fp
 
-        self.save_json(fp=fp, **kwargs)
+        # pass kwargs to calibration dictionary (override existing)
+        for kw, arg in zip(kwargs.keys(), kwargs.items()):
+            self.calibs[kw] = arg
+
+        self.save_json(fp=fp, **self.calibs)
 
         return True
 
