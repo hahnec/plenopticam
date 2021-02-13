@@ -31,9 +31,11 @@ def find_centroid(centroids, ref_point, pitch, axis, pattern='hex', odd=True, e=
 
     # set search condition
     if backwards is False:
+        # forward condition for left and down direction
         cond = (centroids[:, i] > ref_point[i] + pitch[i]/2) & (centroids[:, i] < ref_point[i]+e*pitch[i]/2) & \
                (centroids[:, j] > ref_point[j]-h*pitch[j]/2) & (centroids[:, j] < ref_point[j]+g*pitch[j]/2)
     else:
+        # backward condition for right and up direction
         cond = (centroids[:, i] < ref_point[i] - pitch[i]/2) & (centroids[:, i] > ref_point[i]-e*pitch[i]/2) & \
                (centroids[:, j] > ref_point[j]-h*pitch[j]/2) & (centroids[:, j] < ref_point[j]+g*pitch[j]/2)
 
