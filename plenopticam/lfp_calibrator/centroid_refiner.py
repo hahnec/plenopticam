@@ -47,11 +47,12 @@ class CentroidRefiner(object):
         """
 
         # input variables
-        self._img = img
-        self._centroids = centroids
+        self._img = np.asarray(img)
+        self._centroids = np.array(centroids)
         self.cfg = cfg if cfg is not None else PlenopticamConfig()
         self.sta = sta if sta is not None else PlenopticamStatus()
         self._M = M
+        self._r = self._M//2//DR if M is not None else None
         self._method = cfg.params[cfg.cal_meth] if cfg is not None else method if method is not None else 'area'
 
         # internal variables
@@ -72,11 +73,13 @@ class CentroidRefiner(object):
 
         fun = self._peak_centroid if self._method == 'peak' else self._area_centroid
 
+        # image normalization
+        self._img = (self._img - self._img.min()) / (self._img.max() - self._img.min())
+
         # coordinate and image downsampling preparation
         self._centroids = [(x//DR, y//DR) for x, y in self._centroids] if DR > 1 else self._centroids
         img_scale = self._img[::DR, ::DR]
 
-        r = self._M//2//DR
         self._centroids_refined = []
 
         # iterate through all centroids for refinement procedure
@@ -87,7 +90,7 @@ class CentroidRefiner(object):
                 return False
 
             # compute refined coordinates based on given method
-            fun(img_scale[int(m[0])-r:int(m[0])+r+1, int(m[1])-r:int(m[1])+r+1], m)
+            fun(img_scale[int(m[0])-self._r:int(m[0])+self._r+1, int(m[1])-self._r:int(m[1])+self._r+1], m)
             self._centroids_refined.append(self._get_coords())
 
             # print status
@@ -107,31 +110,38 @@ class CentroidRefiner(object):
 
         return True
 
-    def _area_centroid(self, input_win, p):
+    def _thresholding(self, input_win):
 
         # parameter init
-        r = int(input_win.shape[0]/2)
         weight_win = input_win / input_win.max()
 
         # window thresholding
         th_img = np.zeros_like(input_win, dtype=np.bool)
         th_val = np.percentile(weight_win, 75)
         th_img[weight_win > th_val] = 1
+
+        # validate that binary region exists
         if np.sum(th_img) == 0:
             raise Exception('Binary object not found')
+
+        return th_img
+
+    def _area_centroid(self, input_win, p):
+
+        th_img = self._thresholding(input_win)
 
         # binary centroid calculation in window
         count = (th_img == 1).sum()
         self._t, self._s = np.argwhere(th_img == 1).sum(0)/count if count > 0 else (float('nan'), float('nan'))
-        self._t += p[0]-r
-        self._s += p[1]-r
+        self._t += p[0]-self._r
+        self._s += p[1]-self._r
 
         return True
 
-    def _peak_centroid(self, input_win, p):
+    def _peak_centroid(self, input_win, p, threshold_opt=False):
 
         # parameter init
-        r = int(input_win.shape[0]/2)
+        input_win *= self._thresholding(input_win) if threshold_opt is True else 1
         weight_win = input_win / input_win.sum()
         self._t = self._s = 0
 
@@ -140,8 +150,8 @@ class CentroidRefiner(object):
         jss = np.tile(np.arange(weight_win.shape[1]), weight_win.shape[0])
 
         # compute moment
-        self._t = sum((iss+p[0]-r) * weight_win.T.flatten())
-        self._s = sum((jss+p[1]-r) * weight_win.flatten())
+        self._t = sum((iss+p[0]-self._r) * weight_win.T.flatten())
+        self._s = sum((jss+p[1]-self._r) * weight_win.flatten())
 
         return True
 
@@ -149,17 +159,17 @@ class CentroidRefiner(object):
         """ remove centroids being closer to image border than half the micro image size M """
 
         h, w = self._img.shape[:2]
-        r = self._M//2+1
 
         if isinstance(np.version.version, str):
             # use numpy vectorization
             self._centroids_refined = np.array(self._centroids_refined)
-            valid_idx = (r < self._centroids_refined[:, 0]) & (self._centroids_refined[:, 0] < h - r) & \
-                        (r < self._centroids_refined[:, 1]) & (self._centroids_refined[:, 1] < w - r)
+            valid_idx = (self._r < self._centroids_refined[:, 0]) & (self._centroids_refined[:, 0] < h - self._r) & \
+                        (self._r < self._centroids_refined[:, 1]) & (self._centroids_refined[:, 1] < w - self._r)
             self._centroids_refined = list(self._centroids_refined[valid_idx])
         else:
             # inline for loop
-            self._centroids_refined = [c for c in self._centroids_refined if r < c[0] < h-r and r < c[1] < w-r]
+            self._centroids_refined = [c for c in self._centroids_refined
+                                       if self._r < c[0] < h-self._r and self._r < c[1] < w-self._r]
 
         return True
 
@@ -168,4 +178,4 @@ class CentroidRefiner(object):
 
     @property
     def centroids_refined(self):
-        return self._centroids_refined
+        return np.asarray(self._centroids_refined)
