@@ -186,6 +186,11 @@ class CentroidSorter(object):
             # print progress status on console
             self.sta.progress((ly+1)/self._lens_y_max*100, self.cfg.params[self.cfg.opt_prnt])
 
+        if hasattr(self, 'cfg') and hasattr(self.cfg, 'calibs'):
+            self.cfg.calibs['mic_list'] = self._mic_list
+            self.cfg.calibs['pattern'] = self._pattern
+            self.cfg.calibs['pitch'] = self._pitch
+
         return True
 
     def _estimate_mla_geometry(self, pitch):
