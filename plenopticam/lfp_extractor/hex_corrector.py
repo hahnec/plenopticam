@@ -136,7 +136,7 @@ class HexCorrector(LfpViewpoints):
             if full_mask[j::2, ...].shape[0] == mask.shape[0]:
                 full_mask[j::2, ...] = mask
             else:
-                full_mask[j::2, ...][:-1] = mask
+                full_mask[j::2, ...][:mask.shape[0], ...] = mask
             misc.save_img_file(full_mask, os.path.join(self.cfg.exp_path, 'hex_filter_mask.png'), tag=True)
 
         # generate image indicating which pixels were treated
@@ -146,7 +146,7 @@ class HexCorrector(LfpViewpoints):
                 if tes[j::2, ...].shape[0] == mask.shape[0]:
                     tes[j::2, :, p][mask[..., p] != 0] = tes.max()
                 else:
-                    tes[j::2, :, p][:-1][mask[..., p] != 0] = tes.max()
+                    tes[j::2, :, p][:mask.shape[0], ...][mask[..., p] != 0] = tes.max()
             tes_out = np.divide(tes, tes.max(), out=np.zeros_like(tes), where=tes != 0)
             misc.save_img_file(tes_out, os.path.join(self.cfg.exp_path, 'ident.png'), tag=True)
 
