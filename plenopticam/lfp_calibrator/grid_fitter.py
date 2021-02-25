@@ -34,6 +34,15 @@ class GridFitter(object):
 
     def main(self):
 
+        # exclude centroids lying at the borders for improved fitting
+        if self._sub_fit_opt and self._MAX_Y > 9 and self._MAX_X > 9:
+            div = 4.5
+            y_lim, x_lim = [self._MAX_Y/div, self._MAX_X/div]
+            centroids_parax = self._coords_list[(self._coords_list[:, 2] > y_lim) &
+                                                (self._coords_list[:, 3] > x_lim) &
+                                                (self._coords_list[:, 2] < self._MAX_Y - y_lim) &
+                                                (self._coords_list[:, 3] < self._MAX_X - x_lim)]
+
         # check for minimum grid resolution
         elif self._pat_type == 'rec' and self._MAX_Y > 3 and self._MAX_X > 3 or self._MAX_Y > 5 and self._MAX_X > 5:
             self.comp_grid_fit()
