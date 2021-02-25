@@ -24,10 +24,6 @@ jobs:
         python-version: ['3.5', '3.8', '3.9']
     steps:
       - uses: actions/checkout@v2
-      - name: Run headless
-        uses: GabrielBB/xvfb-action@v1
-        with:
-          run: npm test
       - name: Install Python 3
         uses: actions/setup-python@v1
         with:
@@ -39,6 +35,7 @@ jobs:
           pip install codecov
           pip install coveralls
       - name: Run unit tests
+        uses: GabrielBB/xvfb-action@v1
         run: python -m coverage run tests/unit_test_all.py
       - name: Submit Coverage Report to Coveralls
         env:
