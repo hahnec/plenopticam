@@ -27,9 +27,13 @@ from plenopticam.misc.status import PlenopticamStatus
 
 # external libs
 import numpy as np
+import operator
 
 
 class CentroidSorter(object):
+
+    # force hexagonal shift of second row to be on the right of the upper left
+    _ODD_FIX = True
 
     def __init__(self, centroids, cfg=None, sta=None, bbox=None):
 
@@ -42,8 +46,8 @@ class CentroidSorter(object):
         # internal variables
         self._lens_x_max = None  # maximum number of "complete" micro image centers in a row
         self._lens_y_max = None  # maximum number of "complete" micro image centers in a column
-        self._upper_l = None
-        self._lower_r = None
+        self._upper_l = None     # upper left centroid
+        self._lower_r = None     # lower right centroid
 
         # output variables
         self._mic_list = []                     # list of micro image centers with indices assigned
@@ -66,12 +70,18 @@ class CentroidSorter(object):
             # get maximum number of micro images in horizontal and vertical direction
             self._mla_dims()
         except IndexError:
-            self.sta.status_msg("Error in MLA dimension estimation indicating arbitrarily spaced centroids")
+            self.sta.status_msg(msg="Error in MLA dimension estimation", opt=self.cfg.params[self.cfg.opt_prnt])
             self.sta.error = True
             return False
 
         # sort MICs and assign 2-D indices to them
         self._assign_mic_idx()
+
+        # attach results to config object if present
+        if hasattr(self, 'cfg') and hasattr(self.cfg, 'calibs'):
+            self.cfg.calibs[self.cfg.mic_list] = self._mic_list
+            self.cfg.calibs[self.cfg.pat_type] = self._pattern
+            self.cfg.calibs[self.cfg.ptc_mean] = self._pitch
 
         return True
 
@@ -79,13 +89,13 @@ class CentroidSorter(object):
         """ find most up-left and most bottom-right micro image centers """
 
         # iterate through all micro image centers and add up x and y coordinates
-        sum_mic = sum([self._centroids[:, 0].astype(float, copy=False), self._centroids[:, 1].astype(float, copy=False)])
+        sum_mic = sum([self._centroids[:, 0], self._centroids[:, 1]])
 
         # center coordinates of micro image being top and most left
-        self._upper_l = self._centroids[np.where(sum_mic == sum_mic.min())[0][0]]
+        self._upper_l = self._centroids[np.argmin(sum_mic)]
 
         # center coordinates of micro image being bottom and most right
-        self._lower_r = self._centroids[np.where(sum_mic == sum_mic.max())[0][0]]
+        self._lower_r = self._centroids[np.argmax(sum_mic)]
 
         # set bounding box of micro image center field
         self._bbox = (self._lower_r - self._upper_l).astype('int') if not self._bbox else self._bbox
@@ -93,32 +103,40 @@ class CentroidSorter(object):
         return True
 
     def _mla_dims(self):
-        """ search for complete rows and columns and count number of lenses in each direction """
+        """ search for complete rows and columns and count number of centroids in each direction """
 
-        # set max top and upper right
-        x_max_t, upper_r, self._upper_l = self._get_lens_max(self._upper_l, 1)
+        y_max_l, y_max_r, x_max_t, x_max_b = [0]*4
+        upper_r = self._lower_r
+        lower_l = self._upper_l
 
-        # set max left and lower right
-        y_max_l, lower_l, self._upper_l = self._get_lens_max(self._upper_l, 0)
+        # walk along rectangle (twice) in a clock-wise manner to find valid corners (with complete row/col)
+        for _ in range(2):
+            # top row (east to west)
+            x_max_t, upper_r, self._upper_l = self._get_lens_max(self._upper_l, upper_r, axis=1, inv_dir=0)
+            # most right column (north to south)
+            y_max_r, self._lower_r, upper_r = self._get_lens_max(upper_r, self._lower_r, axis=0, inv_dir=0, inwards=1)
+            # bottom row (west to east)
+            x_max_b, lower_l, self._lower_r = self._get_lens_max(self._lower_r, lower_l, axis=1, inv_dir=1, inwards=1)
+            # most right column (north to south)
+            y_max_l, _, lower_l = self._get_lens_max(lower_l, self._upper_l, axis=0, inv_dir=1)
 
-        # set max right
-        for _ in range(5):      # jump some columns left
-            new_centroid = find_centroid(self._centroids, upper_r, self._pitch, 1, 'rec', backwards=True)
-            if new_centroid.size == 2:
-                upper_r = new_centroid
-        y_max_r = self._get_lens_max(upper_r, 0)[0]
+        # counter-clockwise
+        y_max_l, lower_l, self._upper_l = self._get_lens_max(self._upper_l, lower_l, axis=0, inv_dir=0)
+        #
+        #x_max_b, self._lower_r, lower_l = self._get_lens_max(lower_l, self._lower_r, axis=1, inv_dir=1, inwards=1)
+        #
+        #y_max_r, upper_r, self._lower_r = self._get_lens_max(self._lower_r, upper_r, axis=0, inv_dir=1, inwards=1)
 
-        # set max bottom
-        odd = True
-        for _ in range(5):      # jump some rows up
-            new_centroid = find_centroid(self._centroids, lower_l, self._pitch, 0, self._pattern, odd, backwards=True)
-            if new_centroid.size == 2:
-                lower_l = new_centroid
-                odd = not odd
-        x_max_b = self._get_lens_max(lower_l, 1)[0]
-
-        # set maximum number of micro lenses in each direction
+        # set safe number of micro lenses in each direction
         self._lens_y_max, self._lens_x_max = min(y_max_l, y_max_r), min(x_max_t, x_max_b)
+
+        if True:
+            import matplotlib.pyplot as plt
+            plt.plot(self._centroids[:, 1], self._centroids[:, 0], 'b.')
+            plt.plot(self._upper_l[1], self._upper_l[0], 'rx')
+            plt.plot(self._lower_r[1], self._lower_r[0], 'rx')
+            plt.plot(upper_r[1], upper_r[0], 'rx')
+            plt.plot(lower_l[1], lower_l[0], 'rx')
 
         return True
 
@@ -129,7 +147,7 @@ class CentroidSorter(object):
         self._mic_list = []
         self._mic_list.append([last_neighbor[0], last_neighbor[1], 0, 0])
         j = 0
-        odd = self.estimate_odd(self._upper_l, axis=0)
+        odd = self._ODD_FIX #self.estimate_odd(self._upper_l, axis=0)
         row_len_odd = True
 
         # print status
@@ -186,11 +204,6 @@ class CentroidSorter(object):
             # print progress status on console
             self.sta.progress((ly+1)/self._lens_y_max*100, self.cfg.params[self.cfg.opt_prnt])
 
-        if hasattr(self, 'cfg') and hasattr(self.cfg, 'calibs'):
-            self.cfg.calibs['mic_list'] = self._mic_list
-            self.cfg.calibs['pattern'] = self._pattern
-            self.cfg.calibs['pitch'] = self._pitch
-
         return True
 
     def _estimate_mla_geometry(self, pitch):
@@ -220,14 +233,14 @@ class CentroidSorter(object):
         # numeric angle reduction to account for tolerances
         angles = np.rint(angles / 15)
 
-        # hexagonal angles (at least 2 neighbours at 15 deg)
-        if sum(angles == 1) > 1 and sum(angles == 3) > 1:
+        # hexagonal angles
+        if sum(angles == 1) >= 1 and sum(angles == 3) >= 1:
             self._pattern = 'hex'
-        # rectangular angles (at least 2 neighbours at 0 deg and 2 neighbours at 45 deg)
-        elif sum(angles == 0) > 1 and sum(angles == 3) > 1:
+        # rectangular angles
+        elif sum(angles == 0) >= 1 and sum(angles == 3) >= 1:
             self._pattern = 'rec'
         else:
-            self.sta.status_msg("Geometric MLA arrangement unrecognized")
+            self.sta.status_msg("Geometric MLA arrangement unrecognized", opt=self.cfg.params[self.cfg.opt_prnt])
             self.sta.error = True
             return False
 
@@ -270,36 +283,43 @@ class CentroidSorter(object):
 
         return True
 
-    def _get_lens_max(self, start_mic, axis=0):
+    def _get_lens_max(self, start_mic, opposite_mic, axis=0, inv_dir=0, inwards=0):
 
         cur_mic = start_mic
-        lens_max = 1    # start with 1 to account for upper left centroid
-        odd = self.estimate_odd(start_mic, axis)
+        lens_max = 1    # start to count from 1 to take existing centroid into account
+        odd = self._ODD_FIX #self.estimate_odd(start_mic, axis=0, inv_dir=inv_dir)
+        comp_a, comp_b = (operator.gt, operator.lt) if inv_dir else (operator.lt, operator.gt)
+        pm_a, pm_b = (operator.sub, operator.add) if inv_dir else (operator.add, operator.sub)
 
-        # check if column of upper left is complete
-        while cur_mic[axis] < self._lower_r[axis] + self._pitch[axis]/2:
+        # iterate through row or column (as long as possible)
+        while comp_a(cur_mic[axis], pm_a(opposite_mic[axis], self._pitch[axis]/2)):
             # get adjacent MIC
-            found_center = find_centroid(self._centroids, cur_mic, self._pitch, axis, self._pattern, odd)
-            odd = not odd
+            found_center = find_centroid(self._centroids, cur_mic, self._pitch, axis=axis,
+                                         pattern=self._pattern, odd=odd, inv_dir=inv_dir)
             if len(found_center) != 2:
                 if len(found_center) > 2:
                     # average of found centroids
                     found_center = np.mean(found_center.reshape(-1, 2), axis=0)
                 else:
-                    if cur_mic[axis] > (self._bbox[axis] - self._pitch[axis]/2):
+                    # stop if close to border (represented by opposite centroid)
+                    if comp_b(cur_mic[axis], pm_b(opposite_mic[axis], 3*self._pitch[axis]/4)):
                         break
                     else:
-                        odd = self.estimate_odd(start_mic, axis)
-                        start_mic = find_centroid(self._centroids, start_mic, self._pitch, not axis, self._pattern, not odd)
+                        # restart with new row / column (extend search window e to ensure new start_mic is found)
+                        odd = self.estimate_odd(start_mic, axis=0, inv_dir=inwards)
+                        start_mic = find_centroid(self._centroids, start_mic, self._pitch, axis=not axis,
+                                                  pattern=self._pattern, odd=odd, e=3.5, inv_dir=inwards)
                         found_center = start_mic
-                        lens_max = 0
+                        lens_max = 0    # assign zero as number is incremented directly hereafter
             lens_max += 1
             cur_mic = found_center
+            odd = not odd
 
         return lens_max, cur_mic, start_mic
 
-    def estimate_odd(self, cur_mic, axis):
-        return find_centroid(self._centroids, cur_mic, self._pitch, axis, 'hex', odd=False).size == 0
+    def estimate_odd(self, mic, axis, inv_dir=0):
+        # look if hex shift in next row/col is left/top of the MIC and yield True if so
+        return find_centroid(self._centroids, mic, self._pitch, axis, 'hex', odd=0, inv_dir=inv_dir).size == 0
 
     @property
     def mic_list(self):
