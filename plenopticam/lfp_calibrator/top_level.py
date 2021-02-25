@@ -93,7 +93,7 @@ class LfpCalibrator(object):
         del obj
 
         # fit grid of MICs using least-squares method to obtain accurate MICs from line intersections
-        if self.cfg.params[self.cfg.cal_meth] == c.CALI_METH[2] and not self.sta.interrupt:
+        if self.cfg.params[self.cfg.cal_meth] in c.CALI_METH[1:3] and not self.sta.interrupt:
             self.cfg.calibs[self.cfg.pat_type] = pattern
             obj = GridFitter(coords_list=mic_list, cfg=self.cfg, sta=self.sta)
             obj.main()

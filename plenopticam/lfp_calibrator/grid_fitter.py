@@ -12,6 +12,7 @@ class GridFitter(object):
         self.sta = kwargs['sta'] if 'sta' in kwargs else None
 
         self._grid_fit = np.array([])
+        self._sub_fit_opt = False
 
         # take coordinates as input argument
         if 'coords_list' in kwargs:
@@ -28,16 +29,20 @@ class GridFitter(object):
             self._MAX_X = int(max(self._coords_list[:, 3])+1)   # add one to compensate for index zero
             self._pat_type = self.cfg.calibs[self.cfg.pat_type] if self.cfg.pat_type in self.cfg.calibs else 'rec'
             self._arr_shape = np.array(kwargs['arr_shape']) if 'arr_shape' in kwargs else np.array([0, 0])
-            self._hex_odd = self.estimate_hex_odd() if self._pat_type == 'hex' else 0
+            self._hex_odd = self.estimate_hex_odd(self._coords_list) if self._pat_type == 'hex' else 0
+            self._coords_parx = list()
 
     def main(self):
 
         # check for minimum grid resolution
-        if self._pat_type == 'rec' and self._MAX_Y > 3 and self._MAX_X > 3 or self._MAX_Y > 5 and self._MAX_X > 5:
+        elif self._pat_type == 'rec' and self._MAX_Y > 3 and self._MAX_X > 3 or self._MAX_Y > 5 and self._MAX_X > 5:
             self.comp_grid_fit()
         else:
             print('Skip grid fitting as grid point number is too little')
             self._grid_fit = np.array(self._coords_list)
+
+        if hasattr(self, 'cfg') and hasattr(self.cfg, 'calibs'):
+            self.cfg.calibs[self.cfg.mic_list] = self._grid_fit
 
         return True
 
@@ -55,7 +60,7 @@ class GridFitter(object):
         # LMA fit: executes least-squares regression analysis to optimize initial parameters
         coeffs, _ = leastsq(self.obj_fun, [cy_s, cx_s, sy_s, sx_s, theta], args=(self._coords_list))
 
-        # obtain fitted grid
+        # obtain fitted grid from final estimates
         self._grid_fit = self.adjust_grid(coeffs[0], coeffs[1], coeffs[2], coeffs[3], coeffs[4])
 
         # print status
@@ -65,10 +70,10 @@ class GridFitter(object):
 
     def obj_fun(self, p, centroids):
 
-        grid = self.adjust_grid(p[0], p[1], p[2], p[3], p[4])
-        if np.sum(centroids[:, 2:] - grid[:, 2:]) == 0:
+        grid = self.adjust_grid(cy=p[0], cx=p[1], sy=p[2], sx=p[3], theta=p[4])
+        try:
             sqr_loss = np.sum((centroids[:, :2] - grid[:, :2]) ** 2, axis=1)
-        else:
+        except ValueError:
             err_msg = 'Grid fitting index mismatch'
             if self.sta is None:
                 raise Exception(err_msg)
@@ -138,25 +143,17 @@ class GridFitter(object):
                 self.sta.error = True
                 return False
 
-        if True:
-            p = pts_arr[(pts_arr[:, 2] == 3) & (pts_arr[:, 3] == 3)]
-            # same row
-            n2 = pts_arr[(pts_arr[:, 2] == 3) & (pts_arr[:, 3] == 2)]
-            n3 = pts_arr[(pts_arr[:, 2] == 3) & (pts_arr[:, 3] == 4)]
-            # same column
-            n1 = pts_arr[(pts_arr[:, 2] == 4) & (pts_arr[:, 3] == 3)]
-            n4 = pts_arr[(pts_arr[:, 2] == 2) & (pts_arr[:, 3] == 3)]
-            # different row and column
-            n5 = pts_arr[(pts_arr[:, 2] == 2) & (pts_arr[:, 3] == 2)]
-            n6 = pts_arr[(pts_arr[:, 2] == 2) & (pts_arr[:, 3] == 4)]
-
         return pts_arr
 
-    def estimate_hex_odd(self):
+    @staticmethod
+    def estimate_hex_odd(coords_list):
+
+        # find smallest lens indices (more robust than finding lens index zero)
+        min_idx_y, min_idx_x = min(coords_list[:, 2]), min(coords_list[:, 3])
 
         # take the most upper two points in hexagonal grid
-        pt_00 = self._coords_list[(self._coords_list[:, 2] == 0) & (self._coords_list[:, 3] == 0)][0]
-        pt_10 = self._coords_list[(self._coords_list[:, 2] == 1) & (self._coords_list[:, 3] == 0)][0]
+        pt_00 = coords_list[(coords_list[:, 3] == min_idx_x) & (coords_list[:, 2] == min_idx_y)][0]
+        pt_10 = coords_list[(coords_list[:, 3] == min_idx_x) & (coords_list[:, 2] == min_idx_y + 1)][0]
 
         # compare x-coordinates to determine the direction of heaxgonal shift alternation
         hex_odd = 1 if pt_00[1] < pt_10[1] else 0

@@ -21,7 +21,7 @@ __license__ = """
 """
 
 
-def find_centroid(centroids, ref_point, pitch, axis, pattern='hex', odd=True, e=3, backwards=False):
+def find_centroid(centroids, ref_point, pitch, axis, pattern='hex', odd=True, e=3, inv_dir=False):
 
     # set indices for horizontal or vertical search respectively
     i, j = [1, 0] if axis == 1 else [0, 1]
@@ -30,7 +30,7 @@ def find_centroid(centroids, ref_point, pitch, axis, pattern='hex', odd=True, e=
     h, g = [1, 1] if pattern == 'rec' or axis == 1 else [0, e/2] if odd else [e/2, 0]
 
     # set search condition
-    if backwards is False:
+    if not inv_dir:
         # forward condition for left and down direction
         cond = (centroids[:, i] > ref_point[i] + pitch[i]/2) & (centroids[:, i] < ref_point[i]+e*pitch[i]/2) & \
                (centroids[:, j] > ref_point[j]-h*pitch[j]/2) & (centroids[:, j] < ref_point[j]+g*pitch[j]/2)

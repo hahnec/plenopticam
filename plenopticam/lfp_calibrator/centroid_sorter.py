@@ -122,21 +122,9 @@ class CentroidSorter(object):
 
         # counter-clockwise
         y_max_l, lower_l, self._upper_l = self._get_lens_max(self._upper_l, lower_l, axis=0, inv_dir=0)
-        #
-        #x_max_b, self._lower_r, lower_l = self._get_lens_max(lower_l, self._lower_r, axis=1, inv_dir=1, inwards=1)
-        #
-        #y_max_r, upper_r, self._lower_r = self._get_lens_max(self._lower_r, upper_r, axis=0, inv_dir=1, inwards=1)
 
         # set safe number of micro lenses in each direction
         self._lens_y_max, self._lens_x_max = min(y_max_l, y_max_r), min(x_max_t, x_max_b)
-
-        if True:
-            import matplotlib.pyplot as plt
-            plt.plot(self._centroids[:, 1], self._centroids[:, 0], 'b.')
-            plt.plot(self._upper_l[1], self._upper_l[0], 'rx')
-            plt.plot(self._lower_r[1], self._lower_r[0], 'rx')
-            plt.plot(upper_r[1], upper_r[0], 'rx')
-            plt.plot(lower_l[1], lower_l[0], 'rx')
 
         return True
 
