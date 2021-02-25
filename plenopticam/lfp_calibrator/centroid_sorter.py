@@ -135,7 +135,7 @@ class CentroidSorter(object):
         self._mic_list = []
         self._mic_list.append([last_neighbor[0], last_neighbor[1], 0, 0])
         j = 0
-        odd = self._ODD_FIX #self.estimate_odd(self._upper_l, axis=0)
+        odd = self._ODD_FIX
         row_len_odd = True
 
         # print status
