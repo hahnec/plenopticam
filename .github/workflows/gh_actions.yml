@@ -34,8 +34,13 @@ jobs:
           pip install -r requirements.txt
           pip install codecov
           pip install coveralls
+      - name: Run headless
+        run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            echo "::set-env name=DISPLAY::0.0"
+          fi
+        shell: bash
       - name: Run unit tests
-        uses: GabrielBB/xvfb-action@v1
         run: python -m coverage run tests/unit_test_all.py
       - name: Submit Coverage Report to Coveralls
         env:
