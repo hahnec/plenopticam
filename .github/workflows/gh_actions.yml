@@ -144,7 +144,6 @@ jobs:
   app_bundling:
     name: App Bundling
     if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
-    needs: gh_release
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
