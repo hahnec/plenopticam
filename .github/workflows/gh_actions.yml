@@ -141,3 +141,70 @@ jobs:
           python -m twine upload -r pypi dist/* -u __token__ -p $PYPI_TOKEN --skip-existing
           pip uninstall -y plenopticam
           pip install -i https://pypi.org/simple/ plenopticam
+  app_bundling:
+    name: App Bundling
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    needs: gh_release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: 3.8
+    steps:
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+      - name: Chocolatey for Windows
+        uses: crazy-max/ghaction-chocolatey@v1
+        if: matrix.os == 'windows-latest'
+      - name: Bundling
+        run: |
+            if [ "RUNNER_OS" = "Linux" ]; then
+              bash plenopticam/scripts/bundling/py2bin.sh;
+            fi
+            if [ "RUNNER_OS" = "macOS" ]; then
+              npm install --global create-dmg;
+              bash plenopticam/scripts/bundling/pyinst2app.sh;
+            fi
+            if [ "RUNNER_OS" = "Windows" ]; then
+              pip install pypiwin32;
+              pip install pyinstaller --upgrade;
+              plenopticam/scripts/bundling/py2exe.bat;
+              plenopticam/scripts/bundling/msi_auto-gen.bat;
+            fi
+      - name: Release Assets
+        uses: actions/github-script@v2
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            console.log('environment', process.versions);
+
+            const fs = require('fs').promises;
+            const path = require('path');
+            const dirPath = './dist';
+
+            const { repo: { owner, repo }, sha } = context;
+            console.log({ owner, repo, sha });
+
+            const release = await github.repos.createRelease({
+              owner, repo,
+              tag_name: process.env.GITHUB_REF,
+              draft: true,
+              target_commitish: sha
+            });
+
+            console.log('created release', { release });
+
+            for (let file of await fs.readdir(dirPath)) {
+              // do whatever filtering you want here, I'm just uploading all the files
+              console.log('uploading', file);
+
+              await github.repos.uploadReleaseAsset({
+                owner, repo,
+                release_id: release.data.id,
+                name: file,
+                data: await fs.readFile(`./${path.join(dirPath, file)}`)
+              });
+            }
