@@ -149,7 +149,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: 3.8
+        python-version: '3.8'
     steps:
       - name: Install dependencies
         run: |
