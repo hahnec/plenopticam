@@ -17,6 +17,7 @@ on:
 jobs:
   unit_test:
     name: Unit Tests
+    needs: app_bundling
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
