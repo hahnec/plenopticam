@@ -180,6 +180,8 @@ jobs:
         uses: crazy-max/ghaction-chocolatey@v1
         with:
           args: install advanced-installer --version=17.0.0
+      - name: Windows Bundling
+        if: matrix.os == 'windows-latest'
         run: |
           pip install pypiwin32
           pip install pyinstaller --upgrade
