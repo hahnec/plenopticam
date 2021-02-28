@@ -162,9 +162,6 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
           pip install tornado
-      - name: Chocolatey for Windows
-        uses: crazy-max/ghaction-chocolatey@v1
-        if: matrix.os == 'windows-latest'
       - name: Linux Bundling
         if: matrix.os == 'ubuntu-latest'
         uses: coco-hkk/compress-action@v2.1
@@ -180,6 +177,7 @@ jobs:
           bash plenopticam/scripts/bundling/pyinst2app.sh
       - name: Windows Bundling
         if: matrix.os == 'windows-latest'
+        uses: crazy-max/ghaction-chocolatey@v1
         run: |
           pip install pypiwin32
           pip install pyinstaller --upgrade
