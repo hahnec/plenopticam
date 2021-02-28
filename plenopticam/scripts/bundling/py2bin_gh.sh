@@ -33,3 +33,4 @@ echo "detected version number $version"
 # compress to archive (c-create archive; z-compress archive with gzip; v-display progress in the terminal; f-filename)
 sudo apt-get install tar
 tar -czvf ./dist/plenopticam_${version}.tar.gz dist/plenopticam
+rm -rf ./dist/plenopticam
