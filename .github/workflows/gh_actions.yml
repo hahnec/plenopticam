@@ -17,7 +17,6 @@ on:
 jobs:
   unit_test:
     name: Unit Tests
-    needs: app_bundling
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -140,7 +139,7 @@ jobs:
           pip install -i https://pypi.org/simple/ plenopticam
   app_bundling:
     name: App Bundling
-    needs: unit_test
+    needs: app_bundling
     if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
     runs-on: ${{ matrix.os }}
     strategy:
