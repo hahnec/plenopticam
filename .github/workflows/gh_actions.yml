@@ -151,11 +151,15 @@ jobs:
         python-version: ['3.8']
     steps:
       - uses: actions/checkout@v2
+      - name: Install Python 3
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
       - name: Install dependencies
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install -r requirements.txt
-          python3 -m pip install pyinstaller
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
       - name: Chocolatey for Windows
         uses: crazy-max/ghaction-chocolatey@v1
         if: matrix.os == 'windows-latest'
@@ -170,8 +174,8 @@ jobs:
       - name: Windows Bundling
         if: matrix.os == 'windows-latest'
         run: |
-          pip3 install pypiwin32
-          pip3 install pyinstaller --upgrade
+          pip install pypiwin32
+          pip install pyinstaller --upgrade
           plenopticam/scripts/bundling/py2exe.bat
           plenopticam/scripts/bundling/msi_auto-gen.bat
       - name: Release Assets
