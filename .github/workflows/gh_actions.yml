@@ -169,6 +169,7 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: |
           npm install --global create-dmg
+          brew install tcl-tk
           bash plenopticam/scripts/bundling/pyinst2app.sh
       - name: Windows Bundling
         if: matrix.os == 'windows-latest'
