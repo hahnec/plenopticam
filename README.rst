@@ -70,9 +70,10 @@ Installation
 
 * executable:
     1. download bundled apps_ for macOS_, Win_ or Linux_
-    2. extract archive
-    3. run executable (may take a while on first start-up)
-    4. user interface will show up (see below)
+    2. run installer / extract archive
+    3. work around |WinExeDoc|_ or |MacAppDoc|_ issue
+    4. run executable (may take a while on first start-up)
+    5. user interface will show up (see below)
 
 |
 
@@ -300,6 +301,12 @@ Further information
 .. _Linux: https://github.com/hahnec/plenopticam/releases/download/v0.6.4-beta/plenopticam_0.6.4.tar.gz
 .. _PlenoptiSign: https://github.com/hahnec/plenoptisign/
 .. _apps: https://github.com/hahnec/plenopticam/releases/
+
+.. |WinExeDoc| replace:: **Windows protection**
+.. _WinExeDoc: https://stackoverflow.com/a/65488937/10874787
+
+.. |MacAppDoc| replace:: **macOS unidentified developer**
+.. _MacAppDoc: https://support.apple.com/guide/mac-help/protect-your-mac-from-malware-mh40596
 
 .. |OpEx| replace:: **OpEx dataset**
 .. _OpEx: https://ndownloader.figshare.com/files/5201452
