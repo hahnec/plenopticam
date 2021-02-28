@@ -161,10 +161,10 @@ jobs:
         if: matrix.os == 'windows-latest'
       - name: Bundling
         run: |
-            if [ '$RUNNER_OS" = 'Linux' ]; then
+            if [ '$RUNNER_OS' = 'Linux' ]; then
               bash plenopticam/scripts/bundling/py2bin.sh;
             fi
-            if [ '$RUNNER_OS" = 'macOS' ]; then
+            if [ '$RUNNER_OS' = 'macOS' ]; then
               npm install --global create-dmg;
               bash plenopticam/scripts/bundling/pyinst2app.sh;
             fi
