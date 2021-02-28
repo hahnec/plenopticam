@@ -174,7 +174,7 @@ jobs:
           python -c "exec(\"import tkinter\\nprint(tkinter.TkVersion)\")"
           python -c "exec(\"import tkinter\\nprint(tkinter.Tk().tk.exprstring('$tcl_library'))\")"
           python -c "exec(\"import tkinter\\nprint(tkinter.Tk().tk.exprstring('$tk_library'))\")"
-          bash plenopticam/scripts/bundling/pyinst2app.sh
+          bash plenopticam/scripts/bundling/pyinst2app_gh.sh
       - name: Windows Bundling
         if: matrix.os == 'windows-latest'
         uses: crazy-max/ghaction-chocolatey@v1
