@@ -26,14 +26,14 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install codecov
-          pip install coveralls
+          python3 -m pip install --upgrade pip
+          pip3 install -r requirements.txt
+          pip3 install codecov
+          pip3 install coveralls
       - name: Run headless unit tests
         uses: GabrielBB/xvfb-action@v1
         with:
-          run: python -m coverage run tests/unit_test_all.py
+          run: python3 -m coverage run tests/unit_test_all.py
       - name: Submit Coverage Report to Coveralls
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
