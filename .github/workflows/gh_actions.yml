@@ -159,21 +159,21 @@ jobs:
       - name: Chocolatey for Windows
         uses: crazy-max/ghaction-chocolatey@v1
         if: matrix.os == 'windows-latest'
-      - name: Bundling
+      - name: Linux Bundling
+        if: matrix.os == 'ubuntu-latest'
+        run: bash plenopticam/scripts/bundling/py2bin.sh
+      - name: macOS Bundling
+        if: matrix.os == 'macos-latest'
         run: |
-            if [ '$RUNNER_OS' = 'Linux' ]; then
-              bash plenopticam/scripts/bundling/py2bin.sh;
-            fi
-            if [ '$RUNNER_OS' = 'macOS' ]; then
-              npm install --global create-dmg;
-              bash plenopticam/scripts/bundling/pyinst2app.sh;
-            fi
-            if [ '$RUNNER_OS' = 'Windows' ]; then
-              pip3 install pypiwin32;
-              pip3 install pyinstaller --upgrade;
-              plenopticam/scripts/bundling/py2exe.bat;
-              plenopticam/scripts/bundling/msi_auto-gen.bat;
-            fi
+          npm install --global create-dmg
+          bash plenopticam/scripts/bundling/pyinst2app.sh
+      - name: Windows Bundling
+        if: matrix.os == 'windows-latest'
+        run: |
+          pip3 install pypiwin32
+          pip3 install pyinstaller --upgrade
+          plenopticam/scripts/bundling/py2exe.bat
+          plenopticam/scripts/bundling/msi_auto-gen.bat
       - name: Release Assets
         uses: actions/github-script@v2
         with:
