@@ -28,6 +28,7 @@ pyinstaller plenopticam/gui/top_level.py \
 
 # extract version number from python file (first get substring in quotation marks, then remove the quotation marks)
 version=$(sed -ne 's@__version__ = \([^]]*\)@\1@gp' plenopticam/__init__.py | sed 's/'\''//g')
+echo "detected version number $version"
 
 # compress to archive (c-create archive; z-compress archive with gzip; v-display progress in the terminal; f-filename)
 tar -czvf ./dist/plenopticam_${version}.tar.gz dist/plenopticam
