@@ -169,11 +169,6 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: |
           npm install --global create-dmg
-          brew install tcl-tk
-          brew --prefix tcl-tk
-          python -c "exec(\"import tkinter\\nprint(tkinter.TkVersion)\")"
-          python -c "exec(\"import tkinter\\nprint(tkinter.Tk().tk.exprstring('$tcl_library'))\")"
-          python -c "exec(\"import tkinter\\nprint(tkinter.Tk().tk.exprstring('$tk_library'))\")"
           bash plenopticam/scripts/bundling/pyinst2app_gh.sh
       - name: Windows Bundling
         if: matrix.os == 'windows-latest'
