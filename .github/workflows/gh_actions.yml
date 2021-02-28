@@ -180,11 +180,11 @@ jobs:
         uses: crazy-max/ghaction-chocolatey@v1
         with:
           args: install advanced-installer --version=17.0.0
-          run: |
-            pip install pypiwin32
-            pip install pyinstaller --upgrade
-            plenopticam/scripts/bundling/py2exe.bat
-            plenopticam/scripts/bundling/msi_auto-gen.bat
+        run: |
+          pip install pypiwin32
+          pip install pyinstaller --upgrade
+          plenopticam/scripts/bundling/py2exe.bat
+          plenopticam/scripts/bundling/msi_auto-gen.bat
       - name: Release Assets
         uses: actions/github-script@v2
         with:
