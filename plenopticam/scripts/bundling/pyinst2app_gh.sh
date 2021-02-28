@@ -58,6 +58,8 @@ sudo codesign --deep --signature-size 9400 -f -s "hahnec" ./dist/plenopticam.app
 # create dmg (requires npm and create-dmg)
 #sudo xcode-select -switch "/Applications/Xcode.app/Contents/Developer/"
 sudo create-dmg ./dist/plenopticam.app ./dist
+rm -rf ./dist/plenopticam.app
+rm -rf ./dist/plenopticam
 
 # replace space by underscore
 for file in ./dist/*.dmg
