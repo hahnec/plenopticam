@@ -167,6 +167,11 @@ jobs:
         if: matrix.os == 'windows-latest'
       - name: Linux Bundling
         if: matrix.os == 'ubuntu-latest'
+        uses: coco-hkk/compress-action@v2.1
+        with:
+          file-suffix: ''
+          target-directory-path: './dist'
+          compress-tool: 'gzip'
         run: bash plenopticam/scripts/bundling/py2bin_gh.sh
       - name: macOS Bundling
         if: matrix.os == 'macos-latest'
