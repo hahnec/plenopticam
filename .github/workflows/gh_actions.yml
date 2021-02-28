@@ -172,9 +172,9 @@ jobs:
           bash plenopticam/scripts/bundling/pyinst2app.sh
       - name: Windows Chocolatey
         if: matrix.os == 'windows-latest'
-        uses: crazy-max/ghaction-chocolatey@v1
+        uses: crazy-max/ghaction-chocolatey@v1.4
         with:
-          - args: install advanced-installer
+          - args: install advanced-installer --version=17.0.0
       - name: Windows Bundling
         if: matrix.os == 'windows-latest'
         run: |
