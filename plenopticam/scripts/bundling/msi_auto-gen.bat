@@ -40,3 +40,6 @@ echo !target!
 
 :: run build
 %advinst% /build %prjpath%
+
+:: remove original executable
+DEL /Q "dist\plenopticam.exe"
