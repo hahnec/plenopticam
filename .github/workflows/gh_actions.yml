@@ -174,7 +174,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         uses: crazy-max/ghaction-chocolatey@v1
         with:
-          - args: install advanced-installer --version=17.0.0
+          - args: install advanced-installer
       - name: Windows Bundling
         if: matrix.os == 'windows-latest'
         run: |
