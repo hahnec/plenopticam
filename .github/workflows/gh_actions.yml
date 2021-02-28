@@ -169,7 +169,7 @@ jobs:
           file-suffix: ''
           target-directory-path: './dist'
           compress-tool: 'gzip'
-        run: bash plenopticam/scripts/bundling/py2bin_gh.sh
+          run: bash plenopticam/scripts/bundling/py2bin_gh.sh
       - name: macOS Bundling
         if: matrix.os == 'macos-latest'
         run: |
@@ -178,11 +178,12 @@ jobs:
       - name: Windows Bundling
         if: matrix.os == 'windows-latest'
         uses: crazy-max/ghaction-chocolatey@v1
-        run: |
-          pip install pypiwin32
-          pip install pyinstaller --upgrade
-          plenopticam/scripts/bundling/py2exe.bat
-          plenopticam/scripts/bundling/msi_auto-gen.bat
+        with:
+          run: |
+            pip install pypiwin32
+            pip install pyinstaller --upgrade
+            plenopticam/scripts/bundling/py2exe.bat
+            plenopticam/scripts/bundling/msi_auto-gen.bat
       - name: Release Assets
         uses: actions/github-script@v2
         with:
