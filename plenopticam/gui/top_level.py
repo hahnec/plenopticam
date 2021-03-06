@@ -89,11 +89,16 @@ class PlenopticamApp(tk.Tk):
             self.wm_iconbitmap(default=fp)
 
 
-if __name__ == "__main__":
+def main_app():
 
     # instantiate object
-    MainWin = PlenopticamApp()
+    app_win = PlenopticamApp()
     # make not resizable
-    MainWin.resizable(width=0, height=0)
+    app_win.resizable(width=0, height=0)
     # run
-    MainWin.mainloop()
+    app_win.mainloop()
+
+
+if __name__ == "__main__":
+
+    main_app()
