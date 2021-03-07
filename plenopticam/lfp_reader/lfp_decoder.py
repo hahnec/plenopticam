@@ -157,7 +157,7 @@ class LfpDecoder(object):
 
     @property
     def valid_cam_type(self):
-        ''' check if Lytro file format is supported '''
+        """ check if Lytro file format is supported """
 
         # search for 2nd generation keys (filter camera serial and model )
         serial = safe_get(self._json_dict, "camera", "serialNumber")
@@ -173,10 +173,9 @@ class LfpDecoder(object):
 
         return True
 
-
     @staticmethod
     def filter_lfp_json(json_dict, settings=None):
-        ''' filter LFP metadata settings '''
+        """ filter LFP metadata settings """
 
         # variable init
         settings = {} if settings is None else settings
@@ -272,7 +271,7 @@ class LfpDecoder(object):
         return section
 
     def comp_bayer(self):
-        ''' inspired by Nirav Patel's lfptools '''
+        """ inspired by Nirav Patel's lfptools """
 
         # initialize column vector for bayer image array
         self._bay_img = np.zeros(self._shape[0]*self._shape[1], dtype=np.uint16)
