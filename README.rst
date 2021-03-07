@@ -234,7 +234,7 @@ Further information
     :width: 175
 
 .. |paper| image:: http://img.shields.io/badge/paper-arxiv.2010.11687-red.svg?style=flat-square
-    :target: https://arxiv.org/pdf/2010.11687.pdf
+    :target: https://arxiv.org/abs/2010.11687
     :alt: arXiv link
 
 .. |depth_anim| raw:: html
