@@ -100,6 +100,10 @@ class LfpCalibrator(object):
             mic_list = obj.grid_fit
             del obj
 
+        # attach calibration results to config object
+        for kw, data in zip([self.cfg.mic_list, self.cfg.pat_type, self.cfg.ptc_mean], [mic_list, pattern, pitch]):
+            self.cfg.calibs[kw] = data
+
         # save calibration metadata
         self.sta.status_msg('Save calibration data', opt=self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, opt=self.cfg.params[self.cfg.opt_prnt])
