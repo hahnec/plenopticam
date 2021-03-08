@@ -178,37 +178,14 @@ jobs:
           pip install pyinstaller --upgrade
           plenopticam/scripts/bundling/py2exe.bat
           plenopticam/scripts/bundling/msi_auto-gen.bat
-      - name: Release Assets
-        uses: actions/github-script@v2
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            console.log('environment', process.versions);
-
-            const fs = require('fs').promises;
-            const path = require('path');
-            const dirPath = './dist';
-
-            const { repo: { owner, repo }, sha } = context;
-            console.log({ owner, repo, sha });
-
-            const release = await github.repos.createRelease({
-              owner, repo,
-              tag_name: process.env.GITHUB_REF,
-              draft: true,
-              target_commitish: sha
-            });
-
-            console.log('created release', { release });
-
-            for (let file of await fs.readdir(dirPath)) {
-              // do whatever filtering you want here, I'm just uploading all the files
-              console.log('uploading', file);
-
-              await github.repos.uploadReleaseAsset({
-                owner, repo,
-                release_id: release.data.id,
-                name: file,
-                data: await fs.readFile(`./${path.join(dirPath, file)}`)
-              });
-            }
+      - name: Asset upload using hub
+        run: |
+          set -x
+          assets=()
+          for asset in ./dist/*; do
+            assets+=("-a" "$asset")
+          done
+          tag_name="${GITHUB_REF##*/}"
+          hub release create "${assets[@]}" -m "$tag_name" "$tag_name"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
