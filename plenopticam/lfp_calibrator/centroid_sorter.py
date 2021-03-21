@@ -274,7 +274,7 @@ class CentroidSorter(object):
 
         cur_mic = start_mic
         lens_max = 1    # start to count from 1 to take existing centroid into account
-        odd = self._ODD_FIX
+        odd = self._ODD_FIX and not inwards
         comp_a, comp_b = (operator.gt, operator.lt) if inv_dir else (operator.lt, operator.gt)
         pm_a, pm_b = (operator.sub, operator.add) if inv_dir else (operator.add, operator.sub)
 
