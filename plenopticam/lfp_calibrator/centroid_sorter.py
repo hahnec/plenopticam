@@ -112,16 +112,16 @@ class CentroidSorter(object):
         # walk along rectangle (twice) in a clock-wise manner to find valid corners (with complete row/col)
         for _ in range(2):
             # top row (east to west)
-            x_max_t, upper_r, self._upper_l = self._get_lens_max(self._upper_l, upper_r, axis=1, inv_dir=0)
+            x_max_t, upper_r, self._upper_l = self._get_lens_count(self._upper_l, upper_r, axis=1, inv_dir=0)
             # most right column (north to south)
-            y_max_r, self._lower_r, upper_r = self._get_lens_max(upper_r, self._lower_r, axis=0, inv_dir=0, inwards=1)
+            y_max_r, self._lower_r, upper_r = self._get_lens_count(upper_r, self._lower_r, axis=0, inv_dir=0, inwards=1)
             # bottom row (west to east)
-            x_max_b, lower_l, self._lower_r = self._get_lens_max(self._lower_r, lower_l, axis=1, inv_dir=1, inwards=1)
+            x_max_b, lower_l, self._lower_r = self._get_lens_count(self._lower_r, lower_l, axis=1, inv_dir=1, inwards=1)
             # most right column (north to south)
-            y_max_l, _, lower_l = self._get_lens_max(lower_l, self._upper_l, axis=0, inv_dir=1)
+            y_max_l, _, lower_l = self._get_lens_count(lower_l, self._upper_l, axis=0, inv_dir=1)
 
         # counter-clockwise
-        y_max_l, lower_l, self._upper_l = self._get_lens_max(self._upper_l, lower_l, axis=0, inv_dir=0)
+        y_max_l, lower_l, self._upper_l = self._get_lens_count(self._upper_l, lower_l, axis=0, inv_dir=0)
 
         # set safe number of micro lenses in each direction
         self._lens_y_max, self._lens_x_max = min(y_max_l, y_max_r), min(x_max_t, x_max_b)
@@ -270,7 +270,7 @@ class CentroidSorter(object):
 
         return True
 
-    def _get_lens_max(self, start_mic, opposite_mic, axis=0, inv_dir=0, inwards=0):
+    def _get_lens_count(self, start_mic, opposite_mic, axis=0, inv_dir=0, inwards=0):
 
         cur_mic = start_mic
         lens_max = 1    # start to count from 1 to take existing centroid into account
