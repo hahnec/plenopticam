@@ -31,7 +31,7 @@ from plenopticam.lfp_calibrator import LfpCalibrator, CaliFinder, CentroidDrawer
 from plenopticam.lfp_aligner import LfpAligner
 from plenopticam.lfp_extractor import LfpExtractor
 from plenopticam.lfp_refocuser import LfpRefocuser
-from plenopticam.cfg import PlenopticamConfig
+from plenopticam.cfg import PlenopticamConfig, constants
 from plenopticam.misc import PlenopticamStatus, mkdir_p
 from plenopticam.misc.data_downloader import DataDownloader
 
@@ -49,7 +49,8 @@ class PlenoptiCamTesterIllum(unittest.TestCase):
         self.sta = PlenopticamStatus()
 
         # enable options in config to cover more algorithms in tests
-        self.cfg.params[self.cfg.cal_meth] = 'grid-fit'
+        self.cfg.params[self.cfg.cal_meth] = constants.CALI_METH[3]
+        self.cfg.params[self.cfg.opt_cali] = True
         self.cfg.params[self.cfg.opt_vign] = True
         self.cfg.params[self.cfg.opt_rota] = True
         self.cfg.params[self.cfg.opt_refi] = True

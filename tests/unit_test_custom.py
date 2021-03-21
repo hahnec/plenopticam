@@ -27,14 +27,12 @@ from plenopticam.lfp_calibrator import LfpCalibrator
 from plenopticam.lfp_aligner import LfpAligner
 from plenopticam.lfp_extractor import LfpExtractor
 from plenopticam.lfp_refocuser import LfpRefocuser
-from plenopticam.cfg.cfg import PlenopticamConfig
+from plenopticam.cfg import PlenopticamConfig, constants
 from plenopticam.misc import PlenopticamStatus, mkdir_p, load_img_file
 from plenopticam.misc.data_downloader import DataDownloader
 
 
 class PlenoptiCamTesterCustom(unittest.TestCase):
-
-    CEA_PATH = r'../plenopticam/scripts/metrics/calibration/centroid_error_analysis/'
 
     def __init__(self, *args, **kwargs):
         super(PlenoptiCamTesterCustom, self).__init__(*args, **kwargs)
@@ -49,6 +47,8 @@ class PlenoptiCamTesterCustom(unittest.TestCase):
         self.cfg.params[self.cfg.opt_prnt] = False    # prevent Travis CI to terminate after reaching 4MB logfile size
         self.cfg.params[self.cfg.opt_vign] = True
         self.cfg.params[self.cfg.opt_sat_] = True
+        self.cfg.params[self.cfg.cal_meth] = constants.CALI_METH[3]
+        self.cfg.params[self.cfg.opt_cali] = True
 
         # retrieve OpEx data from Hahne et al.
         self.loader = DataDownloader(cfg=self.cfg, sta=self.sta)
@@ -121,21 +121,6 @@ class PlenoptiCamTesterCustom(unittest.TestCase):
 
             # assertion
             self.assertEqual(True, ret_val)
-
-    @unittest.skipUnless(condition=exists(join(CEA_PATH, 'a.png')), reason='Test data for PitchEstimator not found')
-    def test_pitch_estimator(self):
-
-        from plenopticam.lfp_calibrator import PitchEstimator
-
-        fns = [join(self.CEA_PATH, fn+'.png') for fn in ['a', 'b', 'c', 'd']]
-        ref_sizes = [141, 50, 10, 6]
-
-        for fn, ref_size in zip(fns, ref_sizes):
-            img = load_img_file(fn)
-            obj = PitchEstimator(img=img, cfg=self.cfg)
-            obj.main()
-
-            self.assertEqual(ref_size, obj.M)
 
     def test_all(self):
 
