@@ -54,17 +54,14 @@ class CentroidSorter(object):
         self._pattern = None                    # pattern typ of micro lens array
         self._pitch = None                      # average pitch in horizontal and vertical direction
 
+        # initialize parameters
+        self._init_var()
+
     def main(self):
 
         # check interrupt status
         if self.sta.interrupt:
             return False
-
-        # initialize parameters
-        self._init_var()
-
-        # estimate micro image pitch lengths and pattern type
-        self._get_mla_pitch()
 
         try:
             # get maximum number of micro images in horizontal and vertical direction
@@ -99,6 +96,9 @@ class CentroidSorter(object):
 
         # set bounding box of micro image center field
         self._bbox = (self._lower_r - self._upper_l).astype('int') if not self._bbox else self._bbox
+
+        # estimate micro image pitch lengths and pattern type
+        self._get_mla_pitch()
 
         return True
 
