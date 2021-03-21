@@ -18,11 +18,12 @@ cfg = PlenopticamConfig()
 sta = PlenopticamStatus()
 
 # file settings
-fname = './c'
+fname = './synth_spots/c'
 cfg.params[cfg.cal_path] = fname + '.png'
-cfg.params[cfg.cal_meth] = constants.CALI_METH[2]   #'peak'   #
+cfg.params[cfg.cal_meth] = constants.CALI_METH[2]
 wht_img = load_img_file(cfg.params[cfg.cal_path])
-crop = True
+crop = False
+plt_idx = False
 
 # load ground truth (remove outlying centers)
 spots_grnd_trth = np.loadtxt(fname + '.txt')
@@ -70,7 +71,7 @@ srt_mics = np.array(mic_list)
 # fit grid of MICs using least-squares method to obtain accurate MICs from line intersections
 if cfg.params[cfg.cal_meth] == c.CALI_METH[2]:
     cfg.calibs[cfg.pat_type] = pattern
-    obj = GridFitter(coords_list=mic_list, cfg=cfg, sta=sta)
+    obj = GridFitter(coords_list=mic_list, cfg=cfg, sta=sta, arr_shape=wht_img.shape)
     obj.main()
     mic_list = obj.grid_fit
     del obj
@@ -87,7 +88,7 @@ plt.plot(fit_mics[:, 1], fit_mics[:, 0], 'kx', label=r'\textsc{GridFitter}') if 
 plt.legend(loc='upper right')
 
 # plot micro image indices
-if True:
+if plt_idx:
     str_list = list(zip(list(map(str, srt_mics[:, 2].astype('int'))), list(map(str, srt_mics[:, 3].astype('int')))))
     labels = ['('+s1+', '+s2+')' for s1, s2 in str_list]
     for x, y, s in zip(srt_mics[:, 1]-40, srt_mics[:, 0]-20, labels):
