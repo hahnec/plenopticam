@@ -194,7 +194,7 @@ class CentroidSorter(object):
 
         return True
 
-    def _estimate_mla_geometry(self, pitch):
+    def _estimate_mla_geometry(self, pitch: float = None):
         """ This function determines whether the geometric arrangement of micro lenses is rectangular or hexagonal.
 
         :param pitch: scalar of type int or float representing the spacing between micro image centers
@@ -202,69 +202,68 @@ class CentroidSorter(object):
         """
 
         # pick arbitrary micro image center in middle of centroid list
-        ref_point = self._centroids[len(self._centroids)//2]
+        ref_point = self._centroids[len(self._centroids)//2][:2]
 
         # obtain list of adjacent centroids
-        adj_pts = np.array([pt for pt in self._centroids if pitch*.5 < sum((pt-ref_point)**2)**.5 < pitch*1.5])
+        euc_dst = np.sum((self._centroids[:, :2]-ref_point)**2, axis=1)**.5
+        adj_cnd = (pitch*.5 < euc_dst) & (pitch*1.5 > euc_dst)
+        adj_pts = self._centroids[:, :2][adj_cnd]
 
-        # create vectors and references at 45 degrees
-        vectors = np.abs(adj_pts-ref_point)
-        ref_vec = np.repeat(np.array([1, 1])[..., None], vectors.shape[0], axis=1).T
+        # place adjacent points at origin
+        vecs = np.abs(adj_pts-ref_point)
 
-        # element-wise vector normalization
-        vec_a_arr = ref_vec / np.linalg.norm(ref_vec, axis=-1)[..., None]
-        vec_b_arr = vectors / np.linalg.norm(vectors, axis=-1)[..., None]
+        # create reference vectors at 45 degrees
+        refs = np.repeat(np.array([1, 1])[..., None], vecs.shape[0], axis=1).T
 
         # element-wise dot product for angles
-        angles = np.arccos(np.einsum('ij,ij->i', vec_a_arr, vec_b_arr))*180/np.pi
+        angles = np.arccos(np.einsum('ij,ij->i', refs, vecs)/np.sqrt(2*np.einsum('ij,ij->i', vecs, vecs)))*180/np.pi
 
-        # numeric angle reduction to account for tolerances
+        # numeric angle reduction to account for tolerances (0 => 45 degs; 1 => 30 degs; 2 => 15 degs; 3 => 0 degs)
         angles = np.rint(angles / 15)
 
         # hexagonal angles
-        if sum(angles == 1) >= 1 and sum(angles == 3) >= 1:
+        if (sum(angles == 1) >= 1 and sum(angles == 3) >= 1) or (sum(angles == 2) >= 1 and sum(angles == 0) >= 1):
             self._pattern = 'hex'
         # rectangular angles
-        elif sum(angles == 0) >= 1 and sum(angles == 3) >= 1:
+        elif sum(angles == 0) >= 0 and sum(angles == 3) >= 1:
             self._pattern = 'rec'
         else:
-            self.sta.status_msg("Geometric MLA arrangement unrecognized", opt=self.cfg.params[self.cfg.opt_prnt])
+            self.sta.status_msg("Geometric MLA arrangement not recognized", opt=self.cfg.params[self.cfg.opt_prnt])
             self.sta.error = True
             return False
 
         return self._pattern
 
     def _get_mla_pitch(self):
+        """
+        get horizontal spacing estimate (pitch in px)
+        """
 
-        # get aspect ratio of bounding box
-        aspect_ratio = self._bbox[1] / self._bbox[0]
-
-        # get micro lens array dimensions
-        J = np.sqrt(len(self._centroids) * aspect_ratio**-1)
-        H = np.sqrt(len(self._centroids) * aspect_ratio)
-
-        # get horizontal spacing estimate (pitch in px)
+        # use aspect ratio for "many" micro images
         if len(self._centroids) > 30**2:
-            # use aspect ratio for "many" micro images
+
+            # get aspect ratio of bounding box
+            aspect_ratio = self._bbox[1] / self._bbox[0]
+
+            # get micro lens array dimensions
+            J = np.sqrt(len(self._centroids) * aspect_ratio**-1)
+            H = np.sqrt(len(self._centroids) * aspect_ratio)
+
+            # use aspect ratio for pitch estimate
             pitch_x = self._bbox[1] / H
+
+        # for fewer micro images use average pitch analysis
         else:
-            # for fewer micro images use average pitch analysis
             pitch_diff = np.diff(self._centroids[:, 1])
             pitch_diff = pitch_diff[pitch_diff > 0]
-            sig = 1
-            pitch_x = np.mean(pitch_diff[(pitch_diff < np.mean(pitch_diff) + sig*np.std(pitch_diff)) &
-                                         (pitch_diff > np.mean(pitch_diff) - sig*np.std(pitch_diff))])
+            pitch_x = np.mean(pitch_diff[(pitch_diff <= np.mean(pitch_diff) + np.std(pitch_diff)) &
+                                         (pitch_diff >= np.mean(pitch_diff) - np.std(pitch_diff))])
 
         # estimate MLA packing geometry
         self._estimate_mla_geometry(pitch_x)
 
         # get vertical spacing estimate (pitch in px) under consideration of packing type
-        if self._pattern == 'rec':
-            pitch_y = pitch_x
-        elif self._pattern == 'hex':
-            pitch_y = pitch_x * np.sqrt(3)/2
-        else:
-            pitch_y = pitch_x
+        pitch_y = pitch_x * np.sqrt(3)/2 if self._pattern == 'hex' else pitch_x
 
         # store pitch values
         self._pitch = [pitch_y, pitch_x]
@@ -275,7 +274,7 @@ class CentroidSorter(object):
 
         cur_mic = start_mic
         lens_max = 1    # start to count from 1 to take existing centroid into account
-        odd = self._ODD_FIX #self.estimate_odd(start_mic, axis=0, inv_dir=inv_dir)
+        odd = self._ODD_FIX
         comp_a, comp_b = (operator.gt, operator.lt) if inv_dir else (operator.lt, operator.gt)
         pm_a, pm_b = (operator.sub, operator.add) if inv_dir else (operator.add, operator.sub)
 
