@@ -23,6 +23,7 @@ __license__ = """
 import unittest
 import numpy as np
 from os.path import join, exists
+import zipfile
 
 from plenopticam.lfp_calibrator import CentroidSorter, GridFitter
 from plenopticam.cfg import PlenopticamConfig, constants
@@ -31,7 +32,7 @@ from plenopticam.misc import load_img_file
 
 class PlenoptiCamTesterCalib(unittest.TestCase):
 
-    CEA_PATH = r'../plenopticam/scripts/metrics/calibration/centroid_error_analysis/synth_spots/'
+    CEA_PATH = r'../examples/data/synth_spots'
 
     def __init__(self, *args, **kwargs):
         super(PlenoptiCamTesterCalib, self).__init__(*args, **kwargs)
@@ -47,6 +48,12 @@ class PlenoptiCamTesterCalib(unittest.TestCase):
 
         # print current process message (to prevent Travis from stopping after 10 mins)
         self.cfg.params[self.cfg.opt_prnt] = True
+
+        try:
+            with zipfile.ZipFile(self.CEA_PATH+'.zip', 'r') as zip_obj:
+                zip_obj.extractall(self.CEA_PATH)
+        except BaseException:
+            pass
 
     def test_mla_geometry_estimate(self):
 
