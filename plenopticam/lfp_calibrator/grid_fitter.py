@@ -113,8 +113,8 @@ class GridFitter(object):
 
         if compose:
             # compose parameters to set scale, rotation and translation in projective matrix
-            sim_mat = np.array([[np.cos(-p[8]), -np.sin(-p[8]), 0], [np.sin(-p[8]), np.cos(-p[8]), 0], [0, 0, 1]])
-            scl_mat = np.array([[p[0], p[1], p[2]], [p[3], p[4], p[5]], [p[6], p[7], 1]])
+            sim_mat = np.array([[np.cos(-p[1]), -np.sin(-p[1]), 0], [np.sin(-p[1]), np.cos(-p[1]), 0], [0, 0, 1]])
+            scl_mat = np.array([[p[0], 0, p[2]], [0, p[4], p[5]], [p[6], p[7], 1]])
             prj_mat = np.dot(sim_mat, scl_mat)
         else:
             # reshape vector to 3x3 matrix
