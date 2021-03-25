@@ -46,6 +46,7 @@ jobs:
           plenopticam/scripts/bundling/py2exe.bat
           plenopticam/scripts/bundling/msi_auto-gen.bat
       - name: Create Release
+        if: matrix.os == 'ubuntu-latest'
         id: create_release
         uses: actions/create-release@v1
         env:
