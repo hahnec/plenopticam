@@ -1,5 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import os
+import zipfile
+
+from plenopticam.misc import load_img_file
+from plenopticam.lfp_calibrator import PitchEstimator
 
 # Text rendering with LaTeX
 from matplotlib import rc
@@ -15,15 +20,24 @@ ax = fig.add_subplot(111)
 linestyle = ['-', '--', '-.', ':', (0, (3, 5, 1, 5, 1, 5))]
 min_len = 130
 
-for i, fname in enumerate(['a', 'b', 'c', 'd']):    #, 'lytro'
-    data = np.loadtxt(fname+'_nu.txt')
-    val_max, arg_max, rel_max, arg_rel_max = np.loadtxt(fname+'_extrema.txt')
-    scale_arg, scale_max = (arg_max, val_max) if val_max / arg_max > rel_max / arg_rel_max else (arg_rel_max, rel_max)
-    data_x = np.arange(len(data))
-    #data_x = 2**(data//2) * np.sqrt(2**np.mod(data_x, 2)) * 1.18
+# file settings
+CEA_PATH = os.path.join('..', '..', '..', 'examples', 'data', 'synth_spots')
+
+# extract zip archive
+with zipfile.ZipFile(CEA_PATH + '.zip', 'r') as zip_obj:
+    zip_obj.extractall(CEA_PATH)
+
+for i, fname in enumerate(['a', 'b', 'c', 'd']):
+
+    img = load_img_file(os.path.join(CEA_PATH, fname+'.png'))
+    obj = PitchEstimator(img=img)
+    obj.main()
+    maxima = np.asarray(obj.get_maxima())
+    refined_max, nu = obj.interpolate_maxima(maxima)
+    scale_arg, scale_max = np.argmax(refined_max)/10, np.max(refined_max)
 
     label = '('+fname+')' if len(fname) == 1 else 'Lytro Illum'
-    ax.plot(data_x/10, data, linestyle=linestyle[i], label=label)
+    ax.plot(nu, refined_max, linestyle=linestyle[i], label=label)
     ax.plot(scale_arg, scale_max, 'rx')
 
 ax.set_aspect(3)

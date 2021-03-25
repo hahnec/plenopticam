@@ -21,7 +21,7 @@ sta = PlenopticamStatus()
 
 # file settings
 fname = 'd'
-CEA_PATH = os.path.join('..', '..', '..', '..', '..', 'examples', 'data', 'synth_spots')
+CEA_PATH = os.path.join('..', '..', '..', 'examples', 'data', 'synth_spots')
 
 # extract zip archive
 with zipfile.ZipFile(CEA_PATH + '.zip', 'r') as zip_obj:
