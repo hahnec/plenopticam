@@ -214,11 +214,10 @@ class GridFitter(object):
         """ transformation of centroids via translation and rotation """
 
         # matrix for counter-clockwise rotation around z-axis
-        Rz = np.array([[np.cos(rota_rad), -np.sin(rota_rad)], [np.sin(rota_rad), np.cos(rota_rad)]])
-        # Rz = np.array([[np.cos(self._rad), np.sin(self._rad)], [-np.sin(self._rad), np.cos(self._rad)]]) #clock-wise
+        rota_mat_z = np.array([[np.cos(rota_rad), -np.sin(rota_rad)], [np.sin(rota_rad), np.cos(rota_rad)]])
 
         # rotate data points around z-axis
-        grid[:, :2] = np.dot(Rz, grid[:, :2].T).T
+        grid[:, :2] = np.dot(rota_mat_z, grid[:, :2].T).T
 
         return grid
 
