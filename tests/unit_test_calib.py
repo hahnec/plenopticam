@@ -103,7 +103,6 @@ class PlenoptiCamTesterCalib(unittest.TestCase):
 
         self.assertEqual((est_y, est_x), (dim_y, dim_x), 'Centroid number estimation failed')
 
-    @unittest.skipUnless(condition=exists(join(CEA_PATH, 'a.png')), reason='Test data for PitchEstimator not found')
     def test_pitch_estimator(self):
 
         from plenopticam.lfp_calibrator import PitchEstimator
