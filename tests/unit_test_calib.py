@@ -122,7 +122,6 @@ class PlenoptiCamTesterCalib(unittest.TestCase):
         self.test_mla_geometry_estimate()
         self.test_grid_gen()
         self.test_mla_dims_estimate()
-        self.test_pitch_estimator()
 
 
 if __name__ == '__main__':
