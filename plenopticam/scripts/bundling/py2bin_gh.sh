@@ -1,19 +1,19 @@
 #!/bin/bash
 
-# install additional tkinter package in ubuntu
-#sudo apt-get install python3-tk
-#sudo pip3 install numpy==1.16.2 # solves issue in bundling with pyinstaller
-
 # rmeove build directories
 sudo rm -rf build/
 sudo rm -rf dist/
+
+# find python's site-packages path
+sp_path=$(python3 -c "import sysconfig; print(sysconfig.get_path('purelib'))")
+echo "$sp_path"/imageio/
 
 # run pyinstaller with provided options
 pyinstaller plenopticam/gui/top_level.py \
   --onefile \
 	--noconsole \
 	--noconfirm \
-	--add-data=/opt/hostedtoolcache/Python/3.8.7/x64/lib/python3.8/site-packages/imageio/:./imageio \
+  --add-data="$sp_path"/imageio/:./imageio \
 	--name=plenopticam \
 	--icon=plenopticam/gui/icns/1055104.gif \
 	--add-data=docs/build/html/:./docs/build/html/ \
