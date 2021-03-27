@@ -97,7 +97,7 @@ class PlenopticamStatus(object):
                 return True
 
         # list elements are all "None" or empty
-        self.status_msg('\r ' + msg, msg is not None)
+        self.status_msg(msg, msg is not None)
         self.error = True
 
         return False
