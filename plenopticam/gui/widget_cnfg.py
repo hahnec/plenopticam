@@ -38,7 +38,6 @@ class CnfgWidget(tk.Toplevel):
         self.cfg = parent.cfg
 
         # open window
-        #self.frame = tk.Toplevel(padx=PX, pady=PY)
         self.wm_title("Configuration")
 
         # tk variables init
@@ -75,15 +74,18 @@ class CnfgWidget(tk.Toplevel):
                 obj_ent = DoubleSpinbox(self, textvariable=self.tk_vars[key], width=PX)
 
             elif PROPERTIES[key][1] == 'sel':
+                # default values
+                value_ran, value_sel, scale_fld = '', '', 1
                 # load value range
                 if key == 'cal_meth':
                     value_ran, default = (c.CALI_METH, c.CALI_METH[0])
                     value_sel = self.cfg.params[self.cfg.cal_meth] if self.cfg.cal_meth in self.cfg.params else default
+                    scale_fld = 2
                 elif key == 'ptc_leng':
                     value_ran, default = (c.PTCH_SIZE, c.PTCH_SIZE[2])
                     value_sel = self.cfg.params[self.cfg.ptc_leng] if self.cfg.ptc_leng in self.cfg.params else default
                 self.tk_vars[key] = tk.StringVar(value=value_sel)
-                obj_ent = tk.Spinbox(self, values=value_ran, textvariable=self.tk_vars[key], width=PX//2)
+                obj_ent = tk.Spinbox(self, values=value_ran, textvariable=self.tk_vars[key], width=PX//2*scale_fld)
                 self.tk_vars[key].set(value=value_sel)   # set to default necessary for tkinter's spinbox
 
             elif PROPERTIES[key][1] == 'bool':
@@ -103,9 +105,6 @@ class CnfgWidget(tk.Toplevel):
 
         # makes sure no mouse or keyboard events are sent to other windows (avoid multiple simultaneous instances)
         self.grab_set()
-
-        # stop all processes until this widget is closed (e.g. self.frame is destroyed)
-        #self.wait_window()
 
     def refi(self):
 
