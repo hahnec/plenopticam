@@ -23,6 +23,8 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: develop
       - name: Install Python 3
         uses: actions/setup-python@v1
         with:
