@@ -4,9 +4,12 @@ from .centroid_extractor import CentroidExtractor
 from .find_centroid import find_centroid
 from .pitch_estimator import PitchEstimator
 from .non_max_supp import NonMaxSuppression
-from .auto_find_cali import CaliFinder
+from .cali_finder import CaliFinder
 from .grid_fitter import GridFitter
-from .top_level import *
+from .line_fitter import LineFitter
+from .cali_finder import CaliFinder
+from .centroid_drawer import CentroidDrawer
+from .top_level import LfpCalibrator
 
 # Downsample rate for image processing speed-up
 DR = 4
