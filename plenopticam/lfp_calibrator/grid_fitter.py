@@ -159,14 +159,14 @@ class GridFitter(object):
         return diff
 
     @staticmethod
-    def grid_gen(dims: [int, int] = None, pat_type: str = None, hex_odd: bool = None):
+    def grid_gen(dims: [int, int] = None, pat_type: str = None, hex_odd: bool = None, normalize: bool = False):
         """ generate grid of points """
 
         assert pat_type == 'rec' or pat_type == 'hex', 'Grid pattern type not recognized.'
 
         # create point coordinates
-        y_range = np.linspace(0, 1, dims[0])
-        x_range = np.linspace(0, 1, dims[1])
+        y_range = np.linspace(0, dims[0]-1, dims[0])
+        x_range = np.linspace(0, dims[1]-1, dims[1])
         y_grid, x_grid = np.meshgrid(y_range, x_range)
 
         # create point index labels
@@ -180,15 +180,15 @@ class GridFitter(object):
             # horizontal hex shifting
             x_grid[:, int(hex_odd)::2] += .5/(dims[1]-1)
 
-        if True:
-            # normalize grid to max-length 1
+        # normalize grid to max-length 1 (pixel unit w/o normalization)
+        if normalize:
             norm_div = max(x_grid.max(), y_grid.max())
             y_grid /= norm_div
             x_grid /= norm_div
 
-            # put grid to origin
-            y_grid -= y_grid.max()/2
-            x_grid -= x_grid.max()/2
+        # put grid to origin
+        y_grid -= y_grid.max()/2
+        x_grid -= x_grid.max()/2
 
         pts_arr = np.vstack(np.dstack([y_grid.T, x_grid.T, y_idcs.T, x_idcs.T]))
 
@@ -220,6 +220,28 @@ class GridFitter(object):
         grid[:, :2] = np.dot(rota_mat_z, grid[:, :2].T).T
 
         return grid
+
+    @staticmethod
+    def decompose_mat(mat, scale=True):
+        """
+
+        https://www.robots.ox.ac.uk/~vgg/hzbook/code/vgg_multiview/vgg_KR_from_P.m
+
+        """
+
+        n = mat.shape[0] if len(mat.shape) == 2 else np.sqrt(mat.size)
+        K, R = np.linalg.qr(mat.reshape(n, -1))
+
+        if scale:
+            K = K / K[n-1, n-1]
+            if K[0, 0] < 0:
+                D = np.diag([-1, -1, *np.ones(n-2)])
+                K = np.dot(K, D)
+                R = np.dot(D, R)
+
+        t = -1*np.linalg.lstsq(mat[:, :n], mat[:, -1]) if len(mat.shape) == 2 and mat.shape[1] == 4 else np.zeros(n)
+
+        return K, R, t
 
     @property
     def grid_fit(self):
