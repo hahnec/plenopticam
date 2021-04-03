@@ -78,7 +78,7 @@ del obj
 srt_mics = np.array(mic_list)
 
 # fit grid of MICs using least-squares method to obtain accurate MICs from line intersections
-if cfg.params[cfg.cal_meth] == c.CALI_METH[2]:
+if cfg.params[cfg.cal_meth] == constants.CALI_METH[2]:
     cfg.calibs[cfg.pat_type] = pattern
     obj = GridFitter(coords_list=mic_list, cfg=cfg, sta=sta, arr_shape=wht_img.shape)
     obj.main()
@@ -93,7 +93,7 @@ plt.plot(spots_grnd_trth[:, 1], spots_grnd_trth[:, 0], 'rx', label=r'Ground-trut
 plt.plot(raw_centroids[:, 1], raw_centroids[:, 0], '*', color='orange', label=r'\textsc{CentroidExtractor}')
 plt.plot(ref_centroids[:, 1], ref_centroids[:, 0], 'b+', label=r'\textsc{CentroidRefiner}')
 plt.plot(srt_mics[:, 1], srt_mics[:, 0], 'g.', label=r'\textsc{CentroidSorter}')
-plt.plot(fit_mics[:, 1], fit_mics[:, 0], 'kx', label=r'\textsc{GridFitter}') if cfg.params[cfg.cal_meth] == c.CALI_METH[2] else None
+plt.plot(fit_mics[:, 1], fit_mics[:, 0], 'kx', label=r'\textsc{GridFitter}') if cfg.params[cfg.cal_meth] == constants.CALI_METH[2] else None
 plt.legend(loc='upper right')
 
 # plot micro image indices
