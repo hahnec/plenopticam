@@ -17,10 +17,14 @@ class GridFitter(object):
 
         # internal variables
         self._grid_fit = np.array([])
+        self._coeffs = np.identity(3).flatten()
         self._pat_type = kwargs['pat_type'] if 'pat_type' in kwargs else 'rec'
-        self._ptc_mean = kwargs['ptc_mean'] if 'ptc_mean' in kwargs else [1, 1]
+        self._ptc_mean = kwargs['ptc_mean'] if 'ptc_mean' in kwargs else np.array([1, 1])
         self._hex_odd = kwargs['hex_odd'] if 'hex_odd' in kwargs else 0
         self._arr_shape = np.array(kwargs['arr_shape'])[:2] if 'arr_shape' in kwargs else np.array([0, 0])
+        self._affine = kwargs['affine'] if 'affine' in kwargs else False
+        self._compose = kwargs['compose'] if 'compose' in kwargs else False
+        self._flip_yx = kwargs['flip_xy'] if 'flip_xy' in kwargs else False
 
         # regression settings
         self.penalty_enable = kwargs['penalty_enable'] if 'penalty_enable' in kwargs else False
@@ -35,10 +39,14 @@ class GridFitter(object):
             self._coords_list = np.asarray(kwargs['coords_list'])
             if self._coords_list.shape[1] == 4:
                 self._ptc_mean = np.mean(np.abs(np.diff(self._coords_list[self._coords_list[:, 2] == 0][:, 1])))
+        elif len(args) > 0:
+            self._coords_list = np.asarray(args[0])
 
         if hasattr(self, '_coords_list'):
             self._MAX_Y = int(max(self._coords_list[:, 2])+1)   # add one to compensate for index zero
             self._MAX_X = int(max(self._coords_list[:, 3])+1)   # add one to compensate for index zero
+
+        self._ptc_mean = [self._ptc_mean]*2 if isinstance(self._ptc_mean, (int, float, np.float64)) else self._ptc_mean
 
     def main(self):
 
@@ -62,8 +70,8 @@ class GridFitter(object):
 
         # initial fit parameters
         cy_s, cx_s = self._arr_shape/2 if hasattr(self, '_arr_shape') else [0, 0]
-        sy_s, sx_s = [self._ptc_mean]*2 if hasattr(self, '_ptc_mean') else [1, 1]
-        p_init = np.diag([sy_s, sx_s, 0])
+        sy_s, sx_s = self._ptc_mean if hasattr(self, '_ptc_mean') else [1, 1]
+        p_init = np.diag([sy_s, sx_s, 1])
         p_init[:2, -1] = np.array([cy_s, cx_s])
         beta = 1 if self.penalty_enable else 0
 
@@ -71,26 +79,29 @@ class GridFitter(object):
             warnings.simplefilter('ignore')
 
             # LMA fit: executes least-squares regression analysis to optimize initial parameters
-            coeffs, _ = leastsq(self.obj_fun, p_init, args=(self._coords_list, beta))
+            self._coeffs, _ = leastsq(self.cost_fun, p_init, args=(self._coords_list, beta))
 
-        # generate normalized grid
-        grid_norm = self.grid_gen(dims=[self._MAX_Y, self._MAX_X], pat_type=self._pat_type, hex_odd=self._hex_odd)
+        # generate initial grid
+        grid_init = self.grid_gen(dims=[self._MAX_Y, self._MAX_X], pat_type=self._pat_type, hex_odd=self._hex_odd)
 
         # project grid from final estimates
-        self._grid_fit = self.projective_transform(coeffs, grid_norm)
+        self._grid_fit = self.apply_transform(self._coeffs, grid_init, self._affine, self._flip_yx)
 
         # print status
         self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt]) if self.sta else None
 
         return np.array(self._grid_fit)
 
-    def obj_fun(self, p, centroids, beta=0):
+    def cost_fun(self, p, centroids, beta=0):
 
         # generate grid points
-        grid_norm = self.grid_gen(dims=[self._MAX_Y, self._MAX_X], pat_type=self._pat_type, hex_odd=self._hex_odd)
+        grid_pts = self.grid_gen(dims=[self._MAX_Y, self._MAX_X], pat_type=self._pat_type, hex_odd=self._hex_odd)
+
+        # generate projection parameter from 8 DOF
+        p = self.compose_p(p) if self._compose else p
 
         # transform grid points
-        grid = self.projective_transform(p, grid_norm)
+        grid = self.apply_transform(p, grid_pts, self._affine, self._flip_yx)
 
         # compute loss
         try:
@@ -108,26 +119,26 @@ class GridFitter(object):
         return loss
 
     @staticmethod
-    def projective_transform(p, grid: np.ndarray, compose: bool = False, affine: bool = False):
-        """ projective transformation """
+    def apply_transform(p, grid: np.ndarray, affine: bool = False, flip_xy: bool = False):
+        """ transformation """
 
-        if compose:
-            # compose parameters to set scale, rotation and translation in projective matrix
-            sim_mat = np.array([[np.cos(-p[1]), -np.sin(-p[1]), 0], [np.sin(-p[1]), np.cos(-p[1]), 0], [0, 0, 1]])
-            scl_mat = np.array([[p[0], 0, p[2]], [0, p[4], p[5]], [p[6], p[7], 1]])
-            prj_mat = np.dot(sim_mat, scl_mat)
-        else:
-            # reshape vector to 3x3 matrix
-            prj_mat = np.array(p).reshape(3, 3)
+        # reshape vector to 3x3 matrix
+        pmat = np.array(p).reshape(3, 3)
 
-        # affine transformation constraint
-        prj_mat[-1, :] = np.array([0, 0, 1]) if affine else np.array([*prj_mat[-1, :2], 1])
+        # transformation constraint
+        pmat[-1, :] = np.array([0, 0, 1]) if affine else np.array([*pmat[-1, :2], 1])
 
         # form points matrix adding vector of ones
-        pts = np.concatenate((grid[:, :2].T, np.ones(len(grid))[np.newaxis, :]), axis=0)
+        pts = np.concatenate((grid[:, :2].T, np.max(grid[:, :2])*np.ones(len(grid))[np.newaxis, :]), axis=0)
+
+        # flip x and y coordinates
+        pts[:2, :] = pts[:2, :][::-1] if flip_xy else pts[:2, :]
 
         # transform points
-        prj = np.dot(prj_mat, pts)
+        prj = np.dot(pmat, pts)
+
+        # flip y and x coordinates
+        prj[:2, :] = prj[:2, :][::-1] if flip_xy else prj[:2, :]
 
         # project z values (if available)
         grid[:, :2] = np.divide(prj[:2, :], prj[2, :], out=np.zeros(prj[:2, :].shape), where=prj[2, :] != 0).T[:, :2]
@@ -135,7 +146,7 @@ class GridFitter(object):
         return grid
 
     @staticmethod
-    def _regularizer(c_meas, c_grid, sig_div=22):
+    def _regularizer(c_meas, c_grid, div=22):
 
         assert c_meas.shape[-1] == 4, 'Regularizer requires 4 columns in the list'
 
@@ -150,7 +161,7 @@ class GridFitter(object):
         diff = np.abs(c_meas) - np.abs(c_grid)
 
         # penalty boundary is further pushed by additional fraction
-        diff += pitch / sig_div
+        diff += pitch / div
 
         diff[:, 0][diff[:, 0] < 0] = 0
         diff[:, 1][diff[:, 1] < 0] = 0
@@ -161,6 +172,11 @@ class GridFitter(object):
     @staticmethod
     def grid_gen(dims: [int, int] = None, pat_type: str = None, hex_odd: bool = None, normalize: bool = False):
         """ generate grid of points """
+
+        # set default values
+        dims = [5, 5] if dims is None else dims
+        pat_type = 'rec' if pat_type is None else pat_type
+        hex_odd = 0 if hex_odd is None else hex_odd
 
         assert pat_type == 'rec' or pat_type == 'hex', 'Grid pattern type not recognized.'
 
@@ -178,9 +194,9 @@ class GridFitter(object):
             # vertical shrinkage
             y_grid *= np.sqrt(3) / 2
             # horizontal hex shifting
-            x_grid[:, int(hex_odd)::2] += .5/(dims[1]-1)
+            x_grid[:, int(hex_odd)::2] += .5
 
-        # normalize grid to max-length 1 (pixel unit w/o normalization)
+        # normalize grid
         if normalize:
             norm_div = max(x_grid.max(), y_grid.max())
             y_grid /= norm_div
@@ -195,6 +211,17 @@ class GridFitter(object):
         return pts_arr
 
     @staticmethod
+    def compose_p(p):
+
+        p = p.flatten()
+        rmat = GridFitter.euler2mat(theta_x=p[7], theta_y=p[6], theta_z=p[3])
+        kmat = np.diag([p[0], p[4], 1])
+        kmat[:2, -1] = np.array([p[2], p[5]])
+        p = np.dot(rmat, kmat).flatten()
+
+        return p
+
+    @staticmethod
     def estimate_hex_odd(coords_list):
 
         # find smallest lens indices (more robust than finding lens index zero)
@@ -204,44 +231,84 @@ class GridFitter(object):
         pt_00 = coords_list[(coords_list[:, 3] == min_idx_x) & (coords_list[:, 2] == min_idx_y)][0]
         pt_10 = coords_list[(coords_list[:, 3] == min_idx_x) & (coords_list[:, 2] == min_idx_y + 1)][0]
 
-        # compare x-coordinates to determine the direction of heaxgonal shift alternation
+        # compare x-coordinates to determine the direction of hexagonal shift alternation
         hex_odd = 1 if pt_00[1] < pt_10[1] else 0
 
         return hex_odd
 
     @staticmethod
-    def rotate_grid(grid, rota_rad=0):
-        """ transformation of centroids via translation and rotation """
+    def euler2mat(theta_x: float = 0, theta_y: float = 0, theta_z: float = 0):
+        """
+        Creation of a rotation matrix from three angles in radians
 
-        # matrix for counter-clockwise rotation around z-axis
-        rota_mat_z = np.array([[np.cos(rota_rad), -np.sin(rota_rad)], [np.sin(rota_rad), np.cos(rota_rad)]])
+        """
 
-        # rotate data points around z-axis
-        grid[:, :2] = np.dot(rota_mat_z, grid[:, :2].T).T
+        # matrix for counter-clockwise rotation around x-y-z axes
+        rmat_z = np.array([[np.cos(theta_z), -np.sin(theta_z), 0],
+                           [np.sin(theta_z), np.cos(theta_z), 0],
+                           [0, 0, 1]]
+                          )
 
-        return grid
+        rmat_y = np.array([[np.cos(theta_y), 0, np.sin(theta_y)],
+                           [0, 1, 0],
+                           [-np.sin(theta_y), 0, np.cos(theta_y)]]
+                          )
+
+        rmat_x = np.array([[1, 0, 0],
+                           [0, np.cos(theta_x), -np.sin(theta_x)],
+                           [0, np.sin(theta_x), np.cos(theta_x)]]
+                          )
+
+        rmat_3 = np.dot(np.dot(rmat_x, rmat_y), rmat_z)
+
+        return rmat_3
 
     @staticmethod
-    def decompose_mat(mat, scale=True):
+    def decompose(pmat, scale=True):
         """
 
         https://www.robots.ox.ac.uk/~vgg/hzbook/code/vgg_multiview/vgg_KR_from_P.m
 
         """
 
-        n = mat.shape[0] if len(mat.shape) == 2 else np.sqrt(mat.size)
-        K, R = np.linalg.qr(mat.reshape(n, -1))
+        # reshape potential vector to 3x3 matrix
+        pmat = np.array(pmat).reshape(3, 3) if len(pmat.shape) == 1 and np.array(pmat).size == 9 else pmat
+
+        n = pmat.shape[0] if len(pmat.shape) == 2 else np.sqrt(pmat.size)
+        rmat, kmat = np.linalg.qr(pmat.reshape(n, -1), mode='reduced')
 
         if scale:
-            K = K / K[n-1, n-1]
-            if K[0, 0] < 0:
+            kmat = kmat / kmat[n-1, n-1]
+            if kmat[0, 0] < 0:
                 D = np.diag([-1, -1, *np.ones(n-2)])
-                K = np.dot(K, D)
-                R = np.dot(D, R)
+                kmat = np.dot(D, kmat)
+                rmat = np.dot(rmat, D)
 
-        t = -1*np.linalg.lstsq(mat[:, :n], mat[:, -1]) if len(mat.shape) == 2 and mat.shape[1] == 4 else np.zeros(n)
+        tvec = -1*np.linalg.lstsq(pmat[:, :n], pmat[:, -1]) if pmat.shape[1] == 4 else np.zeros(n)
 
-        return K, R, t
+        return rmat, kmat, tvec
+
+    @staticmethod
+    def mat2euler(rmat):
+        """
+        https://www.geometrictools.com/Documentation/EulerAngles.pdf
+        """
+
+        if rmat[0, 2] < 1:
+            if rmat[0, 2] > -1:
+                theta_y = np.arcsin(rmat[0, 2])
+                theta_x = np.arctan2(-rmat[1, 2], rmat[2, 2])
+                theta_z = np.arctan2(-rmat[0, 1], rmat[0, 0])
+            else:
+                theta_y = -np.pi / 2
+                theta_x = -np.arctan2(rmat[1, 0], rmat[1, 1])
+                theta_z = 0
+        else:
+            theta_y = np.pi / 2
+            theta_x = np.arctan2(rmat[1, 0], rmat[1, 1])
+            theta_z = 0
+
+        return np.array([theta_x, theta_y, theta_z])
 
     @property
     def grid_fit(self):
@@ -251,3 +318,27 @@ class GridFitter(object):
         self._grid_fit[:, 3] = self._grid_fit[:, 3].astype('int')
 
         return self._grid_fit.tolist()
+
+    @property
+    def pmat(self):
+        if self._compose:
+            return self.compose_p(self._coeffs).reshape(3, 3)
+        else:
+            return self._coeffs.reshape(3, 3)
+
+    @pmat.setter
+    def pmat(self, pmat: np.ndarray):
+        if pmat.size == 9:
+            self._coeffs = pmat.flatten()
+
+    @property
+    def rmat(self):
+        return self.decompose(self.pmat)[0]
+
+    @property
+    def kmat(self):
+        return self.decompose(self.pmat)[1]
+
+    @property
+    def tvec(self):
+        return self.decompose(self.pmat)[2]

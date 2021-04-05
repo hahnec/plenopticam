@@ -22,7 +22,7 @@ __license__ = """
 
 import unittest
 import numpy as np
-from os.path import join, exists
+from os.path import join
 import zipfile
 
 from plenopticam.lfp_calibrator import CentroidSorter, GridFitter
@@ -59,14 +59,14 @@ class PlenoptiCamTesterCalib(unittest.TestCase):
 
         pat_types = ['rec', 'hex']
         max_dim = 30
-        pitch = 1 / (max_dim - 1)
+        pitch = 1
 
         for flip in [False, True]:
             for pat_type in pat_types:
                 pseudo_grid = GridFitter.grid_gen(dims=[max_dim, max_dim], pat_type=pat_type, hex_odd=False)
                 pseudo_grid = pseudo_grid[:, :2][:, ::-1] if flip else pseudo_grid
                 sorter = CentroidSorter(centroids=pseudo_grid)
-                pattern = sorter._estimate_mla_geometry(pitch)
+                pattern = sorter._estimate_mla_geometry(pitch=pitch)
                 self.assertEqual(pat_type, pattern, 'Pattern detection failed')
 
         return True
@@ -74,13 +74,73 @@ class PlenoptiCamTesterCalib(unittest.TestCase):
     def test_grid_gen(self):
 
         dim = 5
-        x = np.linspace(-1, 1, dim)
+        x = np.linspace(-.5, .5, dim)
         i = np.linspace(0, dim-1, dim)
         coords = np.concatenate([np.meshgrid(x.T, x)[::-1], np.meshgrid(i.T, i)[::-1]], axis=0).reshape(-1, dim**2).T
 
-        pseudo_grid = GridFitter.grid_gen(dims=[dim, dim], pat_type='rec', hex_odd=False)
+        pseudo_grid = GridFitter.grid_gen(dims=[dim, dim], pat_type='rec', hex_odd=False, normalize=True)
 
-        self.assertEqual(np.sum(coords-pseudo_grid), 0, 'Grid generation failed')
+        rmse = np.sqrt(np.sum(np.square(coords-pseudo_grid)))
+
+        self.assertEqual(rmse, 0, 'Grid generation failed')
+
+    def test_grid_rotation_fit(self):
+
+        rvecs = [35*np.random.rand(3) for _ in range(5)]
+        dims = [122, 122]
+        pat_type = 'rec'
+        compose, affine, flip_xy = [False] * 3
+        compose = True
+
+        for rvec in rvecs:
+
+            # create rotation matrix
+            rvec = rvec/180*np.pi
+            rmat = GridFitter.euler2mat(*rvec)
+            rmat[-1, -1] = 1
+
+            # test grid generation
+            grid = GridFitter.grid_gen(dims=dims, pat_type=pat_type)
+            grid = GridFitter.apply_transform(rmat, grid, affine, flip_xy)
+
+            # grid regression
+            gf = GridFitter(grid, compose=compose, affine=affine, flip_xy=flip_xy)
+            gf.main()
+
+            # rotation matrix assertion
+            all_close = np.allclose(gf.pmat, rmat, rtol=1e-01, atol=1e-01)
+            self.assertTrue(all_close, 'Grid estimation failed')
+
+            # decomposition matrix assertion
+            xrmat = gf.decompose(gf.pmat)[0]
+            all_close = np.allclose(rmat, xrmat, rtol=1e-01, atol=1e-01)
+            self.assertTrue(all_close, 'QR-decomposition failed')
+
+            # euler angles assertion
+            angles = gf.mat2euler(xrmat)
+            all_close = np.allclose(angles, rvec)
+            self.assertTrue(all_close, 'Angle estimation failed')
+
+    def test_decomposition(self):
+
+        for _ in range(100):
+
+            rvec = np.random.randn(3)/180*np.pi
+            rmat = GridFitter.euler2mat(*rvec)
+            kmat = np.diag(np.array([*np.random.rand(2)*2 + 1, 1]))
+            pmat = np.dot(rmat, kmat)
+
+            xvec = GridFitter.mat2euler(rmat)
+            all_close = np.allclose(rvec, xvec)
+            self.assertTrue(all_close, 'Angle extraction failed')
+
+            xrmat, xkmat, xtvec = GridFitter.decompose(pmat)
+            all_close = np.allclose([rmat, kmat], [xrmat, xkmat])
+            self.assertTrue(all_close, 'Decomposition failed')
+
+            xvec = GridFitter.mat2euler(xrmat)
+            all_close = np.allclose(rvec, xvec)
+            self.assertTrue(all_close, 'Angle decomposition failed')
 
     def test_mla_dims_estimate(self):
 
@@ -95,7 +155,7 @@ class PlenoptiCamTesterCalib(unittest.TestCase):
         pseudo_grid -= np.array([ty, tx])
         pseudo_grid = pseudo_grid[:, ::-1] if flip else pseudo_grid
 
-        #
+        # estimate MLA dimensions
         sorter = CentroidSorter(centroids=pseudo_grid)
         sorter._mla_dims()
 
