@@ -86,7 +86,7 @@ class PlenoptiCamTesterCalib(unittest.TestCase):
 
     def test_grid_rotation_fit(self):
 
-        rvecs = [35*np.random.rand(3) for _ in range(5)]
+        rvecs = [15*np.random.rand(3) for _ in range(5)]
         dims = [122, 122]
         pat_type = 'rec'
         compose, affine, flip_xy = [False] * 3
