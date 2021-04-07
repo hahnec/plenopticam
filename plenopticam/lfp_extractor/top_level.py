@@ -85,8 +85,8 @@ class LfpExtractor(object):
             self.vp_img_linear = obj.vp_img_arr
             del obj
 
-        # copy light-field for refocusing process prior to contrast alignment and export
-        self.vp_img_arr = self.vp_img_linear.copy() if self.vp_img_linear is not None else None
+        # copy light-field before gamma encoding for refocusing process (prior to contrast and export)
+        self.vp_img_arr = self.vp_img_linear.copy() if self.vp_img_linear is not None else self.vp_img_arr.copy()
 
         # color management automation
         obj = LfpContrast(vp_img_arr=self.vp_img_arr, cfg=self.cfg, sta=self.sta)
