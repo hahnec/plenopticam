@@ -116,7 +116,7 @@ class CentroidRefiner(object):
         weight_win = input_win / input_win.max()
 
         # window thresholding
-        th_img = np.zeros_like(input_win, dtype=np.bool)
+        th_img = np.zeros_like(input_win, dtype='bool')
         th_val = np.percentile(weight_win, 75)
         th_img[weight_win > th_val] = 1
 
