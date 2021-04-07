@@ -82,10 +82,11 @@ class LfpColorEqualizer(LfpViewpoints):
             if 'ccm_wht' in self.cfg.lfpimg:
                 ccm_arr = self.cfg.lfpimg['ccm_wht']
             elif 'ccm' in self.cfg.lfpimg:
-                #ccm_arr = self.cfg.lfpimg['ccm']
+                # hard-coded CCM for Lytro
                 ccm_arr = np.array([2.4827811717987061, -1.1018080711364746, -0.38097298145294189,
                                     -0.36761483550071716, 1.6667767763137817, -0.29916191101074219,
                                     -0.18722048401832581, -0.73317205905914307, 1.9203925132751465])
+                # ccm_arr = self.cfg.lfpimg['ccm']
             else:
                 ccm_arr = np.diag(np.ones(3))
 
@@ -99,13 +100,12 @@ class LfpColorEqualizer(LfpViewpoints):
             self.vp_img_arr *= sat_lev
 
             # transpose and flip ccm_mat for RGB order
-            ccm_mat = np.reshape(ccm_arr, (3, 3)).T
+            ccm_mat = ccm_arr.reshape(3, 3).T
             self._vp_img_arr = CfaProcessor().correct_color(self._vp_img_arr.copy(), ccm_mat=ccm_mat)
 
             # remove potential NaNs
             self._vp_img_arr[self._vp_img_arr < 0] = 0
             self._vp_img_arr[self._vp_img_arr > sat_lev] = sat_lev
-            #self._vp_img_arr /= sat_lev
             self._vp_img_arr /= self._vp_img_arr.max()
 
         return True
