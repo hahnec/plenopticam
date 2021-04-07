@@ -43,11 +43,11 @@ class PlenoptiCamTesterCalib(unittest.TestCase):
         self.cfg = PlenopticamConfig()
         self.cfg.default_values()
 
+        # omit status messages
+        self.cfg.params[self.cfg.opt_prnt] = False
+
         # enable options in config to cover more algorithms in tests
         self.cfg.params[self.cfg.cal_meth] = constants.CALI_METH[3]
-
-        # print current process message (to prevent Travis from stopping after 10 mins)
-        self.cfg.params[self.cfg.opt_prnt] = True
 
         try:
             with zipfile.ZipFile(self.CEA_PATH+'.zip', 'r') as zip_obj:
@@ -86,25 +86,28 @@ class PlenoptiCamTesterCalib(unittest.TestCase):
 
     def test_grid_rotation_fit(self):
 
-        rvecs = [15*np.random.rand(3) for _ in range(5)]
+        # test grid generation
         dims = [122, 122]
         pat_type = 'rec'
+        grid = GridFitter.grid_gen(dims=dims, pat_type=pat_type)
+
+        # parameters for regression
+        rvecs = [15*np.random.rand(3) for _ in range(5)]
         compose, affine, flip_xy = [False] * 3
-        compose = True
+        compose = False
 
         for rvec in rvecs:
 
-            # create rotation matrix
+            # create transformation matrix
             rvec = rvec/180*np.pi
             rmat = GridFitter.euler2mat(*rvec)
             rmat[-1, -1] = 1
 
-            # test grid generation
-            grid = GridFitter.grid_gen(dims=dims, pat_type=pat_type)
-            grid = GridFitter.apply_transform(rmat, grid, affine, flip_xy)
+            # apply transformation
+            xpts = GridFitter.apply_transform(rmat, grid.copy(), affine, flip_xy)
 
             # grid regression
-            gf = GridFitter(grid, compose=compose, affine=affine, flip_xy=flip_xy)
+            gf = GridFitter(xpts, compose=compose, affine=affine, flip_xy=flip_xy)
             gf.main()
 
             # rotation matrix assertion
