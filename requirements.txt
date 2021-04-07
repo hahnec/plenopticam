@@ -2,7 +2,7 @@ numpy
 scipy>=1.6.0
 colour-demosaicing
 colour
-color-matcher==0.3.0
+color-matcher==0.4.0
 color-space-converter>=0.1.4
 imageio
 docutils
