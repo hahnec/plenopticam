@@ -100,7 +100,7 @@ class LfpColorEqualizer(LfpViewpoints):
             self.vp_img_arr *= sat_lev
 
             # transpose and flip ccm_mat for RGB order
-            ccm_mat = ccm_arr.reshape(3, 3).T
+            ccm_mat = np.array(ccm_arr).reshape(3, 3).T
             self._vp_img_arr = CfaProcessor().correct_color(self._vp_img_arr.copy(), ccm_mat=ccm_mat)
 
             # remove potential NaNs
