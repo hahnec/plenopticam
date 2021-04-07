@@ -43,7 +43,7 @@ class LfpColorEqualizer(LfpViewpoints):
 
         self._ref_img = kwargs['ref_img'] if 'ref_img' in kwargs else self.central_view
         self.prop_type = kwargs['prop_type'] if 'prop_type' in kwargs else 'central'
-        self._method = 'mvgd'
+        self._method = 'hm-mkl-hm'
 
     def main(self):
 
