@@ -104,10 +104,10 @@ class PlenoptiCamTesterCalib(unittest.TestCase):
             rmat[-1, -1] = 1
 
             # apply transformation
-            xpts = GridFitter.apply_transform(rmat, grid.copy(), affine, flip_xy)
+            xpts = GridFitter.apply_transform(rmat, grid.copy(), affine, flip_xy, z_dist=np.max(grid[:, :2]))
 
             # grid regression
-            gf = GridFitter(xpts, compose=compose, affine=affine, flip_xy=flip_xy)
+            gf = GridFitter(xpts, compose=compose, affine=affine, flip_xy=flip_xy, z_dist=np.max(grid[:, :2]))
             gf.main()
 
             # rotation matrix assertion

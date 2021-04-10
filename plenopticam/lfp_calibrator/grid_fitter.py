@@ -25,6 +25,7 @@ class GridFitter(object):
         self._affine = kwargs['affine'] if 'affine' in kwargs else False
         self._compose = kwargs['compose'] if 'compose' in kwargs else False
         self._flip_yx = kwargs['flip_xy'] if 'flip_xy' in kwargs else False
+        self.z_dist = kwargs['z_dist'] if 'z_dist' in kwargs else 1.0
 
         # regression settings
         self.penalty_enable = kwargs['penalty_enable'] if 'penalty_enable' in kwargs else False
@@ -101,7 +102,7 @@ class GridFitter(object):
         p = self.compose_p(p) if self._compose else p
 
         # transform grid points
-        grid = self.apply_transform(p, grid_pts, self._affine, self._flip_yx)
+        grid = self.apply_transform(p, grid_pts, self._affine, self._flip_yx, self.z_dist)
 
         # compute loss
         try:
@@ -119,7 +120,7 @@ class GridFitter(object):
         return loss
 
     @staticmethod
-    def apply_transform(p, grid: np.ndarray, affine: bool = False, flip_xy: bool = False):
+    def apply_transform(p, grid: np.ndarray, affine: bool = False, flip_xy: bool = False, z_dist: float = 1.):
         """ transformation """
 
         # reshape vector to 3x3 matrix
@@ -129,7 +130,7 @@ class GridFitter(object):
         pmat[-1, :] = np.array([0, 0, 1]) if affine else np.array([*pmat[-1, :2], 1])
 
         # form points matrix adding vector of ones
-        pts = np.concatenate((grid[:, :2].T, np.max(grid[:, :2])*np.ones(len(grid))[np.newaxis, :]), axis=0)
+        pts = np.concatenate((grid[:, :2].T, z_dist*np.ones(len(grid))[np.newaxis, :]), axis=0)
 
         # flip x and y coordinates
         pts[:2, :] = pts[:2, :][::-1] if flip_xy else pts[:2, :]
