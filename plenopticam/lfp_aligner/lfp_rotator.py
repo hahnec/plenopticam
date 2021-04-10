@@ -159,7 +159,6 @@ class LfpRotator(object):
 
         # matrix for counter-clockwise rotation around z-axis
         Rz = np.array([[np.cos(self._rad), -np.sin(self._rad)], [np.sin(self._rad), np.cos(self._rad)]])
-        #Rz = np.array([[np.cos(self._rad), np.sin(self._rad)], [-np.sin(self._rad), np.cos(self._rad)]]) #clock-wise
 
         # rotate data points around z-axis
         self._centroids[:, :2] = np.dot(Rz, self._centroids[:, :2].T).T
