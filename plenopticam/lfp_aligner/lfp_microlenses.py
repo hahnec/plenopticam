@@ -138,11 +138,11 @@ class LfpMicroLenses(object):
             safe_pitch = user_pitch
         elif user_pitch > mean_pitch:
             safe_pitch = mean_pitch
-            msg_str = 'Patch size ({0} px) is larger than micro image size and reduced to {1} pixels.'
+            msg_str = 'User size ({0} px) is larger than micro image size and reduced to {1} pixels.'
             self.sta.status_msg(msg_str.format(user_pitch, mean_pitch), self.cfg.params[self.cfg.opt_prnt])
         elif user_pitch < safe_pitch < mean_pitch:
             safe_pitch = mean_pitch
-            msg_str = 'Patch size ({0} px) is too small and increased to {1} pixels.'
+            msg_str = 'User size ({0} px) is too small and increased to {1} pixels.'
             self.sta.status_msg(msg_str.format(user_pitch, mean_pitch), self.cfg.params[self.cfg.opt_prnt])
         elif user_pitch < safe_pitch and mean_pitch < safe_pitch:
             self.sta.status_msg('Micro image dimensions are too small for light field computation.', True)
@@ -185,7 +185,7 @@ class LfpMicroLenses(object):
     def lfp_align_pitch(self) -> int:
         """ estimate pitch size from aligned light-field (when centroids not available) """
 
-        # initialize output variable (return zero if light field not present)
+        # initialize output variable (return zero if aligned light field not present)
         res = 0
         if self._lfp_img_align is None:
             return res
