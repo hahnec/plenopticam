@@ -82,7 +82,7 @@ class LfpColorEqualizer(LfpViewpoints):
             if 'ccm_wht' in self.cfg.lfpimg:
                 ccm_arr = self.cfg.lfpimg['ccm_wht']
             elif 'ccm' in self.cfg.lfpimg:
-                # hard-coded CCM for Lytro
+                # hard-coded and generic CCM for Lytro
                 ccm_arr = np.array([2.4827811717987061, -1.1018080711364746, -0.38097298145294189,
                                     -0.36761483550071716, 1.6667767763137817, -0.29916191101074219,
                                     -0.18722048401832581, -0.73317205905914307, 1.9203925132751465])
