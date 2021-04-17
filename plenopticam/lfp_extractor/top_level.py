@@ -53,7 +53,8 @@ class LfpExtractor(object):
     def main(self):
 
         # load previously calculated calibration and aligned data
-        self.cfg.load_cal_data()
+        if self.cfg.calibs is None:
+            self.cfg.load_cal_data()
         if self._lfp_img_align is None:
             self.load_pickle_file()
             self.load_lfp_metadata()
