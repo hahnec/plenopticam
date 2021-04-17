@@ -86,7 +86,7 @@ class GridFitter(object):
         grid_init = self.grid_gen(dims=[self._MAX_Y, self._MAX_X], pat_type=self._pat_type, hex_odd=self._hex_odd)
 
         # project grid from final estimates
-        self._grid_fit = self.apply_transform(self._coeffs, grid_init, self._affine, self._flip_yx)
+        self._grid_fit = self.apply_transform(self._coeffs, grid_init, self._affine, self._flip_yx, self.z_dist)
 
         # print status
         self.sta.progress(100, opt=self.cfg.params[self.cfg.opt_prnt]) if self.sta else None
