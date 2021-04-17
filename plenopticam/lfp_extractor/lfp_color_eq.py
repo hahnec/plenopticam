@@ -25,7 +25,6 @@ import numpy as np
 
 from plenopticam.lfp_extractor import LfpViewpoints
 from plenopticam.lfp_aligner.cfa_processor import CfaProcessor
-from plenopticam import misc
 
 try:
     from scipy.signal import medfilt
@@ -44,6 +43,9 @@ class LfpColorEqualizer(LfpViewpoints):
         self._ref_img = kwargs['ref_img'] if 'ref_img' in kwargs else self.central_view
         self.prop_type = kwargs['prop_type'] if 'prop_type' in kwargs else 'central'
         self._method = 'hm-mkl-hm'
+
+        # skip color propagation if option not set
+        self.prop_type = self.prop_type if hasattr(self, 'cfg') and self.cfg.params[self.cfg.opt_colo] else None
 
     def main(self):
 
