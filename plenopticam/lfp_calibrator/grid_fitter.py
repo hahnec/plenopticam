@@ -331,6 +331,8 @@ class GridFitter(object):
     def pmat(self, pmat: np.ndarray):
         if pmat.size == 9:
             self._coeffs = pmat.flatten()
+        else:
+            raise Exception('Only a 9-vector or 3x3 matrix is accepted')
 
     @property
     def rmat(self):
