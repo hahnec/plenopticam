@@ -57,9 +57,9 @@ class LfpCropper(LfpMicroLenses):
 
     def crop_micro_image(self, ly, lx):
 
-        self.new_lfp_img[ly*self._Mn:ly*self._Mn+self._Mn, lx*self._Mn:lx*self._Mn+self._Mn] = \
-            self._lfp_img_align[self._k+ly*self._M:ly*self._M+self._M-self._k,
-                                self._k+lx*self._M:lx*self._M+self._M-self._k]
+        self.new_lfp_img[ly*self._Mn:(ly+1)*self._Mn, lx*self._Mn:(lx+1)*self._Mn] = \
+            self._lfp_img_align[self._k+ly*self._M:(ly+1)*self._M-self._k,
+                                self._k+lx*self._M:(lx+1)*self._M-self._k]
 
     @property
     def lfp_img_align(self):
