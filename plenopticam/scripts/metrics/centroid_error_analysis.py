@@ -80,7 +80,7 @@ srt_mics = np.array(mic_list)
 # fit grid of MICs using least-squares method to obtain accurate MICs from line intersections
 if cfg.params[cfg.cal_meth] == constants.CALI_METH[2]:
     cfg.calibs[cfg.pat_type] = pattern
-    obj = GridFitter(coords_list=mic_list, cfg=cfg, sta=sta, arr_shape=wht_img.shape)
+    obj = GridFitter(coords_list=mic_list, cfg=cfg, sta=sta, arr_shape=wht_img.shape, z_dist=1)
     obj.main()
     mic_list = obj.grid_fit
     del obj
