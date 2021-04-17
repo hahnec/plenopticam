@@ -98,7 +98,7 @@ class LfpMicroLenses(object):
         args = [kwargs[key] for key in kwargs.keys() if key not in ('cfg', 'sta', 'msg', 'prnt')]
 
         try:
-            # iterate over each MIC
+            # iterate through each micro lens centroid
             for ly in range(self._LENS_Y_MAX):
                 for lx in range(self._LENS_X_MAX):
 
