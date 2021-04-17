@@ -171,11 +171,14 @@ class LfpExporter(LfpViewpoints):
 
     def gif_vp_img(self, duration, pattern='circle'):
 
-        # micro image size estimate
-        M = max(self.cfg.calibs[self.cfg.ptc_mean]) if self.cfg.calibs else self.cfg.params[self.cfg.ptc_leng]
+        # micro image size selection
+        try:
+            mi_size = np.min(self.cfg.calibs[self.cfg.ptc_mean])
+        except (KeyError, TypeError):
+            mi_size = self.cfg.params[self.cfg.ptc_leng]
 
         # filter images forming a pattern
-        lf_radius = min(int((M+1)//4), self._C)
+        lf_radius = min(int((mi_size+1)//4), self._C)
         img_set = self.reorder_vp_arr(pattern=pattern, lf_radius=lf_radius)
 
         # image normalization
