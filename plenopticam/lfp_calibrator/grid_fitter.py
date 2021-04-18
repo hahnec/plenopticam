@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.optimize import leastsq
+from scipy.optimize import leastsq, least_squares
 import warnings
 
 l2_norm = lambda c_meas, c_grid: np.sqrt(np.sum((c_meas - c_grid)**2, axis=1))
@@ -79,8 +79,13 @@ class GridFitter(object):
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
 
-            # LMA fit: executes least-squares regression analysis to optimize initial parameters
-            self._coeffs, _ = leastsq(self.cost_fun, p_init, args=(self._coords_list, beta))
+            # LMA fit: executes least-squares regression for optimization of initial parameters
+            try:
+                self._coeffs = leastsq(self.cost_fun, p_init, args=(self._coords_list, beta))[0]
+            except:
+                # newer interface for LMA
+                self._coeffs = least_squares(self.cost_fun, p_init.flatten(),
+                                             jac='3-point', args=(self._coords_list, beta), method='lm').x
 
         # generate initial grid
         grid_init = self.grid_gen(dims=[self._MAX_Y, self._MAX_X], pat_type=self._pat_type, hex_odd=self._hex_odd)
