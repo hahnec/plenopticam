@@ -45,7 +45,7 @@ class PlenoptiCamTesterCustom(unittest.TestCase):
         self.cfg.reset_values()
         self.cfg.params[self.cfg.opt_dbug] = False
         self.cfg.params[self.cfg.opt_prnt] = False    # prevent Travis CI to terminate after reaching 4MB logfile size
-        self.cfg.params[self.cfg.opt_vign] = True
+        self.cfg.params[self.cfg.opt_vign] = False
         self.cfg.params[self.cfg.opt_sat_] = True
         self.cfg.params[self.cfg.cal_meth] = constants.CALI_METH[3]
         self.cfg.params[self.cfg.opt_cali] = True
