@@ -60,20 +60,14 @@ class PlenopticamConfig(object):
 
         try:
             self.read_params()
-            # test if config parameters present
-            if not self.params.keys():
-                raise FileNotFoundError('Config file could not be loaded')
-            # number of values in loaded config is supposed to equal config constants specified in the tool
-            if not len(self.params.keys()) == len(PARAMS_KEYS):
-                raise PlenopticamError('Config file corrupted')
         except (PlenopticamError, FileNotFoundError):
             self.default_values()
             self.save_params()
 
     def read_params(self, fp=None):
 
-        if not fp:
-            fp = join(self._dir_path, 'cfg.json')
+        # use default path only if file path not provided
+        fp = join(self._dir_path, 'cfg.json') if fp is None else fp
 
         try:
             with open(fp, 'r') as f:
@@ -85,6 +79,13 @@ class PlenopticamConfig(object):
 
         except FileNotFoundError:
             pass
+
+        # test if config parameters present
+        if not self.params.keys():
+            raise FileNotFoundError('Config file could not be loaded')
+        # number of values in loaded config is supposed to equal config constants specified in the tool
+        if not len(self.params.keys()) == len(PARAMS_KEYS):
+            warnings.warn('Config file corrupted', UserWarning)
 
         return True
 
