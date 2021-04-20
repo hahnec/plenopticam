@@ -69,7 +69,7 @@ class Normalizer(object):
     def norm_fun(self):
         """ normalize image to values between 1 and 0 """
 
-        norm = (self._data - self._min) / (self._max - self._min) if self._max != (self._min and 0) else self._data
+        norm = (self._data-self._min)/(self._max-self._min) if self._max != self._min and self._max != 0 else self._data
 
         # prevent wrap-around
         norm[norm < 0] = 0
