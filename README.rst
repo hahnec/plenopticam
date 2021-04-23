@@ -14,7 +14,7 @@ This application is meant for researchers, developers, beginners and other fiddl
 
 |paper|
 
-|binder|
+|colab|
 
 Results
 =======
