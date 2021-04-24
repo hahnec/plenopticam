@@ -173,6 +173,19 @@ Depending on provided files and settings, your results folder may contain the fo
     - light field metadata as json file (for Lytro files only)
     - scheimpflug focus files
 
+API usage
+---------
+
+Usage of PlenoptiCam modules is demonstrated in the following Jupyter notebooks:
+
+`1. Calibration Demo <https://github.com/hahnec/plenopticam/blob/master/examples/01_calib_demo.ipynb>`__
+
+`2. Alignment Demo <https://github.com/hahnec/plenopticam/blob/master/examples/02_align_demo.ipynb>`__
+
+`3. Extraction Demo <https://github.com/hahnec/plenopticam/blob/master/examples/03_xtract_demo.ipynb>`__
+
+`4. Lytro Illum Demo <https://github.com/hahnec/plenopticam/blob/master/examples/04_illum_demo.ipynb>`__
+
 Citation
 ========
 
