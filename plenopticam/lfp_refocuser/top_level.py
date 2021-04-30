@@ -64,8 +64,8 @@ class LfpRefocuser(LfpViewpoints):
         self.refo_stack = obj.refo_stack
         del obj
 
-        # color management automation (for Lytro images only - others are considered gamma-encoded)
-        if self.cfg.lfpimg and self.refo_stack is not None and not self.sta.interrupt:
+        # color management automation
+        if self.refo_stack is not None and not self.sta.interrupt:
             self.refo_stack = LfpContrast().auto_hist_align(self.refo_stack, ref_img=self.refo_stack[0], opt=True)
             self.refo_stack = GammaConverter().srgb_conv(img=self.refo_stack)
 
