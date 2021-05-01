@@ -21,10 +21,8 @@ __license__ = """
 """
 
 from plenopticam.lfp_aligner.lfp_microlenses import LfpMicroLenses
-from plenopticam.misc import isint
 
 import numpy as np
-import os
 
 
 class LfpCropper(LfpMicroLenses):
@@ -33,14 +31,16 @@ class LfpCropper(LfpMicroLenses):
         super(LfpCropper, self).__init__(*args, **kwargs)
 
         # use _k as crop margin
-        self._k = (self._M - self._Mn) // 2
+        self._k = (self._limg_pitch - self._size_pitch).astype('int') // 2
 
         if self._lfp_img_align is not None:
 
-            self._LENS_Y_MAX = int(self._lfp_img_align.shape[0] / self._M)
-            self._LENS_X_MAX = int(self._lfp_img_align.shape[1] / self._M)
+            self._LENS_Y_MAX = int(self._lfp_img_align.shape[0]/self._limg_pitch[0])
+            self._LENS_X_MAX = int(self._lfp_img_align.shape[1]/self._limg_pitch[1])
             p = self._lfp_img_align.shape[-1] if len(self._lfp_img_align.shape) == 3 else 1
-            self.new_lfp_img = np.zeros([int(self._Mn * self._LENS_Y_MAX), int(self._Mn * self._LENS_X_MAX), p],
+            self.new_lfp_img = np.zeros([int(self._size_pitch*self._LENS_Y_MAX),
+                                         int(self._size_pitch*self._LENS_X_MAX),
+                                         p],
                                         dtype=self._lfp_img_align.dtype)
 
     def main(self):
@@ -50,16 +50,16 @@ class LfpCropper(LfpMicroLenses):
             return False
 
         # reduce light field in angular domain (depending on settings)
-        if self._Mn < self._M and isint(self._M):
+        if self._size_pitch < self._limg_pitch[0] or self._size_pitch < self._limg_pitch[1]:
             self.proc_lens_iter(self.crop_micro_image, msg='Render angular domain')
-        elif self._Mn == self._M:
+        elif self._size_pitch == min(self._limg_pitch):
             self.new_lfp_img = self._lfp_img_align
 
     def crop_micro_image(self, ly, lx):
 
-        self.new_lfp_img[ly*self._Mn:(ly+1)*self._Mn, lx*self._Mn:(lx+1)*self._Mn] = \
-            self._lfp_img_align[self._k+ly*self._M:(ly+1)*self._M-self._k,
-                                self._k+lx*self._M:(lx+1)*self._M-self._k]
+        self.new_lfp_img[ly*self._size_pitch:(ly+1)*self._size_pitch, lx*self._size_pitch:(lx+1)*self._size_pitch] = \
+            self._lfp_img_align[self._k[0]+ly*self._limg_pitch[0]:(ly+1)*self._limg_pitch[0]-self._k[0],
+                                self._k[1]+lx*self._limg_pitch[1]:(lx+1)*self._limg_pitch[1]-self._k[1]]
 
     @property
     def lfp_img_align(self):

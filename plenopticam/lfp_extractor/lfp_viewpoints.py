@@ -35,8 +35,8 @@ class LfpViewpoints(object):
         self._vp_img_arr = self.vp_img_arr.astype('float64') if self.vp_img_arr is not None else None
         self.cfg = kwargs['cfg'] if 'cfg' in kwargs else PlenopticamConfig()
         self.sta = kwargs['sta'] if 'sta' in kwargs else PlenopticamStatus()
-        self._M = self.cfg.params[self.cfg.ptc_leng]
-        self._C = self._M // 2
+        self._size_pitch = self.cfg.params[self.cfg.ptc_leng]
+        self._cent_pitch = self._size_pitch // 2
 
         try:
             self._DIMS = self._vp_img_arr.shape if len(self._vp_img_arr.shape) == 3 else self._vp_img_arr.shape + (1,)
@@ -56,7 +56,7 @@ class LfpViewpoints(object):
 
     @property
     def central_view(self):
-        return self._vp_img_arr[self._C, self._C, ...].copy() if self._vp_img_arr is not None else None
+        return self._vp_img_arr[self._cent_pitch, self._cent_pitch, ...].copy() if self._vp_img_arr is not None else None
 
     @staticmethod
     def remove_proc_keys(kwargs, data_type=None):
@@ -167,18 +167,18 @@ class LfpViewpoints(object):
         m, n = (0, 1) if axis == 0 else (1, 0)
         p, q = (1, -1) if axis == 0 else (-1, 1)
 
-        for i in range(self._C):
+        for i in range(self._cent_pitch):
 
             # swap axes indices
             j, i = (i, j) if axis == 1 else (j, i)
 
-            ref_pos = self.vp_img_arr[self._C + j, self._C + i, ...]
-            ref_neg = self.vp_img_arr[self._C + j * p, self._C + i * q, ...]
+            ref_pos = self.vp_img_arr[self._cent_pitch+j, self._cent_pitch+i, ...]
+            ref_neg = self.vp_img_arr[self._cent_pitch+j*p, self._cent_pitch+i*q, ...]
 
-            self._vp_img_arr[self._C + j + m, self._C + i + n, ...] = \
-                fun(self.vp_img_arr[self._C + j + m, self._C + i + n, ...], ref_pos, **kwargs)
-            self._vp_img_arr[self._C + (j + m) * p, self._C + (i + n) * q, ...] = \
-                fun(self.vp_img_arr[self._C + (j + m) * p, self._C + (i + n) * q, ...], ref_neg, **kwargs)
+            self._vp_img_arr[self._cent_pitch+j+m, self._cent_pitch+i+n, ...] = \
+                fun(self.vp_img_arr[self._cent_pitch+j+m, self._cent_pitch+i+n, ...], ref_pos, **kwargs)
+            self._vp_img_arr[self._cent_pitch+(j+m)*p, self._cent_pitch+(i+n)*q, ...] = \
+                fun(self.vp_img_arr[self._cent_pitch+(j+m)*p, self._cent_pitch+(i+n)*q, ...], ref_neg, **kwargs)
 
             # swap axes indices
             j, i = (i, j) if axis == 1 else (j, i)
@@ -205,13 +205,13 @@ class LfpViewpoints(object):
 
         self.proc_ax_propagate_1d(fun, idx=0, axis=0, **kwargs)
 
-        for j in range(-self._C, self._C + 1):
+        for j in range(-self._cent_pitch, self._cent_pitch+1):
 
             # apply histogram matching along entire column
             self.proc_ax_propagate_1d(fun, idx=j, axis=1, **kwargs)
 
             # progress update
-            percent = (j + self._C + 1) / self._vp_img_arr.shape[0]
+            percent = (j+self._cent_pitch+1) / self._vp_img_arr.shape[0]
             percent = percent / iter_tot + iter_num / iter_tot
             self.sta.progress(percent*100, self.cfg.params[self.cfg.opt_prnt])
 
@@ -223,7 +223,7 @@ class LfpViewpoints(object):
 
     @property
     def views_stacked_img(self):
-        """ concatenation of all sub-aperture images for single image representation """
+        """ 4D to 2D flattening of all sub-aperture images for a single image representation """
         return np.moveaxis(np.concatenate(np.moveaxis(np.concatenate(np.moveaxis(self.vp_img_arr, 1, 2)), 0, 2)), 0, 1)
 
     def circular_view_aperture(self, offset=None, ellipse=None):
@@ -231,7 +231,7 @@ class LfpViewpoints(object):
         # initialize variables
         offset = offset if offset is not None else 0
         ratio = self.vp_img_arr.shape[3]/self.vp_img_arr.shape[2] if ellipse else 1
-        r = self._M // 2
+        r = self._size_pitch // 2
         mask = np.zeros([2*r+1, 2*r+1])
 
         # determine mask for affected views

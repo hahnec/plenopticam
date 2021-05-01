@@ -16,7 +16,7 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-__version__ = '0.7.0'
+__version__ = '0.8.0'
 
 from . import misc
 from . import cfg

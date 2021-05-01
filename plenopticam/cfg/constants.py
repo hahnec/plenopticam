@@ -5,6 +5,7 @@ PARAMS_KEYS = (
     'cal_path',
     'cal_meta',
     'cal_meth',
+    'smp_meth',
     # integers
     'ptc_leng',
     # lists
@@ -32,6 +33,7 @@ PARAMS_KEYS = (
 # dictionary values for configuration parameters in json file
 PARAMS_VALS = (
     # strings
+    '',
     '',
     '',
     '',
@@ -66,6 +68,7 @@ PARAMS_TYPE = (
     'str',
     'str',
     'sel',
+    'sel',
     # integers
     'sel',
     # lists
@@ -96,6 +99,7 @@ PARAMS_NAME = (
     'Calibration source path',
     'Metadata file path',
     'Calibration method',
+    'Resampling method',
     # integers
     'Micro image patch size',
     # lists
@@ -132,3 +136,4 @@ CALIBS_KEYS = (
 PFLU_VALS = ('vertical', 'horizontal', 'skew up', 'skew down')
 PTCH_SIZE = list(range(3, 99, 2))
 CALI_METH = ('area', 'peak', 'grid-fit', 'vign-fit')
+SMPL_METH = ('global', 'local')

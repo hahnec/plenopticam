@@ -61,7 +61,7 @@ class CfaOutliers(object):
 
             # deduct median filtered image
             med_img = medfilt(bay_img[i::2, j::2].copy(), kernel_size=(3, 3))
-            m_img = bay_img[i::2, j::2].copy()/bay_img[i::2, j::2].max() - med_img.copy()/med_img.max()
+            m_img = bay_img[i::2, j::2].copy()/bay_img[i::2, j::2].max() - med_img.copy()/np.max(med_img)
 
             new_img = self.rectify_candidates_channel(channel=bay_img[i::2, j::2].copy(),
                                                       ref_img=m_img, med_img=med_img, n=n, sig_lev=sig_lev+2)

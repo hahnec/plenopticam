@@ -32,7 +32,7 @@ from plenopticam import lfp_refocuser
 from plenopticam.lfp_reader.top_level import SUPP_FILE_EXT
 from plenopticam import misc
 from plenopticam.cfg import PlenopticamConfig
-from plenopticam.cfg.constants import CALI_METH
+from plenopticam.cfg.constants import CALI_METH, SMPL_METH
 from plenopticam import __version__
 from plenopticam.gui.top_level import PlenopticamApp
 
@@ -49,6 +49,8 @@ def usage():
     print("-r <list>,     --refo=[0, 2]      Refocusing range")
     print("-m <str>,      --meth='area'      Calibration method, e.g.:")
     print("                                  "+', '.join(['"'+m+'"' for m in CALI_METH]))
+    print("-s <str>,      --smpl='global'    Resampling method, e.g.:")
+    print("                                  "+', '.join(['"'+m+'"' for m in SMPL_METH]))
     print("-h,            --help             Print this help message")
     print("")
     # boolean options
@@ -68,8 +70,8 @@ def parse_options(argv, cfg):
     """ set config dictionary according to command line user arguments """
 
     try:
-        opts, args = getopt.getopt(argv, "ghf:c:p:r:m:",
-                                   ["gui", "help", "file=", "cali=", "patch=", "refo=", "meth=",
+        opts, args = getopt.getopt(argv, "ghf:c:p:r:m:s:",
+                                   ["gui", "help", "file=", "cali=", "patch=", "refo=", "meth=", "smpl=",
                                     "dbug", "refi", "pflu", "rota",
                                     "vgn", "awb", "con", "hot", "sat", "art", "rm"])
     except getopt.GetoptError as e:
@@ -95,6 +97,8 @@ def parse_options(argv, cfg):
                 cfg.params[cfg.ran_refo] = refo_range if isinstance(refo_range, list) else [0, 2]
             if opt in ("-m", "--meth"):
                 cfg.params[cfg.cal_meth] = arg.strip(" \"\'") if arg.strip(" \"\'") in CALI_METH else CALI_METH[0]
+            if opt in ("-s", "--smpl"):
+                cfg.params[cfg.smp_meth] = arg.strip(" \"\'") if arg.strip(" \"\'") in SMPL_METH else SMPL_METH[0]
             if opt == "--dbug":
                 cfg.params[cfg.opt_dbug] = True
             if opt == "--refi":

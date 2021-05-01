@@ -45,7 +45,8 @@ class LfpRearranger(LfpViewpoints):
             raise PlenopticamError('Dimensions %s of provided light-field not supported', self._lfp_img_align.shape,
                                    cfg=self.cfg, sta=self.sta)
 
-        self._vp_img_arr = np.zeros([int(self._M), int(self._M), int(m/self._M), int(n/self._M), p], dtype=self._dtype)
+        self._vp_img_arr = np.zeros([int(self._size_pitch), int(self._size_pitch),
+                                     int(m/self._size_pitch), int(n/self._size_pitch), p], dtype=self._dtype)
 
     def _init_lfp_img_align(self):
         """ initialize micro image output image array """
@@ -58,14 +59,13 @@ class LfpRearranger(LfpViewpoints):
             raise PlenopticamError('Dimensions %s of provided light-field not supported', self._vp_img_arr.shape,
                                    cfg=self.cfg, sta=self.sta)
 
+        # create empty array
         m *= self._vp_img_arr.shape[0]
         n *= self._vp_img_arr.shape[1]
-
-        # create empty array
         self._lfp_img_align = np.zeros([m, n, p], dtype=self._dtype)
 
         # update angular resolution parameter
-        self._M = self._vp_img_arr.shape[0] if self._vp_img_arr.shape[0] == self._vp_img_arr.shape[1] else float('inf')
+        self._size_pitch = self._vp_img_arr.shape[0] if self._vp_img_arr.shape[0] == self._vp_img_arr.shape[1] else float('inf')
 
     def main(self):
 
@@ -90,18 +90,18 @@ class LfpRearranger(LfpViewpoints):
         self._init_vp_img_arr()
 
         # rearrange light field to multi-view image representation
-        for j in range(self._M):
-            for i in range(self._M):
+        for j in range(self._size_pitch):
+            for i in range(self._size_pitch):
 
                 # check interrupt status
                 if self.sta.interrupt:
                     return False
 
                 # extract viewpoint by pixel rearrangement
-                self._vp_img_arr[j, i, ...] = self._lfp_img_align[j::self._M, i::self._M, :]
+                self._vp_img_arr[j, i, ...] = self._lfp_img_align[j::self._size_pitch, i::self._size_pitch, :]
 
                 # print status
-                percentage = (j*self._M+i+1)/self._M**2
+                percentage = (j * self._size_pitch + i + 1) / self._size_pitch ** 2
                 self.sta.progress(percentage*100, self.cfg.params[self.cfg.opt_prnt])
 
         return True
@@ -120,18 +120,18 @@ class LfpRearranger(LfpViewpoints):
         self._init_lfp_img_align()
 
         # rearrange light field to multi-view image representation
-        for j in range(self._M):
-            for i in range(self._M):
+        for j in range(self._size_pitch):
+            for i in range(self._size_pitch):
 
                 # check interrupt status
                 if self.sta.interrupt:
                     return False
 
                 # extract viewpoint by pixel rearrangement
-                self._lfp_img_align[j::self._M, i::self._M, :] = self._vp_img_arr[j, i, :, :, :]
+                self._lfp_img_align[j::self._size_pitch, i::self._size_pitch, :] = self._vp_img_arr[j, i, :, :, :]
 
                 # print status
-                percentage = (j*self._M+i+1)/self._M**2
+                percentage = (j * self._size_pitch + i + 1) / self._size_pitch ** 2
                 self.sta.progress(percentage*100, self.cfg.params[self.cfg.opt_prnt])
 
         return True

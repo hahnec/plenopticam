@@ -71,9 +71,9 @@ class LfpAligner(object):
             del obj
 
         # interpolate each micro image with its MIC as the center with consistent micro image size
-        obj = LfpResampler(lfp_img=self._lfp_img, cfg=self.cfg, sta=self.sta, method='linear')
+        obj = LfpResampler(lfp_img=self._lfp_img, cfg=self.cfg, sta=self.sta)
         obj.main()
-        self._lfp_img = obj.lfp_out
+        self._lfp_img = obj.lfp_img_align
         del obj
 
         return True

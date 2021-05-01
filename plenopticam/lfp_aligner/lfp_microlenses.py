@@ -32,13 +32,12 @@ class LfpMicroLenses(object):
     def __init__(self, *args, **kwargs):
 
         # variables
+        self.cfg = kwargs['cfg'] if 'cfg' in kwargs else PlenopticamConfig()
+        self.sta = kwargs['sta'] if 'sta' in kwargs else misc.PlenopticamStatus()
+        self._hex_odd = None
         self._lfp_img = kwargs['lfp_img'] if 'lfp_img' in kwargs else None
         self._wht_img = kwargs['wht_img'] if 'wht_img' in kwargs else None
         self._lfp_img_align = kwargs['lfp_img_align'] if 'lfp_img_align' in kwargs else None
-        self.cfg = kwargs['cfg'] if 'cfg' in kwargs else PlenopticamConfig()
-        self.sta = kwargs['sta'] if 'sta' in kwargs else misc.PlenopticamStatus()
-        self._M = 0
-        self._C = 0
         self._flip = kwargs['flip'] if 'flip' in kwargs else False
 
         # convert to float
@@ -50,33 +49,27 @@ class LfpMicroLenses(object):
             self._CENTROIDS = np.asarray(self.cfg.calibs[self.cfg.mic_list])
             self._LENS_Y_MAX = int(max(self._CENTROIDS[:, 2])+1)    # +1 to account for index 0
             self._LENS_X_MAX = int(max(self._CENTROIDS[:, 3])+1)    # +1 to account for index 0
+            self._PAT_TYPE = self.cfg.calibs[self.cfg.pat_type] if self.cfg.pat_type in self.cfg.calibs else 'rec'
+            self._hex_odd = self.get_hex_direction(self._CENTROIDS)
+
+        # initialize micro image size and respective centers
+        self._size_pitch = 0
+        self._cent_pitch = 0
 
         # get pitch from aligned light field
-        self._M = self.lfp_align_pitch() if hasattr(self, '_lfp_img') else self._M
+        self._limg_pitch = self.lfp_align_pitch()
 
         # get mean pitch from centroids
-        mean_pitch = self.centroid_avg_pitch(self._CENTROIDS) if hasattr(self, '_CENTROIDS') else self._M
+        self._cavg_pitch = self.centroid_avg_pitch()
 
-        # evaluate mean pitch size and user pitch size
-        self._Mn = self.safe_pitch_eval(mean_pitch=mean_pitch, user_pitch=int(self.cfg.params[self.cfg.ptc_leng]))
-
-        # check if chosen micro image size too large
-        if 0 < self._M < self._Mn:
-            # remove existing pickle file
-            fp = os.path.join(self.cfg.exp_path, 'lfp_img_align.pkl')
-            os.remove(fp)
-            # status update
-            self.sta.status_msg('Angular resolution mismatch in previous alignment. Redo process')
-            self.sta.error = True
-        # check if micro image size in valid range
-        elif self._M >= self._Mn > 0:
-            self.cfg.params[self.cfg.ptc_leng] = self._Mn
-        # check if micro image size not set
-        elif self._M == 0:
-            self._M = self._Mn
-            self.cfg.params[self.cfg.ptc_leng] = self._Mn
-
-        self._C = self._M // 2
+        # evaluate pitch sizes from aligned image, centroid list and user definition to obtain safe pitch
+        self._size_pitch = self.safe_pitch_eval(
+                                                cavg_pitch=min(self._cavg_pitch),
+                                                limg_pitch=min(self._limg_pitch),
+                                                user_pitch=int(self.cfg.params[self.cfg.ptc_leng]),
+                                                )
+        # micro image centers
+        self._cent_pitch = self._size_pitch // 2
 
         try:
             self._DIMS = self._lfp_img.shape if len(self._lfp_img.shape) == 3 else self._lfp_img.shape + (1,)
@@ -125,46 +118,60 @@ class LfpMicroLenses(object):
 
         return mic[0], mic[1]
 
-    def safe_pitch_eval(self, mean_pitch: float, user_pitch: int) -> int:
-        """ provide odd pitch size that is safe to use """
+    def safe_pitch_eval(self, cavg_pitch: float, limg_pitch: float, user_pitch: int) -> int:
+        """ evaluate pitch size that is safe to use """
 
-        # ensure patch size and mean patch size are odd
-        mean_pitch += np.mod(mean_pitch, 2) - 1
-        user_pitch += np.mod(user_pitch, 2) - 1
         safe_pitch = 3
 
-        # comparison of patch size and mean size
-        if safe_pitch <= user_pitch <= mean_pitch+2:  # allow user pitch to be slightly bigger than estimate
+        # comparison of user selected pitch and average centroid size
+        if safe_pitch <= user_pitch <= cavg_pitch+2:  # allow user pitch to be slightly bigger than estimate
             safe_pitch = user_pitch
-        elif user_pitch > mean_pitch:
-            safe_pitch = mean_pitch
+        elif user_pitch > cavg_pitch:
+            safe_pitch = cavg_pitch
             msg_str = 'User size ({0} px) is larger than micro image size and reduced to {1} pixels.'
-            self.sta.status_msg(msg_str.format(user_pitch, mean_pitch), self.cfg.params[self.cfg.opt_prnt])
-        elif user_pitch < safe_pitch < mean_pitch:
-            safe_pitch = mean_pitch
+            self.sta.status_msg(msg_str.format(user_pitch, cavg_pitch), self.cfg.params[self.cfg.opt_prnt])
+        elif user_pitch < safe_pitch < cavg_pitch:
+            safe_pitch = cavg_pitch
             msg_str = 'User size ({0} px) is too small and increased to {1} pixels.'
-            self.sta.status_msg(msg_str.format(user_pitch, mean_pitch), self.cfg.params[self.cfg.opt_prnt])
-        elif user_pitch < safe_pitch and mean_pitch < safe_pitch:
+            self.sta.status_msg(msg_str.format(user_pitch, cavg_pitch), self.cfg.params[self.cfg.opt_prnt])
+        elif user_pitch < safe_pitch and cavg_pitch < safe_pitch:
             self.sta.status_msg('Micro image dimensions are too small for light field computation.', True)
             self.sta.interrupt = True
 
+        # if chosen safe micro image size is larger than in the aligned image
+        if 0 < limg_pitch < safe_pitch:
+            # remove existing pickle file
+            fp = os.path.join(self.cfg.exp_path, 'lfp_img_align.pkl')
+            os.remove(fp)
+            # status update
+            self.sta.status_msg('Angular resolution mismatch in previous alignment. Redo process')
+            self.sta.interrupt = True
+        # check if micro image size in valid range
+        elif limg_pitch >= safe_pitch > 0:
+            self.cfg.params[self.cfg.ptc_leng] = safe_pitch
+        # check if micro image size not set
+        elif limg_pitch == 0:
+            self._size_pitch = safe_pitch
+            self.cfg.params[self.cfg.ptc_leng] = safe_pitch
+
         return int(safe_pitch)
 
-    @staticmethod
-    def centroid_avg_pitch(centroids: (list, np.ndarray)) -> int:
+    def centroid_avg_pitch(self) -> np.ndarray:
         """ estimate micro image pitch only from centroids """
 
+        if not hasattr(self, '_CENTROIDS'):
+            return np.zeros(2)
+
         # convert to numpy array
-        centroids = np.asarray(centroids)
+        centroids = np.asarray(self._CENTROIDS)
 
         # estimate maximum patch size
-        central_row_idx = int(max(centroids[:, 3])/2)
-        mean_pitch = int(np.ceil(np.mean(np.diff(centroids[centroids[:, 3] == central_row_idx, 0]))))
+        central_row_idx = int(max(centroids[:, 2])/2)
+        central_col_idx = int(max(centroids[:, 3])/2)
+        mean_pitch_x = int(np.ceil(np.mean(np.diff(centroids[centroids[:, 2] == central_row_idx, 1]))))
+        mean_pitch_y = int(np.ceil(np.mean(np.diff(centroids[centroids[:, 3] == central_col_idx, 0]))))
 
-        # ensure mean patch size is odd
-        mean_pitch += np.mod(mean_pitch, 2)-1
-
-        return int(mean_pitch)
+        return np.array([mean_pitch_y, mean_pitch_x])
 
     def centroid_align_pitch(self) -> int:
         """ obtain micro image pitch of aligned light-field from number of centroids """
@@ -182,26 +189,34 @@ class LfpMicroLenses(object):
 
         return int(pitch_estimate_y)
 
-    def lfp_align_pitch(self) -> int:
-        """ estimate pitch size from aligned light-field (when centroids not available) """
+    def lfp_align_pitch(self) -> np.ndarray:
+        """ estimate pitch size from aligned light-field """
 
         # initialize output variable (return zero if aligned light field not present)
-        res = 0
+        self._limg_pitch = np.zeros(2, dtype='int')
         if self._lfp_img_align is None:
-            return res
+            return self._limg_pitch
 
-        # use vertical dimension only (as horizontal may differ from hexagonal stretching)
-        if hasattr(self, '_LENS_Y_MAX'):
-            res = int(self._lfp_img_align.shape[0] / self._LENS_Y_MAX)
+        # obtain micro image size from both dimensions (horizontal accounts for hexagonal stretching)
+        if hasattr(self, '_LENS_Y_MAX') and hasattr(self, '_LENS_X_MAX'):
+            h = np.sqrt(3)/2 if self._PAT_TYPE == 'hex' else 1
+            self._limg_pitch[0] = int(round(self._lfp_img_align.shape[0] / self._LENS_Y_MAX))
+            self._limg_pitch[1] = int(round(self._lfp_img_align.shape[1] / self._LENS_X_MAX * h))
         else:
-            # iterate through potential (uneven) micro image size candidates
-            for d in np.arange(3, 51, 2):
+            for axis in [0, 1]:
                 # take pitch where remainder of ratio between aligned image dimensions and candidate size is zero
-                if (self._lfp_img_align.shape[0] / d) % 1 == 0 and (self._lfp_img_align.shape[1] / d) % 1 == 0:
-                    res = int(d)
-                    break
+                self._limg_pitch[axis] = self.remainder_ratio(num=self._lfp_img_align.shape[axis])
 
-        return res
+        return self._limg_pitch.astype('int')
+
+    @staticmethod
+    def remainder_ratio(num: int) -> int:
+        # iterate through potential (odd or even) micro image size candidates
+        for d in np.arange(3, 151, 1):
+            if (num / d) % 1 == 0:
+                return int(d)
+
+        return 0
 
     @staticmethod
     def get_hex_direction(centroids: np.ndarray) -> bool:

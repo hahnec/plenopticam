@@ -110,14 +110,14 @@ class LfpDevignetter(LfpMicroLenses):
 
         # apply vignetting correction
         div_win = np.divide(lfp_win, weight_win, out=np.zeros_like(weight_win), where=weight_win != 0)
-        olap = self._C + margin
+        olap = self._cent_pitch + margin
         self._lfp_img[rint(mic[0])-olap:rint(mic[0])+olap+1, rint(mic[1])-olap:rint(mic[1])+olap+1] = div_win
 
         return True
 
     def _extract_win(self, img, mic, margin=0):
-        win = img[rint(mic[0]) - self._C-margin:rint(mic[0]) + self._C+margin+1,
-                  rint(mic[1]) - self._C-margin:rint(mic[1]) + self._C+margin+1]
+        win = img[rint(mic[0]) - self._cent_pitch - margin:rint(mic[0]) + self._cent_pitch + margin + 1,
+              rint(mic[1]) - self._cent_pitch - margin:rint(mic[1]) + self._cent_pitch + margin + 1]
         return win
 
     def fit_patch(self, patch):
@@ -162,8 +162,8 @@ class LfpDevignetter(LfpMicroLenses):
         self.sta.status_msg('Estimate white image noise level', self.cfg.params[self.cfg.opt_prnt])
         self.sta.progress(None, self.cfg.params[self.cfg.opt_prnt])
 
-        M = np.mean(self.cfg.calibs[self.cfg.ptc_mean])
-        lp_kernel = misc.create_gauss_kernel(length=M)
+        user_pitch = np.mean(self.cfg.calibs[self.cfg.ptc_mean])
+        lp_kernel = misc.create_gauss_kernel(length=int(user_pitch))
         if len(self._wht_img.shape) == 3:
             bw_img = rgb2gry(self._wht_img)[..., 0] if self._wht_img.shape[2] == 3 else self._wht_img[..., 0]
         else:

@@ -94,10 +94,10 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
         self.refo_stack = self.select_from_dir(rf_dirs, vp=0)
 
         # obtain micro image size of loaded data
-        self._M = self.vp_img_arr.shape[0] if self.vp_img_arr is not None else self._M
+        self._size_pitch = self.vp_img_arr.shape[0] if self.vp_img_arr is not None else self._size_pitch
 
         # set images to None if desired micro image size is bigger than in loaded data
-        if self._M < self.cfg.params[self.cfg.ptc_leng]:
+        if self._size_pitch < self.cfg.params[self.cfg.ptc_leng]:
             self.vp_img_arr = None
             self.refo_stack = None
 
@@ -155,11 +155,11 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
         # consider which button was pressed
         if self.vp_mode:
             if arg == 0:
-                self._u += 1 if self._u < self._M-1 else 0
+                self._u += 1 if self._u < self._size_pitch-1 else 0
             if arg == 1:
                 self._u -= 1 if self._u > 0 else 0
             if arg == 2:
-                self._v += 1 if self._v < self._M-1 else 0
+                self._v += 1 if self._v < self._size_pitch-1 else 0
             if arg == 3:
                 self._v -= 1 if self._v > 0 else 0
         else:
@@ -229,7 +229,7 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
     def reset_indices(self):
         """ reset light-field indices to default """
 
-        self._u, self._v, self._a, self._k, self._h = (self._M // 2 + 1, self._M // 2 + 1, -1, 0, 1)
+        self._u, self._v, self._a, self._k, self._h = (self._size_pitch // 2 + 1, self._size_pitch // 2 + 1, -1, 0, 1)
 
     def set_ascii_symbols(self):
         """ load individual ASCII symbols for buttons as they appear different on each OS """

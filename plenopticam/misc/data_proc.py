@@ -54,7 +54,7 @@ def safe_get(any_dict, *keys):
     return any_dict
 
 
-def img_resize(img, x_scale=1, y_scale=None, method=None, new_shape=None):
+def img_resize(img, x_scale=1, y_scale=None, method=None, new_shape=None, norm_opt=False):
     """ perform image interpolation based on scipy lib """
 
     if not y_scale:
@@ -84,7 +84,7 @@ def img_resize(img, x_scale=1, y_scale=None, method=None, new_shape=None):
         new_img[:, :, p] = f(np.linspace(0, m - 1, x_len), np.linspace(0, n - 1, y_len))
 
     # normalize to the 0-1 range
-    new_img = Normalizer(new_img).type_norm(new_min=0, new_max=1)
+    new_img = Normalizer(new_img).type_norm(new_min=0, new_max=1) if norm_opt else new_img
 
     # remove added third axes in monochromatic image
     new_img = new_img[..., 0] if new_img.shape[-1] == 1 else new_img

@@ -92,7 +92,7 @@ class LfpExporter(LfpViewpoints):
                                    file_type=type, tag=self.cfg.params[self.cfg.opt_dbug])
 
                 # print status
-                percentage = (((j*self._M+i+1)/self._M**2)*100)
+                percentage = (((j * self._size_pitch + i + 1) / self._size_pitch ** 2) * 100)
                 self.sta.progress(percentage, self.cfg.params[self.cfg.opt_prnt])
 
                 if self.sta.interrupt:
@@ -109,7 +109,7 @@ class LfpExporter(LfpViewpoints):
 
         # downscale image
         downscale = True if downscale is None else downscale
-        views_stacked_img = misc.img_resize(self.views_stacked_img.copy(), 1 / self._M) \
+        views_stacked_img = misc.img_resize(self.views_stacked_img.copy(), 1 / self._size_pitch) \
             if downscale else self.views_stacked_img.copy()
 
         # normalization
@@ -118,7 +118,7 @@ class LfpExporter(LfpViewpoints):
         views_stacked_img = misc.Normalizer(views_stacked_img, min=p_lo, max=p_hi).uint8_norm()
 
         # export all viewpoints in single image
-        views_stacked_path = os.path.join(self.cfg.exp_path, 'views_stacked_img_' + str(self._M) + 'px')
+        views_stacked_path = os.path.join(self.cfg.exp_path, 'views_stacked_img_' + str(self._size_pitch) + 'px')
         misc.save_img_file(views_stacked_img, file_path=views_stacked_path, file_type=type)
 
         self.sta.progress(100, self.cfg.params[self.cfg.opt_prnt])
@@ -140,7 +140,7 @@ class LfpExporter(LfpViewpoints):
 
         # create folder
         string = 'subpixel_' if self.cfg.params[self.cfg.opt_refi] else ''
-        folder_path = os.path.join(self.cfg.exp_path, 'refo_' + string + str(self._M) + 'px')
+        folder_path = os.path.join(self.cfg.exp_path, 'refo_' + string + str(self._size_pitch) + 'px')
         misc.mkdir_p(folder_path)
 
         for i, refo_img in enumerate(refo_stack):
@@ -161,7 +161,7 @@ class LfpExporter(LfpViewpoints):
         string = 'subpixel_' if self.cfg.params[self.cfg.opt_refi] and string is None else string
 
         if folder_path is None:
-            folder_path = os.path.join(self.cfg.exp_path, 'refo_' + string + str(self._M) + 'px')
+            folder_path = os.path.join(self.cfg.exp_path, 'refo_' + string + str(self._size_pitch) + 'px')
             misc.mkdir_p(folder_path)
 
         # write image file
@@ -178,7 +178,7 @@ class LfpExporter(LfpViewpoints):
             mi_size = self.cfg.params[self.cfg.ptc_leng]
 
         # filter images forming a pattern
-        lf_radius = min(int((mi_size+1)//4), self._C)
+        lf_radius = min(int((mi_size+1)//4), self._cent_pitch)
         img_set = self.reorder_vp_arr(pattern=pattern, lf_radius=lf_radius)
 
         # image normalization

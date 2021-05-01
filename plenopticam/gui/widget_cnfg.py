@@ -77,13 +77,16 @@ class CnfgWidget(tk.Toplevel):
                 # default values
                 value_ran, value_sel, scale_fld = '', '', 1
                 # load value range
-                if key == 'cal_meth':
+                if key == self.cfg.cal_meth:
                     value_ran, default = (c.CALI_METH, c.CALI_METH[0])
                     value_sel = self.cfg.params[self.cfg.cal_meth] if self.cfg.cal_meth in self.cfg.params else default
                     scale_fld = 2
-                elif key == 'ptc_leng':
+                if key == self.cfg.ptc_leng:
                     value_ran, default = (c.PTCH_SIZE, c.PTCH_SIZE[2])
                     value_sel = self.cfg.params[self.cfg.ptc_leng] if self.cfg.ptc_leng in self.cfg.params else default
+                if key == self.cfg.smp_meth:
+                    value_ran, default = (c.SMPL_METH, c.SMPL_METH[0])
+                    value_sel = self.cfg.params[self.cfg.smp_meth] if self.cfg.smp_meth in self.cfg.params else default
                 self.tk_vars[key] = tk.StringVar(value=value_sel)
                 obj_ent = tk.Spinbox(self, values=value_ran, textvariable=self.tk_vars[key], width=PX//2*scale_fld)
                 self.tk_vars[key].set(value=value_sel)   # set to default necessary for tkinter's spinbox

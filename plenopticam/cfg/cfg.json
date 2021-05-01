@@ -23,6 +23,7 @@
     "ptc_leng": 7,
     "ran_refo": [
         0,
-        3
-    ]
+        1
+    ],
+    "smp_meth": "global"
 }
