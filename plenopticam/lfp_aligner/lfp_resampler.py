@@ -36,7 +36,7 @@ class LfpResampler(LfpLocalResampler, LfpGlobalResampler):
             self.local_resampling()
 
         # unrecognized resampling method
-        if not self.cfg.params[self.cfg.smp_meth] in c.SMPL_METH:
+        if not self.cfg.params[self.cfg.smp_meth] in c.SMPL_METH and self.cfg.params[self.cfg.smp_meth]:
             self.sta.status_msg('Resampling method %s unrecognized.' % self.cfg.params[self.cfg.smp_meth],
                                 self.cfg.params[self.cfg.opt_prnt])
             self.sta.interrupt = True
