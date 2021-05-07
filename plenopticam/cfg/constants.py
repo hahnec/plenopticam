@@ -137,3 +137,38 @@ PFLU_VALS = ('vertical', 'horizontal', 'skew up', 'skew down')
 PTCH_SIZE = list(range(3, 99, 2))
 CALI_METH = ('area', 'peak', 'grid-fit', 'vign-fit')
 SMPL_METH = ('global', 'local')
+
+# user commands
+USER_SHRT = "ghf:c:p:r:m:s:"
+USER_CMDS = [
+    # non-setting commands
+    "gui", "help",
+    # strings
+    "file=",
+    "cali=",
+    "meta=",
+    "meth=",
+    "smpl=",
+    # integers
+    "patch=",
+    # lists
+    "refo=",
+    # booleans
+    "rcal",
+    "vign",
+    "lier",
+    "cont",
+    "colo",
+    "awb_",
+    "sat_",
+    "view",
+    "ropt",
+    "refi",
+    "pflu",
+    "arti",
+    "rota",
+    "dbug",
+    "prnt",
+    "dpth",
+    "remo"
+]

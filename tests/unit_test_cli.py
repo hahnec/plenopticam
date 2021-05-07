@@ -24,7 +24,7 @@ import sys
 import unittest
 
 from plenopticam.bin.cli_script import main, parse_options
-from plenopticam.cfg import PlenopticamConfig, PARAMS_KEYS
+from plenopticam.cfg import PlenopticamConfig, PARAMS_KEYS, USER_CMDS
 from plenopticam.misc import PlenopticamStatus
 
 
@@ -59,12 +59,8 @@ class PlenoptiCamTesterCli(unittest.TestCase):
 
         # get rid of potential arguments from previous usage
         sys.argv = sys.argv[:1]
-
-        exp_vals = ['dummy.ext', 'wht.ext', '', 'grid-fit', 9, [0, 3], False] + [True, ] * 15
-        usr_cmds = ["--file=", "--cali=", "--meta=", "--meth=", "--patch=", "--refo=", "--copt", "--vgn",
-                    "--hot", "--con", "--col", "--awb", "--sat", "--view", "--refo", "--refi", "--pflu",
-                    "--art", "--rota", "--dbug", "--prnt", "--rm"
-                    ]
+        exp_vals = ['dummy.ext', 'wht.ext', '', 'area', 'global', 9, [0, 2]] + [True, ]*6 + [False] + [True, ]*5
+        usr_cmds = ['--' + cmd for cmd in USER_CMDS[2:]]
 
         for cmd, kw, exp_val in zip(usr_cmds, PARAMS_KEYS, exp_vals):
 

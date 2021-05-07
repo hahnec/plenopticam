@@ -32,7 +32,7 @@ from plenopticam import lfp_refocuser
 from plenopticam.lfp_reader.top_level import SUPP_FILE_EXT
 from plenopticam import misc
 from plenopticam.cfg import PlenopticamConfig
-from plenopticam.cfg.constants import CALI_METH, SMPL_METH
+from plenopticam.cfg.constants import CALI_METH, SMPL_METH, USER_CMDS, USER_SHRT
 from plenopticam import __version__
 from plenopticam.gui.top_level import PlenopticamApp
 
@@ -56,13 +56,14 @@ def usage():
     # boolean options
     print("--refi                            Refocusing refinement")
     print("--pflu                            Scheimpflug refocus")
-    print("--vgn                             De-vignetting")
+    print("--vign                            De-vignetting")
+    print("--cont                            Contrast automation")
+    print("--colo                            Color Equalization")
     print("--awb                             Auto white balance")
-    print("--con                             Contrast automation")
-    print("--hot                             Hot pixel treatment")
     print("--sat                             Saturation automation")
-    print("--art                             Artifact removal")
-    print("--rm                              Override output folder")
+    print("--lier                            Hot pixel treatment")
+    print("--arti                            Artifact removal")
+    print("--remo                            Override output folder")
     print("")
 
 
@@ -70,10 +71,7 @@ def parse_options(argv, cfg):
     """ set config dictionary according to command line user arguments """
 
     try:
-        opts, args = getopt.getopt(argv, "ghf:c:p:r:m:s:",
-                                   ["gui", "help", "file=", "cali=", "patch=", "refo=", "meth=", "smpl=",
-                                    "dbug", "refi", "pflu", "rota",
-                                    "vgn", "awb", "con", "hot", "sat", "art", "rm"])
+        opts, args = getopt.getopt(argv, USER_SHRT, USER_CMDS)
     except getopt.GetoptError as e:
         print(e)
         sys.exit(2)
@@ -90,36 +88,46 @@ def parse_options(argv, cfg):
                 cfg.params[cfg.lfp_path] = arg.strip(" \"\'")
             if opt in ("-c", "--cali"):
                 cfg.params[cfg.cal_path] = arg.strip(" \"\'")
+            if opt == "--meta":
+                cfg.params[cfg.cal_meta] = arg.strip(" \"\'") if arg.strip(" \"\'") else ''
+            if opt in ("-m", "--meth"):
+                cfg.params[cfg.cal_meth] = arg.strip(" \"\'") if arg.strip(" \"\'") in CALI_METH else CALI_METH[0]
+            if opt in ("-s", "--smpl"):
+                cfg.params[cfg.smp_meth] = arg.strip(" \"\'") if arg.strip(" \"\'") in SMPL_METH else SMPL_METH[0]
             if opt in ("-p", "--patch"):
                 cfg.params[cfg.ptc_leng] = misc.str2type(arg)
             if opt in ("-r", "--refo"):
                 refo_range = misc.str2list(arg)
                 cfg.params[cfg.ran_refo] = refo_range if isinstance(refo_range, list) else [0, 2]
-            if opt in ("-m", "--meth"):
-                cfg.params[cfg.cal_meth] = arg.strip(" \"\'") if arg.strip(" \"\'") in CALI_METH else CALI_METH[0]
-            if opt in ("-s", "--smpl"):
-                cfg.params[cfg.smp_meth] = arg.strip(" \"\'") if arg.strip(" \"\'") in SMPL_METH else SMPL_METH[0]
-            if opt == "--dbug":
-                cfg.params[cfg.opt_dbug] = True
+            if opt == "--rcal":
+                cfg.params[cfg.opt_cali] = True
+            if opt == "--vign":
+                cfg.params[cfg.opt_vign] = True
+            if opt == "--lier":
+                cfg.params[cfg.opt_lier] = True
+            if opt == "--cont":
+                cfg.params[cfg.opt_cont] = True
+            if opt == "--colo":
+                cfg.params[cfg.opt_colo] = True
+            if opt == "--awb":
+                cfg.params[cfg.opt_awb_] = True
+            if opt == "--sat":
+                cfg.params[cfg.opt_sat_] = True
             if opt == "--refi":
                 cfg.params[cfg.opt_refi] = True
             if opt == "--pflu":
                 cfg.params[cfg.opt_pflu] = True
+            if opt == "--arti":
+                cfg.params[cfg.opt_arti] = True
             if opt == "--rota":
                 cfg.params[cfg.opt_rota] = True
-            if opt == "--vgn":
-                cfg.params[cfg.opt_vign] = True
-            if opt == "--awb":
-                cfg.params[cfg.opt_awb_] = True
-            if opt == "--con":
-                cfg.params[cfg.opt_cont] = True
-            if opt == "--hot":
-                cfg.params[cfg.opt_lier] = True
-            if opt == "--sat":
-                cfg.params[cfg.opt_sat_] = True
-            if opt == "--art":
-                cfg.params[cfg.opt_arti] = True
-            if opt == "--rm":
+            if opt == "--dbug":
+                cfg.params[cfg.opt_dbug] = True
+            if opt == "--prnt":
+                cfg.params[cfg.opt_prnt] = True
+            if opt == "--dpth":
+                cfg.params[cfg.opt_dpth] = True
+            if opt == "--remo":
                 cfg.params[cfg.dir_remo] = True
 
     return cfg
