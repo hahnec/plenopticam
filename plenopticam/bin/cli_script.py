@@ -32,7 +32,7 @@ from plenopticam import lfp_refocuser
 from plenopticam.lfp_reader.top_level import SUPP_FILE_EXT
 from plenopticam import misc
 from plenopticam.cfg import PlenopticamConfig
-from plenopticam.cfg.constants import CALI_METH, SMPL_METH, USER_CMDS, USER_SHRT
+from plenopticam.cfg.constants import CALI_METH, SMPL_METH, CLIF_OPTS, CLIF_SHRT
 from plenopticam import __version__
 from plenopticam.gui.top_level import PlenopticamApp
 
@@ -71,7 +71,7 @@ def parse_options(argv, cfg):
     """ set config dictionary according to command line user arguments """
 
     try:
-        opts, args = getopt.getopt(argv, USER_SHRT, USER_CMDS)
+        opts, args = getopt.getopt(argv, CLIF_SHRT, CLIF_OPTS)
     except getopt.GetoptError as e:
         print(e)
         sys.exit(2)

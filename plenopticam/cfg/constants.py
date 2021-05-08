@@ -138,9 +138,9 @@ PTCH_SIZE = list(range(3, 99, 2))
 CALI_METH = ('area', 'peak', 'grid-fit', 'vign-fit')
 SMPL_METH = ('global', 'local')
 
-# user commands
-USER_SHRT = "ghf:c:p:r:m:s:"
-USER_CMDS = [
+# command line interface options
+CLIF_SHRT = "ghf:c:p:r:m:s:"
+CLIF_OPTS = [
     # non-setting commands
     "gui", "help",
     # strings

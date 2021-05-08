@@ -1,2 +1,2 @@
 from .cfg import PlenopticamConfig
-from .constants import PARAMS_KEYS, USER_CMDS
+from .constants import PARAMS_KEYS, CLIF_OPTS
