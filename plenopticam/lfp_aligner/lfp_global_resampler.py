@@ -41,13 +41,20 @@ class LfpGlobalResampler(LfpMicroLenses):
         # get target micro image size
         target_pitch = np.array([np.floor(K[1, 1]), np.floor(K[0, 0])])
         if self.cfg.calibs[self.cfg.pat_type] == 'rec':
+            # odd micro image size if rectangular
             target_pitch += np.mod(target_pitch+1, 2)
+        elif self.cfg.calibs[self.cfg.pat_type] == 'hex':
+            # even micro image size if hexagonal
+            target_pitch += np.mod(target_pitch, 2)
 
         self._limg_pitch = target_pitch.astype('int')
         scales = np.array([self._limg_pitch[0]/K[1, 1], self._limg_pitch[1]/K[0, 0]])
         oshape = np.round(np.array(self._lfp_img.shape[:2])*scales).astype('int')
 
+        # form scale and translation matrix
         Kpts = np.diag([self._limg_pitch[0], self._limg_pitch[1], K[2, 2]])
+
+        # stretch axis with higher sampling density in hexagonal case for
         Kpts[0, 0] = Kpts[0, 0]*2/np.sqrt(3) if self.cfg.calibs[self.cfg.pat_type] == 'hex' else Kpts[0, 0]
 
         # create projective matrix of desired grid
@@ -68,10 +75,10 @@ class LfpGlobalResampler(LfpMicroLenses):
         del grxy
 
         # compute transfer matrix
-        aff_mat = np.dot(pmat_grid, np.linalg.pinv(pmat_cent))
+        tra_mat = np.dot(pmat_grid, np.linalg.inv(pmat_cent))
 
         # transform light-field image
-        tform = transform.ProjectiveTransform(matrix=aff_mat)
+        tform = transform.ProjectiveTransform(matrix=tra_mat)
         self._lfp_prj = transform.warp(self._lfp_img, tform.inverse, output_shape=oshape)
 
     def hexagonal_alignment(self):
