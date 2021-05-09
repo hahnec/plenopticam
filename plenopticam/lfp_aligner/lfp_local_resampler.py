@@ -108,11 +108,7 @@ class LfpLocalResampler(LfpMicroLenses):
         # initialize variables required for micro image resampling process
         patch_stack = np.zeros([self._LENS_X_MAX, self._size_pitch, self._size_pitch, self._DIMS[2]])
         hex_stretch = int(np.round(2 * self._LENS_X_MAX / np.sqrt(3)))
-        interp_stack = np.zeros([hex_stretch, self._size_pitch, self._size_pitch, self._DIMS[2]])
         self._lfp_img_align = np.zeros([self._LENS_Y_MAX*self._size_pitch, hex_stretch*self._size_pitch, self._DIMS[2]])
-
-        # check if lower neighbor of upper left MIC is shifted to left or right
-        hex_odd = self.get_hex_direction(self._CENTROIDS)
 
         # iterate over each MIC
         for ly in range(self._LENS_Y_MAX):
@@ -121,24 +117,14 @@ class LfpLocalResampler(LfpMicroLenses):
                 # find MIC by indices
                 mic = self.get_coords_by_idx(ly=ly, lx=lx)
 
-                # interpolate each micro image with its MIC as the center and consistent micro image size
+                # interpolate each micro image considering its centroid and consistent micro image size
                 window = self._lfp_img[rint(mic[0]) - self._cent_pitch - 1:rint(mic[0]) + self._cent_pitch + 2,
                          rint(mic[1]) - self._cent_pitch - 1:rint(mic[1]) + self._cent_pitch + 2]
                 patch_stack[lx, :, :] = self._patch_align(window, mic)[1:-1, 1:-1]
 
-            # image stretch interpolation in x-direction to compensate for hex-alignment
-            for y in range(self._size_pitch):
-                for x in range(self._size_pitch):
-                    for p in range(self._DIMS[2]):
-                        # stack of micro images elongated in x-direction
-                        interp_coords = np.linspace(0, self._LENS_X_MAX, int(np.round(self._LENS_X_MAX*2/np.sqrt(3))))+\
-                                        .5*np.mod(ly+hex_odd, 2)
-                        interp_stack[:, y, x, p] = np.interp(interp_coords, range(self._LENS_X_MAX), patch_stack[:, y, x, p])
-
-            self._lfp_img_align[ly*self._size_pitch:(ly+1)*self._size_pitch, :] = \
-                np.concatenate(interp_stack, axis=1).reshape((self._size_pitch,
-                                                              hex_stretch*self._size_pitch,
-                                                              self._DIMS[2]))
+            # elongation to compensate for hexagonal aspect ratio
+            lf_row = np.reshape(np.swapaxes(patch_stack, 0, 1), (self._size_pitch, -1, patch_stack.shape[-1]))
+            self._lfp_img_align[ly * self._size_pitch:(ly + 1) * self._size_pitch, :] = self.hex_stretch(lf_row)
 
             # check interrupt status
             if self.sta.interrupt:
