@@ -244,26 +244,6 @@ class LfpMicroLenses(object):
 
         return hex_odd
 
-    def hex_stretch(self, lf_row):
-        """ function used in resampling to spatially stretch an image dimension to compensate for hexagonal packing """
-
-        dims = lf_row.shape
-        lens_new_x = int(round(self._LENS_X_MAX * 2 / np.sqrt(3)))
-        limg_pitch = [self._size_pitch, self._size_pitch] if np.all(self._limg_pitch == np.zeros(2)) else self._limg_pitch
-        interp_stack = np.zeros([dims[0], lens_new_x*limg_pitch[1], dims[2]])
-
-        # image stretch interpolation in x-direction to compensate for hex-alignment
-        for y in range(limg_pitch[0]):
-            for x in range(limg_pitch[1]):
-                lf_row_pos = lf_row[y, x::limg_pitch[1], :]
-                for p in range(dims[2]):
-                    # stack of micro images elongated in x-direction
-                    interp_coords = np.linspace(0, self._LENS_X_MAX, lens_new_x)
-                    interp_string = np.interp(interp_coords, range(self._LENS_X_MAX), lf_row_pos[:self._LENS_X_MAX, p])
-                    interp_stack[y, x::limg_pitch[1], p] = interp_string
-
-        return interp_stack
-
     @property
     def lfp_img(self):
         return self._lfp_img.copy() if self._lfp_img is not None else False
