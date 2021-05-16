@@ -87,9 +87,8 @@ Installation
     1. install Python from https://www.python.org/
     2. download the source_ using ``$ git clone https://github.com/hahnec/plenopticam.git``
     3. go to the root directory ``$ cd plenopticam``
-    4. load other packages ``$ python3 -m pip install -r requirements.txt``
-    5. install with ``$ sudo python3 setup.py install`` from root directory
-    6. if installation ran smoothly, enter ``$ sudo plenopticam -g`` to the command line
+    4. install while loading other packages ``$ python3 -m pip install -r requirements.txt``
+    5. if installation ran smoothly, enter ``$ sudo plenopticam -g`` to the command line
 
 Usage
 =====
@@ -319,7 +318,7 @@ Further information
 .. _WinExeDoc: https://stackoverflow.com/a/65488937/10874787
 
 .. |MacAppDoc| replace:: **macOS unidentified developer**
-.. _MacAppDoc: https://support.apple.com/guide/mac-help/protect-your-mac-from-malware-mh40596
+.. _MacAppDoc: https://osxdaily.com/2015/05/04/disable-gatekeeper-command-line-mac-osx/
 
 .. |OpEx| replace:: **OpEx dataset**
 .. _OpEx: https://ndownloader.figshare.com/files/5201452
