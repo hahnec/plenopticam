@@ -250,7 +250,7 @@ class LfpContrast(LfpViewpoints):
     def auto_hist_align(img, ref_img, opt=None):
 
         if opt:
-            p_lo, p_hi = (0.005, 99.9)#(0.001, 99.999)
+            p_lo, p_hi = (0.005, 99.9)
             min_perc = np.percentile(rgb2gry(ref_img), p_lo)
             max_perc = np.percentile(ref_img, p_hi)
         else:
