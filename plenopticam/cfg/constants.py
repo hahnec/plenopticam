@@ -44,7 +44,7 @@ PARAMS_VALS = (
     [0, 2],
     # booleans
     False,
-    False,
+    True,
     False,
     False,
     True,
