@@ -42,7 +42,7 @@ for i, fname in enumerate(['a', 'b', 'c', 'd']):
 
 ax.set_aspect(3)
 ax.set_xlabel(r'$\nu$')#[a.u.]
-ax.set_ylabel(r'$\displaystyle\operatorname{max}\left(P(\nu, \mathbf{x})\right)$')#Norm. intensity \text{[a.u.]}
+ax.set_ylabel(r'$\displaystyle\underset{\mathbf{x}}{\operatorname{max}}\left(P(\nu, \mathbf{x})\right)$')#Norm. intensity \text{[a.u.]}
 ax.legend(loc='upper right')
 fig.savefig("scale_max_plot.pdf", bbox_inches="tight")
 plt.show()
