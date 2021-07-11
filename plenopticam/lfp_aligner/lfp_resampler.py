@@ -62,9 +62,15 @@ class LfpResampler(LfpLocalResampler, LfpGlobalResampler):
         # create output data folder
         misc.mkdir_p(self.cfg.exp_path, self.cfg.params[self.cfg.opt_prnt])
 
-        # write aligned light field as pickle file to avoid re-calculation
-        with open(os.path.join(self.cfg.exp_path, 'lfp_img_align.pkl'), 'wb') as f:
-            pickle.dump(self._lfp_img_align, f)
+        try:
+            # write aligned light field as pickle file to avoid re-calculation
+            with open(os.path.join(self.cfg.exp_path, 'lfp_img_align.pkl'), 'wb') as f:
+                pickle.dump(self._lfp_img_align, f)
+        except pickle.UnpicklingError:
+            # print status and interrupt process
+            fname = os.path.join(self.cfg.exp_path, 'lfp_img_align.pkl')
+            self.sta.status_msg('Pickle file may be corrupted %s' % fname, self.cfg.params[self.cfg.opt_prnt])
+            self.sta.error = True
 
         if self.cfg.params[self.cfg.opt_dbug]:
             misc.save_img_file(self._lfp_img_align, os.path.join(self.cfg.exp_path, 'lfp_img_align.tiff'))
