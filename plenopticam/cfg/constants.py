@@ -95,9 +95,9 @@ PARAMS_TYPE = (
 
 PARAMS_NAME = (
     # strings
-    'Light field image path',
-    'Calibration source path',
-    'Metadata file path',
+    'Light field image',
+    'Calibration source',
+    'Metadata file',
     'Calibration method',
     'Resampling method',
     # integers
@@ -108,19 +108,19 @@ PARAMS_NAME = (
     'Redo calibration',
     'De-Vignetting',
     'Pixel outlier removal',
-    'Contrast automation',
+    'Auto-Contrast',
     'Color equalization',
-    'Automatic white balance',
-    'Automatic saturation',
-    'Viewpoint image extraction',
-    'Refocused image extraction',
+    'White balance',
+    'Auto-Saturation',
+    'Viewpoint synthesis',
+    'Refocus synthesis',
     'Refocus refinement',
     'Scheimpflug focus',
-    'Fringe artifact removal',
+    'Hex-Artifact removal',
     'Rotation of light field',
     'Debug option',
     'Status print option',
-    'Depth map computation',
+    'Depth map',
     'Remove output folder'
 )
 
