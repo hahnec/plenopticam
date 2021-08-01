@@ -103,7 +103,7 @@ class CaliFinder(object):
                 # look for geo data in provided calibration tar-file
                 self._search_tar_file(self._path)
 
-            if not self._file_found:
+            if not self._file_found and not self.sta.error:
                 # print status and interrupt process
                 self.sta.status_msg('White image file not found. Revise calibration path settings', self._opt_prnt)
                 self.sta.error = True
@@ -266,9 +266,11 @@ class CaliFinder(object):
 
         except FileNotFoundError:
             self.sta.status_msg('Did not find calibration file', opt=self._opt_prnt)
+            self.sta.error = True
         except KeyError:
             self.sta.status_msg('Did not find "cal_file_manifest.json" in tar archive', opt=self._opt_prnt)
-        except Exception:
+            self.sta.error = True
+        else:
             pass
 
     @property
