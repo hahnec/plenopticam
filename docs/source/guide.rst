@@ -16,7 +16,9 @@ User Guide
 Settings
 --------
 
-Once PlenoptiCam is ready for use (whether from source_ or as an app_), you will be provided with a default parameter set. Start off varying these parameters as you like to see their impact on the light field geometry.
+Once PlenoptiCam is ready for use (whether from source_ or as an app_), you will be provided with a default parameter set.
+Start off varying these parameters as you like to see their impact on the light-field geometry.
+A scientific in-depth description of the parameters below is provided in the paper_.
 	
 .. list-table::
    :widths: 25 75
@@ -30,18 +32,32 @@ Once PlenoptiCam is ready for use (whether from source_ or as an app_), you will
      - Path to white image calibration file
    * - *Metadata file*
      - Path to file where calibration properties are stored (contents are specific to *PlenoptiCam*)
+   * - *Calibration method*
+     - Determine micro image center detection method. Use 'grid-fit' for regular MLAs with consistent spacings.
    * - *Micro image patch size*
-     - One-dimensional micro image size in pixels (detected maximum is reduced via cropping)
-   * - *Force re-calibration*
-     - Redo calibration process
-   * - *Automatic white balance*
-     - Apply channel normalization
+     - One-dimensional micro image size in pixels (your value may be reduced by a detected maximum)
+   * - *Refocusing range*
+     - Numeric start (left) and end point (right) for the refocus parameter.
+   * - *Redo calibration*
+     - Enforce re-calibration process
+   * - *De-Vignetting*
+     - Combat vignetting (white calibration image division by default)
+   * - *Auto-Contrast*
+     - Histogram alignment based on percentiles in luminance channel
+   * - *White balance*
+     - Apply channel-wise normalization
+   * - *Auto-Saturation*
+     - Histogram alignment based on percentiles in saturation channel
    * - *Refocus refinement*
-     - Enable sub-pixel precise refocusing
+     - Enable sub-pixel precise refocusing in steps 1 divided by *micro image size*
    * - *Scheimpflug focus*
      - Imitates tilted sensor focus with 'horizontal', 'vertical', just as upwards and downwards 'skew'
-   * - *Override output folder*
-     - Entire folder gets removed if checked 
+   * - *Artifact removal*
+     - Rectification of potential artifacts arising from hexagonal micro image arrangements (useful for local resampling).
+   * - *Depth map*
+     - Disparity computation using depthy_ providing depth as a `*.ply` and `*.pfm` file.
+   * - *Remove output folder*
+     - Entire folder gets removed for new process if checked
 
 Using your own Lytro Illum
 --------------------------
@@ -80,6 +96,8 @@ In order to acquire the tar-archive from your own Illum camera, use the followin
 .. _source: https://github.com/hahnec/plenopticam/archive/master.zip
 .. _app: https://github.com/hahnec/plenopticam/releases/
 .. _issue: https://github.com/hahnec/plenopticam/issues/new
+.. _depthy: https://github.com/hahnec/depthy
+.. _paper: https://arxiv.org/pdf/2010.11687.pdf
 
 .. Indices and tables
 .. ==================
