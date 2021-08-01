@@ -98,6 +98,7 @@ class CaliFinder(object):
                 # look for geo data in calibration tar-files (skip if already found in folders with file_found==True)
                 self._search_cal_file()
 
+            # when path is tar file
             elif self._path.lower().endswith('.tar'):
 
                 # look for geo data in provided calibration tar-file
