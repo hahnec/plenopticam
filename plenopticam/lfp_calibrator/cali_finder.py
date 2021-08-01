@@ -248,9 +248,9 @@ class CaliFinder(object):
         with tarfile.open(tarname, mode='r') as tar_obj:
 
             # find location of cal_file_manifest.json
-            fname = 'cal_file_manifest.json'
-            subdir = self._serial if join(self._serial, fname) in tar_obj.getnames() else 'unitdata'
-            fpath = join(subdir, fname)
+            fname = '/cal_file_manifest.json'   # join produces double backslash on Win causing errors in .extractfile()
+            subdir = self._serial if self._serial + fname in tar_obj.getnames() else 'unitdata'
+            fpath = subdir + fname
 
             try:
                 # extract cali file metadata
@@ -274,8 +274,8 @@ class CaliFinder(object):
                                                           self._cal_fn.lower().replace('.raw', '.json'))
 
                 # load raw data
-                self._raw_data = tar_obj.extractfile(join(subdir,self._cal_fn)).read()
-                json_file = tar_obj.extractfile(join(subdir, self._cal_fn.upper().replace('.RAW', '.TXT')))
+                self._raw_data = tar_obj.extractfile(subdir + self._cal_fn).read()
+                json_file = tar_obj.extractfile(subdir + self._cal_fn.upper().replace('.RAW', '.TXT'))
                 self._wht_json = json.loads(json_file.read())
 
     @property
