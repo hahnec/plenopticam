@@ -206,7 +206,7 @@ Further information
 ===================
 
 * check out PlenoptiCam's partner project PlenoptiSign_ capable of estimating metric light field geometries
-* visit `plenoptic.info <http://www.plenoptic.info>`__ for technical details, animated figures and theoretical background
+* visit `plenoptic.info <http://www.plenoptic.info>`__ for technical details, animated figures and theoretical backgrounds
 
 .. Image substitutions
 
