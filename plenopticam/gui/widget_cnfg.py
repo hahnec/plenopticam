@@ -31,6 +31,12 @@ from plenopticam.cfg import constants as c
 
 class CnfgWidget(tk.Toplevel):
 
+    # hidden parameter options in user interface
+    EXCLUDED_PARAMS = ('opt_view', 'opt_refo', 'opt_prnt', 'opt_rota', 'opt_dbug', 'opt_colo', 'opt_lier')
+
+    # generate settings properties in dict consisting of lists containing names and types
+    PROPERTIES = dict(zip(c.PARAMS_KEYS, (pair for pair in zip(c.PARAMS_NAME, c.PARAMS_TYPE))))
+
     def __init__(self, parent):
 
         # inheritance
@@ -46,34 +52,30 @@ class CnfgWidget(tk.Toplevel):
         # tk widget list init
         self.obj_ents = {}
 
-        # generate settings properties using dict consisting of lists containing names and types
-        PROPERTIES = dict(zip(c.PARAMS_KEYS, (pair for pair in zip(c.PARAMS_NAME, c.PARAMS_TYPE))))
-
         # hide some config keys in user interface which are given as tuple
-        EXCLUDED = ('opt_view', 'opt_refo', 'opt_prnt', 'opt_rota', 'opt_dbug', 'opt_colo', 'opt_lier')
-        self.gui_keys = [key for key in PROPERTIES.keys() if key not in EXCLUDED]
+        self.gui_keys = [key for key in self.PROPERTIES.keys() if key not in self.EXCLUDED_PARAMS]
 
         # place properties in tk frame
         for i, key in enumerate(self.gui_keys):
-            tk.Label(self, text=PROPERTIES[key][0]).grid(row=i, column=0, sticky='W')
+            tk.Label(self, text=self.PROPERTIES[key][0]).grid(row=i, column=0, sticky='W')
             obj_ent = None
-            if PROPERTIES[key][1] == 'str':
+            if self.PROPERTIES[key][1] == 'str':
                 self.tk_vars[key] = tk.StringVar(value=self.cfg.params[key])
                 obj_ent = tk.Entry(self, textvariable=self.tk_vars[key], width=2*PX)
 
-            elif PROPERTIES[key][1] == 'int':
+            elif self.PROPERTIES[key][1] == 'int':
                 self.tk_vars[key] = tk.IntVar(value=int(self.cfg.params[key]))
                 obj_ent = tk.Entry(self, textvariable=self.tk_vars[key], width=PX)
 
-            elif PROPERTIES[key][1] == 'list':
+            elif self.PROPERTIES[key][1] == 'list':
                 self.tk_vars[key] = tk.StringVar(value=str(self.cfg.params[key]))
                 obj_ent = tk.Entry(self, textvariable=self.tk_vars[key], width=PX)
 
-            elif PROPERTIES[key][1] == 'ran':
+            elif self.PROPERTIES[key][1] == 'ran':
                 self.tk_vars[key] = TwoStringVars(values=self.cfg.params[key])
                 obj_ent = DoubleSpinbox(self, textvariable=self.tk_vars[key], width=PX)
 
-            elif PROPERTIES[key][1] == 'sel':
+            elif self.PROPERTIES[key][1] == 'sel':
                 # default values
                 value_ran, value_sel, scale_fld = '', '', 1
                 # load value range
@@ -91,7 +93,7 @@ class CnfgWidget(tk.Toplevel):
                 obj_ent = tk.Spinbox(self, values=value_ran, textvariable=self.tk_vars[key], width=PX//2*scale_fld)
                 self.tk_vars[key].set(value=value_sel)   # set to default necessary for tkinter's spinbox
 
-            elif PROPERTIES[key][1] == 'bool':
+            elif self.PROPERTIES[key][1] == 'bool':
                 self.tk_vars[key] = tk.BooleanVar(value=bool(self.cfg.params[key]))
                 obj_ent = tk.Checkbutton(self, variable=self.tk_vars[key])
 
@@ -99,7 +101,7 @@ class CnfgWidget(tk.Toplevel):
             obj_ent.grid(row=i, column=1, sticky='W')
 
             # display text from most right
-            obj_ent.xview_moveto(1.0) if PROPERTIES[key][1] != 'bool' else None
+            obj_ent.xview_moveto(1.0) if self.PROPERTIES[key][1] != 'bool' else None
 
             self.obj_ents[key] = obj_ent
 
