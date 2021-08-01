@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2. User Guide &#8212; PlenoptiCam 0.8.0 documentation</title>
+    <title>2. User Guide &#8212; PlenoptiCam 0.8.1 documentation</title>
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -26,7 +26,7 @@
         <li class="right" >
           <a href="readme.html" title="1. PlenoptiCam"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.8.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.8.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">2. </span>User Guide</a></li> 
       </ul>
     </div>  
@@ -43,7 +43,9 @@
 <hr class="docutils" />
 <div class="section" id="settings">
 <h2><span class="section-number">2.1. </span>Settings<a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h2>
-<p>Once PlenoptiCam is ready for use (whether from <a class="reference external" href="https://github.com/hahnec/plenopticam/archive/master.zip">source</a> or as an <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/">app</a>), you will be provided with a default parameter set. Start off varying these parameters as you like to see their impact on the light field geometry.</p>
+<p>Once PlenoptiCam is ready for use (whether from <a class="reference external" href="https://github.com/hahnec/plenopticam/archive/master.zip">source</a> or as an <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/">app</a>), you will be provided with a default parameter set.
+Start off varying these parameters as you like to see their impact on the light-field geometry.
+A scientific in-depth description of the parameters below is provided in the <a class="reference external" href="https://arxiv.org/pdf/2010.11687.pdf">paper</a>.</p>
 <table class="colwidths-given docutils align-default">
 <colgroup>
 <col style="width: 25%" />
@@ -64,23 +66,44 @@
 <tr class="row-even"><td><p><em>Metadata file</em></p></td>
 <td><p>Path to file where calibration properties are stored (contents are specific to <em>PlenoptiCam</em>)</p></td>
 </tr>
-<tr class="row-odd"><td><p><em>Micro image patch size</em></p></td>
-<td><p>One-dimensional micro image size in pixels (detected maximum is reduced via cropping)</p></td>
+<tr class="row-odd"><td><p><em>Calibration method</em></p></td>
+<td><p>Determine micro image center detection method. Use ‘grid-fit’ for regular MLAs with consistent spacings.</p></td>
 </tr>
-<tr class="row-even"><td><p><em>Force re-calibration</em></p></td>
-<td><p>Redo calibration process</p></td>
+<tr class="row-even"><td><p><em>Micro image patch size</em></p></td>
+<td><p>One-dimensional micro image size in pixels (your value may be reduced by a detected maximum)</p></td>
 </tr>
-<tr class="row-odd"><td><p><em>Automatic white balance</em></p></td>
-<td><p>Apply channel normalization</p></td>
+<tr class="row-odd"><td><p><em>Refocusing range</em></p></td>
+<td><p>Numeric start (left) and end point (right) for the refocus parameter.</p></td>
 </tr>
-<tr class="row-even"><td><p><em>Refocus refinement</em></p></td>
-<td><p>Enable sub-pixel precise refocusing</p></td>
+<tr class="row-even"><td><p><em>Redo calibration</em></p></td>
+<td><p>Enforce re-calibration process</p></td>
 </tr>
-<tr class="row-odd"><td><p><em>Scheimpflug focus</em></p></td>
+<tr class="row-odd"><td><p><em>De-Vignetting</em></p></td>
+<td><p>Combat vignetting (white calibration image division by default)</p></td>
+</tr>
+<tr class="row-even"><td><p><em>Auto-Contrast</em></p></td>
+<td><p>Histogram alignment based on percentiles in luminance channel</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>White balance</em></p></td>
+<td><p>Apply channel-wise normalization</p></td>
+</tr>
+<tr class="row-even"><td><p><em>Auto-Saturation</em></p></td>
+<td><p>Histogram alignment based on percentiles in saturation channel</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>Refocus refinement</em></p></td>
+<td><p>Enable sub-pixel precise refocusing in steps 1 divided by <em>micro image size</em></p></td>
+</tr>
+<tr class="row-even"><td><p><em>Scheimpflug focus</em></p></td>
 <td><p>Imitates tilted sensor focus with ‘horizontal’, ‘vertical’, just as upwards and downwards ‘skew’</p></td>
 </tr>
-<tr class="row-even"><td><p><em>Override output folder</em></p></td>
-<td><p>Entire folder gets removed if checked</p></td>
+<tr class="row-odd"><td><p><em>Artifact removal</em></p></td>
+<td><p>Rectification of potential artifacts arising from hexagonal micro image arrangements (useful for local resampling).</p></td>
+</tr>
+<tr class="row-even"><td><p><em>Depth map</em></p></td>
+<td><p>Disparity computation using <a class="reference external" href="https://github.com/hahnec/depthy">depthy</a> providing depth as a <cite>*.ply</cite> and <cite>*.pfm</cite> file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>Remove output folder</em></p></td>
+<td><p>Entire folder gets removed for new process if checked</p></td>
 </tr>
 </tbody>
 </table>
@@ -148,7 +171,7 @@
         <li class="right" >
           <a href="readme.html" title="1. PlenoptiCam"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.8.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.8.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">2. </span>User Guide</a></li> 
       </ul>
     </div>

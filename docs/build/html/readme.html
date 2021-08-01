@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1. PlenoptiCam &#8212; PlenoptiCam 0.8.0 documentation</title>
+    <title>1. PlenoptiCam &#8212; PlenoptiCam 0.8.1 documentation</title>
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -30,7 +30,7 @@
         <li class="right" >
           <a href="index.html" title="PlenoptiCam’s Reference Document"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.8.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.8.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>PlenoptiCam</a></li> 
       </ul>
     </div>  
@@ -160,7 +160,8 @@ This application is meant for researchers, developers, beginners and other fiddl
 <li><p>install Python from <a class="reference external" href="https://www.python.org/">https://www.python.org/</a></p></li>
 <li><p>download the <a class="reference external" href="https://github.com/hahnec/plenopticam/archive/master.zip">source</a> using <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/hahnec/plenopticam.git</span></code></p></li>
 <li><p>go to the root directory <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">cd</span> <span class="pre">plenopticam</span></code></p></li>
-<li><p>install while loading other packages <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code></p></li>
+<li><p>load other packages <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code></p></li>
+<li><p>install with <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">sudo</span> <span class="pre">python3</span> <span class="pre">setup.py</span> <span class="pre">install</span></code> from root directory</p></li>
 <li><p>if installation ran smoothly, enter <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">sudo</span> <span class="pre">plenopticam</span> <span class="pre">-g</span></code> to the command line</p></li>
 </ol>
 </dd>
@@ -257,7 +258,7 @@ In such case, the white image calibration file corresponding to the Lytro Illum 
 <p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">sudo</span> <span class="pre">plenopticam</span> <span class="pre">-f</span> <span class="pre">'/Users/../Folder/'</span> <span class="pre">-c</span> <span class="pre">'Users/../caldata-B5144000XXX.tar'</span></code></p>
 <p>with necessary write privileges on Unix Systems. A Windows-equivalent command would be as follows:</p>
 <p><code class="docutils literal notranslate"><span class="pre">plenopticam</span> <span class="pre">--file=&quot;C:\\..\\Folder\\&quot;</span> <span class="pre">--cali=&quot;C:\\..\\caldata-B5144000XXX.tar&quot;</span></code></p>
-<p>More information on optional arguments, can be found using the help parameter</p>
+<p>More information on optional arguments can be found using the help parameter</p>
 <p><code class="docutils literal notranslate"><span class="pre">plenopticam</span> <span class="pre">-h</span></code></p>
 <p>Results can be found inside a folder named after your light field file which is located in the same directory path.
 Depending on provided files and settings, your results folder may contain the following data:</p>
@@ -284,13 +285,15 @@ Depending on provided files and settings, your results folder may contain the fo
 </div>
 <div class="section" id="citation">
 <h2><span class="section-number">1.5. </span>Citation<a class="headerlink" href="#citation" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-BibTeX notranslate"><div class="highlight"><pre><span></span><span class="nc">@misc</span><span class="p">{</span><span class="nl">hahne2020plenopticam</span><span class="p">,</span>
-      <span class="na">title</span><span class="p">=</span><span class="s">{PlenoptiCam v1.0: A light-field imaging framework}</span><span class="p">,</span>
-      <span class="na">author</span><span class="p">=</span><span class="s">{Christopher Hahne and Amar Aggoun}</span><span class="p">,</span>
-      <span class="na">year</span><span class="p">=</span><span class="s">{2020}</span><span class="p">,</span>
-      <span class="na">eprint</span><span class="p">=</span><span class="s">{2010.11687}</span><span class="p">,</span>
-      <span class="na">archivePrefix</span><span class="p">=</span><span class="s">{arXiv}</span><span class="p">,</span>
-      <span class="na">primaryClass</span><span class="p">=</span><span class="s">{eess.IV}</span>
+<div class="highlight-BibTeX notranslate"><div class="highlight"><pre><span></span><span class="nc">@ARTICLE</span><span class="p">{</span><span class="nl">plenopticam</span><span class="p">,</span>
+    <span class="na">author</span><span class="p">=</span><span class="s">{Hahne, Christopher and Aggoun, Amar}</span><span class="p">,</span>
+    <span class="na">journal</span><span class="p">=</span><span class="s">{IEEE Transactions on Image Processing}</span><span class="p">,</span>
+    <span class="na">title</span><span class="p">=</span><span class="s">{PlenoptiCam v1.0: A Light-Field Imaging Framework}</span><span class="p">,</span>
+    <span class="na">year</span><span class="p">=</span><span class="s">{2021}</span><span class="p">,</span>
+    <span class="na">volume</span><span class="p">=</span><span class="s">{30}</span><span class="p">,</span>
+    <span class="na">number</span><span class="p">=</span><span class="s">{}</span><span class="p">,</span>
+    <span class="na">pages</span><span class="p">=</span><span class="s">{6757-6771}</span><span class="p">,</span>
+    <span class="na">doi</span><span class="p">=</span><span class="s">{10.1109/TIP.2021.3095671}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -373,7 +376,7 @@ Depending on provided files and settings, your results folder may contain the fo
         <li class="right" >
           <a href="index.html" title="PlenoptiCam’s Reference Document"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.8.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PlenoptiCam 0.8.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>PlenoptiCam</a></li> 
       </ul>
     </div>
