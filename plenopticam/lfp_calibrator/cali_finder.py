@@ -240,7 +240,14 @@ class CaliFinder(object):
         # read mla_calibration JSON file from tar archive
         try:
             with tarfile.open(tarname, mode='r') as tar_obj:
-                cal_manifest = tar_obj.extractfile('unitdata/cal_file_manifest.json')
+
+                # find location of cal_file_manifest.json
+                fname = 'cal_file_manifest.json'
+                subdir = self._serial if join(self._serial, fname) in tar_obj.getnames() else 'unitdata'
+                fpath = join(subdir, fname)
+
+                # extract cali file metadata
+                cal_manifest = tar_obj.extractfile(fpath)
                 json_dict = json.loads(cal_manifest.read().decode('utf-8'))
                 self._match_georef(json_dict)
                 if self._cal_fn:
@@ -253,8 +260,8 @@ class CaliFinder(object):
                                                               self._cal_fn.lower().replace('.raw', '.json'))
 
                     # load raw data
-                    self._raw_data = tar_obj.extractfile('unitdata/' + self._cal_fn).read()
-                    json_file = tar_obj.extractfile('unitdata/' + self._cal_fn.upper().replace('.RAW', '.TXT'))
+                    self._raw_data = tar_obj.extractfile(join(subdir,self._cal_fn)).read()
+                    json_file = tar_obj.extractfile(join(subdir, self._cal_fn.upper().replace('.RAW', '.TXT')))
                     self._wht_json = json.loads(json_file.read())
 
         except FileNotFoundError:
