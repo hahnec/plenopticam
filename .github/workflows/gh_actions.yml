@@ -13,6 +13,10 @@ on:
     branches:
       - master
       - develop
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Test scenario tag'
 
 jobs:
   unit_test:
