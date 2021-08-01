@@ -158,7 +158,7 @@ with necessary write privileges on Unix Systems. A Windows-equivalent command wo
 
 ``plenopticam --file="C:\\..\\Folder\\" --cali="C:\\..\\caldata-B5144000XXX.tar"``
 
-More information on optional arguments, can be found using the help parameter
+More information on optional arguments can be found using the help parameter
 
 ``plenopticam -h``
 
@@ -191,13 +191,15 @@ Citation
 
 .. code-block:: BibTeX
 
-    @misc{hahne2020plenopticam,
-          title={PlenoptiCam v1.0: A light-field imaging framework},
-          author={Christopher Hahne and Amar Aggoun},
-          year={2020},
-          eprint={2010.11687},
-          archivePrefix={arXiv},
-          primaryClass={eess.IV}
+    @ARTICLE{plenopticam,
+        author={Hahne, Christopher and Aggoun, Amar},
+        journal={IEEE Transactions on Image Processing},
+        title={PlenoptiCam v1.0: A Light-Field Imaging Framework},
+        year={2021},
+        volume={30},
+        number={},
+        pages={6757-6771},
+        doi={10.1109/TIP.2021.3095671}
     }
 
 Further information
