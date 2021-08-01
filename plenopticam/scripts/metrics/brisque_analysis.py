@@ -77,6 +77,9 @@ if __name__ == "__main__":
                     cy, cx = [x//2 for x in img.shape[:2]]
                     hh, hw = [x//10 for x in img.shape[:2]]
                     img_tile = img[cy-hh:cy+hh+1, cx-hw:cx+hw+1]
+                elif target_folder.__contains__('dans_colour_srgb') or target_folder.__contains__('clim_clr'):
+                    # crop edges to remove zigzag pattern
+                    img_tile = img[2:-2, 2:-2, ...]
                 else:
                     img_tile = img
 
@@ -95,9 +98,9 @@ if __name__ == "__main__":
     softx_width = 5.39749
     ieee_width = 7.14113
     fig.set_size_inches(w=ieee_width, h=a)
-    width = .3
+    width = .2
 
-    labels = ['LFToolbox v0.4', 'CLIM-VSENSE', 'PlenoptiCam v1.0.0']
+    labels = ['LFToolbox v0.5', 'CLIM-VSENSE', 'PlenoptiCam v1.0']
     labelcycler = cycle(labels)
     #labelcycler = cycle(target_folders)
 
@@ -118,7 +121,7 @@ if __name__ == "__main__":
     # tick labels
     tick_labels = [os.path.splitext(file)[0] for file in files if os.path.splitext(file)[0].split('_')[0] not in skip_list]
     tick_labels = [label.split('_')[-1] if not label.startswith('Bee') else label for label in tick_labels]
-    plt.xticks(range(len(tick_labels)), tick_labels, rotation='vertical')
+    plt.xticks(range(len(tick_labels)), tick_labels, rotation=90, ha='center')
 
     # leave space for tick labels
     plt.subplots_adjust(bottom=0.33)
@@ -127,12 +130,17 @@ if __name__ == "__main__":
     plt.grid(True, alpha=.35)
 
     plt.ylabel('BRISQUE [Score]')
-    plt.legend(frameon=True)
+    plt.gca().yaxis.set_label_coords(x=-.07, y=.5)
+    plt.legend(frameon=True, loc='upper left', bbox_to_anchor=(0.033, 1.01))
+
+    plt.tick_params(axis="x", direction="out", length=4)
+    plt.tick_params(axis="y", direction="out", length=4)
 
     # define axis limits
     if np.asarray(score_series).dtype != 'O':
         plt.ylim(10*(np.min(score_series)//10), 10*np.ceil(np.max(score_series)/10))
-        plt.xlim(-1, len(scores))
+        x_range = [x+-.5*width for x in range(len(scores))]
+        plt.xlim(x_range[0]-3*width, x_range[-1]+4*width)
 
     # score assessment
     try:
@@ -143,5 +151,7 @@ if __name__ == "__main__":
     except:
         pass
 
-    plt.savefig("brisque_central.pgf")
+    plt.tight_layout()
+    plt.subplots_adjust(bottom=0.35)
+    plt.savefig("brisque_central.pdf")
     plt.show()
