@@ -25,10 +25,15 @@ try:
 except ImportError:
     import Tkinter as tk
 
-from PIL import Image, ImageTk, ImageFont, ImageDraw
+from PIL import Image, ImageFont, ImageDraw
 import os, sys
 from functools import partial
 import glob
+
+try:
+    from PIL.ImageTk import PhotoImage
+except:
+    PhotoImage = tk.PhotoImage
 
 from plenopticam.lfp_extractor import LfpViewpoints
 from plenopticam.misc.os_ops import get_img_list
@@ -142,7 +147,7 @@ class ViewWidget(tk.Canvas, LfpViewpoints):
             next_frame = self.get_dummy
 
         # set tk frame as member variable as it gets lost otherwise
-        self.tk_frame = ImageTk.PhotoImage(next_frame)
+        self.tk_frame = PhotoImage(next_frame)
 
         self.delete(self.find_withtag("bacl"))
         self.allready = self.create_image(PX*4, PY*4, image=self.tk_frame, anchor=tk.NW, tag="bacl")
