@@ -66,14 +66,20 @@ else:
         data_files=FILES,
  )
 
+path = os.path.dirname(os.path.realpath(__file__))
 # parse description section text
-readme_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'README.rst')
-with open(readme_path, "r") as f:
+readme_path = os.path.join(path, 'README.rst')
+with open(readme_path, 'r') as f:
     data = f.read()
     readme_nodes = list(core.publish_doctree(data))
     for node in readme_nodes:
         if node.astext().startswith('Description'):
                 long_description = node.astext().rsplit('\n\n')[1]
+
+# parse package requirements from text file
+reqtxt_path = os.path.join(path, 'requirements.txt')
+with open(reqtxt_path, 'r') as f:
+    req_list = f.read().split('\n')
 
 setup(
       name='plenopticam',
@@ -90,8 +96,7 @@ setup(
       scripts=['plenopticam/bin/cli_script.py'],
       entry_points={'console_scripts': ['plenopticam=plenopticam.bin.cli_script:main'], },
       packages=find_packages(),
-      install_requires=['numpy', 'scipy==1.4.1', 'imageio', 'Pillow', 'docutils', 'requests',
-                        'colour-demosaicing', 'colour', 'color-matcher', 'color-space-converter', 'depthy'],
+      install_requires=req_list,
       include_package_data=True,
       zip_safe=False,
       **extra_options
