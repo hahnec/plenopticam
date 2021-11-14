@@ -1,3 +1,4 @@
+from .centroid_fit_sort import CentroidFitSorter
 from .centroid_refiner import CentroidRefiner
 from .centroid_sorter import CentroidSorter
 from .centroid_extractor import CentroidExtractor

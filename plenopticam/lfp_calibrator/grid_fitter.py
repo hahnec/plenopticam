@@ -2,8 +2,10 @@ import numpy as np
 from scipy.optimize import leastsq, least_squares
 import warnings
 
-l2_norm = lambda c_meas, c_grid: np.sqrt(np.sum((c_meas - c_grid)**2, axis=1))
-l1_norm = lambda c_meas, c_grid: np.sum(np.abs(c_meas - c_grid), axis=1)
+l2_norm_eucl = lambda c_meas, c_grid: np.sqrt(np.sum((c_meas - c_grid) ** 2, axis=1))
+l1_norm_eucl = lambda c_meas, c_grid: np.sum(np.abs(c_meas - c_grid), axis=1)
+l2_norm_elem = lambda c_meas, c_grid: np.square(c_meas - c_grid)
+l1_norm_elem = lambda c_meas, c_grid: np.abs(c_meas - c_grid)
 
 
 class GridFitter(object):
@@ -25,6 +27,7 @@ class GridFitter(object):
         self._affine = kwargs['affine'] if 'affine' in kwargs else False
         self._compose = kwargs['compose'] if 'compose' in kwargs else False
         self._flip_yx = kwargs['flip_xy'] if 'flip_xy' in kwargs else False
+        self._normalize = kwargs['normalize'] if 'normalize' in kwargs else False
         self.z_dist = kwargs['z_dist'] if 'z_dist' in kwargs else 1.0
 
         # regression settings
@@ -46,6 +49,8 @@ class GridFitter(object):
         if hasattr(self, '_coords_list'):
             self._MAX_Y = int(max(self._coords_list[:, 2])+1)   # add one to compensate for index zero
             self._MAX_X = int(max(self._coords_list[:, 3])+1)   # add one to compensate for index zero
+        else:
+            self._MAX_Y, self._MAX_X = 2, 2
 
         self._ptc_mean = [self._ptc_mean]*2 if isinstance(self._ptc_mean, (int, float, np.float64)) else self._ptc_mean
 
@@ -63,17 +68,17 @@ class GridFitter(object):
 
         return True
 
-    def comp_grid_fit(self):
-        """ perform fitting for two dimensional grid coordinates """
+    def coeff_fit(self, coords_list=None, euclid_opt=True):
+        """ perform two dimensional grid regression """
 
-        # print status
-        self.sta.status_msg('Grid fitting', self.cfg.params[self.cfg.opt_prnt]) if self.sta else None
+        self._coords_list = coords_list if coords_list is not None else self._coords_list
 
         # initial fit parameters
         cy_s, cx_s = self._arr_shape/2 if hasattr(self, '_arr_shape') else [0, 0]
         sy_s, sx_s = self._ptc_mean if hasattr(self, '_ptc_mean') else [1, 1]
         p_init = np.diag([sy_s, sx_s, 1])
         p_init[:2, -1] = np.array([cy_s, cx_s])
+        p_init = p_init.flatten()[:8]       # account for 8 degrees of freedom
         beta = 1 if self.penalty_enable else 0
 
         with warnings.catch_warnings():
@@ -81,14 +86,27 @@ class GridFitter(object):
 
             # LMA fit: executes least-squares regression for optimization of initial parameters
             try:
-                self._coeffs = leastsq(self.cost_fun, p_init, args=(self._coords_list, beta))[0]
+                self._coeffs = leastsq(self.cost_fun, p_init, args=(self._coords_list, beta, euclid_opt))[0]
             except:
                 # newer interface for LMA
                 self._coeffs = least_squares(self.cost_fun, p_init.flatten(),
-                                             jac='3-point', args=(self._coords_list, beta), method='lm').x
+                                             jac='3-point', args=(self._coords_list, beta, euclid_opt), method='lm').x
+
+    def comp_grid_fit(self):
+        """ perform two dimensional grid regression and return fitted grid """
+
+        # print status
+        self.sta.status_msg('Grid fitting', self.cfg.params[self.cfg.opt_prnt]) if self.sta else None
+
+        # perform the grid regression
+        self.coeff_fit()
 
         # generate initial grid
-        grid_init = self.grid_gen(dims=[self._MAX_Y, self._MAX_X], pat_type=self._pat_type, hex_odd=self._hex_odd)
+        grid_init = self.grid_gen(dims=[self._MAX_Y, self._MAX_X],
+                                  pat_type=self._pat_type,
+                                  hex_odd=self._hex_odd,
+                                  normalize=self._normalize
+                                  )
 
         # project grid from final estimates
         self._grid_fit = self.apply_transform(self._coeffs, grid_init, self._affine, self._flip_yx, self.z_dist)
@@ -98,10 +116,14 @@ class GridFitter(object):
 
         return np.array(self._grid_fit)
 
-    def cost_fun(self, p, centroids, beta=0):
+    def cost_fun(self, p, centroids, beta=0, euclid_opt=True):
 
         # generate grid points
-        grid_pts = self.grid_gen(dims=[self._MAX_Y, self._MAX_X], pat_type=self._pat_type, hex_odd=self._hex_odd)
+        grid_pts = self.grid_gen(dims=[self._MAX_Y, self._MAX_X],
+                                 pat_type=self._pat_type,
+                                 hex_odd=self._hex_odd,
+                                 normalize=self._normalize
+                                 )
 
         # generate projection parameter from 8 DOF
         p = self.compose_p(p) if self._compose else p
@@ -109,9 +131,23 @@ class GridFitter(object):
         # transform grid points
         grid = self.apply_transform(p, grid_pts, self._affine, self._flip_yx, self.z_dist)
 
+        # choose euclidian or element-wise norm (the latter yields twice as many points)
+        norm_fun = l2_norm_eucl if euclid_opt else l2_norm_elem
+
+        # mask non-existing points
+        idxs = np.ones(grid.shape[0], dtype='bool')
+        if centroids.shape[0] != grid.shape[0]:
+            # 4 corner fitting
+            if centroids.shape[0] == 4:
+                idxs = np.where((grid[:, 2] == 0) & (grid[:, 3] == 0) |
+                                (grid[:, 2] == 0) & (grid[:, 3] == self._MAX_X-1) |
+                                (grid[:, 2] == self._MAX_Y-1) & (grid[:, 3] == 0) |
+                                (grid[:, 2] == self._MAX_Y-1) & (grid[:, 3] == self._MAX_X-1)
+                                )
+
         # compute loss
         try:
-            loss = l2_norm(centroids[:, :2], grid[:, :2])
+            loss = norm_fun(centroids[:, :2], grid[:, :2][idxs])
             loss += beta * self._regularizer(centroids.copy(), grid) if beta > 0 else 0
         except ValueError:
             err_msg = 'Grid index mismatch'
@@ -122,14 +158,16 @@ class GridFitter(object):
                 self.sta.error = True
                 return False
 
-        return loss
+        return loss.flatten()
 
-    @staticmethod
-    def apply_transform(p, grid: np.ndarray, affine: bool = False, flip_xy: bool = False, z_dist: float = 1.):
+    def apply_transform(self, p, grid: np.ndarray, affine: bool = False, flip_xy: bool = False, z_dist: float = 1.):
         """ transformation """
 
+        # append 1 to 8 DOF vector
+        p = np.array([*p, 1]) if len(p) == 8 else np.array(p)
+
         # reshape vector to 3x3 matrix
-        pmat = np.array(p).reshape(3, 3)
+        pmat = p.reshape(3, 3) if len(p) == 9 else p
 
         # transformation constraint
         pmat[-1, :] = np.array([0, 0, 1]) if affine else np.array([*pmat[-1, :2], 1])
@@ -176,7 +214,7 @@ class GridFitter(object):
         return diff
 
     @staticmethod
-    def grid_gen(dims: [int, int] = None, pat_type: str = None, hex_odd: bool = None, normalize: bool = False):
+    def grid_gen(dims: [int, int] = None, pat_type: str = None, hex_odd: bool = None, normalize: int = 0):
         """ generate grid of points """
 
         # set default values
@@ -184,7 +222,7 @@ class GridFitter(object):
         pat_type = 'rec' if pat_type is None else pat_type
         hex_odd = 0 if hex_odd is None else hex_odd
 
-        assert pat_type == 'rec' or pat_type == 'hex', 'Grid pattern type not recognized.'
+        assert pat_type == 'rec' or pat_type == 'hex' or pat_type == 'pseudo-hex', 'Grid pattern type not recognized.'
 
         # create point coordinates
         y_range = np.linspace(0, dims[0]-1, dims[0])
@@ -201,12 +239,14 @@ class GridFitter(object):
             y_grid *= np.sqrt(3) / 2
             # horizontal hex shifting
             x_grid[:, int(hex_odd)::2] += .5
+        elif pat_type == 'pseudo-hex':
+            # horizontal hex shifting
+            x_grid[:, int(hex_odd)::2] += .5
 
         # normalize grid
-        if normalize:
-            norm_div = max(x_grid.max(), y_grid.max())
-            y_grid /= norm_div
-            x_grid /= norm_div
+        if normalize > 0:
+            norm_div = (max(x_grid.max(), y_grid.max()),)*2 if normalize == 1 else (x_grid.max(), y_grid.max())
+            y_grid, x_grid = y_grid / norm_div[0], x_grid / norm_div[1]
 
         # put grid to origin
         y_grid -= y_grid.max()/2
@@ -272,9 +312,7 @@ class GridFitter(object):
     @staticmethod
     def decompose(pmat, scale=True):
         """
-
         https://www.robots.ox.ac.uk/~vgg/hzbook/code/vgg_multiview/vgg_KR_from_P.m
-
         """
 
         # reshape potential vector to 3x3 matrix
@@ -327,6 +365,7 @@ class GridFitter(object):
 
     @property
     def pmat(self):
+        self._coeffs = np.array([*self._coeffs, 1]) if len(self._coeffs) == 8 else self._coeffs
         if self._compose:
             return self.compose_p(self._coeffs).reshape(3, 3)
         else:
