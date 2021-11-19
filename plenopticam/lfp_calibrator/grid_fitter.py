@@ -159,8 +159,9 @@ class GridFitter(object):
                 return False
 
         return loss.flatten()
-
-    def apply_transform(self, p, grid: np.ndarray, affine: bool = False, flip_xy: bool = False, z_dist: float = 1.):
+    
+    @staticmethod
+    def apply_transform(p, grid: np.ndarray, affine: bool = False, flip_xy: bool = False, z_dist: float = 1.):
         """ transformation """
 
         # append 1 to 8 DOF vector
