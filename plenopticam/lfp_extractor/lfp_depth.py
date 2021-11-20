@@ -27,6 +27,7 @@ from depthy.lightfield import epi_depth
 from depthy.misc import disp2pts, save_ply, save_pfm, plot_point_cloud
 from os.path import join
 import warnings
+from typing import Union
 
 try:
     from mpl_toolkits.mplot3d import Axes3D
@@ -69,7 +70,7 @@ class LfpDepth(LfpViewpoints):
     def plot_point_cloud(self,
                          rgb_img=None,
                          down_scale: int = 4,
-                         view_angles: (int, int) = (50, 70),
+                         view_angles: Union[int, int] = (50, 70),
                          s: float = 0.5,
                          ax: Axes3D = None) -> Axes3D:
 
