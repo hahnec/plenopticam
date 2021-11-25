@@ -30,6 +30,7 @@ from plenopticam.lfp_calibrator.centroid_refiner import CentroidRefiner
 from plenopticam.lfp_calibrator.centroid_sorter import CentroidSorter
 from plenopticam.lfp_calibrator.centroid_drawer import CentroidDrawer
 from plenopticam.lfp_calibrator.grid_fitter import GridFitter
+from plenopticam.lfp_calibrator.centroid_fit_sort import CentroidFitSorter
 from plenopticam.cfg import PlenopticamConfig
 from plenopticam.misc.status import PlenopticamStatus
 from plenopticam.lfp_aligner.cfa_processor import CfaProcessor
@@ -85,11 +86,17 @@ class LfpCalibrator(object):
         centroids = obj.centroids_refined
         del obj
 
-        # reorder MICs and assign indices based on the detected MLA pattern
-        obj = CentroidSorter(centroids, self.cfg, self.sta)
-        obj.main()
-        mic_list, pattern, pitch = obj.mic_list, obj.pattern, obj.pitch
-        del obj
+        try:
+            obj = CentroidFitSorter(centroids, self.cfg, self.sta)
+            mic_list = obj.corner_fit()
+            pattern, pitch = obj.pattern, obj.pitch
+            del obj
+        except:
+            # reorder MICs and assign indices based on the detected MLA pattern
+            obj = CentroidSorter(centroids, self.cfg, self.sta)
+            obj.main()
+            mic_list, pattern, pitch = obj.mic_list, obj.pattern, obj.pitch
+            del obj
 
         # fit grid of MICs using least-squares method to obtain accurate MICs from line intersections
         if self.cfg.params[self.cfg.cal_meth] in c.CALI_METH[2:4] and not self.sta.interrupt:
