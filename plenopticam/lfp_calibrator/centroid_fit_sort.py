@@ -39,6 +39,8 @@ class CentroidFitSorter(CentroidSorter, GridFitter):
 
         self.corner_mics = []
 
+        self.keep_pts_opt = False if 'keep_pts_opt' not in kwargs else kwargs['keep_pts_opt']
+
     def corner_fit(self, norm_type: int = 1):
 
         # estimate MLA dimensions
@@ -76,24 +78,46 @@ class CentroidFitSorter(CentroidSorter, GridFitter):
 
         return ruff_fit.tolist()
 
-    def match_points(self, centroids, fit_points, method: int = 0):
-                
-        for i in range(len(centroids)//1000):
-            self.match_points(centroids[i*1000:(i+1)*1000, ...], fit_points[i*1000:(i+1)*1000, ...])
+    def match_points(self, centroids, fit_points):
 
-            dres = cdist(centroids[:, :2], fit_points[:, :2], 'euclidean')
-            self.idxs = np.argmin(dres, axis=0)
+        sorted_mics = fit_points.copy()
+        centroid_rows = int(max(fit_points[:, 2]))
+
+        # iterate through centroid rows (cdist array can easily require large amounts of memory)
+        for i in range(centroid_rows):
+
+            # select next row of indexed points
+            frow = fit_points[fit_points[:, 2] == i]
+
+            # measure distance between fitted and actual centroids
+            dres = cdist(centroids[:, :2], frow[:, :2], 'euclidean')
+
+            # determine indices and distance of closest actual centroids to each fitted/index point
+            idxs = np.argmin(dres, axis=0)
             mins = np.min(dres, axis=0)
-            dist_threshold = mins < min(self._pitch)/2
 
-            if method == 0:
-                # copy refined centroid peaks (fulfilling euclidean threshold) to the fitted grid
-                sorted_mics = fit_points.copy()
-                sorted_mics[dist_threshold, :2] = self._centroids[:, :2][self.idxs][dist_threshold, :2]
-            elif method == 1:
-                # assemble points and their indices (fulfilling euclidean threshold: chance of losing points)
-                sorted_mics = np.concatenate([self._centroids[self.idxs][dist_threshold, :2], fit_points[dist_threshold, 2:]], axis=-1)
-            else:
-                sorted_mics = fit_points
-        
+            # use threshold to exclude points which are too far away
+            thrs = mins < min(self._pitch)/2
+
+            # copy actual centroid peaks (fulfilling euclidean threshold) to the fitted grid
+            sorted_mics[sorted_mics[:, 2] == i][thrs, :2] = self._centroids[:, :2][idxs][thrs, :2]
+
         return sorted_mics
+
+    def main(self, keep_pts_opt=None):
+
+        self.keep_pts_opt = keep_pts_opt if keep_pts_opt is not None else self.keep_pts_opt
+
+        ruff_fit = self.corner_fit()
+        if self.keep_pts_opt:
+            self._mic_list = self.match_points(self._centroids, np.array(ruff_fit))
+        else:
+            self._mic_list = ruff_fit
+
+        # attach results to config object if present
+        if hasattr(self, 'cfg') and hasattr(self.cfg, 'calibs'):
+            self.cfg.calibs[self.cfg.mic_list] = self._mic_list
+            self.cfg.calibs[self.cfg.pat_type] = self._pattern
+            self.cfg.calibs[self.cfg.ptc_mean] = self._pitch
+
+        return ruff_fit
