@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.optimize import leastsq, least_squares
-import warnings
+from typing import Union
 
 l2_norm_eucl = lambda c_meas, c_grid: np.sqrt(np.sum((c_meas - c_grid) ** 2, axis=1))
 l1_norm_eucl = lambda c_meas, c_grid: np.sum(np.abs(c_meas - c_grid), axis=1)
@@ -78,19 +78,16 @@ class GridFitter(object):
         sy_s, sx_s = self._ptc_mean if hasattr(self, '_ptc_mean') else [1, 1]
         p_init = np.diag([sy_s, sx_s, 1])
         p_init[:2, -1] = np.array([cy_s, cx_s])
-        p_init = p_init.flatten()[:8]       # account for 8 degrees of freedom
+        p_init = p_init.flatten()[:8]
         beta = 1 if self.penalty_enable else 0
 
-        with warnings.catch_warnings():
-            warnings.simplefilter('ignore')
-
-            # LMA fit: executes least-squares regression for optimization of initial parameters
-            try:
-                self._coeffs = leastsq(self.cost_fun, p_init, args=(self._coords_list, beta, euclid_opt))[0]
-            except:
-                # newer interface for LMA
-                self._coeffs = least_squares(self.cost_fun, p_init.flatten(),
-                                             jac='3-point', args=(self._coords_list, beta, euclid_opt), method='lm').x
+        # LMA fit: executes least-squares regression for optimization of initial parameters
+        try:
+            self._coeffs = leastsq(self.cost_fun, p_init, args=(self._coords_list, beta, euclid_opt))[0]
+        except:
+            # newer interface for LMA
+            self._coeffs = least_squares(self.cost_fun, p_init.flatten(),
+                                            jac='2-point', args=(self._coords_list, beta, euclid_opt), method='lm').x
 
     def comp_grid_fit(self):
         """ perform two dimensional grid regression and return fitted grid """
@@ -125,7 +122,7 @@ class GridFitter(object):
                                  normalize=self._normalize
                                  )
 
-        # generate projection parameter from 8 DOF
+        # generate projection parameters
         p = self.compose_p(p) if self._compose else p
 
         # transform grid points
@@ -215,7 +212,7 @@ class GridFitter(object):
         return diff
 
     @staticmethod
-    def grid_gen(dims: [int, int] = None, pat_type: str = None, hex_odd: bool = None, normalize: int = 0):
+    def grid_gen(dims: Union[int, int] = None, pat_type: str = None, hex_odd: bool = None, normalize: int = 0):
         """ generate grid of points """
 
         # set default values
@@ -287,7 +284,6 @@ class GridFitter(object):
     def euler2mat(theta_x: float = 0, theta_y: float = 0, theta_z: float = 0):
         """
         Creation of a rotation matrix from three angles in radians
-
         """
 
         # matrix for counter-clockwise rotation around x-y-z axes
