@@ -33,7 +33,7 @@ class GridFitter(object):
         # regression settings
         self.penalty_enable = kwargs['penalty_enable'] if 'penalty_enable' in kwargs else False
 
-        # take coordinates as input argument
+        # take coordinate array and its properties as input
         if 'cfg' in kwargs and self.cfg.mic_list in self.cfg.calibs:
             self._coords_list = np.asarray(self.cfg.calibs[self.cfg.mic_list])
             self._pat_type = self.cfg.calibs[self.cfg.pat_type] if self.cfg.pat_type in self.cfg.calibs else 'rec'
@@ -47,8 +47,9 @@ class GridFitter(object):
             self._coords_list = np.asarray(args[0])
 
         if hasattr(self, '_coords_list'):
-            self._MAX_Y = int(max(self._coords_list[:, 2])+1)   # add one to compensate for index zero
-            self._MAX_X = int(max(self._coords_list[:, 3])+1)   # add one to compensate for index zero
+            # add one to list index to compensate for index zero
+            self._MAX_Y = int(max(self._coords_list[:, 2])+1)
+            self._MAX_X = int(max(self._coords_list[:, 3])+1)
         else:
             self._MAX_Y, self._MAX_X = 2, 2
 
@@ -116,10 +117,10 @@ class GridFitter(object):
     def cost_fun(self, p, centroids, beta=0, euclid_opt=True):
 
         # generate grid points
-        grid_pts = self.grid_gen(dims=[self._MAX_Y, self._MAX_X],
-                                 pat_type=self._pat_type,
-                                 hex_odd=self._hex_odd,
-                                 normalize=self._normalize
+        grid_pts = self.grid_gen(dims = [self._MAX_Y, self._MAX_X],
+                                 pat_type = self._pat_type,
+                                 hex_odd = self._hex_odd,
+                                 normalize = self._normalize
                                  )
 
         # generate projection parameters
@@ -190,7 +191,7 @@ class GridFitter(object):
     @staticmethod
     def _regularizer(c_meas, c_grid, div=22):
 
-        assert c_meas.shape[-1] == 4, 'Regularizer requires 4 columns in the list'
+        assert c_meas.shape[-1] == 4, 'Regularizer requires 4 columns in the 2-D array'
 
         dim = int(np.max(c_meas[:, 3]))
         pitch = np.mean(np.diff(c_meas[:dim, 1]))
