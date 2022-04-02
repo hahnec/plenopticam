@@ -113,18 +113,25 @@ class CentroidSorter(object):
 
         # walk along rectangle in a clock-wise manner to find valid corners with complete row/col (twice for upper_l)
         for _ in range(2):
-            # top row (east to west)
-            x_max_t, self._upper_r, self._upper_l = self._get_lens_count(self._upper_l, self._upper_r, axis=1, inv_dir=0)
+            # top row (west to east)
+            x_max_t, self._upper_r, self._upper_l = self._get_lens_count(self._upper_l, self._upper_r, axis=1, inv_dir=0, inwards=0)
             # most right column (north to south)
             y_max_r, self._lower_r, self._upper_r = self._get_lens_count(self._upper_r, self._lower_r, axis=0, inv_dir=0, inwards=1)
-            # bottom row (west to east)
+            # bottom row (east to west)
             x_max_b, self._lower_l, self._lower_r = self._get_lens_count(self._lower_r, self._lower_l, axis=1, inv_dir=1, inwards=1)
-            # most left column (north to south)
-            y_max_l, self._upper_l, self._lower_l = self._get_lens_count(self._lower_l, self._upper_l, axis=0, inv_dir=1)
+            # most left column (south to north)
+            y_max_l, self._upper_l, self._lower_l = self._get_lens_count(self._lower_l, self._upper_l, axis=0, inv_dir=1, inwards=0)
 
         # counter-clockwise
         if counterclockwise_opt:
-            y_max_l, self._lower_l, self._upper_l = self._get_lens_count(self._upper_l, self._lower_l, axis=0, inv_dir=0, inwards=True)
+            # most left column (north to south)
+            y_max_l, self._lower_l, self._upper_l = self._get_lens_count(self._upper_l, self._lower_l, axis=0, inv_dir=0, inwards=0)
+            # bottom row (west to east)
+            x_max_b, self._lower_r, self._lower_l = self._get_lens_count(self._lower_l, self._lower_r, axis=1, inv_dir=0, inwards=1)
+            # most right column (south to north)
+            y_max_r, self._upper_r, self._lower_r = self._get_lens_count(self._lower_r, self._upper_r, axis=0, inv_dir=1, inwards=1)
+            # top row (east to west)
+            x_max_t, self._upper_l, self._upper_r = self._get_lens_count(self._upper_r, self._upper_l, axis=1, inv_dir=1, inwards=0)
 
         # set safe number of micro lenses in each direction
         self._lens_y_max, self._lens_x_max = min(y_max_l, y_max_r), min(x_max_t, x_max_b)
