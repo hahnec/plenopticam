@@ -199,7 +199,7 @@ class LfpDecoder(object):
             settings['ccm'] = safe_get(json_dict, 'image', 'color', 'ccmRgbToSrgbArray')
             settings['gam'] = safe_get(json_dict, 'image', 'color', 'gamma')
 
-        elif cam_model.startswith(('B', 'I')):  # 2nd generation Lytro
+        elif cam_model.startswith(('B', 'I')) or cam_model.isdigit():  # 2nd generation Lytro
 
             # read bit packing
             settings['bit'] = safe_get(json_dict, "image", "pixelPacking", "bitsPerPixel")
