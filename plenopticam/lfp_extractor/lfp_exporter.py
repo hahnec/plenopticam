@@ -88,7 +88,7 @@ class LfpExporter(LfpViewpoints):
         for j in range(ptc_leng):
             for i in range(ptc_leng):
 
-                misc.save_img_file(vp_img_arr[j, i], os.path.join(folderpath, str(j) + '_' + str(i)),
+                misc.save_img_file(vp_img_arr[j, i], os.path.join(folderpath, str(j).zfill(2) + '_' + str(i).zfill(2)),
                                    file_type=type, tag=self.cfg.params[self.cfg.opt_dbug])
 
                 # print status

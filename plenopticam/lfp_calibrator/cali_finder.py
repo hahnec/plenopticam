@@ -79,7 +79,7 @@ class CaliFinder(object):
                 frames = safe_get(self._lfp_json, 'picture', 'derivationArray') #'frameArray')  #
                 self._georef = frames[0]    #safe_get(frames[0], 'frame', 'imageRef') if frames else ''   #
 
-            elif self._cam_model.startswith(('B', 'I')):
+            elif self._cam_model.startswith(('B', 'I')) or self._cam_model.isdigit():
                 frames = safe_get(self._lfp_json, 'frames')
                 self._georef = safe_get(frames[0], 'frame', 'geometryCorrectionRef') if frames else ''
 
@@ -160,7 +160,7 @@ class CaliFinder(object):
         """ compare georef hash value with that in provided json dictionary """
 
         # use JSON keys according to LFR type
-        key1, key2 = ('calibrationFiles', 'hash') if self._cam_model.startswith(('B', 'I')) else ('frame', 'imageRef')#('derivationArray', 0) #('files', 'dataRef')
+        key1, key2 = ('calibrationFiles', 'hash') if self._cam_model.startswith(('B', 'I')) or self._cam_model.isdigit() else ('frame', 'imageRef')
 
         # search for georef hash value in geometry files of calibration folder
         for item in json_dict[key1]:

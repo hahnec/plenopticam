@@ -34,6 +34,7 @@ DR = 1
 class CentroidRefiner(object):
 
     def __init__(self, img, centroids, cfg=None, sta=None, M=None, method=None):
+        super(CentroidRefiner, self).__init__()
         """
 
         This class takes a list of integer coordinates as centroids and an intensity map as inputs and re-computes

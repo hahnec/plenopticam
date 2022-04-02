@@ -6,7 +6,7 @@ color-matcher==0.4.0
 color-space-converter>=0.1.4
 imageio
 docutils
-Pillow>=8.3.2
+Pillow==8.3.2
 requests
 depthy>=0.3.0
 certifi>=2020.06.20

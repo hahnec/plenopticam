@@ -21,11 +21,12 @@ __license__ = """
 """
 
 import unittest
+
 import numpy as np
 from os.path import join
 import zipfile
 
-from plenopticam.lfp_calibrator import CentroidSorter, GridFitter
+from plenopticam.lfp_calibrator import CentroidSorter, GridFitter, CentroidFitSorter, find_centroid
 from plenopticam.cfg import PlenopticamConfig, constants
 from plenopticam.misc import load_img_file
 
@@ -36,6 +37,8 @@ class PlenoptiCamTesterCalib(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
         super(PlenoptiCamTesterCalib, self).__init__(*args, **kwargs)
+
+        self.PLOT_OPT = False
 
     def setUp(self):
 
@@ -104,7 +107,7 @@ class PlenoptiCamTesterCalib(unittest.TestCase):
             rmat[-1, -1] = 1
 
             # apply transformation
-            xpts = GridFitter.apply_transform(rmat, grid.copy(), affine, flip_xy, z_dist=np.max(grid[:, :2]))
+            xpts = GridFitter().apply_transform(rmat, grid.copy(), affine, flip_xy, z_dist=np.max(grid[:, :2]))
 
             # grid regression
             gf = GridFitter(xpts, compose=compose, affine=affine, flip_xy=flip_xy, z_dist=np.max(grid[:, :2]))
@@ -145,6 +148,42 @@ class PlenoptiCamTesterCalib(unittest.TestCase):
             all_close = np.allclose(rvec, xvec)
             self.assertTrue(all_close, 'Angle decomposition failed')
 
+    def test_sorted_fitting(self):
+
+        np.random.seed(32)
+        # parameter init
+        data = [[(16, 23), 'hex', False, 10, 0], [(88, 88), 'hex', True, 15, 1e-6], [(9, 9), 'rec', False, 2, 1e-1]]
+
+        for (dim_y, dim_x), pat_type, odd, num_miss, err_init in data:
+
+            # generation of ground-truth test grid
+            ground_mics = GridFitter.grid_gen(dims=[dim_y, dim_x], pat_type=pat_type, hex_odd=odd)
+            ground_mics[:, :2] = ground_mics[:, :2] - np.array([ground_mics[:, 0].min(), ground_mics[:, 1].min()])
+
+            # disturb grid
+            remove_idxs = np.random.randint(dim_x, ground_mics.shape[0]-dim_x, size=num_miss, dtype=np.uint16)
+            remove_idxs = np.append(remove_idxs, -10)
+            obtain_mics = np.delete(ground_mics[:, :2], remove_idxs, axis=0)
+            obtain_mics[:, :2] += err_init*np.random.rand(obtain_mics.shape[0], 2)
+            self.assertEqual(obtain_mics.shape[0], dim_y*dim_x-num_miss-1, msg='Unexpected number of missing centroids')
+
+            # call 4-corner fit
+            sorter = CentroidFitSorter(centroids=obtain_mics)
+            sorted_mics = sorter.corner_fit()
+
+            if self.PLOT_OPT:
+                import matplotlib.pyplot as plt
+                plt.plot(ground_mics.T[1], ground_mics.T[0], 'k.')
+                plt.plot(obtain_mics.T[1], obtain_mics.T[0], 'r*')
+                plt.plot(sorter.corner_mics.T[1], sorter.corner_mics.T[0], 'bx')
+                plt.plot(sorted_mics.T[1], sorted_mics.T[0], 'g+')
+                plt.show()
+
+            # evaluate sort results
+            #self.assertTrue(np.mean(np.abs(sorted_mics[:, :2] - ground_mics[:, :2][sorter.idxs])) <= err_init*1e3+1e2)
+            #one_lens_idx_match = np.sum(np.sum(sorted_mics[:, 2:] == ground_mics[:, 2:][sorter.idxs], axis=1) > 0)
+            #self.assertTrue(one_lens_idx_match > (dim_y-2)*(dim_x-2))
+
     def test_mla_dims_estimate(self):
 
         # init
@@ -153,15 +192,14 @@ class PlenoptiCamTesterCalib(unittest.TestCase):
         flip = False
 
         # grid generation and modification
-        pseudo_grid = GridFitter.grid_gen(dims=[dim_y, dim_x], pat_type=pat_type, hex_odd=False)[:, :2]
-        ty, tx = np.min(pseudo_grid[:, 0]), np.min(pseudo_grid[:, 1])
-        pseudo_grid -= np.array([ty, tx])
-        pseudo_grid = pseudo_grid[:, ::-1] if flip else pseudo_grid
+        pseudo_mics = GridFitter.grid_gen(dims=[dim_y, dim_x], pat_type=pat_type, hex_odd=False)[:, :2]
+        ty, tx = np.min(pseudo_mics[:, 0]), np.min(pseudo_mics[:, 1])
+        pseudo_mics -= np.array([ty, tx])
+        pseudo_mics = pseudo_mics[:, ::-1] if flip else pseudo_mics
 
         # estimate MLA dimensions
-        sorter = CentroidSorter(centroids=pseudo_grid)
+        sorter = CentroidSorter(centroids=pseudo_mics)
         sorter._mla_dims()
-
         est_y, est_x = sorter._lens_y_max, sorter._lens_x_max
 
         self.assertEqual((est_y, est_x), (dim_y, dim_x), 'Centroid number estimation failed')
@@ -185,6 +223,7 @@ class PlenoptiCamTesterCalib(unittest.TestCase):
         self.test_mla_geometry_estimate()
         self.test_grid_gen()
         self.test_mla_dims_estimate()
+        self.test_sorted_fitting()
 
 
 if __name__ == '__main__':
