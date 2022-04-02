@@ -286,8 +286,8 @@ class CentroidSorter(object):
         lens_max = 1    # start to count from 1 to take existing centroid into account
         odd = self._hex_odd and not inwards if not inv_dir else not (self._hex_odd and inwards)
         start_odd = odd
-        comp_a, comp_b = (operator.gt, operator.lt) if inv_dir else (operator.lt, operator.gt)
-        pm_a, pm_b = (operator.sub, operator.add) if inv_dir else (operator.add, operator.sub)
+        comp_a = operator.gt if inv_dir else operator.lt
+        pm_a = operator.add if inv_dir else operator.sub
 
         # iterate through row or column (as long as possible)
         while comp_a(cur_mic[axis], pm_a(opposite_mic[axis], self._pitch[axis]/2)):
@@ -309,10 +309,6 @@ class CentroidSorter(object):
             lens_max += 1
             cur_mic = found_center
             odd = not odd
-
-            # stop if close to border (represented by opposite centroid)
-            if comp_b(cur_mic[axis], pm_b(opposite_mic[axis], 1 * self._pitch[axis] / 4)):
-                break
 
         return lens_max, cur_mic, start_mic
 
