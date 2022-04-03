@@ -86,13 +86,15 @@ class LfpCalibrator(object):
         centroids = obj.centroids_refined
         del obj
 
-        try:
+        # obtain consistent MLA dimensions with indices for each micro image
+        if self.cfg.params[self.cfg.cal_meth] == c.CALI_METH[4]:
+            # perform 4-point corner fit for dimension and index assignment
             obj = CentroidFitSorter(centroids, self.cfg, self.sta)
             mic_list = obj.corner_fit()
             pattern, pitch = obj.pattern, obj.pitch
             del obj
-        except:
-            # reorder MICs and assign indices based on the detected MLA pattern
+        else:
+            # iteratively reorder MICs and assign indices
             obj = CentroidSorter(centroids, self.cfg, self.sta)
             obj.main()
             mic_list, pattern, pitch = obj.mic_list, obj.pattern, obj.pitch
