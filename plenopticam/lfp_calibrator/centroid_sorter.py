@@ -284,7 +284,7 @@ class CentroidSorter(object):
 
         cur_mic = start_mic
         lens_max = 1    # start to count from 1 to take existing centroid into account
-        odd = self._hex_odd and not inwards if not inv_dir else not (self._hex_odd and inwards)
+        odd = self._hex_odd and not inwards if not inv_dir else not inwards
         start_odd = odd
         comp_a = operator.gt if inv_dir else operator.lt
         pm_a = operator.add if inv_dir else operator.sub
@@ -300,9 +300,9 @@ class CentroidSorter(object):
                     found_center = np.mean(found_center.reshape(-1, 2), axis=0)
                 else:
                     # restart with new row / column (extend search window e to ensure new start_mic is found)
-                    start_odd = not start_odd   # reset hex search direction (flip for next not odd)
                     start_mic = find_centroid(self._centroids, start_mic, self._pitch, axis=not axis,
                                               pattern=self._pattern, odd=start_odd, e=3.5, inv_dir=inwards)
+                    start_odd = not start_odd   # reset hex search direction (flip for next not odd)
                     found_center = start_mic
                     lens_max = 0    # assign zero as number is incremented directly hereafter
                     odd = start_odd
