@@ -286,18 +286,22 @@ class CentroidSorter(object):
         lens_max = 1    # start to count from 1 to take existing centroid into account
         odd = not (self._hex_odd and not inwards) if not inv_dir else not inwards
         start_odd = odd
-        comp_a = operator.gt if inv_dir else operator.lt
+        comp_a = operator.lt if inv_dir else operator.gt
         pm_a = operator.add if inv_dir else operator.sub
 
         # iterate through row or column (as long as possible)
-        while comp_a(cur_mic[axis], pm_a(opposite_mic[axis], self._pitch[axis]/2)):
+        while True:
             # get adjacent MIC
             found_center = find_centroid(self._centroids, cur_mic, self._pitch, axis=axis,
                                          pattern=self._pattern, odd=odd, inv_dir=inv_dir)
             if len(found_center) != 2:
+                # if several candidates are found
                 if len(found_center) > 2:
                     # average found centroids
                     found_center = np.mean(found_center.reshape(-1, 2), axis=0)
+                # if stop condition is fulfilled
+                elif comp_a(cur_mic[axis], pm_a(opposite_mic[axis], self._pitch[axis]/2)):
+                    break
                 else:
                     # restart with new row / column (extend search window e to ensure new start_mic is found)
                     start_mic = find_centroid(self._centroids, start_mic, self._pitch, axis=not axis,
