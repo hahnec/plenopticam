@@ -25,6 +25,7 @@ import unittest
 import numpy as np
 from os.path import join
 import zipfile
+from scipy.spatial.distance import cdist
 
 from plenopticam.lfp_calibrator import CentroidSorter, GridFitter, CentroidFitSorter, find_centroid
 from plenopticam.cfg import PlenopticamConfig, constants
@@ -170,6 +171,7 @@ class PlenoptiCamTesterCalib(unittest.TestCase):
             # call 4-corner fit
             sorter = CentroidFitSorter(centroids=obtain_mics)
             sorted_mics = sorter.corner_fit()
+            sorted_mics = np.array(sorted_mics)
 
             if self.PLOT_OPT:
                 import matplotlib.pyplot as plt
@@ -179,10 +181,11 @@ class PlenoptiCamTesterCalib(unittest.TestCase):
                 plt.plot(sorted_mics.T[1], sorted_mics.T[0], 'g+')
                 plt.show()
 
-            # evaluate sort results
-            #self.assertTrue(np.mean(np.abs(sorted_mics[:, :2] - ground_mics[:, :2][sorter.idxs])) <= err_init*1e3+1e2)
-            #one_lens_idx_match = np.sum(np.sum(sorted_mics[:, 2:] == ground_mics[:, 2:][sorter.idxs], axis=1) > 0)
-            #self.assertTrue(one_lens_idx_match > (dim_y-2)*(dim_x-2))
+            # validation
+            dres = cdist(ground_mics[:, :2], sorted_mics[:, :2], 'euclidean')
+            idxs = np.argmin(dres, axis=0)
+            rval = np.allclose(sorted_mics[:, :2], ground_mics[idxs, :2], atol=10e7)
+            self.assertTrue(rval)
 
     def test_mla_dims_estimate(self):
 

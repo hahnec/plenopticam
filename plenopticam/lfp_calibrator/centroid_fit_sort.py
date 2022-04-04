@@ -44,7 +44,7 @@ class CentroidFitSorter(CentroidSorter, GridFitter):
     def corner_fit(self, norm_type: int = 1):
 
         # estimate MLA dimensions
-        self._mla_dims()
+        self._mla_dims(counterclockwise_opt=False)
         self._get_mla_pitch()
         self._estimate_mla_geometry(self._pitch[0])
 
