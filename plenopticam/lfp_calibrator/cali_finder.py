@@ -65,102 +65,78 @@ class CaliFinder(object):
             return False
 
         # auto calibration can only be used if calibration source path is either directory or tar archive
-        if isdir(self._path) or self._path.lower().endswith('.tar'):
+        if not isdir(self._path) and not self._path.lower().endswith('.tar'):
+            return False
 
-            # read JSON file from selected *.lfp image
-            self._lfp_json = self.cfg.load_json(self.cfg.params[self.cfg.lfp_path])
+        # read JSON file from selected *.lfp image
+        self._lfp_json = self.cfg.load_json(self.cfg.params[self.cfg.lfp_path])
 
-            # extract serial number to support search
-            self._serial = safe_get(self._lfp_json, 'camera', 'serialNumber')
-            self._cam_model = self._serial if self._serial else safe_get(self._lfp_json, 'camera', 'model')
+        # look for calibration file name
+        self._cal_fn = safe_get(self._lfp_json, 'gctFilePath')
 
-            # extract calibration reference data
-            if self._cam_model.startswith(('A', 'F')):
-                frames = safe_get(self._lfp_json, 'picture', 'derivationArray') #'frameArray')  #
-                self._georef = frames[0]    #safe_get(frames[0], 'frame', 'imageRef') if frames else ''   #
+        # extract serial number and camera model
+        self._serial = safe_get(self._lfp_json, 'camera', 'serialNumber')
+        self._cam_model = self._serial if self._serial else safe_get(self._lfp_json, 'camera', 'model')
 
-            elif self._cam_model.startswith(('B', 'I')) or self._cam_model.isdigit():
-                frames = safe_get(self._lfp_json, 'frames')
-                self._georef = safe_get(frames[0], 'frame', 'geometryCorrectionRef') if frames else ''
+        # check if gct file is found and valid
+        if self._cal_fn and self._cal_fn.upper().__contains__('.GCT'):
+            self._cal_fn = basename(self._cal_fn).replace('GCT', 'RAW')
+        else:
+            self._find_cal_fn_by_georef()
 
-            # print status
-            if not self._serial and isdir(self._path):
-                self.sta.status_msg('No serial number found in JSON file. Provide calibration file instead of folder',
-                                    self._opt_prnt)
-                self.sta.error = True
+        # when path is directory
+        if isdir(self._path):
 
-            # when path is directory
-            if isdir(self._path):
+            # look for geo data in calibration folders
+            self._search_cal_dirs()
 
-                # look for geo data in calibration folders
-                self._search_cal_dirs()
+            # look for geo data in calibration tar-files (skip if already found in folders with file_found==True)
+            self._search_cal_file()
 
-                # look for geo data in calibration tar-files (skip if already found in folders with file_found==True)
-                self._search_cal_file()
+        # when path is tar file
+        elif self._path.lower().endswith('.tar'):
 
-            # when path is tar file
-            elif self._path.lower().endswith('.tar'):
+            # look for geo data in provided calibration tar-file
+            self._search_tar_file(self._path)
 
-                # look for geo data in provided calibration tar-file
-                self._search_tar_file(self._path)
-
-            if not self._file_found and not self.sta.error:
-                # print status and interrupt process
-                self.sta.status_msg('White image file not found. Revise calibration path settings', self._opt_prnt)
-                self.sta.error = True
-            # load and keep white image if found and options are set or meta data is missing
-            cond = self.cfg.params[self.cfg.opt_cali] or \
-                   self.cfg.params[self.cfg.opt_vign] or \
-                   not self.cfg.cond_meta_file()
-            if self._file_found and cond:
-                # convert raw data to image array and get metadata
-                self._raw2img()
+        if not self._file_found and not self.sta.error:
+            # print status and interrupt process
+            self.sta.status_msg('White image file not found. Revise calibration path settings', self._opt_prnt)
+            self.sta.error = True
+        # load and keep white image if found and options are set or meta data is missing
+        cond = self.cfg.params[self.cfg.opt_cali] or \
+               self.cfg.params[self.cfg.opt_vign] or \
+               not self.cfg.cond_meta_file()
+        if self._file_found and cond:
+            # convert raw data to image array and get metadata
+            self._raw2img()
 
         return True
 
-    def _raw2img(self):
-        """ decode raw data to obtain bayer image and settings data """
+    def _find_cal_fn_by_georef(self):
 
-        # skip if calibrated json file already exists, otherwise perform centroid calibration
-        if self._raw_data:
+        # extract calibration reference data
+        if self._cam_model.startswith(('A', 'F')):
+            frames = safe_get(self._lfp_json, 'picture', 'derivationArray')
+            self._georef = frames[0]
 
-            # decode raw data
-            obj = LfpDecoder(self._raw_data, self.cfg, self.sta)
-            obj.decode_raw()
-            self._wht_bay = obj.bay_img
-            del obj
+        elif self._cam_model.startswith(('B', 'I')) or self._cam_model.isdigit():
+            frames = safe_get(self._lfp_json, 'frames')
+            self._georef = safe_get(frames[0], 'frame', 'geometryCorrectionRef') if frames else ''
 
-            # balance Bayer channels in white image
-            try:
-                frame_arr = safe_get(self._wht_json, 'master', 'picture', 'frameArray')[0]
-                self.cfg.lfpimg['ccm_wht'] = safe_get(frame_arr, 'frame', 'metadata', 'image', 'color', 'ccmRgbToSrgbArray')
-                awb = safe_get(frame_arr, 'frame', 'metadata', 'devices', 'sensor', 'normalizedResponses')[0]
-                gains = [1./awb['b'], 1./awb['r'], 1./awb['gr'], 1./awb['gb']]
-                self.cfg.lfpimg['awb_wht'] = gains
-            except ValueError:
-                gains = [1/0.74476742744445801, 1/0.76306647062301636, 1, 1]
-
-            # apply white balance gains to calibration file
-            cfa_obj = CfaProcessor(bay_img=self._wht_bay, cfg=self.cfg, sta=self.sta)
-            cfa_obj.set_gains(gains)
-            self._wht_bay = cfa_obj.apply_awb()
-            del cfa_obj
-
-        return True
-
-    def _match_lens(self, lens_spec):
-
-        if lens_spec == self._lensref:
-            self._cal_fn = lens_spec['name'].replace('.GCT', '.RAW')
-            self._file_found = True
-
-        return True
+        # print status
+        if not self._serial and isdir(self._path):
+            self.sta.status_msg('No serial found in JSON metadata. Provide white image calibration file.', self._opt_prnt)
+            self.sta.error = True
 
     def _match_georef(self, json_dict):
         """ compare georef hash value with that in provided json dictionary """
 
         # use JSON keys according to LFR type
-        key1, key2 = ('calibrationFiles', 'hash') if self._cam_model.startswith(('B', 'I')) or self._cam_model.isdigit() else ('frame', 'imageRef')
+        if self._cam_model.startswith(('B', 'I')) or self._cam_model.isdigit():
+            key1, key2 = ('calibrationFiles', 'hash')
+        else:
+            key1, key2 = ('frame', 'imageRef')
 
         # search for georef hash value in geometry files of calibration folder
         for item in json_dict[key1]:
@@ -213,8 +189,6 @@ class CaliFinder(object):
                         with open(join(splitext(fn)[0], mod_txt), 'r') as f:
                             json_dict = {}
                             json_dict.update(json.loads(f.read().rpartition('}')[0]+'}'))
-                            #self._match_georef(json_dict['master']['picture']['frameArray'][0])
-                            #if json_dict['master']['picture']['frameArray'][0]['frame']['imageRef'] == self._georef:
                             if json_dict['master']['picture']['derivationArray'] == self._georef:
                                 self._file_found = True
 
@@ -249,7 +223,7 @@ class CaliFinder(object):
 
             # find location of cal_file_manifest.json
             fname = 'cal_file_manifest.json'
-            subdir = self._serial if self._serial + '/' + fname in tar_obj.getnames() else 'unitdata'
+            subdir = self._serial if self._serial and self._serial + '/' + fname in tar_obj.getnames() else 'unitdata'
             fpath = subdir + '/' + fname    # join produces double backslash on Win causing errors in .extractfile()
 
             try:
@@ -277,6 +251,36 @@ class CaliFinder(object):
                 self._raw_data = tar_obj.extractfile(subdir + '/' + self._cal_fn).read()
                 json_file = tar_obj.extractfile(subdir + '/' + self._cal_fn.upper().replace('.RAW', '.TXT'))
                 self._wht_json = json.loads(json_file.read())
+
+    def _raw2img(self):
+        """ decode raw data to obtain bayer image and settings data """
+
+        # skip if calibrated json file already exists, otherwise perform centroid calibration
+        if self._raw_data:
+
+            # decode raw data
+            obj = LfpDecoder(self._raw_data, self.cfg, self.sta)
+            obj.decode_raw()
+            self._wht_bay = obj.bay_img
+            del obj
+
+            # balance Bayer channels in white image
+            try:
+                frame_arr = safe_get(self._wht_json, 'master', 'picture', 'frameArray')[0]
+                self.cfg.lfpimg['ccm_wht'] = safe_get(frame_arr, 'frame', 'metadata', 'image', 'color', 'ccmRgbToSrgbArray')
+                awb = safe_get(frame_arr, 'frame', 'metadata', 'devices', 'sensor', 'normalizedResponses')[0]
+                gains = [1./awb['b'], 1./awb['r'], 1./awb['gr'], 1./awb['gb']]
+                self.cfg.lfpimg['awb_wht'] = gains
+            except ValueError:
+                gains = [1/0.74476742744445801, 1/0.76306647062301636, 1, 1]
+
+            # apply white balance gains to calibration file
+            cfa_obj = CfaProcessor(bay_img=self._wht_bay, cfg=self.cfg, sta=self.sta)
+            cfa_obj.set_gains(gains)
+            self._wht_bay = cfa_obj.apply_awb()
+            del cfa_obj
+
+        return True
 
     @property
     def raw_data(self):
