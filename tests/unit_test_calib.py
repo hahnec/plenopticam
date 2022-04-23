@@ -202,7 +202,7 @@ class PlenoptiCamTesterCalib(unittest.TestCase):
 
         # estimate MLA dimensions
         sorter = CentroidSorter(centroids=pseudo_mics)
-        sorter._mla_dims()
+        sorter._mla_dims(counterclockwise_opt=True)
         est_y, est_x = sorter._lens_y_max, sorter._lens_x_max
 
         self.assertEqual((est_y, est_x), (dim_y, dim_x), 'Centroid number estimation failed')
