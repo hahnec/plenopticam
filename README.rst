@@ -6,7 +6,7 @@ PlenoptiCam
 Description
 ===========
 
-*PlenoptiCam* is an open-source software (macOS_, Win_ or Linux_) for scientific light field computation with cross-platform compatibility, few dependencies and a lean graphical user interface.
+*PlenoptiCam* comes as a cross-platform, open-source software (see `releases page <releases_>`_) for scientific light field computation with few dependencies and a lean graphical user interface.
 Raw exposures from a plenoptic camera require four-dimensional image alignment in order to be decoded as a light field. Provided software addresses this by its ability to calibrate an image taken by a plenoptic camera and extract sub-aperture images or synthetically focused photographs.
 This application is meant for researchers, developers, beginners and other fiddlers who like to experiment with light field technology. Its scope comprises custom-types of plenoptic cameras and is thus not limited to Lytro's image data.
 
@@ -69,7 +69,7 @@ Installation
 ============
 
 * executable:
-    1. download bundled apps_ for macOS_, Win_ or Linux_
+    1. download a bundled app found at the `releases page <releases_>`_
     2. run installer / extract archive
     3. work around |WinExeDoc|_ or |MacAppDoc|_ issue
     4. run executable (may take a while on first start-up)
@@ -311,11 +311,11 @@ Further information
 .. Hyperlink aliases
 
 .. _source: https://github.com/hahnec/plenopticam/archive/master.zip
-.. _macOS: https://github.com/hahnec/plenopticam/releases/download/v0.9.1-beta/plenopticam_0.9.1.dmg
-.. _Win: https://github.com/hahnec/plenopticam/releases/download/v0.9.1-beta/plenopticam_0.9.1.msi
-.. _Linux: https://github.com/hahnec/plenopticam/releases/download/v0.9.1-beta/plenopticam_0.9.1.tar.gz
+.. _macOS: https://github.com/hahnec/plenopticam/releases/download/v0.9.1-beta/plenopticam_0.9.2.dmg
+.. _Win: https://github.com/hahnec/plenopticam/releases/download/v0.9.1-beta/plenopticam_0.9.2.msi
+.. _Linux: https://github.com/hahnec/plenopticam/releases/download/v0.9.1-beta/plenopticam_0.9.2.tar.gz
 .. _PlenoptiSign: https://github.com/hahnec/plenoptisign/
-.. _apps: https://github.com/hahnec/plenopticam/releases/
+.. _releases: https://github.com/hahnec/plenopticam/releases/
 
 .. |WinExeDoc| replace:: **Windows protection**
 .. _WinExeDoc: https://stackoverflow.com/a/65488937/10874787
