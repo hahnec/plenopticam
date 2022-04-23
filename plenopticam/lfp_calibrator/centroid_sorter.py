@@ -104,7 +104,7 @@ class CentroidSorter(object):
 
         return True
 
-    def _mla_dims(self, counterclockwise_opt: bool = True):
+    def _mla_dims(self, counterclockwise_opt: bool = False):
         """ search for complete rows and columns and count number of centroids in each direction """
 
         y_max_l, y_max_r, x_max_t, x_max_b = [0, 0, 0, 0]
