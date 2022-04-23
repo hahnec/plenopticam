@@ -33,7 +33,9 @@ A scientific in-depth description of the parameters below is provided in the pap
    * - *Metadata file*
      - Path to file where calibration properties are stored (contents are specific to *PlenoptiCam*)
    * - *Calibration method*
-     - Determine micro image center detection method. Use 'grid-fit' for regular MLAs with consistent spacings.
+     - Determine micro image center detection method. Use 'grid-fit' for regular MLAs, 'vign_fit' to combat severe micro image vignetting or 'corn-fit' to skip micro image sorting (experimental).
+   * - *Resampling method*
+     - Determine alignment method for a consistent micro image sampling grid. Use 'global' for fast computation.
    * - *Micro image patch size*
      - One-dimensional micro image size in pixels (your value may be reduced by a detected maximum)
    * - *Refocusing range*
@@ -52,7 +54,7 @@ A scientific in-depth description of the parameters below is provided in the pap
      - Enable sub-pixel precise refocusing in steps 1 divided by *micro image size*
    * - *Scheimpflug focus*
      - Imitates tilted sensor focus with 'horizontal', 'vertical', just as upwards and downwards 'skew'
-   * - *Artifact removal*
+   * - *Hex-Artifact removal*
      - Rectification of potential artifacts arising from hexagonal micro image arrangements (useful for local resampling).
    * - *Depth map*
      - Disparity computation using depthy_ providing depth as a `*.ply` and `*.pfm` file.
