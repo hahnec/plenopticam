@@ -4,7 +4,7 @@ colour-demosaicing
 colour
 color-matcher==0.4.0
 color-space-converter>=0.1.4
-imageio
+imageio>=2.17.0
 docutils
 Pillow>=9.0.1
 requests
