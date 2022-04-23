@@ -29,8 +29,7 @@ class PlenopticamError(Exception):
     URL_ISSUE = 'https://github.com/hahnec/plenopticam/issues/new'
 
     def __init__(self, *args, **kwargs):
-        self.__dict__.update(kwargs)
-        Exception.__init__(*args)
+        super(PlenopticamError, self).__init__(*args)
 
         self.cfg = kwargs['cfg'] if 'cfg' in kwargs else None
         self.sta = kwargs['sta'] if 'sta' in kwargs else PlenopticamStatus()
