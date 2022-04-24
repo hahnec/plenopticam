@@ -72,6 +72,7 @@ Installation
     1. download a bundled app found at the `releases page <releases_>`_
     2. run installer / extract archive
     3. work around |WinExeDoc|_ or |MacAppDoc|_ issue
+        - macOS Big Sur requires to set ``$ xattr -c /Applications/plenopticam.app`` (|BigSurDoc|_)
     4. run executable (may take a while on first start-up)
     5. user interface will show up (see below)
 
@@ -318,10 +319,13 @@ Further information
 .. _releases: https://github.com/hahnec/plenopticam/releases/
 
 .. |WinExeDoc| replace:: **Windows protection**
-.. _WinExeDoc: https://stackoverflow.com/a/65488937/10874787
+.. _WinExeDoc: https://stackoverflow.com/a/65488937
 
 .. |MacAppDoc| replace:: **macOS unidentified developer**
 .. _MacAppDoc: https://osxdaily.com/2015/05/04/disable-gatekeeper-command-line-mac-osx/
+
+.. |BigSurDoc| replace:: **see here**
+.. _BigSurDoc: https://stackoverflow.com/a/67975297
 
 .. |OpEx| replace:: **OpEx dataset**
 .. _OpEx: https://ndownloader.figshare.com/files/5201452

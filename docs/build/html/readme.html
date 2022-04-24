@@ -130,7 +130,13 @@ This application is meant for researchers, developers, beginners and other fiddl
 <dt>executable:</dt><dd><ol class="arabic simple">
 <li><p>download a bundled app found at the <a class="reference external" href="https://github.com/hahnec/plenopticam/releases/">releases page</a></p></li>
 <li><p>run installer / extract archive</p></li>
-<li><p>work around <a class="reference external" href="https://stackoverflow.com/a/65488937/10874787"><strong>Windows protection</strong></a> or <a class="reference external" href="https://osxdaily.com/2015/05/04/disable-gatekeeper-command-line-mac-osx/"><strong>macOS unidentified developer</strong></a> issue</p></li>
+<li><dl class="simple">
+<dt>work around <a class="reference external" href="https://stackoverflow.com/a/65488937"><strong>Windows protection</strong></a> or <a class="reference external" href="https://osxdaily.com/2015/05/04/disable-gatekeeper-command-line-mac-osx/"><strong>macOS unidentified developer</strong></a> issue</dt><dd><ul>
+<li><p>macOS Big Sur requires to set <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">xattr</span> <span class="pre">-c</span> <span class="pre">/Applications/plenopticam.app</span></code> (<a class="reference external" href="https://stackoverflow.com/a/67975297"><strong>see here</strong></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
 <li><p>run executable (may take a while on first start-up)</p></li>
 <li><p>user interface will show up (see below)</p></li>
 </ol>
