@@ -1,6 +1,6 @@
 numpy
 scipy>=1.6.0
-colour-demosaicing
+colour-demosaicing>=0.2.2
 colour
 color-matcher==0.4.0
 color-space-converter>=0.1.4
