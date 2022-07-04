@@ -40,7 +40,7 @@ Color equalization
 ------------------
 
 .. list-table::
-   :widths: 6 6 6
+   :widths: 8 8 8
    :header-rows: 1
    :stub-columns: 0
 
