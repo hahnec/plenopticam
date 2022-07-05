@@ -154,7 +154,7 @@ jobs:
   app_bundling:
       name: App Bundling
       needs: unit_test
-      if: github.event_name == 'push'
+      if: github.event_name == 'push' && ne(github.ref, 'refs/heads/master')
       runs-on: ${{ matrix.os }}
       strategy:
         matrix:
