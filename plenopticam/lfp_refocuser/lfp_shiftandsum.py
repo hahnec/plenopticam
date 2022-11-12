@@ -33,11 +33,11 @@ import numpy as np
 
 class LfpShiftAndSum(LfpViewpoints):
 
-    def __init__(self, lfp_img=None, *args, **kwargs):
+    def __init__(self, lfp_img_align=None, *args, **kwargs):
         super(LfpShiftAndSum, self).__init__(*args, **kwargs)
 
         # input variables
-        self.lfp_img = lfp_img
+        self.lfp_img_align = lfp_img_align
 
         # validate refocusing range
         self.validate_range()
@@ -61,7 +61,7 @@ class LfpShiftAndSum(LfpViewpoints):
         # do refocus computation based on provided method
         if self.vp_img_arr is not None:
             self.refo_from_vp()
-        elif self.lfp_img is not None:
+        elif self.lfp_img_align is not None:
             if self.cfg.params[self.cfg.opt_refi]:
                 self.refo_from_scratch_upsample()
             else:
@@ -147,16 +147,16 @@ class LfpShiftAndSum(LfpViewpoints):
         # initialize variables
         self._refo_stack = []
         patch_len = self.cfg.params[self.cfg.ptc_leng]
-        if len(self.lfp_img.shape) == 3:
-            m, n, P = self.lfp_img.shape
+        if len(self.lfp_img_align.shape) == 3:
+            m, n, P = self.lfp_img_align.shape
         else:
-            m, n, P = self.lfp_img.shape[0], self.lfp_img.shape[1], 1
+            m, n, P = self.lfp_img_align.shape[0], self.lfp_img_align.shape[1], 1
         J = int(n/patch_len)
         H = int(m/patch_len)
         c = int((patch_len-1)/2)
 
         # divide intensity to prevent clipping in shift and sum process
-        img = self.lfp_img/patch_len
+        img = self.lfp_img_align / patch_len
 
         # start synthesising a new refocused image
         a_range = np.arange(*self.cfg.params[self.cfg.ran_refo])
@@ -181,7 +181,7 @@ class LfpShiftAndSum(LfpViewpoints):
                         if (x >= 0) & (x < n):
                             fraction_hor = img[y, x, :]
                         else:
-                            fraction_hor = np.zeros(P, dtype=self.lfp_img.dtype)
+                            fraction_hor = np.zeros(P, dtype=self.lfp_img_align.dtype)
 
                         # add pixel to refocusing plane (integration)
                         hor_refo[y, j, :] += fraction_hor
@@ -199,7 +199,7 @@ class LfpShiftAndSum(LfpViewpoints):
                     if (y >= 0) & (y < m):
                         fraction_ver = hor_refo[y, :, :]
                     else:
-                        fraction_ver = np.zeros([J + abs(a) * (patch_len - 1), P], dtype=self.lfp_img.dtype)
+                        fraction_ver = np.zeros([J + abs(a) * (patch_len - 1), P], dtype=self.lfp_img_align.dtype)
 
                     # add pixel to refocusing plane (integration)
                     ver_refo[h, :, :] += fraction_ver
@@ -228,10 +228,10 @@ class LfpShiftAndSum(LfpViewpoints):
         # initialize variables
         self._refo_stack = []
         patch_len = self.cfg.params[self.cfg.ptc_leng]
-        m, n, P = self.lfp_img.shape if len(self.lfp_img.shape) == 3 else self.lfp_img.shape[0], self.lfp_img.shape[1], 1
+        m, n, P = self.lfp_img_align.shape if len(self.lfp_img_align.shape) == 3 else self.lfp_img_align.shape[0], self.lfp_img_align.shape[1], 1
         factor = self.cfg.params[self.cfg.ptc_leng] if self.cfg.params[self.cfg.opt_refi] else 1
 
-        img = self.lfp_img/patch_len    # divide to prevent clipping
+        img = self.lfp_img_align / patch_len    # divide to prevent clipping
 
         a_range = np.arange(*self.cfg.params[self.cfg.ran_refo])
         for a in a_range:
