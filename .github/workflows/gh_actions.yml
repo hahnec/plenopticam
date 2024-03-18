@@ -200,7 +200,7 @@ jobs:
             draft: false
             prerelease: true
         - name: Upload Release
-          uses: alexellis/upload-assets@0.2.2
+          uses: alexellis/upload-assets@0.4.0
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
