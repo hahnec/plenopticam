@@ -188,6 +188,11 @@ jobs:
             pip install pyinstaller --upgrade
             plenopticam/scripts/bundling/py2exe.bat
             plenopticam/scripts/bundling/msi_auto-gen.bat
+        - name: Create tag in public repository
+          run: |
+            cd ${{github.workspace}}/plenopticam
+            git tag ${{ steps.get_tag.outputs.tag }}
+            git push --tags --porcelain
         - name: Create Release
           if: matrix.os == 'ubuntu-latest'
           id: create_release
@@ -195,7 +200,7 @@ jobs:
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
-            tag_name: ${{ github.ref }}
+            tag_name: ${{ steps.get_tag.outputs.tag }}
             release_name: Release ${{ github.ref }}
             draft: false
             prerelease: true
