@@ -195,7 +195,7 @@ jobs:
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
-            tag_name: ${{ github.ref.split('/')[2] }}
+            tag_name: "v0.x.x"
             release_name: Release ${{ github.ref }}
             draft: false
             prerelease: true
