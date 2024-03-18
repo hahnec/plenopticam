@@ -28,15 +28,15 @@ pyinstaller plenopticam/gui/top_level.py \
 version=$(sed -ne 's@__version__ = \([^]]*\)@\1@gp' plenopticam/__init__.py)
 
 # add config to spec file
-sudo sed -i -e '$ d' ./plenopticam.spec
-echo "             bundle_identifier=None," >> ./plenopticam.spec
-echo "             info_plist={" >> ./plenopticam.spec
-echo "              'NSHighResolutionCapable': 'True'," >> ./plenopticam.spec
-echo "              'PyRuntimeLocations': $version," >> ./plenopticam.spec
-echo "              'CFBundleShortVersionString': $version," >> ./plenopticam.spec
-echo "              'CFBundleVersion': $version" >> ./plenopticam.spec
-echo "             }," >> ./plenopticam.spec
-echo "            )" >> ./plenopticam.spec
+#sudo sed -i -e '$ d' ./plenopticam.spec
+#echo "             bundle_identifier=None," >> ./plenopticam.spec
+#echo "             info_plist={" >> ./plenopticam.spec
+#echo "              'NSHighResolutionCapable': 'True'," >> ./plenopticam.spec
+#echo "              'PyRuntimeLocations': $version," >> ./plenopticam.spec
+#echo "              'CFBundleShortVersionString': $version," >> ./plenopticam.spec
+#echo "              'CFBundleVersion': $version" >> ./plenopticam.spec
+#echo "             }," >> ./plenopticam.spec
+#echo "            )" >> ./plenopticam.spec
 
 # re-run pyinstaller with extended spec file
 sudo pyinstaller plenopticam.spec --noconfirm
