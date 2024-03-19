@@ -25,8 +25,8 @@ pyinstaller plenopticam/gui/top_level.py \
   --exclude-module=matplotlib \
   --osx-bundle-identifier='org.pythonmac.unspecified.plenopticam' \
   --hidden-import pkg_resources.py2_warn \
-  --add-data='/usr/local/lib/libtk8.6.dylib':'lib' \
-  --add-data='/usr/local/lib/libtcl8.6.dylib':'lib' \
+  --add-binary='/usr/local/lib/libtk8.6.dylib':'tk' \
+  --add-binary='/usr/local/lib/libtcl8.6.dylib':'tcl' \
   --add-data=plenopticam/cfg/cfg.json:cfg
 
 # extract version number from python file
