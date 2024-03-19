@@ -12,4 +12,4 @@ depthy>=0.3.0
 certifi>=2020.06.20
 scikit-image>=0.18.0
 tifffile==2022.4.8
-pyinstaller==5.13.1
+pyinstaller==3.4
