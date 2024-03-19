@@ -8,6 +8,10 @@ sp_path=$(python3 -c "import sysconfig; print(sysconfig.get_path('purelib'))")
 echo "$sp_path"/imageio/
 echo $(find /usr /opt /lib /lib64 /usr/local -type f -name "libtk*.dylib" 2>/dev/null)
 
+# link tk/tcl libs
+ln -s /usr/local/Cellar/tcl-tk/$version/lib/libtcl8.6.dylib /usr/local/lib/libtcl8.6.dylib
+ln -s /usr/local/Cellar/tcl-tk/$version/lib/libtk8.6.dylib /usr/local/lib/libtk8.6.dylib
+
 # run pyinstaller with provided options
 pyinstaller plenopticam/gui/top_level.py \
   --onefile \
