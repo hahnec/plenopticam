@@ -6,6 +6,7 @@ sudo rm -rf build dist
 # find python's site-packages path
 sp_path=$(python3 -c "import sysconfig; print(sysconfig.get_path('purelib'))")
 echo "$sp_path"/imageio/
+echo $(find / -type f -name "libtk*.dylib" 2>/dev/null)
 
 # run pyinstaller with provided options
 pyinstaller plenopticam/gui/top_level.py \
