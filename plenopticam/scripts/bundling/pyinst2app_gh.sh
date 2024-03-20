@@ -24,9 +24,6 @@ pyinstaller plenopticam/gui/top_level.py \
   --add-data=./docs/build/html/:./docs/build/html/ \
   --exclude-module=matplotlib \
   --osx-bundle-identifier='org.pythonmac.unspecified.plenopticam' \
-  --hidden-import pkg_resources.py2_warn \
-  --add-data='/usr/local/lib/libtk8.6.dylib':'./library' \
-  --add-data='/usr/local/lib/libtcl8.6.dylib':'./library' \
   --add-data=plenopticam/cfg/cfg.json:cfg
 
 # extract version number from python file
@@ -58,6 +55,7 @@ sudo mkdir -p ./dist/plenopticam.app/Contents/Resources/gui/
 sudo cp -r ./plenopticam/gui/icns ./dist/plenopticam.app/Contents/Resources/gui/
 
 # move tk-tcl lib to package
+sudo mkdir -p ./dist/plenopticam.app/Contents/library/
 sudo cp /usr/local/lib/libtk8.6.dylib ./dist/plenopticam.app/Contents/library/
 sudo cp /usr/local/lib/libtcl8.6.dylib ./dist/plenopticam.app/Contents/library/
 
