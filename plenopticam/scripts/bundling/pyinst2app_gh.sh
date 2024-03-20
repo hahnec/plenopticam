@@ -57,6 +57,10 @@ sudo cp -r ./docs ./dist/plenopticam.app/Contents/Resources/
 sudo mkdir -p ./dist/plenopticam.app/Contents/Resources/gui/
 sudo cp -r ./plenopticam/gui/icns ./dist/plenopticam.app/Contents/Resources/gui/
 
+# move tk-tcl lib to package
+sudo cp /usr/local/lib/libtk8.6.dylib ./dist/plenopticam.app/Contents/library/
+sudo cp /usr/local/lib/libtcl8.6.dylib ./dist/plenopticam.app/Contents/library/
+
 # certificate signature
 sudo codesign --deep --signature-size 9400 -f -s "hahnec" ./dist/plenopticam.app
 
